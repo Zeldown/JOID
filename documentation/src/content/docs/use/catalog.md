@@ -18,60 +18,60 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>RectNode</code></div>
-<figcaption><a href="/reference/nodes/rectnode/"><code>RectNode</code></a><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/rectnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-rectnode.webp" alt="A grey square on a light card" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/rectnode/"><code>RectNode</code></a><span>Draws a filled rectangle on its bounds, with an optional border, and colors that fade on hover.</span><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/rectnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CircleNode</code></div>
-<figcaption><a href="/reference/nodes/circlenode/"><code>CircleNode</code></a><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/circlenode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-circlenode.webp" alt="A grey disc on a light card" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/circlenode/"><code>CircleNode</code></a><span>Draws a filled disc in its bounds, with a color that fades on hover.</span><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/circlenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>TextNode</code></div>
-<figcaption><a href="/reference/nodes/textnode/"><code>TextNode</code></a><small><a href="/use/learn/describing-the-ui/text/">Learn</a> · <a href="/reference/nodes/textnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-textnode.webp" alt="The word Text in grey, centered on a light card" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/textnode/"><code>TextNode</code></a><span>Draws a Text in its bounds, and takes the size of the text when no size is declared.</span><small><a href="/use/learn/describing-the-ui/text/">Learn</a> · <a href="/reference/nodes/textnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ResourceNode</code></div>
-<figcaption><a href="/reference/nodes/resourcenode/"><code>ResourceNode</code></a><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourcenode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-resourcenode.webp" alt="A placeholder image crossed by two diagonals" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/resourcenode/"><code>ResourceNode</code></a><span>Draws an image resource in its bounds, tinted by a color, with an optional image that fades in on hover.</span><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourcenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ResourcePlayerNode</code></div>
-<figcaption><a href="/reference/nodes/resourceplayernode/"><code>ResourcePlayerNode</code></a><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourceplayernode/">Reference</a></small></figcaption>
+<picture><source srcset="/captures/catalog-nodes-resourceplayernode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-resourceplayernode.webp" alt="An animated image: a grey square slides from left to right" loading="lazy" width="340" height="300" /></picture>
+<figcaption><a href="/reference/nodes/resourceplayernode/"><code>ResourcePlayerNode</code></a><span>Plays a video or an animated image in its bounds, with its sound, and controls the playback.</span><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourceplayernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ProgressNode</code></div>
-<figcaption><a href="/reference/nodes/progressnode/"><code>ProgressNode</code></a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/nodes/progressnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-progressnode.webp" alt="A progress bar filled at 60 %" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/progressnode/"><code>ProgressNode</code></a><span>Shows a progress from 0 to 1 by sizing its fill part over an optional track part.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/nodes/progressnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ModelNode</code></div>
-<figcaption><a href="/reference/nodes/modelnode/"><code>ModelNode</code></a><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-modelnode.webp" alt="A textured cube turned to show its front, side and top faces" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/modelnode/"><code>ModelNode</code></a><span>Draws a 3D model at a zoom and a rotation that your code sets.</span><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ModelViewerNode</code></div>
-<figcaption><a href="/reference/nodes/modelviewernode/"><code>ModelViewerNode</code></a><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelviewernode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-modelviewernode.webp" alt="A textured cube turned the other way, which the mouse can turn and zoom" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/modelviewernode/"><code>ModelViewerNode</code></a><span>Draws a 3D model that the user turns by dragging and zooms with the wheel, within ranges.</span><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelviewernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ContainerNode</code></div>
-<figcaption><a href="/reference/layout/containernode/"><code>ContainerNode</code></a><small><a href="/use/learn/describing-the-ui/layout/">Learn</a> · <a href="/reference/layout/containernode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-containernode.webp" alt="A white container holding two grey squares at fixed positions" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/layout/containernode/"><code>ContainerNode</code></a><span>A node that draws nothing and groups its children, to move, clip or scroll them together.</span><small><a href="/use/learn/describing-the-ui/layout/">Learn</a> · <a href="/reference/layout/containernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>FlexNode</code></div>
-<figcaption><a href="/reference/layout/flexnode/"><code>FlexNode</code></a><small><a href="/use/learn/describing-the-ui/flex-layout/">Learn</a> · <a href="/reference/layout/flexnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-flexnode.webp" alt="Four grey rectangles in a row, evenly spaced" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/layout/flexnode/"><code>FlexNode</code></a><span>Places its visible children one after the other in a column or a row, and takes the size of its content.</span><small><a href="/use/learn/describing-the-ui/flex-layout/">Learn</a> · <a href="/reference/layout/flexnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>GridNode</code></div>
-<figcaption><a href="/reference/layout/gridnode/"><code>GridNode</code></a><small><a href="/use/learn/describing-the-ui/grid-layout/">Learn</a> · <a href="/reference/layout/gridnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-gridnode.webp" alt="Twelve squares in rows and columns, alternating grey and white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/layout/gridnode/"><code>GridNode</code></a><span>Places its visible children in rows that wrap at its width, and takes the height of its content.</span><small><a href="/use/learn/describing-the-ui/grid-layout/">Learn</a> · <a href="/reference/layout/gridnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ReorderableFlexNode</code></div>
-<figcaption><a href="/reference/layout/reorderableflexnode/"><code>ReorderableFlexNode</code></a><small><a href="/use/learn/interactivity/reorderable-lists/">Learn</a> · <a href="/reference/layout/reorderableflexnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-reorderableflexnode.webp" alt="A vertical list of four rows, the second one grey" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/layout/reorderableflexnode/"><code>ReorderableFlexNode</code></a><span>A flex column or row whose children the user reorders by dragging them.</span><small><a href="/use/learn/interactivity/reorderable-lists/">Learn</a> · <a href="/reference/layout/reorderableflexnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ChartNode</code></div>
-<figcaption><a href="/reference/nodes/chartnode/"><code>ChartNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/going-further/charts/">Learn</a> · <a href="/reference/nodes/chartnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-chartnode.webp" alt="A line chart of visits from Monday to Friday" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/chartnode/"><code>ChartNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>Base class of a chart that shows named series of values over the labels of an X axis.</span><small><a href="/use/learn/going-further/charts/">Learn</a> · <a href="/reference/nodes/chartnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>RadarChartNode</code></div>
-<figcaption><a href="/reference/nodes/radarchartnode/"><code>RadarChartNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/going-further/charts/">Learn</a> · <a href="/reference/nodes/radarchartnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-nodes-radarchartnode.webp" alt="A radar chart over four axes A, B, C and D" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/nodes/radarchartnode/"><code>RadarChartNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>Base class of a radar chart, which shows one value per axis around a center.</span><small><a href="/use/learn/going-further/charts/">Learn</a> · <a href="/reference/nodes/radarchartnode/">Reference</a></small></figcaption>
 </figure>
 </div>
 
@@ -82,48 +82,48 @@ These cards use plain skins like the ones that [Give your controls a look](/use/
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>TextFieldNode</code></div>
-<figcaption><a href="/reference/controls/textfieldnode/"><code>TextFieldNode</code></a><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/textfieldnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-textfieldnode.webp" alt="A one-line text field holding the words Text field" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/textfieldnode/"><code>TextFieldNode</code></a><span>A one-line field whose value is its text.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/textfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>MultilineTextFieldNode</code></div>
-<figcaption><a href="/reference/controls/multilinetextfieldnode/"><code>MultilineTextFieldNode</code></a><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/multilinetextfieldnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-multilinetextfieldnode.webp" alt="A multiline text field whose sentence wraps on two lines" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/multilinetextfieldnode/"><code>MultilineTextFieldNode</code></a><span>A field of several lines whose value is its text, wrapped in its width.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/multilinetextfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>IntegerFieldNode</code></div>
-<figcaption><a href="/reference/controls/integerfieldnode/"><code>IntegerFieldNode</code></a><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/integerfieldnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-integerfieldnode.webp" alt="A number field holding 42" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/integerfieldnode/"><code>IntegerFieldNode</code></a><span>A one-line field that holds an <code>Integer</code> between a minimum and a maximum, stepped by Up, Down and the wheel.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/integerfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CheckboxNode</code></div>
-<figcaption><a href="/reference/controls/checkboxnode/"><code>CheckboxNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/checkboxnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-checkboxnode.webp" alt="Two checkboxes, the second one checked" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/checkboxnode/"><code>CheckboxNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A checkbox made of two parts: a <code>box</code> that covers the control and a <code>mark</code> shown while it is checked.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/checkboxnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ToggleNode</code></div>
-<figcaption><a href="/reference/controls/togglenode/"><code>ToggleNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/togglenode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-togglenode.webp" alt="Two toggles, off and on" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/togglenode/"><code>ToggleNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A toggle made of two parts: a <code>track</code> that covers the control and a <code>knob</code> that slides from the left (off) to the right (on).</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/togglenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>SwitchNode</code></div>
-<figcaption><a href="/reference/controls/switchnode/"><code>SwitchNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/switchnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-switchnode.webp" alt="A switch with three states, Two selected" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/switchnode/"><code>SwitchNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A choice that shows every option side by side, one node per option, and selects the option under a left press.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/switchnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>SelectorNode</code></div>
-<figcaption><a href="/reference/controls/selectornode/"><code>SelectorNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/selectornode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-selectornode.webp" alt="A closed selector showing its first option" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/selectornode/"><code>SelectorNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A drop-down list made of a <code>field</code> and one node per option, with the selected option on top and the others in rows under it or above it.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/selectornode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>IntegerSliderNode</code></div>
-<figcaption><a href="/reference/controls/integerslidernode/"><code>IntegerSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/integerslidernode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-integerslidernode.webp" alt="A slider whose thumb sits at 4 of 10" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/integerslidernode/"><code>IntegerSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a range of integers.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/integerslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>DoubleSliderNode</code></div>
-<figcaption><a href="/reference/controls/doubleslidernode/"><code>DoubleSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/doubleslidernode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-doubleslidernode.webp" alt="A slider whose thumb sits at three quarters" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/doubleslidernode/"><code>DoubleSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a range of decimal numbers with a fixed step.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/doubleslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>StringSliderNode</code></div>
-<figcaption><a href="/reference/controls/stringslidernode/"><code>StringSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/stringslidernode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-stringslidernode.webp" alt="A slider above the labels Low, Medium and High, its thumb on Medium" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/stringslidernode/"><code>StringSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a list of texts, such as quality levels, given as texts or as the constants of an enum.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/stringslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ScrollbarNode</code></div>
-<figcaption><a href="/reference/controls/scrollbarnode/"><code>ScrollbarNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><small><a href="/use/learn/describing-the-ui/layout/#scroll-a-long-content">Learn</a> · <a href="/reference/controls/scrollbarnode/">Reference</a></small></figcaption>
+<img src="/captures/catalog-controls-scrollbarnode.webp" alt="A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/controls/scrollbarnode/"><code>ScrollbarNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A scrollbar made of two parts: a <code>track</code> that covers the bar and a <code>thumb</code> sized and placed from the scroll of the node it serves.</span><small><a href="/use/learn/describing-the-ui/layout/#add-a-scrollbar">Learn</a> · <a href="/reference/controls/scrollbarnode/">Reference</a></small></figcaption>
 </figure>
 </div>
 
@@ -133,32 +133,32 @@ Effects change how a node is drawn, never its layout.
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>RoundedNodeEffect</code></div>
-<figcaption><a href="/reference/effects/roundednodeeffect/"><code>RoundedNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/roundednodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-roundednodeeffect.webp" alt="A grey rectangle with rounded corners" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/roundednodeeffect/"><code>RoundedNodeEffect</code></a><span>Rounds the corners of what a node draws, all four or only some of them.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/roundednodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CircleNodeEffect</code></div>
-<figcaption><a href="/reference/effects/circlenodeeffect/"><code>CircleNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/circlenodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-circlenodeeffect.webp" alt="A grey square cut into a disc" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/circlenodeeffect/"><code>CircleNodeEffect</code></a><span>Cuts what a node draws to the largest disc centered in its bounds.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/circlenodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>BorderNodeEffect</code></div>
-<figcaption><a href="/reference/effects/bordernodeeffect/"><code>BorderNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/bordernodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-bordernodeeffect.webp" alt="A white rectangle with a thick grey border" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/bordernodeeffect/"><code>BorderNodeEffect</code></a><span>Outlines the pixels that a node draws, outside or inside their edge.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/bordernodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ShadowNodeEffect</code></div>
-<figcaption><a href="/reference/effects/shadownodeeffect/"><code>ShadowNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/shadownodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-shadownodeeffect.webp" alt="A white rectangle casting a soft grey shadow below it" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/shadownodeeffect/"><code>ShadowNodeEffect</code></a><span>Draws a soft shadow of the shape of a node under it, or a glow when the color is light.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/shadownodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>BlurNodeEffect</code></div>
-<figcaption><a href="/reference/effects/blurnodeeffect/"><code>BlurNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/blurnodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-blurnodeeffect.webp" alt="The placeholder image, blurred" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/blurnodeeffect/"><code>BlurNodeEffect</code></a><span>Blurs what a node draws with a horizontal then a vertical Gaussian pass.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/blurnodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>MaskNodeEffect</code></div>
-<figcaption><a href="/reference/effects/masknodeeffect/"><code>MaskNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/masknodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-masknodeeffect.webp" alt="A gradient window inside a white rectangle with a grey outline: the white part is the rest of the node, which the mask hides" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/masknodeeffect/"><code>MaskNodeEffect</code></a><span>Hides every pixel of a node and its children outside a rectangle, or outside the opaque part of an image.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/masknodeeffect/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>TransformNodeEffect</code></div>
-<figcaption><a href="/reference/effects/transformnodeeffect/"><code>TransformNodeEffect</code></a><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/transformnodeeffect/">Reference</a></small></figcaption>
+<img src="/captures/catalog-effects-transformnodeeffect.webp" alt="A grey rectangle rotated by 20 degrees" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/effects/transformnodeeffect/"><code>TransformNodeEffect</code></a><span>Moves, rotates or scales the drawing of a node and its children without changing the layout.</span><small><a href="/use/learn/style-and-motion/effects/">Learn</a> · <a href="/reference/effects/transformnodeeffect/">Reference</a></small></figcaption>
 </figure>
 </div>
 
@@ -168,8 +168,8 @@ A transition animates a UI when it opens and when it closes.
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>PopTransition</code></div>
-<figcaption><a href="/reference/ui/poptransition/"><code>PopTransition</code></a><small><a href="/use/learn/style-and-motion/transitions/">Learn</a> · <a href="/reference/ui/poptransition/">Reference</a></small></figcaption>
+<picture><source srcset="/captures/catalog-transitions-poptransition.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-transitions-poptransition.webp" alt="A white popup grows into view on a light card, then stays open" loading="lazy" width="340" height="300" /></picture>
+<figcaption><a href="/reference/ui/poptransition/"><code>PopTransition</code></a><span>Transition that grows a UI from 75 % of its size when it opens and shrinks it back when it closes, in 130 ms, around its anchor.</span><small><a href="/use/learn/style-and-motion/transitions/">Learn</a> · <a href="/reference/ui/poptransition/">Reference</a></small></figcaption>
 </figure>
 </div>
 
@@ -179,48 +179,48 @@ Each card plots the IN (grey), OUT (dark grey) and INOUT (white) curves of a fam
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>LinearTweenEquation</code></div>
-<figcaption><a href="/reference/animation/lineartweenequation/"><code>LinearTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/lineartweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-lineartweenequation.webp" alt="The Linear easing curve, a straight grey line across a white frame that marks 0 and 1" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/lineartweenequation/"><code>LinearTweenEquation</code></a><span>Easing curve of constant speed.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/lineartweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>QuadTweenEquation</code></div>
-<figcaption><a href="/reference/animation/quadtweenequation/"><code>QuadTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quadtweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-quadtweenequation.webp" alt="The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/quadtweenequation/"><code>QuadTweenEquation</code></a><span>Easing curves along a power of 2.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quadtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CubicTweenEquation</code></div>
-<figcaption><a href="/reference/animation/cubictweenequation/"><code>CubicTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/cubictweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-cubictweenequation.webp" alt="The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/cubictweenequation/"><code>CubicTweenEquation</code></a><span>Easing curves along a power of 3.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/cubictweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>QuartTweenEquation</code></div>
-<figcaption><a href="/reference/animation/quarttweenequation/"><code>QuartTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quarttweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-quarttweenequation.webp" alt="The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/quarttweenequation/"><code>QuartTweenEquation</code></a><span>Easing curves along a power of 4.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quarttweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>QuintTweenEquation</code></div>
-<figcaption><a href="/reference/animation/quinttweenequation/"><code>QuintTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quinttweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-quinttweenequation.webp" alt="The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/quinttweenequation/"><code>QuintTweenEquation</code></a><span>Easing curves along a power of 5.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quinttweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>SineTweenEquation</code></div>
-<figcaption><a href="/reference/animation/sinetweenequation/"><code>SineTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/sinetweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-sinetweenequation.webp" alt="The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/sinetweenequation/"><code>SineTweenEquation</code></a><span>Easing curves along a sine.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/sinetweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ExpoTweenEquation</code></div>
-<figcaption><a href="/reference/animation/expotweenequation/"><code>ExpoTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/expotweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-expotweenequation.webp" alt="The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/expotweenequation/"><code>ExpoTweenEquation</code></a><span>Easing curves along an exponential.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/expotweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CircTweenEquation</code></div>
-<figcaption><a href="/reference/animation/circtweenequation/"><code>CircTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/circtweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-circtweenequation.webp" alt="The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/circtweenequation/"><code>CircTweenEquation</code></a><span>Easing curves along quarter circles.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/circtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>BackTweenEquation</code></div>
-<figcaption><a href="/reference/animation/backtweenequation/"><code>BackTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/backtweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-backtweenequation.webp" alt="The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/backtweenequation/"><code>BackTweenEquation</code></a><span>Easing curves that move back a little before they start or go past the end before they settle.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/backtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>BounceTweenEquation</code></div>
-<figcaption><a href="/reference/animation/bouncetweenequation/"><code>BounceTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/bouncetweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-bouncetweenequation.webp" alt="The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/bouncetweenequation/"><code>BounceTweenEquation</code></a><span>Easing curves that bounce, like a ball that falls and rebounds.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/bouncetweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>ElasticTweenEquation</code></div>
-<figcaption><a href="/reference/animation/elastictweenequation/"><code>ElasticTweenEquation</code></a><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/elastictweenequation/">Reference</a></small></figcaption>
+<img src="/captures/catalog-easing-elastictweenequation.webp" alt="The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/animation/elastictweenequation/"><code>ElasticTweenEquation</code></a><span>Easing curves that oscillate like a spring at the start or at the end.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/elastictweenequation/">Reference</a></small></figcaption>
 </figure>
 </div>
 
@@ -231,55 +231,55 @@ Text modifiers change the characters before layout.
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Wave effect</code></div>
-<figcaption><a href="/reference/text/itexteffect/"><code>Wave effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/WaveTextEffect.java">Example source</a></small></figcaption>
+<picture><source srcset="/captures/catalog-text-wave-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-wave-effect.webp" alt="A sentence whose glyphs move up and down in a wave" loading="lazy" width="340" height="300" /></picture>
+<figcaption><a href="/reference/text/itexteffect/"><code>Wave effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/describing/markup/WaveTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Rainbow effect</code></div>
+<picture><source srcset="/captures/catalog-text-rainbow-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-rainbow-effect.webp" alt="A sentence whose glyphs cycle through colors" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/text/itexteffect/"><code>Rainbow effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/RainbowTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Underline effect</code></div>
-<figcaption><a href="/reference/text/itexteffect/"><code>Underline effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/UnderlineTextEffect.java">Example source</a></small></figcaption>
+<img src="/captures/catalog-text-underline-effect.webp" alt="An underlined sentence" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/text/itexteffect/"><code>Underline effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/describing/markup/UnderlineTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Highlight effect</code></div>
+<img src="/captures/catalog-text-highlight-effect.webp" alt="A sentence on a highlight band" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/itexteffect/"><code>Highlight effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/HighlightTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Scramble effect</code></div>
+<picture><source srcset="/captures/catalog-text-scramble-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-scramble-effect.webp" alt="A sentence whose characters are scrambled while keeping their width" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/text/itexteffect/"><code>Scramble effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/ScrambleTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>Markup</code></div>
-<figcaption><a href="/reference/text/itextmarkup/"><code>Markup</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itextmarkup/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/ExampleTextMarkup.java">Example source</a></small></figcaption>
+<img src="/captures/catalog-text-markup.webp" alt="A sentence with a bold word and a tinted, underlined word" loading="lazy" width="340" height="300" />
+<figcaption><a href="/reference/text/itextmarkup/"><code>Markup</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itextmarkup/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/describing/markup/TagTextMarkup.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>UPPER_CASE</code></div>
+<img src="/captures/catalog-text-upper-case.webp" alt="HELLO JOID WORLD, all in capitals" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-UPPER_CASE"><code>UPPER_CASE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-UPPER_CASE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>LOWER_CASE</code></div>
+<img src="/captures/catalog-text-lower-case.webp" alt="hello joid world, all in lower case" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-LOWER_CASE"><code>LOWER_CASE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-LOWER_CASE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CAPITALIZE</code></div>
+<img src="/captures/catalog-text-capitalize.webp" alt="Hello joid world, with a capital on the first word only" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-CAPITALIZE"><code>CAPITALIZE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-CAPITALIZE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>WORD_CAPITALIZE</code></div>
+<img src="/captures/catalog-text-word-capitalize.webp" alt="Hello Joid World, with a capital on every word" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-WORD_CAPITALIZE"><code>WORD_CAPITALIZE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-WORD_CAPITALIZE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>CAMEL_CASE</code></div>
+<img src="/captures/catalog-text-camel-case.webp" alt="helloJoidWorld, the words joined and each one after the first capitalized" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-CAMEL_CASE"><code>CAMEL_CASE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-CAMEL_CASE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>UPPER_CAMEL_CASE</code></div>
+<img src="/captures/catalog-text-upper-camel-case.webp" alt="HelloJoidWorld, the words joined and each one capitalized" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-UPPER_CAMEL_CASE"><code>UPPER_CAMEL_CASE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-UPPER_CAMEL_CASE">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<div class="joid-card-empty" aria-hidden="true"><code>SNAKE_CASE</code></div>
+<img src="/captures/catalog-text-snake-case.webp" alt="hello_joid_world, the words joined by underscores" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/textmodifier/#TextModifier-constant-SNAKE_CASE"><code>SNAKE_CASE</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/textmodifier/#TextModifier-constant-SNAKE_CASE">Reference</a></small></figcaption>
 </figure>
 </div>

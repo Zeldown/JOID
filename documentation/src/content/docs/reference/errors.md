@@ -22,7 +22,10 @@ Each entry gives the exact message, the method that emits it, its cause and its 
 
 Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] Hot reload is off for …: its classes are not loaded from a folder or a jar file, run it from one of them to reload it</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the UI opened, but its classes come from a place that hot reload cannot watch, such as a class loader of your own.
+The UI works; editing its class does not reload it.
+
+Run the application from a folder of classes or from a jar file, as an IDE or Gradle does: [Dev tools](/use/get-started/dev-tools/).
 
 ### The hot reload of … cannot start (…), the UI no longer reloads {#hot-reload-cannot-start}
 
@@ -30,7 +33,10 @@ Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch).
 
 Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The hot reload of … cannot start (…), the UI no longer reloads: check that the folder can be watched</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the watcher of the folder or jar of the UI failed to start, for example because the system limits the number of watched folders.
+The UI works without hot reload; the reason is in the parentheses.
+
+Check that the folder exists and can be watched, or raise the limit of watched files of the system.
 
 ### A hot reload watcher cannot stop (…), it stops with the JVM {#hot-reload-watcher-cannot}
 
@@ -38,7 +44,10 @@ Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch).
 
 Emitted by [`HotReload.unwatch`](/reference/ui/hotreload/#HotReload-method-unwatch).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A hot reload watcher cannot stop (…), it stops with the JVM</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the last UI watched from a folder closed, and its watcher failed to stop.
+Nothing else is affected: the watcher stops when the JVM exits.
+
+No fix is needed; the reason is in the parentheses.
 
 ### A JOID.onReady callback failed (…), the next callbacks still run {#joid-onready-callback-failed}
 
@@ -46,7 +55,9 @@ Emitted by [`HotReload.unwatch`](/reference/ui/hotreload/#HotReload-method-unwat
 
 Emitted by [`JOID.load`](/reference/ui/joid/#JOID-method-load).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A JOID.onReady callback failed (…), the next callbacks still run: catch the exception inside the callback to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+A callback given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) threw a `RuntimeException`; JOID runs the next callbacks anyway.
+
+Catch the exception inside the callback, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
 
 ### A warning that carries the message of an exception {#warning}
 
@@ -54,7 +65,10 @@ Emitted by [`JOID.load`](/reference/ui/joid/#JOID-method-load).
 
 Emitted by [`JOIDLog.warnOnce`](/reference/ui/joidlog/#JOIDLog-method-warnOnce), [`JOIDLog.devWarnOnce`](/reference/ui/joidlog/#JOIDLog-method-devWarnOnce), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw), [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install), [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] …</code> to <code>documentation/reference/errors.md</code>.</div>
+A warning whose whole text is the message of an exception, printed with its stack trace: a reload that failed on a rule of JOID, a draw that failed, a failed install of the video natives, or an error of the snapshot comparison.
+Each of these messages has its own entry on this page.
+
+Read the message and look it up on this page.
 
 ### The property … of … cannot be read into its field … (…), the field keeps … {#property-cannot-read-into}
 
@@ -62,7 +76,10 @@ Emitted by [`JOIDLog.warnOnce`](/reference/ui/joidlog/#JOIDLog-method-warnOnce),
 
 Emitted by [`UIPropertyHook.load`](/reference/ui/uipropertyhook/#UIPropertyHook-method-load).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The property … of … cannot be read into its field … (…), the field keeps its default value</code> to <code>documentation/reference/errors.md</code>.</div>
+A field marked [`UIProperty`](/reference/ui/uiproperty/) has a saved value that does not fit its type any more, usually because you changed the type of the field.
+The field keeps the value that the UI gives it.
+
+Keep the type of a remembered field, or give it another name: [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui).
 
 ### The field … of … cannot be saved as the property … (…), the property is … {#field-cannot-saved-property}
 
@@ -70,7 +87,11 @@ Emitted by [`UIPropertyHook.load`](/reference/ui/uipropertyhook/#UIPropertyHook-
 
 Emitted by [`UIPropertyHook.save`](/reference/ui/uipropertyhook/#UIPropertyHook-method-save).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The field … of … cannot be saved as the property … (…), the property is not saved</code> to <code>documentation/reference/errors.md</code>.</div>
+When the UI closed, the value of a field marked [`UIProperty`](/reference/ui/uiproperty/) could not be turned into JSON, for example because it refers to itself.
+The previous saved value stays on disk.
+
+Remember a value that JSON can hold: numbers, strings, booleans, lists, maps and plain objects of them.
+See [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui).
 
 ### The store … cannot be restored from … (…), it starts from init() {#store-cannot-restored-from}
 
@@ -78,7 +99,9 @@ Emitted by [`UIPropertyHook.save`](/reference/ui/uipropertyhook/#UIPropertyHook-
 
 Emitted by [`UIStoreHook.useStore`](/reference/ui/uistorehook/#UIStoreHook-method-useStore).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The store … cannot be restored from … (…), it starts from init(): catch the exception inside fromJson() to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+The `fromJson()` of a [`UIStore`](/reference/ui/uistore/) threw while it read the saved file; the store starts from its `init()` values.
+
+Make `fromJson()` accept the files that older versions of your store wrote: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
 ### The destroy of the store … failed (…), it is destroyed anyway {#destroy-store-failed-destroyed}
 
@@ -86,7 +109,9 @@ Emitted by [`UIStoreHook.useStore`](/reference/ui/uistorehook/#UIStoreHook-metho
 
 Emitted by [`UIStoreHook.destroyStore`](/reference/ui/uistorehook/#UIStoreHook-method-destroyStore).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The destroy of the store … failed (…), it is destroyed anyway: catch the exception inside destroy() to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+The `destroy()` of a [`UIStore`](/reference/ui/uistore/) threw when its scope ended; JOID forgets the store anyway.
+
+Catch the exception inside `destroy()`, or fix the code it names.
 
 ### The store … cannot be saved (…), the other stores are saved anyway {#store-cannot-saved-other}
 
@@ -94,7 +119,9 @@ Emitted by [`UIStoreHook.destroyStore`](/reference/ui/uistorehook/#UIStoreHook-m
 
 Emitted by [`UIStoreHook.saveAll`](/reference/ui/uistorehook/#UIStoreHook-method-saveAll).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The store … cannot be saved (…), the other stores are saved anyway: catch the exception inside toJson() to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+The `toJson()` of a [`UIStore`](/reference/ui/uistore/) threw while JOID saved the stores, at the end of their scope or when the program ended; the previous file stays on disk.
+
+Catch the exception inside `toJson()`, or fix the code it names: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
 ### The reload of … failed (…), fix init() then reload it again {#reload-failed-fix-init}
 
@@ -102,7 +129,9 @@ Emitted by [`UIStoreHook.saveAll`](/reference/ui/uistorehook/#UIStoreHook-method
 
 Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The reload of … failed (…), fix init() then reload it again</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()`, and the UI shows what the failed build left.
+
+Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-started/dev-tools/).
 
 ### … took …ms to draw a frame, more than the 16.66ms of 60 fps {#took-ms-draw-frame}
 
@@ -110,7 +139,9 @@ Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`
 
 Emitted by [`UI.draw`](/reference/ui/ui/#UI-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … took …ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar and the profiler of the UI turned on in [`UIDataDebug`](/reference/annotations/uidatadebug/), one frame of the UI took longer than a frame at 60 fps.
+
+Move loading and computing out of the draw, onto a worker thread or into several frames: [Performance](/use/in-depth/performance/#find-the-slow-part).
 
 ### The … of … failed (…), the next inputs still run {#failed-next-inputs-still}
 
@@ -118,7 +149,10 @@ Emitted by [`UI.draw`](/reference/ui/ui/#UI-method-draw).
 
 Emitted by [`UI.fireUpdate`](/reference/ui/ui/#UI-method-fireUpdate), [`UI.fireMousePressed`](/reference/ui/ui/#UI-method-fireMousePressed), [`UI.fireMouseReleased`](/reference/ui/ui/#UI-method-fireMouseReleased), [`UI.fireMouseDragged`](/reference/ui/ui/#UI-method-fireMouseDragged), [`UI.fireMouseScroll`](/reference/ui/ui/#UI-method-fireMouseScroll), [`UI.fireCharTyped`](/reference/ui/ui/#UI-method-fireCharTyped), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.fireKeyReleased`](/reference/ui/ui/#UI-method-fireKeyReleased).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The … of … failed (…), the next inputs still run: catch the exception inside the handler to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+A handler of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
+JOID prints it once per kind of input and of exception, and the next inputs still run.
+
+Catch the exception inside the handler, or fix the code it names: [Events](/use/learn/interactivity/events/).
 
 ### No key resolver knows the shortcut binding … of type … yet, the shortcut … {#no-key-resolver-knows-shortcut}
 
@@ -126,7 +160,10 @@ Emitted by [`UI.fireUpdate`](/reference/ui/ui/#UI-method-fireUpdate), [`UI.fireM
 
 Emitted by [`Shortcut`](/reference/ui/shortcut/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] No key resolver knows the shortcut binding … of type … yet, the shortcut fires only once an IKeyResolver that knows it is registered: pass a Key or register an IKeyResolver with KeyResolver.register(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`Shortcut`](/reference/ui/shortcut/) was created with a binding that is not a [`Key`](/reference/input/key/), and no registered [`IKeyResolver`](/reference/input/ikeyresolver/) supports it yet.
+The shortcut stays silent until a resolver that knows the binding is registered.
+
+Pass a `Key`, or register the resolver of your key bindings before you create the shortcut: [Use the key bindings of your application](/use/learn/interactivity/keyboard/#use-the-key-bindings-of-your-application).
 
 ### UncheckedIOException that carries the message of its cause {#uncheckedioexception}
 
@@ -134,7 +171,10 @@ Emitted by [`Shortcut`](/reference/ui/shortcut/).
 
 Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch), [`ShaderSource.read`](/reference/pipeline/shadersource/#ShaderSource-factory-read), [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main), [`SnapshotImage.read`](/reference/testing/snapshotimage/#SnapshotImage-factory-read), [`SnapshotImage.write`](/reference/testing/snapshotimage/#SnapshotImage-method-write), [`SnapshotReport.write`](/reference/testing/snapshotreport/#SnapshotReport-method-write), [`SnapshotRunner.writeRenderer`](/reference/testing/snapshotrunner/#SnapshotRunner-method-writeRenderer), [`SnapshotRunner.getShots`](/reference/testing/snapshotrunner/#SnapshotRunner-method-getShots), [`SnapshotRunner.run`](/reference/testing/snapshotrunner/#SnapshotRunner-method-run).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException …</code> to <code>documentation/reference/errors.md</code>.</div>
+An `IOException` wrapped to cross a method that cannot throw it: reading a shader source, watching a folder for hot reload, or reading and writing the files of the testkit.
+The message is the one of the cause.
+
+Read the cause: a missing file, a folder that cannot be written, or a damaged file.
 
 ### No IUIBridge can open … {#no-iuibridge-can-open}
 
@@ -142,7 +182,10 @@ Emitted by [`HotReload.watch`](/reference/ui/hotreload/#HotReload-method-watch),
 
 Emitted by [`JOID.open`](/reference/ui/joid/#JOID-method-open), [`JOID.forceOpen`](/reference/ui/joid/#JOID-method-forceOpen).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No IUIBridge can open …: register one whose canHandle accepts it</code> to <code>documentation/reference/errors.md</code>.</div>
+[`JOID.open`](/reference/ui/joid/#JOID-method-open) found no UI bridge whose `canHandle` accepts the UI: no backend is registered yet, or every UI bridge refuses the UI.
+
+Register the backend before you open a UI, or open it from [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady); with UI bridges of your own, register one that accepts the UI.
+See [Opening a UI throws No IUIBridge can open](/use/troubleshooting/#opening-a-ui-throws-no-iuibridge-can-open).
 
 ### The backend was built for JOID ….x, but JOID … is loaded {#backend-was-built-joid}
 
@@ -150,7 +193,9 @@ Emitted by [`JOID.open`](/reference/ui/joid/#JOID-method-open), [`JOID.forceOpen
 
 Emitted by [`JOID.checkVersion`](/reference/ui/joid/#JOID-method-checkVersion).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The backend was built for JOID ….x, but JOID … is loaded: update the backend</code> to <code>documentation/reference/errors.md</code>.</div>
+[`Backend.register`](/reference/backends/backend/#Backend-method-register) compares the major version that the backend was built for with the major version of the JOID core on the classpath, and they differ.
+
+Use the backend jar of the same release as the core jar: [Choosing a backend](/use/learn/running/backends/).
 
 ### The dev mode needs the dev classes of JOID {#dev-mode-needs-dev}
 
@@ -158,7 +203,9 @@ Emitted by [`JOID.checkVersion`](/reference/ui/joid/#JOID-method-checkVersion).
 
 Emitted by [`JOIDEnv.devMode`](/reference/ui/joidenv/#JOIDEnv-method-devMode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The dev mode needs the dev classes of JOID, use its dev or demo jar</code> to <code>documentation/reference/errors.md</code>.</div>
+[`JOIDEnv.devMode`](/reference/ui/joidenv/#JOIDEnv-method-devMode) was asked to turn the dev mode on with the prod jar, which holds no dev tools.
+
+Put the dev jar on the classpath to use the dev mode: [Dev tools](/use/get-started/dev-tools/).
 
 ### The store … has no @UIStoreData annotation, add it to the class {#store-has-no-uistoredata}
 
@@ -166,7 +213,9 @@ Emitted by [`JOIDEnv.devMode`](/reference/ui/joidenv/#JOIDEnv-method-devMode).
 
 Emitted by [`UIStoreHook.getData`](/reference/ui/uistorehook/#UIStoreHook-method-getData).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The store … has no @UIStoreData annotation, add it to the class</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`UIStore`](/reference/ui/uistore/) class without [`UIStoreData`](/reference/ui/uistoredata/) was used; JOID cannot know its scope.
+
+Annotate the class with `@UIStoreData`: [Write a store](/use/learn/state/stores-and-properties/#write-a-store).
 
 ### The UI … is not open, only an open UI can be renewed {#ui-not-open-only}
 
@@ -174,7 +223,9 @@ Emitted by [`UIStoreHook.getData`](/reference/ui/uistorehook/#UIStoreHook-method
 
 Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The UI … is not open, only an open UI can be renewed: open it before renew()</code> to <code>documentation/reference/errors.md</code>.</div>
+[`UI.renew`](/reference/ui/ui/#UI-method-renew) replaces an open UI with a fresh instance, and this UI is not open in any bridge.
+
+Open the UI first, or create a new instance and open it: [Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui).
 
 ### The UI … has no constructor without argument, it cannot be renewed {#ui-has-no-constructor}
 
@@ -182,7 +233,9 @@ Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
 Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The UI … has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead</code> to <code>documentation/reference/errors.md</code>.</div>
+[`UI.renew`](/reference/ui/ui/#UI-method-renew) creates the fresh instance with the constructor without argument of the class, and the class has none.
+
+Add a constructor without argument, of any visibility, or reload the UI instead: [Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui).
 
 ### The UI … cannot be renewed {#ui-cannot-renewed-constructor}
 
@@ -190,7 +243,9 @@ Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
 Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The UI … cannot be renewed: its constructor without argument failed (…), fix the constructor from this error</code> to <code>documentation/reference/errors.md</code>.</div>
+[`UI.renew`](/reference/ui/ui/#UI-method-renew) called the constructor without argument of the class, and it threw; the open UI stays as it was.
+
+Fix the constructor from the error in the parentheses.
 
 ### The UI … cannot be a popup and an overlay at the same time, keep only … {#ui-cannot-popup-overlay}
 
@@ -198,7 +253,9 @@ Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
 Emitted by [`UI`](/reference/ui/ui/#UI-constructor), [`UI.reload`](/reference/ui/ui/#UI-method-reload).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The UI … cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay</code> to <code>documentation/reference/errors.md</code>.</div>
+The UI is annotated with an active [`UIDataPopup`](/reference/annotations/uidatapopup/) and an active [`UIDataOverlay`](/reference/annotations/uidataoverlay/); a UI is one of the two at most.
+
+Keep one annotation: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
 ## Annotations
 
@@ -208,7 +265,9 @@ Emitted by [`UI`](/reference/ui/ui/#UI-constructor), [`UI.reload`](/reference/ui
 
 Emitted by [`AnnotationValues.read`](/reference/annotations/annotationvalues/#AnnotationValues-method-read), [`AnnotationValues.merge`](/reference/annotations/annotationvalues/#AnnotationValues-method-merge).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The class … has no public method …(...) for the annotation value …, add it</code> to <code>documentation/reference/errors.md</code>.</div>
+An object that changes a UI setting while the UI runs was applied to a target that lacks the public method of one of its values.
+
+Add the public method that the message names, with the parameter type of the value.
 
 ### The method … of … failed for an annotation value (…) {#method-failed-annotation-value}
 
@@ -216,7 +275,9 @@ Emitted by [`AnnotationValues.read`](/reference/annotations/annotationvalues/#An
 
 Emitted by [`AnnotationValues.read`](/reference/annotations/annotationvalues/#AnnotationValues-method-read), [`AnnotationValues.merge`](/reference/annotations/annotationvalues/#AnnotationValues-method-merge).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The method … of … failed for an annotation value (…)</code> to <code>documentation/reference/errors.md</code>.</div>
+The method that applies an annotation value threw; the cause is in the parentheses.
+
+Fix the method from that cause.
 
 ## Nodes
 
@@ -224,7 +285,10 @@ Emitted by [`AnnotationValues.read`](/reference/annotations/annotationvalues/#An
 
 **Warning** · `[JOID] The dev panel cannot read the field … of … (…), the panel leaves it out`
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The dev panel cannot read the field … of … (…), the panel leaves it out</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the inspector could not read one field of the selected node, often a field that the module system hides.
+The panel shows the other fields.
+
+No fix is needed; the reason is in the parentheses.
 
 ### The update of … failed (…), the next updates still run {#update-failed-next-updates}
 
@@ -232,7 +296,9 @@ Emitted by [`AnnotationValues.read`](/reference/annotations/annotationvalues/#An
 
 Emitted by [`Node.fireUpdate`](/reference/nodes/node/#Node-method-fireUpdate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The update of … failed (…), the next updates still run: catch the exception inside update() to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+The `update()` of a node threw during a frame; JOID prints it once per node and kind of exception, and the other nodes still update.
+
+Catch the exception inside `update()`, or fix the code it names: [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
 
 ### The detach of … failed (…), the node is detached anyway {#detach-failed-node-detached}
 
@@ -240,7 +306,9 @@ Emitted by [`Node.fireUpdate`](/reference/nodes/node/#Node-method-fireUpdate).
 
 Emitted by [`Node.fireDetach`](/reference/nodes/node/#Node-method-fireDetach).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The detach of … failed (…), the node is detached anyway: catch the exception inside detach() to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+The `detach()` of a node, or one of its detach callbacks, threw; JOID detaches the node anyway.
+
+Catch the exception inside `detach()`, or fix the code it names: [Release what a node started](/use/learn/describing-the-ui/node-lifecycle/#release-what-a-node-started).
 
 ### A watch of … cannot apply its property when its signal changes (…), the … {#watch-cannot-apply-property}
 
@@ -248,7 +316,10 @@ Emitted by [`Node.fireDetach`](/reference/nodes/node/#Node-method-fireDetach).
 
 Emitted by [`Node.watch`](/reference/nodes/node/#Node-method-watch).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A watch of … cannot apply its property when its signal changes (…), the remaining properties of this watch still apply: check the value the signal gives or the body it replays</code> to <code>documentation/reference/errors.md</code>.</div>
+A property given to `watch(...)` threw when its signal changed, for example on a value the body does not expect.
+The other properties of the watch still apply.
+
+Check the value that the signal gives and the code of the property: [Choose what a change does](/use/learn/state/rebuilding/#choose-what-a-change-does).
 
 ### The … has no X axis to hold the data … {#has-no-x-axis-hold}
 
@@ -256,7 +327,9 @@ Emitted by [`Node.watch`](/reference/nodes/node/#Node-method-watch).
 
 Emitted by [`ChartNode.data`](/reference/nodes/chartnode/#ChartNode-method-data).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … has no X axis to hold the data …, call xAxis(...) before data(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`data(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
+
+Call `xAxis(...)` first: [Draw a line chart](/use/learn/going-further/charts/#draw-a-line-chart).
 
 ### The … has no X axis to remove the data … from {#has-no-x-axis-remove}
 
@@ -264,7 +337,9 @@ Emitted by [`ChartNode.data`](/reference/nodes/chartnode/#ChartNode-method-data)
 
 Emitted by [`ChartNode.removeData`](/reference/nodes/chartnode/#ChartNode-method-removeData).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … has no X axis to remove the data … from, call xAxis(...) before removeData(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`removeData(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
+
+Call `xAxis(...)` first: [Update the data](/use/learn/going-further/charts/#update-the-data).
 
 ### The min … of the zoom range is above its max …, pass a min of at most … {#min-zoom-range-above}
 
@@ -272,7 +347,9 @@ Emitted by [`ChartNode.removeData`](/reference/nodes/chartnode/#ChartNode-method
 
 Emitted by [`ModelViewerNode.zoomRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-zoomRange).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The min … of the zoom range is above its max …, pass a min of at most …</code> to <code>documentation/reference/errors.md</code>.</div>
+`zoomRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
 
 ### The min … of the rotation yaw range is above its max …, pass a min of at … {#min-rotation-yaw-range}
 
@@ -280,7 +357,9 @@ Emitted by [`ModelViewerNode.zoomRange`](/reference/nodes/modelviewernode/#Model
 
 Emitted by [`ModelViewerNode.rotationYawRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationYawRange).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The min … of the rotation yaw range is above its max …, pass a min of at most …</code> to <code>documentation/reference/errors.md</code>.</div>
+`rotationYawRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
 
 ### The min … of the rotation pitch range is above its max …, pass a min of … {#min-rotation-pitch-range}
 
@@ -288,7 +367,9 @@ Emitted by [`ModelViewerNode.rotationYawRange`](/reference/nodes/modelviewernode
 
 Emitted by [`ModelViewerNode.rotationPitchRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationPitchRange).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The min … of the rotation pitch range is above its max …, pass a min of at most …</code> to <code>documentation/reference/errors.md</code>.</div>
+`rotationPitchRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
 
 ### The resource … of this ResourcePlayerNode has no playback {#resource-resourceplayernode-has-no}
 
@@ -296,7 +377,9 @@ Emitted by [`ModelViewerNode.rotationPitchRange`](/reference/nodes/modelviewerno
 
 Emitted by [`ResourcePlayerNode.play`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-play), [`ResourcePlayerNode.stop`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-stop), [`ResourcePlayerNode.pause`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-pause), [`ResourcePlayerNode.restart`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-restart), [`ResourcePlayerNode.seek`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-seek).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The resource … of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode</code> to <code>documentation/reference/errors.md</code>.</div>
+`play()`, `stop()`, `pause()`, `restart()` or `seek(...)` was called on a [`ResourcePlayerNode`](/reference/nodes/resourceplayernode/) whose resource is a still image, which has nothing to play.
+
+Give the node a video or an animated image, or show the image with a [`ResourceNode`](/reference/nodes/resourcenode/): [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ### The … has no …, … {#has-no}
 
@@ -304,7 +387,10 @@ Emitted by [`ResourcePlayerNode.play`](/reference/nodes/resourceplayernode/#Reso
 
 Emitted by [`Node.require`](/reference/nodes/node/#Node-method-require).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … has no …, …</code> to <code>documentation/reference/errors.md</code>.</div>
+A node of your own declared a setting as required with `require(...)`, and the node was loaded without it.
+The end of the message is the advice that the node gives.
+
+Set what the message names before the node is attached.
 
 ### The node … cannot be copied: its constructor … failed (…) {#node-cannot-copied-constructor}
 
@@ -312,7 +398,9 @@ Emitted by [`Node.require`](/reference/nodes/node/#Node-method-require).
 
 Emitted by [`Node.instantiate`](/reference/nodes/node/#Node-method-instantiate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … cannot be copied: its constructor … failed (…)</code> to <code>documentation/reference/errors.md</code>.</div>
+`copy()`, or a drag with `DraggableType.COPY`, created the copy with a constructor of the class, and that constructor threw.
+
+Fix the constructor from the error in the parentheses: [Make your node duplicable](/use/learn/going-further/custom-nodes/#make-your-node-duplicable).
 
 ### The node … cannot be copied: declare a constructor (x, y, width, height) or override instantiate() {#node-cannot-copied-declare}
 
@@ -320,7 +408,9 @@ Emitted by [`Node.instantiate`](/reference/nodes/node/#Node-method-instantiate).
 
 Emitted by [`Node.instantiate`](/reference/nodes/node/#Node-method-instantiate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … cannot be copied: declare a constructor (x, y, width, height) or override instantiate()</code> to <code>documentation/reference/errors.md</code>.</div>
+`copy()`, or a drag with `DraggableType.COPY`, found no constructor `(x, y, width, height)`, `(x, y)` or without argument in the class of the node.
+
+Declare one of these constructors, of any visibility, or override `instantiate()`: [Make your node duplicable](/use/learn/going-further/custom-nodes/#make-your-node-duplicable).
 
 ### The node … has no DraggableProperty {#node-has-no-draggableproperty}
 
@@ -328,7 +418,9 @@ Emitted by [`Node.instantiate`](/reference/nodes/node/#Node-method-instantiate).
 
 Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDragging).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … has no DraggableProperty, call draggable(...) first</code> to <code>documentation/reference/errors.md</code>.</div>
+`startDragging()` was called on a node that is not draggable.
+
+Give the node a [`DraggableProperty`](/reference/nodes/draggableproperty/) with `draggable(...)` first: [Make a node draggable](/use/learn/interactivity/drag-and-drop/#make-a-node-draggable).
 
 ### The node … has a disabled DraggableProperty, enable it with enabled(...) … {#node-has-disabled-draggableproperty}
 
@@ -336,7 +428,9 @@ Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDraggi
 
 Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDragging).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … has a disabled DraggableProperty, enable it with enabled(...) first</code> to <code>documentation/reference/errors.md</code>.</div>
+`startDragging()` was called while the [`DraggableProperty`](/reference/nodes/draggableproperty/) of the node is disabled.
+
+Enable the property, or check it before you start the drag: [Make a node draggable](/use/learn/interactivity/drag-and-drop/#make-a-node-draggable).
 
 ### The node … is dragged inside its parent but sits at the top of its UI, … {#node-dragged-inside-parent}
 
@@ -344,7 +438,9 @@ Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDraggi
 
 Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDragging), [`DraggableProperty.getBounds`](/reference/nodes/draggableproperty/#DraggableProperty-method-getBounds).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()</code> to <code>documentation/reference/errors.md</code>.</div>
+A drag kept inside the parent started on a node attached to the UI itself, which has no parent node to bound it.
+
+Attach the node to a node, or pick another area, such as `DraggableProperty.ui()`: [Choose where the node may go](/use/learn/interactivity/drag-and-drop/#choose-where-the-node-may-go).
 
 ### The … is dragged with DraggableType.MOVE but its … is computed (a lambda … {#dragged-draggabletype-move-but}
 
@@ -352,7 +448,9 @@ Emitted by [`Node.startDragging`](/reference/nodes/node/#Node-method-startDraggi
 
 Emitted by [`Node.x`](/reference/nodes/node/#Node-property-x), [`Node.y`](/reference/nodes/node/#Node-property-y), [`Node.draggable`](/reference/nodes/node/#Node-property-draggable).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … is dragged with DraggableType.MOVE but its … is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give …(...) a value or a writable Signal, or drag a copy with DraggableType.COPY</code> to <code>documentation/reference/errors.md</code>.</div>
+A drag that moves the node needs to write its position, and `x` or `y` follows a lambda or a derived signal that cannot be written.
+
+Give the position a value or a writable [`Signal`](/reference/signals/signal/), or drag a copy: [Leave the original in place](/use/learn/interactivity/drag-and-drop/#leave-the-original-in-place).
 
 ### The node … cannot be copied: its field … cannot be set (…) {#node-cannot-copied-field}
 
@@ -360,7 +458,9 @@ Emitted by [`Node.x`](/reference/nodes/node/#Node-property-x), [`Node.y`](/refer
 
 Emitted by [`Node.copy`](/reference/nodes/node/#Node-method-copy), [`Node.startDragging`](/reference/nodes/node/#Node-method-startDragging).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The node … cannot be copied: its field … cannot be set (…), mark the field transient to leave it out of copy()</code> to <code>documentation/reference/errors.md</code>.</div>
+`copy()` copies every field of the node by reflection, and one field refused the value, for example a final field that the module system protects.
+
+Mark the field `transient` to leave it out of the copy, and set it in the constructor: [Make your node duplicable](/use/learn/going-further/custom-nodes/#make-your-node-duplicable).
 
 ### A free draggable area has no bounds, check getAreaType() before calling … {#free-draggable-area-has}
 
@@ -368,7 +468,9 @@ Emitted by [`Node.copy`](/reference/nodes/node/#Node-method-copy), [`Node.startD
 
 Emitted by [`DraggableProperty.getBounds`](/reference/nodes/draggableproperty/#DraggableProperty-method-getBounds).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A free draggable area has no bounds, check getAreaType() before calling getBounds() or pick a bounded area such as DraggableProperty.parent()</code> to <code>documentation/reference/errors.md</code>.</div>
+`getBounds(...)` was called on a [`DraggableProperty`](/reference/nodes/draggableproperty/) whose area is free, which bounds nothing.
+
+Check `getAreaType()` first, or use a bounded area: [Choose where the node may go](/use/learn/interactivity/drag-and-drop/#choose-where-the-node-may-go).
 
 ## Controls
 
@@ -376,13 +478,17 @@ Emitted by [`DraggableProperty.getBounds`](/reference/nodes/draggableproperty/#D
 
 **`IllegalStateException`** · `The … has no values, call values(...) before getValue()`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … has no values, call values(...) before getValue()</code> to <code>documentation/reference/errors.md</code>.</div>
+`getValue()` was called on a choice control, a switch or a selector, before it received its options.
+
+Give the control its options with `values(...)` first: [Choose one of a few options](/use/learn/interactivity/controls/#choose-one-of-a-few-options).
 
 ### The … needs at least one value, pass them to values(...) {#needs-least-one-value}
 
 **`IllegalArgumentException`** · `The … needs at least one value, pass them to values(...)`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The … needs at least one value, pass them to values(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`values(...)` of a choice control received an empty list.
+
+Pass at least one option: [Choose one of a few options](/use/learn/interactivity/controls/#choose-one-of-a-few-options).
 
 ### The value … is not an option of the … …, pass one of them or add it with … {#value-not-option-pass}
 
@@ -390,7 +496,9 @@ Emitted by [`DraggableProperty.getBounds`](/reference/nodes/draggableproperty/#D
 
 Emitted by [`BaseChoiceNode.value`](/reference/controls/basechoicenode/#BaseChoiceNode-property-value), [`BaseChoiceNode.change`](/reference/controls/basechoicenode/#BaseChoiceNode-method-change).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The value … is not an option of the … …, pass one of them or add it with values(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`value(...)` or `change(...)` of a choice control received a value that is not among its options.
+
+Pass one of the options, or add the value with `values(...)` first: [Choose one of a few options](/use/learn/interactivity/controls/#choose-one-of-a-few-options).
 
 ### The index … is out of the values … of the …, pass an index from 0 to … {#index-out-values-pass}
 
@@ -398,7 +506,9 @@ Emitted by [`BaseChoiceNode.value`](/reference/controls/basechoicenode/#BaseChoi
 
 Emitted by [`BaseChoiceNode.valueIndex`](/reference/controls/basechoicenode/#BaseChoiceNode-property-valueIndex).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The index … is out of the values … of the …, pass an index from 0 to …</code> to <code>documentation/reference/errors.md</code>.</div>
+`valueIndex(...)` of a choice control received an index outside its options.
+
+Pass an index from `0` to the number of options minus one.
 
 ### The step … of the IntegerFieldNode must be positive, pass a step of 1 or … {#step-integerfieldnode-must-positive}
 
@@ -406,7 +516,9 @@ Emitted by [`BaseChoiceNode.valueIndex`](/reference/controls/basechoicenode/#Bas
 
 Emitted by [`IntegerFieldNode.step`](/reference/controls/integerfieldnode/#IntegerFieldNode-property-step).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The step … of the IntegerFieldNode must be positive, pass a step of 1 or more</code> to <code>documentation/reference/errors.md</code>.</div>
+`step(...)` of an [`IntegerFieldNode`](/reference/controls/integerfieldnode/) received, or its supplier returned, `0` or less.
+
+Pass a step of `1` or more: [Ask for a number](/use/learn/interactivity/text-fields/#ask-for-a-number).
 
 ### The step … of the slider range must be positive, pass a step above 0 {#step-slider-range-must-step-above}
 
@@ -414,7 +526,9 @@ Emitted by [`IntegerFieldNode.step`](/reference/controls/integerfieldnode/#Integ
 
 Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#DoubleSliderNode-method-range).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The step … of the slider range must be positive, pass a step above 0</code> to <code>documentation/reference/errors.md</code>.</div>
+`range(min, max, step)` of a [`DoubleSliderNode`](/reference/controls/doubleslidernode/) received a step of `0D` or less.
+
+Pass a step above `0D`: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
 ### The min … of the slider range is above its max …, pass a min of at most … {#min-slider-range-above}
 
@@ -422,7 +536,9 @@ Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#Doub
 
 Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#DoubleSliderNode-method-range), [`IntegerSliderNode.range`](/reference/controls/integerslidernode/#IntegerSliderNode-method-range).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The min … of the slider range is above its max …, pass a min of at most …</code> to <code>documentation/reference/errors.md</code>.</div>
+`range(min, max, step)` of a slider received a minimum above its maximum.
+
+Pass a minimum lower than or equal to the maximum: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
 ### The step … of the slider range must be positive, pass a step of 1 or … {#step-slider-range-must-step-1}
 
@@ -430,7 +546,9 @@ Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#Doub
 
 Emitted by [`IntegerSliderNode.range`](/reference/controls/integerslidernode/#IntegerSliderNode-method-range).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The step … of the slider range must be positive, pass a step of 1 or more</code> to <code>documentation/reference/errors.md</code>.</div>
+`range(min, max, step)` of an [`IntegerSliderNode`](/reference/controls/integerslidernode/) received a step of `0` or less.
+
+Pass a step of `1` or more: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
 ## Layout
 
@@ -440,7 +558,9 @@ Emitted by [`IntegerSliderNode.range`](/reference/controls/integerslidernode/#In
 
 Emitted by [`ReorderableFlexNode.getChildIndex`](/reference/layout/reorderableflexnode/#ReorderableFlexNode-method-getChildIndex).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The node … is not a child of this …, attach it to the flex first</code> to <code>documentation/reference/errors.md</code>.</div>
+`getChildIndex(...)` of a [`ReorderableFlexNode`](/reference/layout/reorderableflexnode/) received a node that is not one of its children.
+
+Pass a child of the list: [Let the user reorder a list](/use/learn/interactivity/reorderable-lists/#let-the-user-reorder-a-list).
 
 ## Events
 
@@ -450,7 +570,9 @@ Emitted by [`ReorderableFlexNode.getChildIndex`](/reference/layout/reorderablefl
 
 Emitted by [`EventBus.fireListeners`](/reference/events/eventbus/#EventBus-method-fireListeners), [`EventBus.fireMonitor`](/reference/events/eventbus/#EventBus-method-fireMonitor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The … listener of … failed (…), the other listeners still run: catch the exception inside the listener to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+A listener of an event threw; JOID prints it once per listener while the failure stays the same, and the other listeners still run.
+
+Catch the exception inside the listener, or fix the code it names: [Events](/use/learn/interactivity/events/).
 
 ### A MONITOR listener only reads …, it cannot call …() {#monitor-listener-only-reads}
 
@@ -458,7 +580,10 @@ Emitted by [`EventBus.fireListeners`](/reference/events/eventbus/#EventBus-metho
 
 Emitted by [`Event.checkWritable`](/reference/events/event/#Event-method-checkWritable).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A MONITOR listener only reads …, it cannot call …(): listen with another priority to … it</code> to <code>documentation/reference/errors.md</code>.</div>
+A listener registered with the `MONITOR` priority tried to change the event, by cancelling or consuming it.
+A monitor listener runs last and sees the final result only.
+
+Register the listener with another priority to change the event: [Order the listeners of one event](/use/learn/interactivity/events/#order-the-listeners-of-one-event).
 
 ## Signals
 
@@ -468,7 +593,9 @@ Emitted by [`Event.checkWritable`](/reference/events/event/#Event-method-checkWr
 
 Emitted by [`ComputedSignal.refresh`](/reference/signals/computedsignal/#ComputedSignal-method-refresh).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A Signal.from(...) of … reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, a derived value computed by [`Signal.from`](/reference/signals/signal/#Signal-method-from) read no signal the first time it computed, so it never computes again.
+
+Read the signals with `get()` inside the function, or give the setter a lambda, which JOID reads at every frame: [Combine several signals](/use/learn/state/derived-values/#combine-several-signals).
 
 ### … but cannot follow it {#but-cannot-follow-value}
 
@@ -476,7 +603,10 @@ Emitted by [`ComputedSignal.refresh`](/reference/signals/computedsignal/#Compute
 
 Emitted by [`SignalReplay.warn`](/reference/signals/signalreplay/#SignalReplay-method-warn).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … but cannot follow it: …. The value stays "…". …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, a setter received an expression that reads signals, and JOID cannot replay its bytecode to find them; the message names the file, the line, the setter and the signals.
+The property keeps the value of the first read; the end of the message gives the advice for this case.
+
+Follow the advice, or give the setter a lambda, which JOID reads at every frame: [What JOID follows](/use/learn/interactivity/signals/#what-joid-follows).
 
 ### The replay of a signal read failed on an internal error, the value "…" … {#replay-signal-read-failed}
 
@@ -484,7 +614,10 @@ Emitted by [`SignalReplay.warn`](/reference/signals/signalreplay/#SignalReplay-m
 
 Emitted by [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay-method-replay).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The replay of a signal read failed on an internal error, the value "…" stays fixed</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the replay of an expression given to a setter failed on an error of JOID itself; the stack trace follows.
+The property keeps the value of the first read.
+
+Give the setter a lambda instead, and report the stack trace to JOID.
 
 ### The … of … cannot take its new value (…), it keeps the previous one {#cannot-take-new-value}
 
@@ -492,7 +625,9 @@ Emitted by [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay
 
 Emitted by [`NodeBindings.pull`](/reference/signals/nodebindings/#NodeBindings-method-pull).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The … of … cannot take its new value (…), it keeps the previous one: check the value its signal gives</code> to <code>documentation/reference/errors.md</code>.</div>
+A property bound to a signal refused the new value of the signal, for example a value outside its bounds.
+
+Check the values that the signal gives: [Bind a control to a signal](/use/learn/interactivity/controls/#bind-a-control-to-a-signal).
 
 ### … and the other controls bound to … keep correcting each other {#other-controls-bound-keep}
 
@@ -500,7 +635,9 @@ Emitted by [`NodeBindings.pull`](/reference/signals/nodebindings/#NodeBindings-m
 
 Emitted by [`NodeBindings.sync`](/reference/signals/nodebindings/#NodeBindings-method-sync).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … and the other controls bound to … keep correcting each other: their bounds are incompatible, give them bounds that agree</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, several controls bound to one signal kept writing it back, each one to fit its own bounds, and JOID stopped after 16 rounds and set the first value back.
+
+Give the controls bound to one signal bounds that agree: [Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse).
 
 ### A ComputedSignal cannot read itself while it computes its value, remove … {#computedsignal-cannot-read-itself}
 
@@ -508,7 +645,9 @@ Emitted by [`NodeBindings.sync`](/reference/signals/nodebindings/#NodeBindings-m
 
 Emitted by [`ComputedSignal.refresh`](/reference/signals/computedsignal/#ComputedSignal-method-refresh).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A ComputedSignal cannot read itself while it computes its value, remove the read of this signal from its function</code> to <code>documentation/reference/errors.md</code>.</div>
+The function of a derived value read the derived value itself, directly or through another one.
+
+Remove that read from the function: [Combine several signals](/use/learn/state/derived-values/#combine-several-signals).
 
 ### The IntegerSignal of value … cannot be divided by 0, check the divisor … {#integersignal-value-cannot-divided}
 
@@ -516,7 +655,9 @@ Emitted by [`ComputedSignal.refresh`](/reference/signals/computedsignal/#Compute
 
 Emitted by [`IntegerSignal.divide`](/reference/signals/integersignal/#IntegerSignal-method-divide).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The IntegerSignal of value … cannot be divided by 0, check the divisor before calling divide(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`divide(0)` was called on an [`IntegerSignal`](/reference/signals/integersignal/).
+
+Check the divisor before you divide.
 
 ### The LongSignal of value … cannot be divided by 0, check the divisor … {#longsignal-value-cannot-divided}
 
@@ -524,7 +665,9 @@ Emitted by [`IntegerSignal.divide`](/reference/signals/integersignal/#IntegerSig
 
 Emitted by [`LongSignal.divide`](/reference/signals/longsignal/#LongSignal-method-divide).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The LongSignal of value … cannot be divided by 0, check the divisor before calling divide(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`divide(0)` was called on a [`LongSignal`](/reference/signals/longsignal/).
+
+Check the divisor before you divide.
 
 ### SignalReplayException that carries the message of its cause {#signalreplayexception}
 
@@ -532,7 +675,9 @@ Emitted by [`LongSignal.divide`](/reference/signals/longsignal/#LongSignal-metho
 
 Emitted by [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay-method-replay), [`SignalReplayBinding.get`](/reference/signals/signalreplaybinding/#SignalReplayBinding-method-get), [`SignalReplayClass.method`](/reference/signals/signalreplayclass/#SignalReplayClass-method-method), [`SignalReplayClass.read`](/reference/signals/signalreplayclass/#SignalReplayClass-factory-read), [`SignalReplayFrame.execute`](/reference/signals/signalreplayframe/#SignalReplayFrame-method-execute), [`SignalReplayMethod.type`](/reference/signals/signalreplaymethod/#SignalReplayMethod-method-type), [`SignalReplayRun.position`](/reference/signals/signalreplayrun/#SignalReplayRun-method-position), [`SignalReplaySite.analyze`](/reference/signals/signalreplaysite/#SignalReplaySite-factory-analyze).
 
-<div class="joid-missing">Missing cause and fix: add <code>## SignalReplayException …</code> to <code>documentation/reference/errors.md</code>.</div>
+The replay of an expression given to a setter met something it cannot follow; JOID catches it and prints [`… but cannot follow it`](#but-cannot-follow-value) instead.
+
+See that entry.
 
 ### IllegalStateException that carries the message of its cause {#illegalstateexception}
 
@@ -540,7 +685,9 @@ Emitted by [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay
 
 Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException …</code> to <code>documentation/reference/errors.md</code>.</div>
+An `IllegalStateException` whose message comes from your code: a refusal given to [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse), thrown again by `set(...)` or `reset()`, or the failure of the copy of an effect.
+
+Read the message that your code gave.
 
 ### The … of … is changed by the user, so it cannot follow …, which cannot … {#changed-user-so-cannot}
 
@@ -548,7 +695,9 @@ Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signa
 
 Emitted by [`NodeBindings.bindNullable`](/reference/signals/nodebindings/#NodeBindings-method-bindNullable).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The … of … is changed by the user, so it cannot follow …, which cannot be written: pass a writable Signal, or its value as a start value</code> to <code>documentation/reference/errors.md</code>.</div>
+A control received a derived or read-only signal for its value; the user changes that value, so the control must write it back.
+
+Pass a writable [`Signal`](/reference/signals/signal/), or the value as a start value and listen to the changes: [Bind a control to a signal](/use/learn/interactivity/controls/#bind-a-control-to-a-signal).
 
 ## Animation
 
@@ -556,7 +705,10 @@ Emitted by [`NodeBindings.bindNullable`](/reference/signals/nodebindings/#NodeBi
 
 **Warning** · `[JOID] The update of TweenAnimator failed (…), the other animators still run: catch the exception inside the onChange listeners of the animator or the getter and setter given to Tween.to(...) to handle it`
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The update of TweenAnimator failed (…), the other animators still run: catch the exception inside the onChange listeners of the animator or the getter and setter given to Tween.to(...) to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`TweenAnimator`](/reference/animation/tweenanimator/) threw while it advanced in a frame: one of its change listeners, or the getter or setter of one of its tweens.
+The other animators still run.
+
+Catch the exception in the listener, the getter or the setter, or fix the code it names: [Animation](/use/learn/style-and-motion/animation/).
 
 ### The animator has no timeline {#animator-has-no-timeline}
 
@@ -564,7 +716,9 @@ Emitted by [`NodeBindings.bindNullable`](/reference/signals/nodebindings/#NodeBi
 
 Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnimator-method-start), [`TweenAnimator.delay`](/reference/animation/tweenanimator/#TweenAnimator-method-delay), [`TweenAnimator.repeat`](/reference/animation/tweenanimator/#TweenAnimator-method-repeat), [`TweenAnimator.repeatYoyo`](/reference/animation/tweenanimator/#TweenAnimator-method-repeatYoyo), [`TweenAnimator.push`](/reference/animation/tweenanimator/#TweenAnimator-method-push), [`TweenAnimator.onStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onStart), [`TweenAnimator.onIterationStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onIterationStart), [`TweenAnimator.onIterationEnd`](/reference/animation/tweenanimator/#TweenAnimator-event-onIterationEnd), [`TweenAnimator.onComplete`](/reference/animation/tweenanimator/#TweenAnimator-event-onComplete), [`TweenAnimator.onReverseStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseStart), [`TweenAnimator.onReverseIterationStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseIterationStart), [`TweenAnimator.onReverseIterationEnd`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseIterationEnd), [`TweenAnimator.onReverseComplete`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseComplete).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The animator has no timeline, call sequence(...) first</code> to <code>documentation/reference/errors.md</code>.</div>
+A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` callback, was called before the animator received a timeline.
+
+Call `sequence(...)` first: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ### A tween or timeline that repeats forever needs a duration or a repeat … {#tween-timeline-repeats-forever}
 
@@ -572,7 +726,9 @@ Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnim
 
 Emitted by [`BaseTween.start`](/reference/animation/basetween/#BaseTween-method-start).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A tween or timeline that repeats forever needs a duration or a repeat delay above 0, give it one or a finite repeat count</code> to <code>documentation/reference/errors.md</code>.</div>
+`start()` was called on a tween or a timeline that repeats forever with a duration and a repeat delay of `0`, which would loop forever within one frame.
+
+Give it a duration or a repeat delay above `0`, or a finite repeat count: [Chain, repeat and replay](/use/learn/style-and-motion/animation/#chain-repeat-and-replay).
 
 ### The repetitions of a tween or timeline cannot change once it is started {#repetitions-tween-timeline-cannot}
 
@@ -580,7 +736,9 @@ Emitted by [`BaseTween.start`](/reference/animation/basetween/#BaseTween-method-
 
 Emitted by [`BaseTween.repeat`](/reference/animation/basetween/#BaseTween-method-repeat), [`BaseTween.repeatYoyo`](/reference/animation/basetween/#BaseTween-method-repeatYoyo).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The repetitions of a tween or timeline cannot change once it is started, call …(...) before start()</code> to <code>documentation/reference/errors.md</code>.</div>
+`repeat(...)` or `repeatYoyo(...)` was called on a tween or a timeline that is already started.
+
+Set the repetitions before `start()`: [Chain, repeat and replay](/use/learn/style-and-motion/animation/#chain-repeat-and-replay).
 
 ### The pushed timeline still has an open beginSequence() or … {#pushed-timeline-still-has}
 
@@ -588,7 +746,9 @@ Emitted by [`BaseTween.repeat`](/reference/animation/basetween/#BaseTween-method
 
 Emitted by [`Timeline.push`](/reference/animation/timeline/#Timeline-method-push).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it</code> to <code>documentation/reference/errors.md</code>.</div>
+`push(timeline)` received a timeline in which a `beginSequence()` or `beginParallel()` has no matching `end()`.
+
+Close each group with `end()` before you push the timeline.
 
 ### The timeline has no open beginSequence() or beginParallel() to close, … {#timeline-has-no-open}
 
@@ -596,19 +756,25 @@ Emitted by [`Timeline.push`](/reference/animation/timeline/#Timeline-method-push
 
 Emitted by [`Timeline.end`](/reference/animation/timeline/#Timeline-method-end).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The timeline has no open beginSequence() or beginParallel() to close, remove this end()</code> to <code>documentation/reference/errors.md</code>.</div>
+`end()` was called on a timeline that has no open group.
+
+Remove the extra `end()`, or open the group it closes.
 
 ### The timeline still has an open beginSequence() or beginParallel(), close … {#timeline-still-has-open}
 
 **`IllegalStateException`** · `The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()</code> to <code>documentation/reference/errors.md</code>.</div>
+The timeline was started while a `beginSequence()` or `beginParallel()` has no matching `end()`.
+
+Close each group with `end()` before `start()`.
 
 ### A timeline cannot hold a child that repeats forever (repeat count …), … {#timeline-cannot-hold-child}
 
 **`IllegalArgumentException`** · `A timeline cannot hold a child that repeats forever (repeat count …), give it a finite repeat count`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A timeline cannot hold a child that repeats forever (repeat count …), give it a finite repeat count</code> to <code>documentation/reference/errors.md</code>.</div>
+A timeline was started with a child that repeats forever, which would make the timeline itself endless.
+
+Give the child a finite repeat count, or repeat the whole timeline instead.
 
 ### A timeline takes no new child once it is built (start() builds it), push … {#timeline-takes-no-new}
 
@@ -616,7 +782,9 @@ Emitted by [`Timeline.end`](/reference/animation/timeline/#Timeline-method-end).
 
 Emitted by [`Timeline.push`](/reference/animation/timeline/#Timeline-method-push), [`Timeline.pushPause`](/reference/animation/timeline/#Timeline-method-pushPause), [`Timeline.end`](/reference/animation/timeline/#Timeline-method-end), [`Timeline.beginSequence`](/reference/animation/timeline/#Timeline-method-beginSequence), [`Timeline.beginParallel`](/reference/animation/timeline/#Timeline-method-beginParallel).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A timeline takes no new child once it is built (start() builds it), push its children before start()</code> to <code>documentation/reference/errors.md</code>.</div>
+A child was added to a timeline, or a group opened or closed, after `start()` built it.
+
+Build the whole timeline before `start()`.
 
 ### The duration of a tween cannot be negative, got … {#duration-tween-cannot-negative}
 
@@ -624,7 +792,9 @@ Emitted by [`Timeline.push`](/reference/animation/timeline/#Timeline-method-push
 
 Emitted by [`Tween`](/reference/animation/tween/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The duration of a tween cannot be negative, got …: pass 0 or more</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`Tween`](/reference/animation/tween/) was created with a negative duration.
+
+Pass a duration of `0` or more, in milliseconds.
 
 ## Text
 
@@ -634,7 +804,9 @@ Emitted by [`Tween`](/reference/animation/tween/).
 
 Emitted by [`FontFamily.resolve`](/reference/text/fontfamily/#FontFamily-method-resolve).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The font weight … is not loaded in the family of …, … is drawn instead (loaded: …)</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, a text asked for a weight that its font family does not hold, and JOID draws the nearest loaded face; JOID prints it once per weight and family.
+
+Load the face of that weight with the family, or ask for a loaded weight: [Let a style pick a face](/use/learn/describing-the-ui/fonts/#let-a-style-pick-a-face).
 
 ### The font … of a text style is not drawn by …, the text keeps its own … {#font-text-style-not}
 
@@ -642,7 +814,10 @@ Emitted by [`FontFamily.resolve`](/reference/text/fontfamily/#FontFamily-method-
 
 Emitted by [`GlyphTextRenderer.layout`](/reference/text/glyphtextrenderer/#GlyphTextRenderer-method-layout).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The font … of a text style is not drawn by …, the text keeps its own font: give the style a font drawn by …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, a style inside a text names a font that another text renderer draws, such as a bitmap font inside an MSDF text.
+JOID draws that part with the font of the text itself.
+
+Mix only fonts of the same kind in one text: [Choose MSDF or bitmap](/use/learn/describing-the-ui/fonts/#choose-msdf-or-bitmap).
 
 ### The font shader of … cannot be compiled by …, what it draws is skipped {#font-shader-cannot-compiled}
 
@@ -650,7 +825,9 @@ Emitted by [`GlyphTextRenderer.layout`](/reference/text/glyphtextrenderer/#Glyph
 
 Emitted by [`GlyphTextRenderer.drawText`](/reference/text/glyphtextrenderer/#GlyphTextRenderer-method-drawText).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The font shader of … cannot be compiled by …, what it draws is skipped: the error printed by JOID when it was created tells why</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the shader that draws a kind of font did not compile on this graphics context, so its texts are not drawn.
+
+Read the compilation error that JOID printed before this message; on OpenGL, updating the graphics driver often fixes it.
 
 ### The text has no element at index …, give an index from 0 and lower than … {#text-has-no-element}
 
@@ -658,7 +835,9 @@ Emitted by [`GlyphTextRenderer.drawText`](/reference/text/glyphtextrenderer/#Gly
 
 Emitted by [`Text.get`](/reference/text/text/#Text-method-get).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IndexOutOfBoundsException The text has no element at index …, give an index from 0 and lower than its element count (…)</code> to <code>documentation/reference/errors.md</code>.</div>
+`get(index)` of a [`Text`](/reference/text/text/) received an index outside its elements.
+
+Pass an index from `0` to the element count minus one.
 
 ### A bitmap cell needs at least one texel, got the texels …, …, …, … {#bitmap-cell-needs-least}
 
@@ -666,7 +845,9 @@ Emitted by [`Text.get`](/reference/text/text/#Text-method-get).
 
 Emitted by [`BitmapCell.create`](/reference/text/bitmapcell/#BitmapCell-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A bitmap cell needs at least one texel, got the texels …, …, …, …: give a right above the left and a bottom above the top</code> to <code>documentation/reference/errors.md</code>.</div>
+[`BitmapCell.create`](/reference/text/bitmapcell/#BitmapCell-factory-create) received a rectangle of texels without area.
+
+Give a right edge above the left one and a bottom edge above the top one: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
 
 ### The bounds of a bitmap cell cannot be empty, got …, …, …, … {#bounds-bitmap-cell-cannot}
 
@@ -674,7 +855,9 @@ Emitted by [`BitmapCell.create`](/reference/text/bitmapcell/#BitmapCell-factory-
 
 Emitted by [`BitmapCell.bounds`](/reference/text/bitmapcell/#BitmapCell-method-bounds).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The bounds of a bitmap cell cannot be empty, got …, …, …, …: give a right above the left and a bottom above the top</code> to <code>documentation/reference/errors.md</code>.</div>
+`bounds(...)` of a [`BitmapCell`](/reference/text/bitmapcell/) received bounds without area.
+
+Give a right edge above the left one and a bottom edge above the top one: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
 
 ### The bitmap size … of a font is not positive, pass a size above 0 {#bitmap-size-font-not}
 
@@ -682,7 +865,9 @@ Emitted by [`BitmapCell.bounds`](/reference/text/bitmapcell/#BitmapCell-method-b
 
 Emitted by [`BitmapFont`](/reference/text/bitmapfont/#BitmapFont-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The bitmap size … of a font is not positive, pass a size above 0</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`BitmapFont`](/reference/text/bitmapfont/) was created with a size of `0` or less.
+
+Pass the height of a glyph cell in texels, above `0`: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
 
 ### A font family needs at least one face, got none {#font-family-needs-least}
 
@@ -690,7 +875,9 @@ Emitted by [`BitmapFont`](/reference/text/bitmapfont/#BitmapFont-constructor).
 
 Emitted by [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A font family needs at least one face, got none: pass its faces to FontFamily.of(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of) received no face.
+
+Pass at least one face: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
 
 ### Two faces share the weight …, keep one face per weight and style {#two-faces-share-weight}
 
@@ -698,7 +885,9 @@ Emitted by [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of).
 
 Emitted by [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException Two faces share the weight …, keep one face per weight and style</code> to <code>documentation/reference/errors.md</code>.</div>
+[`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of) received two faces with the same weight and the same italic flag.
+
+Keep one face per weight and style, or set the weight of a file: [Set the weight of a font file](/use/learn/going-further/fonts/#set-the-weight-of-a-font-file).
 
 ### … cannot draw the font …, it is drawn by … {#cannot-draw-font-drawn}
 
@@ -706,7 +895,9 @@ Emitted by [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of).
 
 Emitted by [`GlyphTextRenderer.layout`](/reference/text/glyphtextrenderer/#GlyphTextRenderer-method-layout), [`GlyphTextRenderer.getLineHeight`](/reference/text/glyphtextrenderer/#GlyphTextRenderer-method-getLineHeight), [`GlyphTextRenderer.getBaseline`](/reference/text/glyphtextrenderer/#GlyphTextRenderer-method-getBaseline).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException … cannot draw the font …, it is drawn by …: draw it with info.getFont().getTextRenderer()</code> to <code>documentation/reference/errors.md</code>.</div>
+Code of your own called a text renderer with a [`TextInfo`](/reference/text/textinfo/) whose font belongs to another renderer.
+
+Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
 
 ### A font face needs a name, got an empty one {#font-face-needs-name}
 
@@ -714,7 +905,9 @@ Emitted by [`GlyphTextRenderer.layout`](/reference/text/glyphtextrenderer/#Glyph
 
 Emitted by [`MsdfFontFace.of`](/reference/text/msdffontface/#MsdfFontFace-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A font face needs a name, got an empty one: give the face the name of its font</code> to <code>documentation/reference/errors.md</code>.</div>
+An MSDF face was created with an empty name.
+
+Give the face the name of its font.
 
 ### CompletionException that carries the message of its cause {#completionexception}
 
@@ -722,7 +915,9 @@ Emitted by [`MsdfFontFace.of`](/reference/text/msdffontface/#MsdfFontFace-factor
 
 Emitted by [`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoader-method-load).
 
-<div class="joid-missing">Missing cause and fix: add <code>## CompletionException …</code> to <code>documentation/reference/errors.md</code>.</div>
+The future of [`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoader-method-load) completed with an error: the cause, such as an `IOException` of a file that cannot be read or generated, is in the message.
+
+Read the cause, often another entry of this page: [Load a font without blocking](/use/learn/describing-the-ui/fonts/#load-a-font-without-blocking).
 
 ### A msdf font needs at least one face, got none {#msdf-font-needs-least}
 
@@ -730,25 +925,33 @@ Emitted by [`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoade
 
 Emitted by [`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoader-method-load).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A msdf font needs at least one face, got none: pass the files of its faces</code> to <code>documentation/reference/errors.md</code>.</div>
+[`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoader-method-load) received no file; its future completes with this error.
+
+Pass the files of the faces of the font: [Load a font family](/use/learn/describing-the-ui/fonts/#load-a-font-family).
 
 ### The file does not start with JOIDMSDF, it is not a font made by the msdf … {#file-does-not-start-joidmsdf}
 
 **`IOException`** · `The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`BinaryMsdfSource`](/reference/text/binarymsdfsource/) read a file that is not a `.msdf` atlas of JOID, such as a `.ttf` file given the wrong extension.
+
+Load a `.ttf` or `.otf` file with [`OpenTypeMsdfSource`](/reference/text/opentypemsdfsource/), or generate the atlas: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ### The msdf font version … is not supported, only the version … loads {#msdf-font-version-not}
 
 **`IOException`** · `The msdf font version … is not supported, only the version … loads: generate it again with the msdf tool of JOID`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The msdf font version … is not supported, only the version … loads: generate it again with the msdf tool of JOID</code> to <code>documentation/reference/errors.md</code>.</div>
+The `.msdf` atlas was written by a generator of another version of JOID.
+
+Generate the atlas again with the generator of this version: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ### The msdf atlas of the font cannot be generated in …, check that the font … {#msdf-atlas-font-cannot}
 
 **`IOException`** · `The msdf atlas of the font cannot be generated in …, check that the font is a valid TrueType or OpenType file and that the cache folder can be written`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The msdf atlas of the font cannot be generated in …, check that the font is a valid TrueType or OpenType file and that the cache folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+At the first load of a font file, JOID generates its atlas into the cache folder, and the generation failed: the file is not a font that Java can read, or the folder cannot be written.
+
+Check the font file and the [cache folder](/use/learn/running/files/#find-the-folders); [What happens when a font loads](/use/in-depth/msdf-text/#what-happens-when-a-font-loads) explains the cache.
 
 ## Resources
 
@@ -758,7 +961,9 @@ Emitted by [`MsdfFontLoader.load`](/reference/text/msdffontloader/#MsdfFontLoade
 
 Emitted by [`StreamAsset.open`](/reference/resources/streamasset/#StreamAsset-method-open).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The stream … cannot be closed (…), its content is read anyway: check the stream</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`StreamAsset`](/reference/resources/streamasset/) read its stream, and closing it threw; the content is used anyway.
+
+Check the stream that you gave, for example one already closed by its owner.
 
 ### The retention of the cache area … cannot be written into … (…), check … {#retention-cache-area-cannot}
 
@@ -766,7 +971,9 @@ Emitted by [`StreamAsset.open`](/reference/resources/streamasset/#StreamAsset-me
 
 Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileCacheArea-property-retention).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The retention of the cache area … cannot be written into … (…), check that the cache folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+JOID could not write the file that records the retention of a cache area; the area works, but its files may be cleaned with the default retention.
+
+Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be written.
 
 ### The cache entry … of the area … is in use, it is left to the next … {#cache-entry-area-use}
 
@@ -774,7 +981,9 @@ Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileC
 
 Emitted by [`FileCacheArea.remove`](/reference/resources/filecachearea/#FileCacheArea-method-remove).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The cache entry … of the area … is in use, it is left to the next cleaning of the cache</code> to <code>documentation/reference/errors.md</code>.</div>
+An entry of a cache area could not be deleted, usually because a file of it is open, on Windows for example; JOID marks it as old and deletes it at a later cleaning.
+
+No fix is needed.
 
 ### The video … cannot be reopened (…), check that the file can still be … {#video-cannot-reopened-check}
 
@@ -782,7 +991,10 @@ Emitted by [`FileCacheArea.remove`](/reference/resources/filecachearea/#FileCach
 
 Emitted by [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-play).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The video … cannot be reopened (…), check that the file can still be read</code> to <code>documentation/reference/errors.md</code>.</div>
+A video that plays again after its end, or after a seek, could not open its file again.
+The video stops.
+
+Check that the file or the URL can still be read.
 
 ### The video … cannot seek to …us (…), check that the file can still be … {#video-cannot-seek-us}
 
@@ -790,7 +1002,9 @@ Emitted by [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecod
 
 Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-decode), [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-play), [`VideoResourceDecoder.seek`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-seek).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The video … cannot seek to …us (…), check that the file can still be read</code> to <code>documentation/reference/errors.md</code>.</div>
+A seek of a video, or its return to the start, failed in the decoder.
+
+Check that the file can still be read; a damaged file can refuse some positions.
 
 ### The video … stops decoding (…), check that the file can still be read {#video-stops-decoding-check}
 
@@ -798,7 +1012,9 @@ Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedec
 
 Emitted by [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-play).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The video … stops decoding (…), check that the file can still be read</code> to <code>documentation/reference/errors.md</code>.</div>
+The decoder of a playing video threw; the video stops where it was.
+
+Check that the file can still be read, and that it is not damaged.
 
 ### The resource … cannot be read {#resource-cannot-read-drawn}
 
@@ -806,7 +1022,10 @@ Emitted by [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecod
 
 Emitted by [`ResourceData.fail`](/reference/resources/resourcedata/#ResourceData-method-fail).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The resource … cannot be read: …. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
+The cause follows the colon; the [`Resource.onError`](/reference/resources/resource/#Resource-event-onError) callbacks receive it.
+
+Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [My image shows a checkerboard or nothing](/use/troubleshooting/#my-image-shows-a-checkerboard-or-nothing).
 
 ### The video … plays without sound (…), register an audio bridge and check … {#video-plays-without-sound}
 
@@ -814,7 +1033,10 @@ Emitted by [`ResourceData.fail`](/reference/resources/resourcedata/#ResourceData
 
 Emitted by [`VideoAudioPlayer.play`](/reference/resources/videoaudioplayer/#VideoAudioPlayer-method-play).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The video … plays without sound (…), register an audio bridge and check the audio device</code> to <code>documentation/reference/errors.md</code>.</div>
+A video with a sound track could not create its audio source: no audio bridge is registered, as with `audio(false)`, or the audio device refused.
+The picture plays without sound.
+
+Register the backend with audio and check the audio device of the machine: [Control the sound of a video](/use/learn/describing-the-ui/media/#control-the-sound-of-a-video).
 
 ### The start of … cannot be read {#start-cannot-read}
 
@@ -822,7 +1044,9 @@ Emitted by [`VideoAudioPlayer.play`](/reference/resources/videoaudioplayer/#Vide
 
 Emitted by [`Asset.peek`](/reference/resources/asset/#Asset-method-peek).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The start of … cannot be read</code> to <code>documentation/reference/errors.md</code>.</div>
+JOID reads the first bytes of an asset to detect its format, and reading them failed.
+
+Check that the file or the URL can be read; the cause follows the message.
 
 ### No asset locator knows the input … of type …, register an IAssetLocator … {#no-asset-locator-knows}
 
@@ -830,7 +1054,9 @@ Emitted by [`Asset.peek`](/reference/resources/asset/#Asset-method-peek).
 
 Emitted by [`AssetLocator.locate`](/reference/resources/assetlocator/#AssetLocator-method-locate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException No asset locator knows the input … of type …, register an IAssetLocator that supports it with AssetLocator.register(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`Resource.of(...)` or `Asset.of(...)` received an input that no asset locator supports, such as an object of your own.
+
+Pass a path, a URL, a `File` or a stream, or register a locator: [Read resources from your own source](/use/learn/going-further/custom-formats/#read-resources-from-your-own-source).
 
 ### The asset … is not found in the classpath nor as a file, check the path … {#asset-not-found-classpath}
 
@@ -838,7 +1064,9 @@ Emitted by [`AssetLocator.locate`](/reference/resources/assetlocator/#AssetLocat
 
 Emitted by [`StringAssetLocator.locate`](/reference/resources/stringassetlocator/#StringAssetLocator-method-locate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The asset … is not found in the classpath nor as a file, check the path or give a URL with its scheme (https:, file:, jar:)</code> to <code>documentation/reference/errors.md</code>.</div>
+A path without scheme names neither a resource of the classpath nor a file.
+
+Check the path, relative to the root of the classpath or to the working folder, or give a URL: [Load from the jar, the disk or the web](/use/learn/describing-the-ui/media/#load-from-the-jar-the-disk-or-the-web).
 
 ### The retention … of the cache area … is not positive, pass a duration … {#retention-cache-area-not}
 
@@ -846,7 +1074,9 @@ Emitted by [`StringAssetLocator.locate`](/reference/resources/stringassetlocator
 
 Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileCacheArea-property-retention).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The retention … of the cache area … is not positive, pass a duration above 0</code> to <code>documentation/reference/errors.md</code>.</div>
+`retention(...)` of a [`FileCacheArea`](/reference/resources/filecachearea/) received a duration of zero or less.
+
+Pass a duration above zero: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ### The cache area … is already declared with a retention of …, it cannot be … {#cache-area-already-declared}
 
@@ -854,7 +1084,9 @@ Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileC
 
 Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileCacheArea-property-retention).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The cache area … is already declared with a retention of …, it cannot be declared again with …: give one of them another name</code> to <code>documentation/reference/errors.md</code>.</div>
+Two parts of the application declared the same cache area with different retentions.
+
+Give each area its own name: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ### The content written into the cache area … cannot be hashed at …, the … {#content-written-into-cache}
 
@@ -862,7 +1094,9 @@ Emitted by [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileC
 
 Emitted by [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCacheArea-method-store).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The content written into the cache area … cannot be hashed at …, the writer of store must write a file</code> to <code>documentation/reference/errors.md</code>.</div>
+`store(...)` of a [`FileCacheArea`](/reference/resources/filecachearea/) names its entry by the hash of the file that the writer wrote, and that file cannot be read.
+
+Write a file at the path that the writer receives.
 
 ### The cache … name … is not a plain file name {#cache-name-not-plain}
 
@@ -870,7 +1104,9 @@ Emitted by [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCache
 
 Emitted by [`FileCacheArea.check`](/reference/resources/filecachearea/#FileCacheArea-method-check).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The cache … name … is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'</code> to <code>documentation/reference/errors.md</code>.</div>
+The name of a cache area or of an entry would not be a safe file name.
+
+Use a name of letters, digits, `.`, `-` and `_`, that starts with a letter or a digit.
 
 ### The cache area … cannot be created in …, check that the cache folder can … {#cache-area-cannot-created}
 
@@ -878,7 +1114,9 @@ Emitted by [`FileCacheArea.check`](/reference/resources/filecachearea/#FileCache
 
 Emitted by [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCacheArea-method-compute), [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCacheArea-method-store), [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileCacheArea-property-retention).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The cache area … cannot be created in …, check that the cache folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+JOID could not create the folder of a cache area.
+
+Check that the [cache folder](/use/learn/running/files/#find-the-folders) exists and can be written, or move it: [Move the folders](/use/learn/running/files/#move-the-folders).
 
 ### The writer of … wrote nothing at …, it must create the file or the … {#writer-wrote-nothing-must}
 
@@ -886,7 +1124,9 @@ Emitted by [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCac
 
 Emitted by [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCacheArea-method-compute), [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCacheArea-method-store), [`FileCacheArea.retention`](/reference/resources/filecachearea/#FileCacheArea-property-retention).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The writer of … wrote nothing at …, it must create the file or the folder it is given</code> to <code>documentation/reference/errors.md</code>.</div>
+The writer given to `compute(...)` or `store(...)` of a [`FileCacheArea`](/reference/resources/filecachearea/) returned without creating its entry.
+
+Create the file or the folder at the path that the writer receives.
 
 ### The file cache cannot name the content of … {#file-cache-cannot-name}
 
@@ -894,7 +1134,9 @@ Emitted by [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCac
 
 Emitted by [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCacheArea-method-store).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The file cache cannot name the content of …: this JVM has no SHA-1 digest, run JOID on a standard JVM</code> to <code>documentation/reference/errors.md</code>.</div>
+The JVM offers no SHA-1, which the file cache uses to name its entries.
+
+Run JOID on a standard JVM.
 
 ### The PNG has no IHDR chunk before its image data, the file is damaged {#png-has-no-ihdr-chunk}
 
@@ -902,7 +1144,9 @@ Emitted by [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCache
 
 Emitted by [`ApngResourceAnimationReader.read`](/reference/resources/apngresourceanimationreader/#ApngResourceAnimationReader-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The PNG has no IHDR chunk before its image data, the file is damaged: export it again</code> to <code>documentation/reference/errors.md</code>.</div>
+The animated PNG is damaged.
+
+Export the image again.
 
 ### The PNG has no acTL chunk or no frame control, it is not an animated PNG {#png-has-no-actl-chunk}
 
@@ -910,7 +1154,9 @@ Emitted by [`ApngResourceAnimationReader.read`](/reference/resources/apngresourc
 
 Emitted by [`ApngResourceAnimationReader.read`](/reference/resources/apngresourceanimationreader/#ApngResourceAnimationReader-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG</code> to <code>documentation/reference/errors.md</code>.</div>
+A PNG was decoded as an animation but holds a single image.
+
+Show it with a [`ResourceNode`](/reference/nodes/resourcenode/), or export it as an APNG: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ### The file does not start with a RIFF WEBP header, it is not a WebP image {#file-does-not-start-riff}
 
@@ -918,7 +1164,9 @@ Emitted by [`ApngResourceAnimationReader.read`](/reference/resources/apngresourc
 
 Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourceanimationreader/#WebpResourceAnimationReader-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The file does not start with a RIFF WEBP header, it is not a WebP image: check the file and its extension</code> to <code>documentation/reference/errors.md</code>.</div>
+A file decoded as an animated WebP is not a WebP.
+
+Check the file and its extension.
 
 ### The WebP chunk … runs past the end of the file, the file is damaged {#webp-chunk-runs-past}
 
@@ -926,7 +1174,9 @@ Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourc
 
 Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourceanimationreader/#WebpResourceAnimationReader-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The WebP chunk … runs past the end of the file, the file is damaged: export it again</code> to <code>documentation/reference/errors.md</code>.</div>
+The WebP file is truncated or damaged.
+
+Export the image again.
 
 ### The WebP has no ANMF frame or no VP8X size, it is not an animated WebP {#webp-has-no-anmf}
 
@@ -934,7 +1184,9 @@ Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourc
 
 Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourceanimationreader/#WebpResourceAnimationReader-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation</code> to <code>documentation/reference/errors.md</code>.</div>
+A WebP was decoded as an animation but holds a single image.
+
+Show it with a [`ResourceNode`](/reference/nodes/resourcenode/), or export it with its animation.
 
 ### An animation needs at least one frame, got none {#animation-needs-least-one}
 
@@ -942,7 +1194,9 @@ Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourc
 
 Emitted by [`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException An animation needs at least one frame, got none: check that the file holds its frames</code> to <code>documentation/reference/errors.md</code>.</div>
+[`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of) received no frame, from a reader of your own or from an empty file.
+
+Give the animation at least one frame: [Build an animation from your own frames](/use/learn/going-further/custom-formats/#build-an-animation-from-your-own-frames).
 
 ### The animation … cannot be read {#animation-cannot-read}
 
@@ -950,7 +1204,10 @@ Emitted by [`ResourceAnimation.of`](/reference/resources/resourceanimation/#Reso
 
 Emitted by [`AnimatedResourceDecoder.decode`](/reference/resources/animatedresourcedecoder/#AnimatedResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The animation … cannot be read</code> to <code>documentation/reference/errors.md</code>.</div>
+Reading the file of an animated image failed; the cause follows the message.
+The resource fails and prints [`The resource … cannot be read`](#resource-cannot-read-drawn) with the dev jar.
+
+Check that the file or the URL can be read.
 
 ### The image … cannot be read {#image-cannot-read}
 
@@ -958,7 +1215,10 @@ Emitted by [`AnimatedResourceDecoder.decode`](/reference/resources/animatedresou
 
 Emitted by [`RasterResourceDecoder.decode`](/reference/resources/rasterresourcedecoder/#RasterResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The image … cannot be read</code> to <code>documentation/reference/errors.md</code>.</div>
+Reading the file of an image failed; the cause follows the message.
+The resource fails and prints [`The resource … cannot be read`](#resource-cannot-read-drawn) with the dev jar.
+
+Check that the file or the URL can be read.
 
 ### … is not an image that ImageIO can decode, convert it to PNG, JPEG or … {#not-image-imageio-can}
 
@@ -966,7 +1226,9 @@ Emitted by [`RasterResourceDecoder.decode`](/reference/resources/rasterresourced
 
 Emitted by [`RasterResourceDecoder.decode`](/reference/resources/rasterresourcedecoder/#RasterResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException … is not an image that ImageIO can decode, convert it to PNG, JPEG or WebP</code> to <code>documentation/reference/errors.md</code>.</div>
+The file was read, but no decoder of images recognizes its content.
+
+Convert it to PNG, JPEG or WebP: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
 ### The SVG … cannot be read {#svg-cannot-read}
 
@@ -974,7 +1236,9 @@ Emitted by [`RasterResourceDecoder.decode`](/reference/resources/rasterresourced
 
 Emitted by [`VectorResourceDecoder.decode`](/reference/resources/vectorresourcedecoder/#VectorResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The SVG … cannot be read</code> to <code>documentation/reference/errors.md</code>.</div>
+Reading the file of an SVG image failed; the cause follows the message.
+
+Check that the file or the URL can be read.
 
 ### … is not an SVG document that can be parsed {#not-svg-document-can}
 
@@ -982,7 +1246,9 @@ Emitted by [`VectorResourceDecoder.decode`](/reference/resources/vectorresourced
 
 Emitted by [`VectorResourceDecoder.decode`](/reference/resources/vectorresourcedecoder/#VectorResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException … is not an SVG document that can be parsed</code> to <code>documentation/reference/errors.md</code>.</div>
+The file was read, but it is not a valid SVG document.
+
+Check the file in an SVG editor and export it again.
 
 ### The video … cannot be read {#video-cannot-read}
 
@@ -990,7 +1256,9 @@ Emitted by [`VectorResourceDecoder.decode`](/reference/resources/vectorresourced
 
 Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The video … cannot be read</code> to <code>documentation/reference/errors.md</code>.</div>
+Opening the file of a video failed; the cause follows the message.
+
+Check that the file or the URL can be read.
 
 ### The video … cannot be decoded {#video-cannot-decoded}
 
@@ -998,7 +1266,9 @@ Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedec
 
 Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The video … cannot be decoded</code> to <code>documentation/reference/errors.md</code>.</div>
+FFmpeg opened the file but could not decode it; the cause follows the message.
+
+Check that the file is a video that FFmpeg plays: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
 ### The FFmpeg natives are not installed yet, wait for … {#ffmpeg-natives-not-installed}
 
@@ -1006,7 +1276,9 @@ Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedec
 
 Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-decode), [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-play).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The FFmpeg natives are not installed yet, wait for VideoNatives.install()</code> to <code>documentation/reference/errors.md</code>.</div>
+A video was opened while the FFmpeg natives were still being installed.
+
+Wait for the future of [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install) before you play videos: [Play videos on every machine](/use/learn/describing-the-ui/media/#play-videos-on-every-machine).
 
 ### The FFmpeg natives cannot be installed (…), check the video libraries on … {#ffmpeg-natives-cannot-installed}
 
@@ -1014,7 +1286,9 @@ Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedec
 
 Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedecoder/#VideoResourceDecoder-method-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## VideoNativesException The FFmpeg natives cannot be installed (…), check the video libraries on the classpath</code> to <code>documentation/reference/errors.md</code>.</div>
+The install of the FFmpeg natives failed when a video was opened; the cause is in the parentheses, often another FFmpeg entry of this page.
+
+Check the video libraries on the classpath: [Play videos on every machine](/use/learn/describing-the-ui/media/#play-videos-on-every-machine).
 
 ### … is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, … {#heif-avif-image-which}
 
@@ -1022,7 +1296,9 @@ Emitted by [`VideoResourceDecoder.decode`](/reference/resources/videoresourcedec
 
 Emitted by [`HeifResourceFormat.decoder`](/reference/resources/heifresourceformat/#HeifResourceFormat-method-decoder).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException … is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP</code> to <code>documentation/reference/errors.md</code>.</div>
+The file is a HEIF or AVIF image, which JOID recognizes but does not decode.
+
+Convert it to PNG, JPEG or WebP: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
 ### The borrowed texture … is not a texture of the host, borrow a texture … {#borrowed-texture-not-texture}
 
@@ -1030,7 +1306,10 @@ Emitted by [`HeifResourceFormat.decoder`](/reference/resources/heifresourceforma
 
 Emitted by [`ResourceData.generate`](/reference/resources/resourcedata/#ResourceData-method-generate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The borrowed texture … is not a texture of the host, borrow a texture that the host created and has not deleted</code> to <code>documentation/reference/errors.md</code>.</div>
+`Resource.of(...)` received a texture of the host that names no texture when JOID loads the resource: the number is wrong, the texture was deleted, or it belongs to another graphics context.
+The resource fails.
+
+Borrow a texture that exists in the graphics context of JOID: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
 
 ### FFmpeg has no natives for the platform …, play the videos on … {#ffmpeg-has-no-natives}
 
@@ -1038,7 +1317,9 @@ Emitted by [`ResourceData.generate`](/reference/resources/resourcedata/#Resource
 
 Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## VideoNativesException FFmpeg has no natives for the platform …, play the videos on windows-x86_64, linux-x86_64, macosx-x86_64 or macosx-arm64</code> to <code>documentation/reference/errors.md</code>.</div>
+The machine runs a system or a processor for which JOID has no FFmpeg natives to download.
+
+Play videos on one of the platforms that the message lists, or put the FFmpeg natives of your platform on the classpath.
 
 ### The FFmpeg natives of … cannot be written into …, check that the cache … {#ffmpeg-natives-cannot-written}
 
@@ -1046,7 +1327,9 @@ Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNati
 
 Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## VideoNativesException The FFmpeg natives of … cannot be written into …, check that the cache folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+The downloaded FFmpeg natives could not be saved into the cache folder.
+
+Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be written.
 
 ### The FFmpeg natives of … cannot be downloaded from …, check the … {#ffmpeg-natives-cannot-downloaded}
 
@@ -1054,7 +1337,9 @@ Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNati
 
 Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## VideoNativesException The FFmpeg natives of … cannot be downloaded from …, check the connection and the repository, or put org.bytedeco:ffmpeg:…:… on the classpath</code> to <code>documentation/reference/errors.md</code>.</div>
+The first video of the machine downloads the FFmpeg natives, and the download failed.
+
+Check the connection, or ship the natives with the application: [Play videos on every machine](/use/learn/describing-the-ui/media/#play-videos-on-every-machine).
 
 ### The FFmpeg natives downloaded from … do not match their SHA-256, check … {#ffmpeg-natives-downloaded-from}
 
@@ -1062,7 +1347,9 @@ Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNati
 
 Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## VideoNativesException The FFmpeg natives downloaded from … do not match their SHA-256, check the repository</code> to <code>documentation/reference/errors.md</code>.</div>
+The downloaded natives differ from the files that JOID expects; JOID refuses them.
+
+Check the repository and the network, then try again.
 
 ## Drawing
 
@@ -1072,7 +1359,9 @@ Emitted by [`VideoNatives.install`](/reference/resources/videonatives/#VideoNati
 
 Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The file of the OBJ model … cannot be closed (…), the model is loaded anyway: check the stream or the file it was read from</code> to <code>documentation/reference/errors.md</code>.</div>
+Closing the reader of an OBJ file threw after the model was read; the model is used anyway.
+
+Check the stream or the file it was read from.
 
 ### The color … cannot be decoded, write it as \#RRGGBB, \#RRGGBBAA, rgb(r, g, … {#color-cannot-decoded-write}
 
@@ -1080,7 +1369,9 @@ Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
 Emitted by [`Color.decode`](/reference/drawing/color/#Color-factory-decode).
 
-<div class="joid-missing">Missing cause and fix: add <code>## NumberFormatException The color … cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`Color.decode`](/reference/drawing/color/#Color-factory-decode) received a text in none of its formats.
+
+Write the color in one of the formats of the message: [Create a color](/use/learn/style-and-motion/styling/#create-a-color).
 
 ### The dash pattern … is not positive, pass a length above 0 {#dash-pattern-not-positive}
 
@@ -1088,7 +1379,9 @@ Emitted by [`Color.decode`](/reference/drawing/color/#Color-factory-decode).
 
 Emitted by [`DrawShape.drawDashedLine`](/reference/drawing/drawshape/#DrawShape-method-drawDashedLine).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The dash pattern … is not positive, pass a length above 0</code> to <code>documentation/reference/errors.md</code>.</div>
+`drawDashedLine(...)` received a dash length of `0` or less.
+
+Pass a dash length above `0`, in design pixels: [Draw lines and curves](/use/learn/going-further/drawing/#draw-lines-and-curves).
 
 ### An ObjFace has 3 vertices, got … {#objface-has-3-vertices}
 
@@ -1096,7 +1389,9 @@ Emitted by [`DrawShape.drawDashedLine`](/reference/drawing/drawshape/#DrawShape-
 
 Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException An ObjFace has 3 vertices, got …: split the polygon into triangles (ObjModel does it for OBJ files)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of) received a face that is not a triangle.
+
+Split the polygon into triangles; [`ObjModel`](/reference/drawing/objmodel/) does it for the faces of an OBJ file.
 
 ### An ObjFace has 3 texture coordinates or none, got … {#objface-has-3-texture}
 
@@ -1104,7 +1399,9 @@ Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
 Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException An ObjFace has 3 texture coordinates or none, got …</code> to <code>documentation/reference/errors.md</code>.</div>
+[`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of) received a number of texture coordinates other than 0 or 3.
+
+Give one texture coordinate per vertex, or none.
 
 ### An ObjFace has 3 vertex normals or none, got … {#objface-has-3-vertex}
 
@@ -1112,7 +1409,9 @@ Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
 Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException An ObjFace has 3 vertex normals or none, got …</code> to <code>documentation/reference/errors.md</code>.</div>
+[`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of) received a number of normals other than 0 or 3.
+
+Give one normal per vertex, or none.
 
 ### The OBJ model … cannot be read (…), check that the file exists and can … {#obj-model-cannot-read-check}
 
@@ -1120,7 +1419,9 @@ Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 
 Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UncheckedIOException The OBJ model … cannot be read (…), check that the file exists and can be read</code> to <code>documentation/reference/errors.md</code>.</div>
+Reading the OBJ file failed; the cause is in the parentheses.
+
+Check that the file exists and can be read: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
 
 ### The OBJ model … cannot be read {#obj-model-cannot-read-line}
 
@@ -1128,7 +1429,9 @@ Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
 Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The OBJ model … cannot be read: its line … "…" …, fix this line in the model file</code> to <code>documentation/reference/errors.md</code>.</div>
+A line of the OBJ file is malformed; the message gives its number, its text and the problem.
+
+Fix that line, or export the model again: [Know what JOID reads in a .obj file](/use/learn/going-further/3d-models/#know-what-joid-reads-in-a-obj-file).
 
 ### The framebuffer of …x… is empty {#framebuffer-x-empty-call}
 
@@ -1136,7 +1439,9 @@ Emitted by [`ObjModel`](/reference/drawing/objmodel/).
 
 Emitted by [`FrameBuffer.draw`](/reference/drawing/framebuffer/#FrameBuffer-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The framebuffer of …x… is empty, call fill(...) before draw(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`draw(...)` of a [`FrameBuffer`](/reference/drawing/framebuffer/) was called before anything was drawn into it.
+
+Call `fill(...)` first: [Draw once, reuse every frame](/use/learn/going-further/framebuffers-and-models/#draw-once-reuse-every-frame).
 
 ### The Tessellator is already tessellating a … shape {#tessellator-already-tessellating-shape}
 
@@ -1144,7 +1449,9 @@ Emitted by [`FrameBuffer.draw`](/reference/drawing/framebuffer/#FrameBuffer-meth
 
 Emitted by [`Tessellator.start`](/reference/drawing/tessellator/#Tessellator-method-start).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Tessellator is already tessellating a … shape, call draw() to end it before start(…)</code> to <code>documentation/reference/errors.md</code>.</div>
+`start(...)` of the [`Tessellator`](/reference/drawing/tessellator/) was called while another shape was not drawn yet.
+
+End the previous shape with `draw()`: [Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry).
 
 ### The Tessellator has no shape to draw {#tessellator-has-no-shape}
 
@@ -1152,7 +1459,9 @@ Emitted by [`Tessellator.start`](/reference/drawing/tessellator/#Tessellator-met
 
 Emitted by [`Tessellator.draw`](/reference/drawing/tessellator/#Tessellator-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Tessellator has no shape to draw, call start(DrawMode) before draw()</code> to <code>documentation/reference/errors.md</code>.</div>
+`draw()` of the [`Tessellator`](/reference/drawing/tessellator/) was called without `start(...)`.
+
+Call `start(DrawMode)`, add the vertices, then `draw()`: [Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry).
 
 ### The Tessellator is not tessellating {#tessellator-not-tessellating-call}
 
@@ -1160,7 +1469,9 @@ Emitted by [`Tessellator.draw`](/reference/drawing/tessellator/#Tessellator-meth
 
 Emitted by [`Tessellator.setColor`](/reference/drawing/tessellator/#Tessellator-method-setColor), [`Tessellator.setTextureUV`](/reference/drawing/tessellator/#Tessellator-method-setTextureUV), [`Tessellator.setNormal`](/reference/drawing/tessellator/#Tessellator-method-setNormal), [`Tessellator.addVertex`](/reference/drawing/tessellator/#Tessellator-method-addVertex).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Tessellator is not tessellating, call start(DrawMode) before giving it vertices</code> to <code>documentation/reference/errors.md</code>.</div>
+A vertex, a color, texture coordinates or a normal was given to the [`Tessellator`](/reference/drawing/tessellator/) outside `start(...)` and `draw()`.
+
+Call `start(DrawMode)` first: [Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry).
 
 ## Shaders
 
@@ -1170,7 +1481,9 @@ Emitted by [`Tessellator.setColor`](/reference/drawing/tessellator/#Tessellator-
 
 Emitted by [`ShaderProgram.load`](/reference/shaders/shaderprogram/#ShaderProgram-method-load).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The shader … cannot be loaded (…), what it draws is skipped: check the paths of its vertex and fragment sources</code> to <code>documentation/reference/errors.md</code>.</div>
+`load(...)` of a [`ShaderProgram`](/reference/shaders/shaderprogram/) could not read one of its two sources; the shader never draws.
+
+Check the paths of the vertex and fragment sources: [Write a shader](/use/learn/going-further/shaders/#write-a-shader).
 
 ### The shader … cannot be created (…), what it draws is skipped {#shader-cannot-created-what}
 
@@ -1178,7 +1491,10 @@ Emitted by [`ShaderProgram.load`](/reference/shaders/shaderprogram/#ShaderProgra
 
 Emitted by [`ShaderProgram.getShader`](/reference/shaders/shaderprogram/#ShaderProgram-method-getShader).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The shader … cannot be created (…), what it draws is skipped: fix its vertex and fragment sources from this error</code> to <code>documentation/reference/errors.md</code>.</div>
+The first use of a [`ShaderProgram`](/reference/shaders/shaderprogram/) asked the render bridge to create it, and JOID refused the sources: a rule of JOID GLSL is broken, or a feature is missing on this context.
+The shader never draws.
+
+Fix the sources from the error, often another entry of this page: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### The shader … is unavailable, what it draws is skipped {#shader-unavailable-what-draws}
 
@@ -1186,7 +1502,9 @@ Emitted by [`ShaderProgram.getShader`](/reference/shaders/shaderprogram/#ShaderP
 
 Emitted by [`ShaderProgram.canDraw`](/reference/shaders/shaderprogram/#ShaderProgram-method-canDraw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The shader … is unavailable, what it draws is skipped</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, `canDraw()` was called on a [`ShaderProgram`](/reference/shaders/shaderprogram/) that failed to load, to be created or to compile; JOID prints it once per shader.
+
+Fix the error printed before it; for a shader of your own, test `isAvailable()` to draw a fallback: [Write a shader](/use/learn/going-further/shaders/#write-a-shader).
 
 ## Input and keys
 
@@ -1196,7 +1514,9 @@ Emitted by [`ShaderProgram.canDraw`](/reference/shaders/shaderprogram/#ShaderPro
 
 Emitted by [`KeyResolver.resolve`](/reference/input/keyresolver/#KeyResolver-method-resolve).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException No key resolver knows the binding … of type …, pass a Key or register an IKeyResolver with KeyResolver.register(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`KeyResolver.resolve`](/reference/input/keyresolver/#KeyResolver-method-resolve) received a key binding that no registered [`IKeyResolver`](/reference/input/ikeyresolver/) supports.
+
+Pass a [`Key`](/reference/input/key/), or register the resolver of your key bindings: [Use the key bindings of your application](/use/learn/interactivity/keyboard/#use-the-key-bindings-of-your-application).
 
 ## Utilities
 
@@ -1206,7 +1526,10 @@ Emitted by [`KeyResolver.resolve`](/reference/input/keyresolver/#KeyResolver-met
 
 Emitted by [`JsonFiles.read`](/reference/utilities/jsonfiles/#JsonFiles-method-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The file … cannot be read (…), it is left untouched and …</code> to <code>documentation/reference/errors.md</code>.</div>
+The file of a store or of the remembered fields of a UI exists but cannot be read, for example for lack of permission.
+The end of the message says what starts from its defaults.
+
+Check the permissions of the [data folder](/use/learn/running/files/#find-the-folders).
 
 ### The file … cannot be saved (…), check that the data folder can be … {#file-cannot-saved-check}
 
@@ -1214,7 +1537,9 @@ Emitted by [`JsonFiles.read`](/reference/utilities/jsonfiles/#JsonFiles-method-r
 
 Emitted by [`JsonFiles.write`](/reference/utilities/jsonfiles/#JsonFiles-method-write).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The file … cannot be saved (…), check that the data folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+JOID could not write the file of a store or of the remembered fields of a UI; the previous file stays as it was.
+
+Check that the [data folder](/use/learn/running/files/#find-the-folders) can be written, or move it: [Move the folders](/use/learn/running/files/#move-the-folders).
 
 ### The file … cannot be read (…), it is kept as … and … {#file-cannot-read-kept}
 
@@ -1222,7 +1547,10 @@ Emitted by [`JsonFiles.write`](/reference/utilities/jsonfiles/#JsonFiles-method-
 
 Emitted by [`JsonFiles.keep`](/reference/utilities/jsonfiles/#JsonFiles-method-keep).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The file … cannot be read (…), it is kept as … and …</code> to <code>documentation/reference/errors.md</code>.</div>
+The file of a store or of the remembered fields of a UI holds no valid JSON, or its store refused it.
+JOID renames it with the `.corrupt` suffix, so that nothing overwrites it, and starts from the defaults.
+
+Open the `.corrupt` file to recover what you need, then delete it: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
 ### The file … cannot be read (…) nor renamed to … (…), it is left untouched … {#file-cannot-read-nor}
 
@@ -1230,7 +1558,10 @@ Emitted by [`JsonFiles.keep`](/reference/utilities/jsonfiles/#JsonFiles-method-k
 
 Emitted by [`JsonFiles.keep`](/reference/utilities/jsonfiles/#JsonFiles-method-keep).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The file … cannot be read (…) nor renamed to … (…), it is left untouched and …</code> to <code>documentation/reference/errors.md</code>.</div>
+The file of a store or of the remembered fields of a UI holds no valid JSON, and JOID could not rename it with the `.corrupt` suffix either.
+JOID starts from the defaults; the next save overwrites the file.
+
+Check the permissions of the [data folder](/use/learn/running/files/#find-the-folders).
 
 ### … is marked non-null but is null {#marked-non-null-but}
 
@@ -1238,7 +1569,9 @@ Emitted by [`JsonFiles.keep`](/reference/utilities/jsonfiles/#JsonFiles-method-k
 
 Emitted by ``.
 
-<div class="joid-missing">Missing cause and fix: add <code>## NullPointerException … is marked non-null but is null</code> to <code>documentation/reference/errors.md</code>.</div>
+A parameter of JOID that cannot be `null` received `null`; the message names the parameter.
+
+Pass a value; the reference page of the method says which parameters accept `null`.
 
 ### …, use …(...) to get a modified copy {#use-get-modified-copy}
 
@@ -1246,7 +1579,9 @@ Emitted by ``.
 
 Emitted by [`LockableValue.mutate`](/reference/utilities/lockablevalue/#LockableValue-method-mutate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException …, use …(...) to get a modified copy</code> to <code>documentation/reference/errors.md</code>.</div>
+A setter was called on a locked value, such as a color of a palette locked with `lock()`, which never changes.
+
+Call the method that the message names to get a modified copy: [Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe).
 
 ## Backends
 
@@ -1256,7 +1591,9 @@ Emitted by [`LockableValue.mutate`](/reference/utilities/lockablevalue/#Lockable
 
 Emitted by [`StackUIBridge.open`](/reference/backends/stackuibridge/#StackUIBridge-method-open).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … refused to close: a beforeClose listener cancelled the event, so … is not opened: do not cancel it to let the UI close</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, opening a screen asks the open screen to close, and a listener of its `beforeClose` event cancelled it, so the new screen does not open.
+
+Let the screen close, or open the new UI as a popup or an overlay: [Replace the current screen](/use/learn/describing-the-ui/uis/#replace-the-current-screen).
 
 ### … cannot draw a frame and skips the rest of it (…), fix the draw code … {#cannot-draw-frame-skips}
 
@@ -1264,7 +1601,9 @@ Emitted by [`StackUIBridge.open`](/reference/backends/stackuibridge/#StackUIBrid
 
 Emitted by [`UIBridge.draw`](/reference/backends/uibridge/#UIBridge-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … cannot draw a frame and skips the rest of it (…), fix the draw code from this error</code> to <code>documentation/reference/errors.md</code>.</div>
+A UI of the bridge threw while it drew; the bridge skips the rest of its frame, puts the matrix and state stacks back, and prints it once per kind of exception.
+
+Fix the draw code from the error and its stack trace.
 
 ### … draws no tooltip, override drawHover(UI, Object, double, double) to … {#draws-no-tooltip-override}
 
@@ -1272,7 +1611,9 @@ Emitted by [`UIBridge.draw`](/reference/backends/uibridge/#UIBridge-method-draw)
 
 Emitted by [`UIBridge.drawHover`](/reference/backends/uibridge/#UIBridge-method-drawHover).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … draws no tooltip, override drawHover(UI, Object, double, double) to draw them</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the pointer rests on a node that has a tooltip, and the UI bridge extends [`UIBridge`](/reference/backends/uibridge/) without overriding `drawHover(...)`; JOID prints it once per bridge.
+
+Override `drawHover(...)` in the bridge, or extend [`WindowUIBridge`](/reference/backends/windowuibridge/): [UI bridge](/build/bridges/ui/).
 
 ### … draws no tooltip {#draws-no-tooltip-set}
 
@@ -1280,7 +1621,9 @@ Emitted by [`UIBridge.drawHover`](/reference/backends/uibridge/#UIBridge-method-
 
 Emitted by [`WindowUIBridge.drawHover`](/reference/backends/windowuibridge/#WindowUIBridge-method-drawHover).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … draws no tooltip, set its hoverInfo(TextInfo) to draw them</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the pointer rests on a node that has a tooltip, and the window bridge has no text style for tooltips; JOID prints it once per bridge.
+
+Give the bridge a style with [`WindowUIBridge.hoverInfo`](/reference/backends/windowuibridge/#WindowUIBridge-property-hoverInfo): [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge).
 
 ### … is already registered {#already-registered-call-register}
 
@@ -1288,7 +1631,9 @@ Emitted by [`WindowUIBridge.drawHover`](/reference/backends/windowuibridge/#Wind
 
 Emitted by [`Backend.register`](/reference/backends/backend/#Backend-method-register).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … is already registered, call register() only once</code> to <code>documentation/reference/errors.md</code>.</div>
+[`Backend.register`](/reference/backends/backend/#Backend-method-register) was called a second time on the same backend.
+
+Register each backend once, at startup: [Start a backend](/use/learn/running/backends/#start-a-backend).
 
 ### ….draw() needs an open frame and the render bridge has none {#draw-needs-open-frame}
 
@@ -1296,7 +1641,9 @@ Emitted by [`Backend.register`](/reference/backends/backend/#Backend-method-regi
 
 Emitted by [`UIBridge.draw`](/reference/backends/uibridge/#UIBridge-method-draw).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException ….draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()</code> to <code>documentation/reference/errors.md</code>.</div>
+`draw()` of a UI bridge was called outside a frame of the render bridge.
+
+Call [`Backend.frame`](/reference/backends/backend/#Backend-method-frame) or [`UIBridgeRegistry.frame`](/reference/backends/uibridgeregistry/#UIBridgeRegistry-method-frame), which open the frame, or call `beginFrame()` and `endFrame()` of the render bridge around the draw: [UI bridge](/build/bridges/ui/#guarantees).
 
 ## Bridges
 
@@ -1306,7 +1653,9 @@ Emitted by [`UIBridge.draw`](/reference/backends/uibridge/#UIBridge-method-draw)
 
 Emitted by [`Shader`](/reference/bridges/shader/#Shader-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A … shader uses …, which needs …: the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, a shader uses a GLSL feature that OpenGL 2.1 contexts refuse; it draws on this machine, but not on those contexts.
+
+Rewrite the shader without the feature that the message names: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### A task sent to the render thread from another thread failed (…), the … {#task-sent-render-thread}
 
@@ -1314,7 +1663,9 @@ Emitted by [`Shader`](/reference/bridges/shader/#Shader-constructor).
 
 Emitted by [`FrameThreadBridge.runTasks`](/reference/bridges/framethreadbridge/#FrameThreadBridge-method-runTasks).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] A task sent to the render thread from another thread failed (…), the next tasks still run: catch the exception inside the task to handle it</code> to <code>documentation/reference/errors.md</code>.</div>
+A task that another thread sent to the render thread, through [`ThreadUtils.runOnRenderThread`](/reference/utilities/threadutils/#ThreadUtils-method-runOnRenderThread) or `JOID.open`, threw at the start of a frame; JOID prints it once per kind of failure, and the next tasks still run.
+
+Catch the exception inside the task, or fix the code it names: [Threads](/use/learn/running/threads/).
 
 ### No … bridge registered {#no-bridge-registered-call}
 
@@ -1322,7 +1673,10 @@ Emitted by [`FrameThreadBridge.runTasks`](/reference/bridges/framethreadbridge/#
 
 Emitted by [`BridgeRegistry.get`](/reference/bridges/bridgeregistry/#BridgeRegistry-method-get).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No … bridge registered, call BridgeHandler.….register before using JOID</code> to <code>documentation/reference/errors.md</code>.</div>
+JOID needed a bridge, the render or the window bridge for example, and its registry is empty: the backend is not registered yet.
+
+Register the backend before you use JOID, or run the code from [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady): [Start a backend](/use/learn/running/backends/#start-a-backend).
+A backend author registers the bridge in its hook: [The bridges](/build/bridges/#who-registers-what-and-when).
 
 ### The JOID frame has already begun {#joid-frame-has-already}
 
@@ -1330,7 +1684,9 @@ Emitted by [`BridgeRegistry.get`](/reference/bridges/bridgeregistry/#BridgeRegis
 
 Emitted by [`RenderBridge.beginFrame`](/reference/bridges/renderbridge/#RenderBridge-method-beginFrame).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The JOID frame has already begun, call endFrame() first</code> to <code>documentation/reference/errors.md</code>.</div>
+`beginFrame()` of the render bridge was called twice without `endFrame()`, for example by a loop that calls [`Backend.frame`](/reference/backends/backend/#Backend-method-frame) inside a frame of its own.
+
+Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and closes its own frame: [Render bridge](/build/bridges/render/#provided).
 
 ### … draws only inside a frame and no frame has begun {#draws-only-inside-frame}
 
@@ -1338,7 +1694,9 @@ Emitted by [`RenderBridge.beginFrame`](/reference/bridges/renderbridge/#RenderBr
 
 Emitted by [`RenderBridge.requireFrame`](/reference/bridges/renderbridge/#RenderBridge-method-requireFrame).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop</code> to <code>documentation/reference/errors.md</code>.</div>
+Something drew or cleared outside a frame of the render bridge, such as a draw from a callback of input, from a worker thread, or before the loop.
+
+Draw from the draw of a node or of a UI, which runs inside the frame: [Frame lifecycle](/use/in-depth/frame-lifecycle/).
 
 ### The shader declares no sampler …, declare it in the shader source or fix … {#shader-declares-no-sampler}
 
@@ -1346,7 +1704,9 @@ Emitted by [`RenderBridge.requireFrame`](/reference/bridges/renderbridge/#Render
 
 Emitted by [`Shader.sampler`](/reference/bridges/shader/#Shader-method-sampler).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The shader declares no sampler …, declare it in the shader source or fix its name (samplers: …)</code> to <code>documentation/reference/errors.md</code>.</div>
+`sampler(name, ...)` of a shader received a name that its sources do not declare; the message lists the declared samplers.
+
+Fix the name, or declare the sampler in the source: [Set uniforms and textures](/use/learn/going-further/shaders/#set-uniforms-and-textures).
 
 ### A borrowed texture belongs to its host: JOID reads it but never allocates it {#borrowed-texture-belongs-host-never-allocates}
 
@@ -1354,7 +1714,9 @@ Emitted by [`Shader.sampler`](/reference/bridges/shader/#Shader-method-sampler).
 
 Emitted by [`BorrowedTexture.allocate`](/reference/bridges/borrowedtexture/#BorrowedTexture-method-allocate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UnsupportedOperationException A borrowed texture belongs to its host: JOID reads it but never allocates it, create a texture with IRenderBridge.createTexture() to draw your own pixels</code> to <code>documentation/reference/errors.md</code>.</div>
+`allocate(...)` was called on a texture borrowed from the host.
+
+Create a texture of JOID to hold pixels of your own: [Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry).
 
 ### A borrowed texture belongs to its host: JOID reads it but never writes it {#borrowed-texture-belongs-host-never-writes}
 
@@ -1362,7 +1724,9 @@ Emitted by [`BorrowedTexture.allocate`](/reference/bridges/borrowedtexture/#Borr
 
 Emitted by [`BorrowedTexture.upload`](/reference/bridges/borrowedtexture/#BorrowedTexture-method-upload).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UnsupportedOperationException A borrowed texture belongs to its host: JOID reads it but never writes it, create a texture with IRenderBridge.createTexture() to draw your own pixels</code> to <code>documentation/reference/errors.md</code>.</div>
+`upload(...)` was called on a texture borrowed from the host.
+
+Write the pixels with the API of the host, or create a texture of JOID.
 
 ### The texture is deleted, create a new one with … {#texture-deleted-create-new}
 
@@ -1370,7 +1734,9 @@ Emitted by [`BorrowedTexture.upload`](/reference/bridges/borrowedtexture/#Borrow
 
 Emitted by [`Texture.allocate`](/reference/bridges/texture/#Texture-method-allocate), [`Texture.upload`](/reference/bridges/texture/#Texture-method-upload).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The texture is deleted, create a new one with IRenderBridge.createTexture()</code> to <code>documentation/reference/errors.md</code>.</div>
+`allocate(...)` or `upload(...)` was called on a deleted texture.
+
+Create a new texture.
 
 ### The texture is not allocated {#texture-not-allocated-call}
 
@@ -1378,7 +1744,9 @@ Emitted by [`Texture.allocate`](/reference/bridges/texture/#Texture-method-alloc
 
 Emitted by [`Texture.upload`](/reference/bridges/texture/#Texture-method-upload).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The texture is not allocated, call allocate(width, height) before upload(pixels)</code> to <code>documentation/reference/errors.md</code>.</div>
+`upload(...)` was called on a texture without storage.
+
+Call `allocate(width, height)` first.
 
 ### The texture of …x… needs … pixels and got …, pass one pixel per texel {#texture-x-needs-pixels}
 
@@ -1386,7 +1754,9 @@ Emitted by [`Texture.upload`](/reference/bridges/texture/#Texture-method-upload)
 
 Emitted by [`Texture.upload`](/reference/bridges/texture/#Texture-method-upload).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The texture of …x… needs … pixels and got …, pass one pixel per texel</code> to <code>documentation/reference/errors.md</code>.</div>
+`upload(...)` received fewer pixels than the texture has texels.
+
+Pass one ARGB pixel per texel, row after row.
 
 ### No resource resolver knows the input … of type …, register an … {#no-resource-resolver-knows}
 
@@ -1394,7 +1764,9 @@ Emitted by [`Texture.upload`](/reference/bridges/texture/#Texture-method-upload)
 
 Emitted by [`ResourceResolver.resolve`](/reference/bridges/resourceresolver/#ResourceResolver-method-resolve).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException No resource resolver knows the input … of type …, register an IResourceResolver that supports it with ResourceResolver.register(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+`Resource.of(...)` received an object that is neither an asset input nor a type that a registered [`IResourceResolver`](/reference/bridges/iresourceresolver/) supports.
+
+Pass a supported input, or register a resolver: [Resource resolvers](/build/resource-resolvers/#write-the-resolver).
 
 ## Pipeline
 
@@ -1404,7 +1776,9 @@ Emitted by [`ResourceResolver.resolve`](/reference/bridges/resourceresolver/#Res
 
 Emitted by [`CoreShader.open`](/reference/pipeline/coreshader/#CoreShader-method-open).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The core shader … is missing from the classpath, check that the JOID jar is complete</code> to <code>documentation/reference/errors.md</code>.</div>
+A built-in shader of JOID was not found in the jar, which is damaged or was stripped by a build tool.
+
+Ship the JOID jar whole: [Keep the files of the JOID jars](/use/guides/ship-your-application/#6-keep-the-files-of-the-joid-jars).
 
 ### … has no uniform blocks, translate its uniforms with UniformLayout.LOOSE {#has-no-uniform-blocks}
 
@@ -1412,7 +1786,9 @@ Emitted by [`CoreShader.open`](/reference/pipeline/coreshader/#CoreShader-method
 
 Emitted by [`GlslShaderTranslator`](/reference/pipeline/glslshadertranslator/#GlslShaderTranslator-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException … has no uniform blocks, translate its uniforms with UniformLayout.LOOSE</code> to <code>documentation/reference/errors.md</code>.</div>
+A [`GlslShaderTranslator`](/reference/pipeline/glslshadertranslator/) was created with `UniformLayout.BLOCK` for a dialect without uniform blocks.
+
+Use `UniformLayout.LOOSE` for that dialect: [Pick a uniform layout](/build/shader-translation/#pick-a-uniform-layout).
 
 ### The shader uses …, which needs …, but the dialect is … {#shader-uses-which-needs-but}
 
@@ -1420,7 +1796,10 @@ Emitted by [`GlslShaderTranslator`](/reference/pipeline/glslshadertranslator/#Gl
 
 Emitted by [`GlslShaderTranslator.translateVertex`](/reference/pipeline/glslshadertranslator/#GlslShaderTranslator-method-translateVertex), [`GlslShaderTranslator.translateFragment`](/reference/pipeline/glslshadertranslator/#GlslShaderTranslator-method-translateFragment), [`GlslShaderTranslator.translate`](/reference/pipeline/glslshadertranslator/#GlslShaderTranslator-method-translate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## UnsupportedOperationException The shader uses …, which needs …, but the dialect is …: rewrite the shader without it or translate it for a newer dialect</code> to <code>documentation/reference/errors.md</code>.</div>
+The source of a shader uses a GLSL feature that the dialect of the graphics context lacks.
+
+Rewrite the shader without the feature: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
+A backend author can translate for a newer dialect: [Pick a dialect](/build/shader-translation/#pick-a-dialect).
 
 ### Vertex shaders cannot declare the input … {#vertex-shaders-cannot-declare}
 
@@ -1428,7 +1807,9 @@ Emitted by [`GlslShaderTranslator.translateVertex`](/reference/pipeline/glslshad
 
 Emitted by [`ShaderSource.from`](/reference/pipeline/shadersource/#ShaderSource-factory-from).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException Vertex shaders cannot declare the input …, use the built-in attributes aPosition, aTexCoord, aColor and aNormal</code> to <code>documentation/reference/errors.md</code>.</div>
+A vertex source declares an `in` variable; JOID gives every vertex shader its built-in attributes.
+
+Use `aPosition`, `aTexCoord`, `aColor` and `aNormal`: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### Fragment shaders cannot declare the output …, write the color to … {#fragment-shaders-cannot-declare}
 
@@ -1436,7 +1817,9 @@ Emitted by [`ShaderSource.from`](/reference/pipeline/shadersource/#ShaderSource-
 
 Emitted by [`ShaderSource.from`](/reference/pipeline/shadersource/#ShaderSource-factory-from).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException Fragment shaders cannot declare the output …, write the color to fragColor</code> to <code>documentation/reference/errors.md</code>.</div>
+A fragment source declares an `out` variable; JOID declares the output of every fragment shader.
+
+Write the color to `fragColor`: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### The shader declares no uniform …, declare it in the shader source or fix … {#shader-declares-no-uniform}
 
@@ -1444,7 +1827,9 @@ Emitted by [`ShaderSource.from`](/reference/pipeline/shadersource/#ShaderSource-
 
 Emitted by [`UniformBlock.requireMember`](/reference/pipeline/uniformblock/#UniformBlock-method-requireMember).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The shader declares no uniform …, declare it in the shader source or fix its name (uniforms: …)</code> to <code>documentation/reference/errors.md</code>.</div>
+`uniform(name, ...)` received a name that the sources do not declare; the message lists the declared uniforms.
+
+Fix the name, or declare the uniform in the source: [Set uniforms and textures](/use/learn/going-further/shaders/#set-uniforms-and-textures).
 
 ### The length … of the uniform array … is neither a number nor a \#define of … {#length-uniform-array-neither}
 
@@ -1452,7 +1837,9 @@ Emitted by [`UniformBlock.requireMember`](/reference/pipeline/uniformblock/#Unif
 
 Emitted by [`UniformBlock.create`](/reference/pipeline/uniformblock/#UniformBlock-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The length … of the uniform array … is neither a number nor a #define of the shader, write a number or #define … in the shader source</code> to <code>documentation/reference/errors.md</code>.</div>
+The length of a uniform array is a name that no `#define` of the source gives a number.
+
+Write the length as a number, or `#define` it in the source.
 
 ### The uniform … cannot take … {#uniform-cannot-take}
 
@@ -1460,7 +1847,9 @@ Emitted by [`UniformBlock.create`](/reference/pipeline/uniformblock/#UniformBloc
 
 Emitted by [`UniformMember.value`](/reference/pipeline/uniformmember/#UniformMember-method-value).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The uniform … cannot take …</code> to <code>documentation/reference/errors.md</code>.</div>
+`uniform(name, ...)` received values of another type or count than the uniform declares, such as three floats for a `vec4`.
+
+Pass as many values as the type holds, of its kind: [Set uniforms and textures](/use/learn/going-further/shaders/#set-uniforms-and-textures).
 
 ### The uniform type … is not supported {#uniform-type-not-supported}
 
@@ -1468,7 +1857,9 @@ Emitted by [`UniformMember.value`](/reference/pipeline/uniformmember/#UniformMem
 
 Emitted by [`UniformType.of`](/reference/pipeline/uniformtype/#UniformType-factory-of).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The uniform type … is not supported, use int, uint, bool, float, vec2 to vec4, ivec2 to ivec4, uvec2 to uvec4, bvec2 to bvec4 or mat2 to mat4</code> to <code>documentation/reference/errors.md</code>.</div>
+A uniform of the source has a type that JOID cannot lay out, such as a structure.
+
+Use one of the types of the message: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ## Testing
 
@@ -1478,7 +1869,9 @@ Emitted by [`UniformType.of`](/reference/pipeline/uniformtype/#UniformType-facto
 
 Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The … jar check failed</code> to <code>documentation/reference/errors.md</code>.</div>
+[`JarCheck`](/reference/testing/jarcheck/) could not start JOID from a packaged jar, or the UI it opened failed; the stack trace follows, and the check exits with `1`.
+
+Read the cause that follows, often another entry of this page: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
 
 ### Usage: GlslExport \<output directory\> {#usage-glslexport-output-directory}
 
@@ -1486,7 +1879,9 @@ Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
 Emitted by [`GlslExport.main`](/reference/testing/glslexport/#GlslExport-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] Usage: GlslExport &lt;output directory&gt;</code> to <code>documentation/reference/errors.md</code>.</div>
+[`GlslExport`](/reference/testing/glslexport/) was run with another number of arguments than one.
+
+Pass the output folder as the only argument: [Check your translation](/build/shader-translation/#check-your-translation).
 
 ### … rendered on … and … on … {#rendered-differences-may-come}
 
@@ -1494,7 +1889,9 @@ Emitted by [`GlslExport.main`](/reference/testing/glslexport/#GlslExport-method-
 
 Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] … rendered on … and … on …: differences may come from the GPUs, run them on one GPU</code> to <code>documentation/reference/errors.md</code>.</div>
+[`SnapshotComparison`](/reference/testing/snapshotcomparison/) compares renders whose `renderer.txt` name different GPUs; it compares them anyway.
+
+Render the backends on the same GPU: [Compare with LWJGL 3](/build/testing-a-backend/#compare-with-lwjgl-3).
 
 ### Report: … {#report}
 
@@ -1502,7 +1899,9 @@ Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#Sn
 
 Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] Report: …</code> to <code>documentation/reference/errors.md</code>.</div>
+[`SnapshotComparison`](/reference/testing/snapshotcomparison/) found a difference; the message gives the link of the report.
+
+Open the report to see each shot next to its reference: [References and the report](/build/testing-a-backend/#references-and-the-report).
 
 ### A test of BitmapFontContractSuite fails {#test-bitmapfontcontractsuite-fails}
 
@@ -1510,7 +1909,17 @@ Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#Sn
 
 Emitted by [`BitmapFontContractSuite`](/reference/testing/bitmapfontcontractsuite/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## AssertionError A test of BitmapFontContractSuite fails</code> to <code>documentation/reference/errors.md</code>.</div>
+A test of [`BitmapFontContractSuite`](/reference/testing/bitmapfontcontractsuite/) found a bitmap glyph drawn differently from the contract:
+
+| Message | Cause |
+|---|---|
+| `…: partial pixels` | At a whole scale, some pixels are partly covered: the glyph is filtered or not placed on whole pixels. |
+| `…: ink` | The glyph holds more or less ink than its texels. |
+| `…: columns` | At a fractional scale, the glyph does not show its three columns of texels. |
+| `…: column` | At a fractional scale, one column of texels gets another amount of ink than the others. |
+| `… at … differs from the ASCII atlas by …` | The same glyph from another atlas gives other pixels. |
+
+Sample bitmap fonts with the nearest filter and place the quads exactly where JOID asks: [The suites](/build/testing-a-backend/#the-suites).
 
 ### A test of RenderBridgeContractSuite fails {#test-renderbridgecontractsuite-fails}
 
@@ -1518,7 +1927,22 @@ Emitted by [`BitmapFontContractSuite`](/reference/testing/bitmapfontcontractsuit
 
 Emitted by [`RenderBridgeContractSuite`](/reference/testing/renderbridgecontractsuite/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## AssertionError A test of RenderBridgeContractSuite fails</code> to <code>documentation/reference/errors.md</code>.</div>
+A test of [`RenderBridgeContractSuite`](/reference/testing/renderbridgecontractsuite/) found a render bridge that breaks the render contract; most tests fail on a pixel, with `Pixel x,y`, the expected and the actual color.
+The other messages:
+
+| Message | Cause |
+|---|---|
+| `The … shader does not compile` | A built-in shader of JOID does not compile with your translation. |
+| `A shader that fails to compile must report isActive() == false` | A shader with an error reports that it can draw. |
+| `A face turned to the light must be brighter than the ambient light` | The lighting built-in does not reach the shader. |
+| `A texture must not be mipmapped by default` | A new texture reports mipmaps. |
+| `A texture asked to mipmap must report it` | `mipmap(true)` is lost. |
+| `A mipmapped checkerboard must minify to its average (deviation …)` | The mipmap levels are missing or wrong. |
+| `Mipmaps must reduce the minification error (plain …, mipmapped …)` | The sampler ignores the mipmap levels. |
+| `Mipmaps asked after the upload must keep the content and minify to its average (deviation …)` | `mipmap(true)` after `upload(...)` loses the pixels or builds no level. |
+| `Pixel …,32` | A transparent border is not sampled beyond the edges of a `CLAMP_TO_BORDER` texture. |
+
+Fix the rule that the name of the failed test states: [Render bridge](/build/bridges/render/#guarantees).
 
 ### A test of StateGuardContractSuite fails {#test-stateguardcontractsuite-fails}
 
@@ -1526,7 +1950,18 @@ Emitted by [`RenderBridgeContractSuite`](/reference/testing/renderbridgecontract
 
 Emitted by [`StateGuardContractSuite`](/reference/testing/stateguardcontractsuite/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## AssertionError A test of StateGuardContractSuite fails</code> to <code>documentation/reference/errors.md</code>.</div>
+A test of [`StateGuardContractSuite`](/reference/testing/stateguardcontractsuite/) found a frame of JOID that changes with the state that the host left, or that does not give the host its state back:
+
+| Message | Cause |
+|---|---|
+| `With the … of the host, the pixel …,… is … instead of …` | A trap of the host changed what JOID draws: the guard does not reset that state. |
+| `JOID must give the host its state back before a nested host draw` | `suspend` does not restore the state of the host before its drawing. |
+| `IRenderBridge.suspend must run the host draw it is given` | `suspend` does not run its drawing. |
+| `JOID must leave the state of the host as the nested host draw left it` | The end of the frame does not give the state back as the host left it. |
+| `Reading the pixels must leave the state of the host` | The capture of the snapshot backend changes the state. |
+| `JOID must give the host its state back after a raster nested in a host draw` | A raster inside a drawing of the host leaves the state changed. |
+
+Journal every state that your bridge changes, and restore it at the end of the frame and around the drawings of the host: [Check the guard](/build/embedding-in-a-host/#check-the-guard).
 
 ### The … jar threw while it drew …, see the stack traces above {#jar-threw-while-drew}
 
@@ -1534,7 +1969,9 @@ Emitted by [`StateGuardContractSuite`](/reference/testing/stateguardcontractsuit
 
 Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … jar threw while it drew …, see the stack traces above</code> to <code>documentation/reference/errors.md</code>.</div>
+[`JarCheck`](/reference/testing/jarcheck/) drew 60 frames from a packaged jar, and a stack trace reached the error stream.
+
+Read the stack traces above the message: a class or a file is often missing from the jar.
 
 ### The … jar runs with the dev mode … and the demo mode … {#jar-runs-dev-mode}
 
@@ -1542,7 +1979,9 @@ Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
 Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The … jar runs with the dev mode … and the demo mode …: check the excludes of gradle/variants.gradle</code> to <code>documentation/reference/errors.md</code>.</div>
+The packaged jar does not hold the classes that its variant needs, or holds the classes of another variant.
+
+Check what each variant includes and excludes: [Three jars per module](/build/demos/#three-jars-per-module).
 
 ### … is no longer open after 60 frames of the … jar, check what closes it … {#no-longer-open-after}
 
@@ -1550,7 +1989,9 @@ Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
 Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … is no longer open after 60 frames of the … jar, check what closes it in that jar</code> to <code>documentation/reference/errors.md</code>.</div>
+The UI that [`JarCheck`](/reference/testing/jarcheck/) opened closed during its 60 frames.
+
+Check what closes the UI with that jar.
 
 ### The folder … cannot be created, check that its parent folder can be … {#folder-cannot-created-check}
 
@@ -1558,7 +1999,9 @@ Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
 
 Emitted by [`GlslExport.export`](/reference/testing/glslexport/#GlslExport-method-export).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The folder … cannot be created, check that its parent folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+[`GlslExport`](/reference/testing/glslexport/) could not create a folder of its output.
+
+Check that the output folder can be written.
 
 ### No snapshot rendered in …, render the snapshots first {#no-snapshot-rendered-render}
 
@@ -1566,7 +2009,9 @@ Emitted by [`GlslExport.export`](/reference/testing/glslexport/#GlslExport-metho
 
 Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## failure [JOID] No snapshot rendered in …, render the snapshots first</code> to <code>documentation/reference/errors.md</code>.</div>
+[`SnapshotComparison`](/reference/testing/snapshotcomparison/) found no PNG in the folder of the reference renders.
+
+Render the reference first, with `renderBaseline`: [Compare with LWJGL 3](/build/testing-a-backend/#compare-with-lwjgl-3).
 
 ### The image … cannot be decoded, check that it is a valid PNG {#image-cannot-decoded-check}
 
@@ -1574,7 +2019,9 @@ Emitted by [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#Sn
 
 Emitted by [`SnapshotImage.read`](/reference/testing/snapshotimage/#SnapshotImage-factory-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IOException The image … cannot be decoded, check that it is a valid PNG</code> to <code>documentation/reference/errors.md</code>.</div>
+[`SnapshotImage.read`](/reference/testing/snapshotimage/#SnapshotImage-factory-read) read a file that is not a PNG, or a damaged one.
+
+Record the reference again: [References and the report](/build/testing-a-backend/#references-and-the-report).
 
 ### The snapshot command … is unknown, fix the scenario {#snapshot-command-unknown-fix}
 
@@ -1582,7 +2029,9 @@ Emitted by [`SnapshotImage.read`](/reference/testing/snapshotimage/#SnapshotImag
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The snapshot command … is unknown, fix the scenario</code> to <code>documentation/reference/errors.md</code>.</div>
+A command given to [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute) is none of its commands.
+
+Fix the command from the table of `execute`: [Drive the UI with commands](/use/learn/running/testing/#drive-the-ui-with-commands).
 
 ### The window shows the … cursor instead of … {#window-shows-cursor-instead}
 
@@ -1590,7 +2039,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The window shows the … cursor instead of …</code> to <code>documentation/reference/errors.md</code>.</div>
+The `cursor` command of a scenario expected another cursor than the one that the UI shows.
+
+Check the cursor that the hovered node sets: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/).
 
 ### The snapshot window …x… does not fit the …x… snapshot surface, give a … {#snapshot-window-x-does}
 
@@ -1598,7 +2049,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.start`](/reference/testing/snapshotrunner/#SnapshotRunner-factory-start), [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The snapshot window …x… does not fit the …x… snapshot surface, give a smaller window</code> to <code>documentation/reference/errors.md</code>.</div>
+A `resize` command asked for a window larger than the 1920×1080 surface of the runner.
+
+Resize to 1920×1080 at most.
 
 ### The snapshot UI … cannot be created: its constructor threw … {#snapshot-ui-cannot-created-constructor}
 
@@ -1606,7 +2059,9 @@ Emitted by [`SnapshotRunner.start`](/reference/testing/snapshotrunner/#SnapshotR
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The snapshot UI … cannot be created: its constructor threw …</code> to <code>documentation/reference/errors.md</code>.</div>
+The `ui` or `open` command created the UI, and its constructor threw.
+
+Fix the constructor from the error.
 
 ### The snapshot UI … cannot be created: give it a constructor without arguments {#snapshot-ui-cannot-created-give}
 
@@ -1614,7 +2069,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The snapshot UI … cannot be created: give it a constructor without arguments, of any visibility</code> to <code>documentation/reference/errors.md</code>.</div>
+The class given to the `ui` or `open` command is not found, or has no constructor without argument.
+
+Give the full class name, and a constructor without argument: [Render a screen](/use/learn/running/testing/#render-a-screen).
 
 ### A resource never settled in 30s {#resource-never-settled-30s}
 
@@ -1622,7 +2079,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A resource never settled in 30s: it kept decoding or rendering, check that the resources of the scenario stop decoding</code> to <code>documentation/reference/errors.md</code>.</div>
+During a `wait`, a resource kept decoding for 30 seconds, such as a video that plays in a loop.
+
+Pause or stop what keeps decoding before the shot: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
 ### A resource never finished loading in 30s, check that its file exists and … {#resource-never-finished-loading}
 
@@ -1630,7 +2089,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException A resource never finished loading in 30s, check that its file exists and that its decoder settles</code> to <code>documentation/reference/errors.md</code>.</div>
+Before a shot, a resource did not finish loading within 30 seconds.
+
+Check that its file exists and can be read, or that a decoder of your own reports when it is done: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
 ### … never became stable while the clock was paused, … pixels kept changing {#never-became-stable-while}
 
@@ -1638,7 +2099,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … never became stable while the clock was paused, … pixels kept changing: mask the area that moves or stop what moves it</code> to <code>documentation/reference/errors.md</code>.</div>
+Before a shot, the picture kept changing while the clock of the test stood still, usually because the UI reads the time of the system.
+
+Read the time from `BridgeHandler.CLOCK`, or mask the area: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
 ### … never settled {#never-settled-resource-kept}
 
@@ -1646,7 +2109,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … never settled: a resource kept decoding or rendering, check that the resources of the scenario stop decoding</code> to <code>documentation/reference/errors.md</code>.</div>
+The picture of a shot became stable, but a resource was still decoding.
+
+Pause or stop what keeps decoding before the shot.
 
 ### No reference for the GPU … in …, the shots of … were not compared {#no-reference-gpu-shots}
 
@@ -1654,7 +2119,9 @@ Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#Snapsho
 
 Emitted by [`SnapshotSuite.matchesDevSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesDevSnapshots), [`SnapshotSuite.matchesPopupSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesPopupSnapshots), [`SnapshotSuite.matchesStaticSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesStaticSnapshots), [`SnapshotSuite.matchesWindowSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesWindowSnapshots), [`SnapshotSuite.matchesResourceSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesResourceSnapshots), [`SnapshotSuite.matchesTransitionSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesTransitionSnapshots), [`SnapshotSuite.matchesInteractionSnapshots`](/reference/testing/snapshotsuite/#SnapshotSuite-method-matchesInteractionSnapshots).
 
-<div class="joid-missing">Missing cause and fix: add <code>## AssertionError [JOID] No reference for the GPU … in …, the shots of … were not compared: record them on this GPU with updateSnapshots…</code> to <code>documentation/reference/errors.md</code>.</div>
+The [`SnapshotSuite`](/reference/testing/snapshotsuite/) runs on a GPU that has no references yet; the message lists the GPUs that have some.
+
+Record the references of this GPU with `updateSnapshots`: [References and the report](/build/testing-a-backend/#references-and-the-report).
 
 ### The snapshot cache cannot name the download of … {#snapshot-cache-cannot-name}
 
@@ -1662,7 +2129,9 @@ Emitted by [`SnapshotSuite.matchesDevSnapshots`](/reference/testing/snapshotsuit
 
 Emitted by [`SnapshotUrlAssetLocator.locate`](/reference/testing/snapshoturlassetlocator/#SnapshotUrlAssetLocator-method-locate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The snapshot cache cannot name the download of …: this JVM has no SHA-1 digest, run the snapshots on a standard JVM</code> to <code>documentation/reference/errors.md</code>.</div>
+The JVM offers no SHA-1, which the testkit uses to name its downloads.
+
+Run the tests on a standard JVM.
 
 ## base-glfw
 
@@ -1672,7 +2141,9 @@ Emitted by [`SnapshotUrlAssetLocator.locate`](/reference/testing/snapshoturlasse
 
 Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException OpenAL cannot open the default audio device, check that an audio output device is connected and enabled</code> to <code>documentation/reference/errors.md</code>.</div>
+The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
+
+Connect or enable an audio output, or register the backend with `audio(false)`: [What register() does](/use/learn/running/backends/#what-register-does).
 
 ### OpenAL cannot create a context on the default audio device, check that … {#openal-cannot-create-context}
 
@@ -1680,7 +2151,9 @@ Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albindin
 
 Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date</code> to <code>documentation/reference/errors.md</code>.</div>
+The default audio device opened but refused an OpenAL context.
+
+Close the application that holds the device exclusively, or update its driver.
 
 ### GLFW cannot be initialized, check that the system has a display (DISPLAY … {#glfw-cannot-initialized-check}
 
@@ -1688,7 +2161,9 @@ Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albindin
 
 Emitted by [`GlfwSnapshotWindow.create`](/reference/base-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)</code> to <code>documentation/reference/errors.md</code>.</div>
+A snapshot backend could not start GLFW, usually on a machine without a display.
+
+Run the tests with a display, or a virtual one such as Xvfb on a server: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
 
 ### GLFW cannot create the …x… snapshot window, check that the graphics … {#glfw-cannot-create-x}
 
@@ -1696,7 +2171,9 @@ Emitted by [`GlfwSnapshotWindow.create`](/reference/base-glfw/glfwsnapshotwindow
 
 Emitted by [`GlfwSnapshotWindow.create`](/reference/base-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException GLFW cannot create the …x… snapshot window, check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)</code> to <code>documentation/reference/errors.md</code>.</div>
+The graphics driver refused the hidden window of a snapshot backend.
+
+Update the graphics driver, or run on a machine that supports the API of the backend.
 
 ## base-opengl
 
@@ -1704,13 +2181,18 @@ Emitted by [`GlfwSnapshotWindow.create`](/reference/base-glfw/glfwsnapshotwindow
 
 **Warning** · `[JOID] OpenGL cannot link a shader program, fix its sources from the log of the driver: …`
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] OpenGL cannot link a shader program, fix its sources from the log of the driver: …</code> to <code>documentation/reference/errors.md</code>.</div>
+The driver compiled both stages of a shader but could not link them; the log of the driver follows, and the shader never draws.
+
+Fix the sources from the log: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### OpenGL cannot compile a … shader, fix its source at the line the driver … {#opengl-cannot-compile-shader}
 
 **Warning** · `[JOID] OpenGL cannot compile a … shader, fix its source at the line the driver reports: …`
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] OpenGL cannot compile a … shader, fix its source at the line the driver reports: …</code> to <code>documentation/reference/errors.md</code>.</div>
+The driver refused a stage of a shader; its log, with the line of the error, follows, and the shader never draws.
+The line is in the translated source, which adds a header to yours.
+
+Fix the source from the log: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl); [Check your translation](/build/shader-translation/#check-your-translation) shows the translated source.
 
 ### This OpenGL context cannot blit framebuffers (…) {#opengl-context-cannot-blit}
 
@@ -1718,7 +2200,9 @@ Emitted by [`GlfwSnapshotWindow.create`](/reference/base-glfw/glfwsnapshotwindow
 
 Emitted by [`DrawGlMipmapBuilder.build`](/reference/base-opengl/drawglmipmapbuilder/#DrawGlMipmapBuilder-method-build).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] This OpenGL context cannot blit framebuffers (…): mipmaps are drawn, which may not give exactly the pixels of the other backends</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the context lacks framebuffer blits, so the mipmaps are drawn instead; JOID prints it once.
+
+No fix is needed; a newer context gives the pixels of the other backends: [Capabilities and paths](/build/base-modules/opengl/#capabilities-and-paths).
 
 ### No OpenGL context is current {#no-opengl-context-current}
 
@@ -1726,7 +2210,9 @@ Emitted by [`DrawGlMipmapBuilder.build`](/reference/base-opengl/drawglmipmapbuil
 
 Emitted by [`GlCapabilities.read`](/reference/base-opengl/glcapabilities/#GlCapabilities-factory-read).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No OpenGL context is current: create the context of JOID and make it current before registering the backend</code> to <code>documentation/reference/errors.md</code>.</div>
+The OpenGL render bridge was created on a thread where no OpenGL context is current.
+
+Create the window, make its context current and load the OpenGL functions before `register()`: [Start a backend](/use/learn/running/backends/#start-a-backend).
 
 ### JOID needs OpenGL 2.1 with GLSL 1.20, this context offers … {#joid-needs-opengl-2}
 
@@ -1734,7 +2220,9 @@ Emitted by [`GlCapabilities.read`](/reference/base-opengl/glcapabilities/#GlCapa
 
 Emitted by [`GlCapabilities.require`](/reference/base-opengl/glcapabilities/#GlCapabilities-method-require).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException JOID needs OpenGL 2.1 with GLSL 1.20, this context offers …: update the graphics driver or create a newer OpenGL context</code> to <code>documentation/reference/errors.md</code>.</div>
+The OpenGL context is older than OpenGL 2.1 with GLSL 1.20.
+
+Update the graphics driver, or ask for a newer context: [Check the prerequisites](/use/learn/running/backends/#check-the-prerequisites).
 
 ### JOID needs framebuffer objects (OpenGL 3.0, GL\_ARB\_framebuffer\_object or … {#joid-needs-framebuffer-objects}
 
@@ -1742,7 +2230,9 @@ Emitted by [`GlCapabilities.require`](/reference/base-opengl/glcapabilities/#GlC
 
 Emitted by [`GlCapabilities.require`](/reference/base-opengl/glcapabilities/#GlCapabilities-method-require).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers …: update the graphics driver or create a newer OpenGL context</code> to <code>documentation/reference/errors.md</code>.</div>
+The OpenGL context has no framebuffer objects.
+
+Update the graphics driver, or ask for a newer context: [Check the prerequisites](/use/learn/running/backends/#check-the-prerequisites).
 
 ### Only a compatibility context has fixed-function matrices to import, this … {#only-compatibility-context-has}
 
@@ -1750,7 +2240,9 @@ Emitted by [`GlCapabilities.require`](/reference/base-opengl/glcapabilities/#GlC
 
 Emitted by [`FixedMatrixImport.create`](/reference/base-opengl/fixedmatriximport/#FixedMatrixImport-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException Only a compatibility context has fixed-function matrices to import, this context is … with …: create the context with the compatibility profile to import them</code> to <code>documentation/reference/errors.md</code>.</div>
+[`FixedMatrixImport.create`](/reference/base-opengl/fixedmatriximport/#FixedMatrixImport-factory-create) was called on a core context, which has no fixed-function matrices.
+
+Create the context with the compatibility profile: [Import the matrices of a fixed-function host](/build/embedding-in-a-host/#import-the-matrices-of-a-fixed-function-host).
 
 ### The shader that draws the mipmaps does not compile on …, update the … {#shader-draws-mipmaps-does}
 
@@ -1758,7 +2250,9 @@ Emitted by [`FixedMatrixImport.create`](/reference/base-opengl/fixedmatriximport
 
 Emitted by [`DrawGlMipmapBuilder.build`](/reference/base-opengl/drawglmipmapbuilder/#DrawGlMipmapBuilder-method-build).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The shader that draws the mipmaps does not compile on …, update the graphics driver</code> to <code>documentation/reference/errors.md</code>.</div>
+On a context without framebuffer blits, the shader that draws the mipmaps did not compile.
+
+Update the graphics driver.
 
 ### No OpenGL render bridge is registered, register an OpenGL backend before … {#no-opengl-render-bridge}
 
@@ -1766,13 +2260,17 @@ Emitted by [`DrawGlMipmapBuilder.build`](/reference/base-opengl/drawglmipmapbuil
 
 Emitted by [`GlBorrowedTexture`](/reference/base-opengl/glborrowedtexture/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No OpenGL render bridge is registered, register an OpenGL backend before GlBorrowedTexture.of(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`GlBorrowedTexture.of`](/reference/base-opengl/glborrowedtexture/#GlBorrowedTexture-factory-of) was called before an OpenGL backend was registered.
+
+Register the backend first: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
 
 ### A texture of …x… exceeds the maximum size … of …, downscale the image {#texture-x-exceeds-maximum}
 
 **`IllegalArgumentException`** · `A texture of …x… exceeds the maximum size … of …, downscale the image`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A texture of …x… exceeds the maximum size … of …, downscale the image</code> to <code>documentation/reference/errors.md</code>.</div>
+An image is wider or taller than the largest texture of the graphics context or device.
+
+Downscale the image, or split it: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
 ## LWJGL 2 backend
 
@@ -1782,7 +2280,9 @@ Emitted by [`GlBorrowedTexture`](/reference/base-opengl/glborrowedtexture/).
 
 Emitted by [`NativeCursor.forPlatform`](/reference/lwjgl2/nativecursor/#NativeCursor-factory-forPlatform).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] JNA is missing or cannot be loaded, the mouse cursor stays the default one: …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the LWJGL 2 backend sets the cursors of nodes through JNA, which is not on the classpath; the cursor stays the default one.
+
+Put JNA on the classpath to show the cursors: [Cursors](/build/backends/lwjgl2/#cursors).
 
 ### The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the … {#native-cursors-lwjgl-2}
 
@@ -1790,7 +2290,9 @@ Emitted by [`NativeCursor.forPlatform`](/reference/lwjgl2/nativecursor/#NativeCu
 
 Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-method-apply).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the native cursor of LWJGL 2 could not be reached; the backend stops trying and keeps the default cursor.
+
+Check the version of LWJGL 2 on the classpath: [Cursors](/build/backends/lwjgl2/#cursors).
 
 ### The … cursor cannot be loaded (…), the default one replaces it {#cursor-cannot-loaded-default}
 
@@ -1798,7 +2300,9 @@ Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-m
 
 Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-method-apply).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The … cursor cannot be loaded (…), the default one replaces it: check that the system has this cursor</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the system has no cursor for one of the cursors of JOID; that one shows the default cursor.
+
+Check the cursor theme of the system.
 
 ### libXcursor cannot be loaded, the X11 cursors come from the cursor font {#libxcursor-cannot-loaded-x11}
 
@@ -1806,7 +2310,9 @@ Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-m
 
 Emitted by [`X11NativeCursor`](/reference/lwjgl2/x11nativecursor/#X11NativeCursor-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] libXcursor cannot be loaded, the X11 cursors come from the cursor font: …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, on Linux, libXcursor is missing, so the cursors come from the older cursor font of X11.
+
+Install libXcursor to get the cursors of the theme.
 
 ### The clipboard cannot be read, an empty text replaces it {#clipboard-cannot-read-empty}
 
@@ -1814,7 +2320,9 @@ Emitted by [`X11NativeCursor`](/reference/lwjgl2/x11nativecursor/#X11NativeCurso
 
 Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-getClipboard).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The clipboard cannot be read, an empty text replaces it: …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot.
 
 ### The clipboard cannot be written, the text stays out of it {#clipboard-cannot-written-text}
 
@@ -1822,7 +2330,9 @@ Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/lwjgl2/lwjgl2windowbri
 
 Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-setClipboard).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The clipboard cannot be written, the text stays out of it: …</code> to <code>documentation/reference/errors.md</code>.</div>
+With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot.
 
 ### LWJGL 2 cannot create the OpenAL context (…), check that an audio output … {#lwjgl-2-cannot-create-openal}
 
@@ -1830,7 +2340,9 @@ Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/lwjgl2/lwjgl2windowbri
 
 Emitted by [`Lwjgl2AlBinding.createContext`](/reference/lwjgl2/lwjgl2albinding/#Lwjgl2AlBinding-method-createContext).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled</code> to <code>documentation/reference/errors.md</code>.</div>
+The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
+
+Connect or enable an audio output, or register the backend with `audio(false)`.
 
 ### The LWJGL 2 native … is missing from the backend {#lwjgl-2-native-missing}
 
@@ -1838,7 +2350,9 @@ Emitted by [`Lwjgl2AlBinding.createContext`](/reference/lwjgl2/lwjgl2albinding/#
 
 Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The LWJGL 2 native … is missing from the backend</code> to <code>documentation/reference/errors.md</code>.</div>
+[`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) did not find a native library in the backend jar, which is damaged or was stripped.
+
+Ship the backend jar whole, or provide the natives with `org.lwjgl.librarypath`.
 
 ### Unable to extract the LWJGL 2 natives into …, check that the cache … {#unable-extract-lwjgl-2}
 
@@ -1846,7 +2360,9 @@ Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Nati
 
 Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException Unable to extract the LWJGL 2 natives into …, check that the cache folder can be written</code> to <code>documentation/reference/errors.md</code>.</div>
+[`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) could not write the natives into the cache folder.
+
+Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be written.
 
 ### LWJGL 2 cannot create the …x… OpenGL context of the snapshots (…), check … {#lwjgl-2-cannot-create-x}
 
@@ -1854,7 +2370,9 @@ Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Nati
 
 Emitted by [`Lwjgl2SnapshotBackend.create`](/reference/lwjgl2/lwjgl2snapshotbackend/#Lwjgl2SnapshotBackend-method-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException LWJGL 2 cannot create the …x… OpenGL context of the snapshots (…), check that the graphics driver supports OpenGL</code> to <code>documentation/reference/errors.md</code>.</div>
+The LWJGL 2 snapshot backend could not create its offscreen OpenGL context.
+
+Update the graphics driver, or run the tests with a display.
 
 ## LWJGL 3 backend
 
@@ -1864,7 +2382,9 @@ Emitted by [`Lwjgl2SnapshotBackend.create`](/reference/lwjgl2/lwjgl2snapshotback
 
 Emitted by [`SnapshotProfile.check`](/reference/lwjgl3/snapshotprofile/#SnapshotProfile-method-check).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The snapshot profile … needs OpenGL ….… …, this context offers … …: force its version with MESA_GL_VERSION_OVERRIDE and MESA_GLSL_VERSION_OVERRIDE</code> to <code>documentation/reference/errors.md</code>.</div>
+The LWJGL 3 snapshot backend runs with a [`SnapshotProfile`](/reference/lwjgl3/snapshotprofile/) whose version or profile the driver did not give.
+
+On Mesa, force the version with the two variables of the message: [OpenGL profiles](/build/backends/lwjgl3/#opengl-profiles).
 
 ## Vulkan backend
 
@@ -1874,7 +2394,9 @@ Emitted by [`SnapshotProfile.check`](/reference/lwjgl3/snapshotprofile/#Snapshot
 
 Emitted by [`VulkanShaderCompiler.compile`](/reference/vulkan/vulkanshadercompiler/#VulkanShaderCompiler-method-compile).
 
-<div class="joid-missing">Missing cause and fix: add <code>## warning [JOID] The Vulkan … shader cannot be compiled, fix its source at the line shaderc reports: …</code> to <code>documentation/reference/errors.md</code>.</div>
+shaderc refused a translated stage of a shader; its error follows, and the shader never draws.
+
+Fix the source from the error: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ### A Vulkan window host needs at least one frame in flight, got … {#vulkan-window-host-needs}
 
@@ -1882,7 +2404,9 @@ Emitted by [`VulkanShaderCompiler.compile`](/reference/vulkan/vulkanshadercompil
 
 Emitted by [`WindowVulkanHost.create`](/reference/vulkan/windowvulkanhost/#WindowVulkanHost-factory-create).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException A Vulkan window host needs at least one frame in flight, got …: pass 1 to wait for each frame, 2 or more to record the next frame while the GPU draws the previous ones</code> to <code>documentation/reference/errors.md</code>.</div>
+[`WindowVulkanHost.create`](/reference/vulkan/windowvulkanhost/#WindowVulkanHost-factory-create) received a number of frames in flight below `1`.
+
+Pass `1` or more.
 
 ### The Vulkan window frame has already begun {#vulkan-window-frame-has-already}
 
@@ -1890,7 +2414,9 @@ Emitted by [`WindowVulkanHost.create`](/reference/vulkan/windowvulkanhost/#Windo
 
 Emitted by [`WindowVulkanHost.beginFrame`](/reference/vulkan/windowvulkanhost/#WindowVulkanHost-method-beginFrame).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Vulkan window frame has already begun, call endFrame() first</code> to <code>documentation/reference/errors.md</code>.</div>
+`beginFrame()` of the [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/) was called twice without `endFrame()`.
+
+Pair each `beginFrame()` with one `endFrame()`: [Start the other backends](/use/learn/running/backends/#start-the-other-backends).
 
 ### The Vulkan window frame has not begun {#vulkan-window-frame-has-not}
 
@@ -1898,7 +2424,9 @@ Emitted by [`WindowVulkanHost.beginFrame`](/reference/vulkan/windowvulkanhost/#W
 
 Emitted by [`WindowVulkanHost.endFrame`](/reference/vulkan/windowvulkanhost/#WindowVulkanHost-method-endFrame).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Vulkan window frame has not begun, call beginFrame() first</code> to <code>documentation/reference/errors.md</code>.</div>
+`endFrame()` of the [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/) was called without `beginFrame()`.
+
+Begin the frame of the host before the JOID frame.
 
 ### Vulkan is not supported on this system, update the graphics driver or … {#vulkan-not-supported-system}
 
@@ -1906,7 +2434,9 @@ Emitted by [`WindowVulkanHost.endFrame`](/reference/vulkan/windowvulkanhost/#Win
 
 Emitted by [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException Vulkan is not supported on this system, update the graphics driver or use an OpenGL backend</code> to <code>documentation/reference/errors.md</code>.</div>
+GLFW found no Vulkan loader or driver on the machine.
+
+Update the graphics driver, or use an OpenGL backend: [Pick the backend that fits your application](/use/learn/running/backends/#pick-the-backend-that-fits-your-application).
 
 ### No Vulkan 1.3 device able to present to the window was found, update the … {#no-vulkan-1-3-device-able-present}
 
@@ -1914,7 +2444,9 @@ Emitted by [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/).
 
 Emitted by [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No Vulkan 1.3 device able to present to the window was found, update the graphics driver or use an OpenGL backend</code> to <code>documentation/reference/errors.md</code>.</div>
+No device of the machine supports Vulkan 1.3 and the surface of the window.
+
+Update the graphics driver, or use an OpenGL backend: [Check the prerequisites](/use/learn/running/backends/#check-the-prerequisites).
 
 ### No Vulkan render bridge is registered, register the Vulkan backend … {#no-vulkan-render-bridge}
 
@@ -1922,7 +2454,9 @@ Emitted by [`WindowVulkanHost`](/reference/vulkan/windowvulkanhost/).
 
 Emitted by [`VulkanBorrowedTexture`](/reference/vulkan/vulkanborrowedtexture/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.of(...)</code> to <code>documentation/reference/errors.md</code>.</div>
+[`VulkanBorrowedTexture.of`](/reference/vulkan/vulkanborrowedtexture/#VulkanBorrowedTexture-factory-of) was called before the Vulkan backend was registered.
+
+Register the backend first: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
 
 ### … failed with the Vulkan error …, update the graphics driver or run with … {#failed-vulkan-error-update}
 
@@ -1930,7 +2464,9 @@ Emitted by [`VulkanBorrowedTexture`](/reference/vulkan/vulkanborrowedtexture/).
 
 Emitted by [`VulkanContext.check`](/reference/vulkan/vulkancontext/#VulkanContext-method-check).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException … failed with the Vulkan error …, update the graphics driver or run with the Vulkan validation layers to find the call at fault</code> to <code>documentation/reference/errors.md</code>.</div>
+A Vulkan call returned an error code; the message names the call.
+
+Update the graphics driver; with a host of your own, run with the validation layers to find the misuse: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ### No Vulkan memory type of the device matches the properties … for the … {#no-vulkan-memory-type}
 
@@ -1938,13 +2474,17 @@ Emitted by [`VulkanContext.check`](/reference/vulkan/vulkancontext/#VulkanContex
 
 Emitted by [`VulkanContext.createImage`](/reference/vulkan/vulkancontext/#VulkanContext-method-createImage), [`VulkanContext.createBuffer`](/reference/vulkan/vulkancontext/#VulkanContext-method-createBuffer).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No Vulkan memory type of the device matches the properties … for the types …, update the graphics driver or use another device</code> to <code>documentation/reference/errors.md</code>.</div>
+The device offers no memory type that JOID needs for an image or a buffer.
+
+Update the graphics driver, or use another device.
 
 ### The Vulkan device supports none of the depth formats … {#vulkan-device-supports-none}
 
 **`IllegalStateException`** · `The Vulkan device supports none of the depth formats …, use a device that supports one of them`
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Vulkan device supports none of the depth formats …, use a device that supports one of them</code> to <code>documentation/reference/errors.md</code>.</div>
+The device supports none of the depth formats that the renderer can use.
+
+Use another device, or update its driver.
 
 ### The Vulkan host … has … frames in flight, getFramesInFlight() must … {#vulkan-host-has-frames}
 
@@ -1952,7 +2492,9 @@ Emitted by [`VulkanContext.createImage`](/reference/vulkan/vulkancontext/#Vulkan
 
 Emitted by [`VulkanRenderBridge`](/reference/vulkan/vulkanrenderbridge/#VulkanRenderBridge-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The Vulkan host … has … frames in flight, getFramesInFlight() must return 1 or more</code> to <code>documentation/reference/errors.md</code>.</div>
+A Vulkan host of your own returns `0` or less from `getFramesInFlight()`.
+
+Return `1` or more: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ### The Vulkan host … gives a device without Vulkan 1.3, create the instance … {#vulkan-host-gives-device}
 
@@ -1960,7 +2502,9 @@ Emitted by [`VulkanRenderBridge`](/reference/vulkan/vulkanrenderbridge/#VulkanRe
 
 Emitted by [`VulkanRenderBridge`](/reference/vulkan/vulkanrenderbridge/#VulkanRenderBridge-constructor).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The Vulkan host … gives a device without Vulkan 1.3, create the instance and the device with VK_API_VERSION_1_3</code> to <code>documentation/reference/errors.md</code>.</div>
+A Vulkan host of your own gives a device created for an older version of Vulkan.
+
+Create the instance and the device with `VK_API_VERSION_1_3`: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ### No Vulkan 1.3 device able to draw was found, update the graphics driver … {#no-vulkan-1-3-device-able-draw}
 
@@ -1968,7 +2512,9 @@ Emitted by [`VulkanRenderBridge`](/reference/vulkan/vulkanrenderbridge/#VulkanRe
 
 Emitted by [`SnapshotVulkanHost`](/reference/vulkan/snapshotvulkanhost/).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException No Vulkan 1.3 device able to draw was found, update the graphics driver or use an OpenGL backend</code> to <code>documentation/reference/errors.md</code>.</div>
+The Vulkan snapshot host found no device with Vulkan 1.3 and a graphics queue.
+
+Update the graphics driver, or run the Vulkan tests on another machine.
 
 ### VulkanBackend has no render bridge to destroy {#vulkanbackend-has-no-render}
 
@@ -1976,7 +2522,9 @@ Emitted by [`SnapshotVulkanHost`](/reference/vulkan/snapshotvulkanhost/).
 
 Emitted by [`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException VulkanBackend has no render bridge to destroy: call register() first and destroy() only once</code> to <code>documentation/reference/errors.md</code>.</div>
+[`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy) was called before `register()`, or twice.
+
+Destroy the backend once, after the loop.
 
 ## Tools
 
@@ -1986,7 +2534,9 @@ Emitted by [`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBack
 
 Emitted by [`Packer.fit`](/reference/tools/packer/#Packer-method-fit).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The glyphs do not fit in …x… even at …px, raise --width and --height or shrink the charset</code> to <code>documentation/reference/errors.md</code>.</div>
+The MSDF generator found no glyph size at which the charset fits in the atlas.
+
+Raise `--width` and `--height`, or pass a smaller `--charset`: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ### Usage: msdf --font \<file.ttf\|file.otf\> \[--output \<directory\>\] \[--charset … {#usage-msdf-font-file}
 
@@ -1994,7 +2544,9 @@ Emitted by [`Packer.fit`](/reference/tools/packer/#Packer-method-fit).
 
 Emitted by [`MsdfGenerator.main`](/reference/tools/msdfgenerator/#MsdfGenerator-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException Usage: msdf --font &lt;file.ttf|file.otf&gt; [--output &lt;directory&gt;] [--charset &lt;file|ranges&gt;] [--range &lt;pixels&gt;] [--width &lt;pixels&gt;] [--height &lt;pixels&gt;] [--size &lt;pixels&gt;]</code> to <code>documentation/reference/errors.md</code>.</div>
+The MSDF generator was run without `--font`, or with an unknown option.
+
+Pass the options of the message: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ### The charset … is neither a file nor codepoints like \[32, 126\], 8364 {#charset-neither-file-nor}
 
@@ -2002,7 +2554,9 @@ Emitted by [`MsdfGenerator.main`](/reference/tools/msdfgenerator/#MsdfGenerator-
 
 Emitted by [`MsdfGenerator.codepoints`](/reference/tools/msdfgenerator/#MsdfGenerator-method-codepoints).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The charset … is neither a file nor codepoints like [32, 126], 8364: check the path or separate the values with commas</code> to <code>documentation/reference/errors.md</code>.</div>
+`--charset` received neither the path of a file nor a list of ranges and code points.
+
+Check the path, or write the ranges in brackets and separate the values with commas.
 
 ### The glyphs do not fit in …x… at …px, raise --width and --height or lower … {#glyphs-do-not-fit-x-px}
 
@@ -2010,7 +2564,9 @@ Emitted by [`MsdfGenerator.codepoints`](/reference/tools/msdfgenerator/#MsdfGene
 
 Emitted by [`MsdfGenerator.generate`](/reference/tools/msdfgenerator/#MsdfGenerator-method-generate).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalStateException The glyphs do not fit in …x… at …px, raise --width and --height or lower --size</code> to <code>documentation/reference/errors.md</code>.</div>
+The glyphs of the charset do not fit in the atlas at the size given with `--size`.
+
+Raise `--width` and `--height`, or lower `--size`.
 
 ### The option … has no value, give it one after a space {#option-has-no-value}
 
@@ -2018,5 +2574,7 @@ Emitted by [`MsdfGenerator.generate`](/reference/tools/msdfgenerator/#MsdfGenera
 
 Emitted by [`MsdfGenerator.main`](/reference/tools/msdfgenerator/#MsdfGenerator-method-main).
 
-<div class="joid-missing">Missing cause and fix: add <code>## IllegalArgumentException The option … has no value, give it one after a space: … &lt;value&gt;</code> to <code>documentation/reference/errors.md</code>.</div>
+The last option on the command line of the MSDF generator has no value.
+
+Give the option its value after a space.
 

@@ -14,29 +14,29 @@ Every warning and exception message is on [Warnings and errors](/reference/error
 
 | Family | What it holds | Types |
 |---|---|---|
-| [UI](/reference/ui/) |  | 20 |
-| [Annotations](/reference/annotations/) |  | 16 |
-| [Nodes](/reference/nodes/) |  | 32 |
-| [Controls](/reference/controls/) |  | 23 |
-| [Layout](/reference/layout/) |  | 8 |
-| [Events](/reference/events/) |  | 46 |
-| [Effects](/reference/effects/) |  | 9 |
-| [Signals](/reference/signals/) |  | 30 |
-| [Animation](/reference/animation/) |  | 23 |
-| [Text](/reference/text/) |  | 41 |
-| [Resources](/reference/resources/) |  | 46 |
-| [Drawing](/reference/drawing/) |  | 23 |
-| [Shaders](/reference/shaders/) |  | 16 |
-| [Input and keys](/reference/input/) |  | 7 |
-| [Utilities](/reference/utilities/) |  | 13 |
-| [Backends](/reference/backends/) |  | 7 |
-| [Bridges](/reference/bridges/) |  | 32 |
-| [Pipeline](/reference/pipeline/) |  | 35 |
-| [Testing](/reference/testing/) |  | 26 |
-| [base-glfw](/reference/base-glfw/) |  | 5 |
-| [base-openal](/reference/base-openal/) |  | 4 |
-| [base-opengl](/reference/base-opengl/) |  | 24 |
-| [LWJGL 2 backend](/reference/lwjgl2/) |  | 14 |
-| [LWJGL 3 backend](/reference/lwjgl3/) |  | 8 |
-| [Vulkan backend](/reference/vulkan/) |  | 19 |
-| [Tools](/reference/tools/) |  | 13 |
+| [UI](/reference/ui/) | The classes that describe a UI, open and close it, keep its state and its files, run its tasks and shortcuts, and animate it when it opens and closes. | 20 |
+| [Annotations](/reference/annotations/) | The annotations that configure a UI, an overlay, a popup and its scale, and the objects that hold those options while the UI runs. | 16 |
+| [Nodes](/reference/nodes/) | The base class `Node` and the nodes that draw shapes, text, images, media, progress bars, charts and 3D models, with their tooltips and their drag settings. | 32 |
+| [Controls](/reference/controls/) | The nodes that hold a value the user changes (checkboxes, toggles, switches, selectors, sliders, text fields) and the scrollbars, each one a behavior class with a skin class of named parts. | 23 |
+| [Layout](/reference/layout/) | The nodes that place their children (containers, flex rows and columns, grids, reorderable lists) and the settings of position, overflow and alignment. | 8 |
+| [Events](/reference/events/) | The events that listeners receive, with the bus, the types and the priorities that order the listeners of a node or a UI. | 46 |
+| [Effects](/reference/effects/) | The effects that change how a node is drawn without touching its layout: rounded corners, circle, border, shadow, blur, mask and transform, and the base class of your own effects. | 9 |
+| [Signals](/reference/signals/) | The signals that hold a value the interface follows, the typed signals and collections, the derived signals computed from them, and the bindings that tie them to nodes and controls. | 30 |
+| [Animation](/reference/animation/) | The animator, the tween engine (tweens, timelines, manager) and the easing curves and paths that move a value over time. | 23 |
+| [Text](/reference/text/) | The text runs and their styles, the fonts (MSDF, bitmap and glyph fonts of your own) with their loader and sources, and the markups, effects, modifiers and converters that change what a text shows. | 41 |
+| [Resources](/reference/resources/) | Images, animated images, vector images and videos, the assets they are read from, the formats and decoders that read them, their memory cache, the file cache of JOID and the video natives. | 46 |
+| [Drawing](/reference/drawing/) | Colors and gradients, the immediate drawing helpers, transformations, framebuffers, the tessellator and Wavefront OBJ models that a custom node draws with. | 23 |
+| [Shaders](/reference/shaders/) | The shader programs of JOID and of your own, the shader passes and the pipeline that chains them over an offscreen framebuffer. | 16 |
+| [Input and keys](/reference/input/) | The keys, the mouse buttons and the cursors, with the classes that follow the keyboard layout and turn the key bindings of an application into keys. | 7 |
+| [Utilities](/reference/utilities/) | The small helpers that the other families share: points and boxes, Bézier curves, sorted and registry lists, lockable values, threads, platform folders, JSON files and pixel buffers. | 13 |
+| [Backends](/reference/backends/) | The base class of the backends, the window bridge contract and the UI bridges that hold, route and draw the UIs of a window. | 7 |
+| [Bridges](/reference/bridges/) | The registries of bridges and the bridge contracts of the render, audio, clock, thread and signal replay services, with the textures, framebuffers, shaders and resource resolvers of the render bridge. | 32 |
+| [Pipeline](/reference/pipeline/) | What a draw call carries to the render bridge: the matrices and the pixel grid, the render state with its blending and stencil, the vertices, and the JOID GLSL sources with their translation and uniforms. | 35 |
+| [Testing](/reference/testing/) | The testkit: the snapshot runner that renders UIs on a hidden surface, the snapshot suite and the contract suites that check a backend, and the tools that compare renders. | 26 |
+| [base-glfw](/reference/base-glfw/) | The window bridge, the input forwarder and the key table of GLFW, the OpenAL binding of LWJGL 3 and the hidden window of the snapshot backends. | 5 |
+| [base-openal](/reference/base-openal/) | The audio bridge of OpenAL, its streaming sources and the binding that a backend gives it. | 4 |
+| [base-opengl](/reference/base-opengl/) | The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back. | 24 |
+| [LWJGL 2 backend](/reference/lwjgl2/) | The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend. | 14 |
+| [LWJGL 3 backend](/reference/lwjgl3/) | The backend for LWJGL 3: its context requests, its OpenGL bindings and its snapshot backend with the OpenGL profiles of the tests. | 8 |
+| [Vulkan backend](/reference/vulkan/) | The backend for Vulkan: the hosts that lend their device and their frame, the render bridge that records into it, and its textures, framebuffers, shaders and caches. | 19 |
+| [Tools](/reference/tools/) | The MSDF generator, which builds the atlas of a font file ahead of time or at its first load. | 13 |
