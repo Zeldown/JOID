@@ -53,6 +53,10 @@ public abstract class BuildDiagramUI extends UI {
 		});
 	}
 
+	protected final void line(final Node node, final double fromX, final double fromY, final double toX, final double toY) {
+		node.layer((current, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(BuildDiagramUI.INK, 3F, Point.of(fromX, fromY), Point.of(toX, toY)));
+	}
+
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color) {
 		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 22F).weight(FontWeight.BOLD).color(color);
 		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 16F).color(color);

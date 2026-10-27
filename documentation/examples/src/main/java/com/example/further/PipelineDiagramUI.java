@@ -30,7 +30,7 @@ public class PipelineDiagramUI extends UI {
 		.create(80, 80, 1240, 160)
 		.body(container -> {
 			for (int i = 0; i < boxes.length; i++) {
-				RectNode.create(i * 260, 40, 180, 80).color(Color.WHITE).label(Text.create(boxes[i], info)).attach(container);
+				RectNode.create(i * 260, 60, 180, 80).color(Color.WHITE).label(Text.create(boxes[i], info)).attach(container);
 			}
 
 			for (int i = 0; i < arrows.length; i++) {
@@ -41,9 +41,9 @@ public class PipelineDiagramUI extends UI {
 			for (int i = 0; i < arrows.length; i++) {
 				final double start = i * 260D + 184D;
 				final double end = i * 260D + 254D;
-				DrawUtils.SHAPE.drawLine(PipelineDiagramUI.ACCENT, 3F, Point.of(start, 80D), Point.of(end, 80D));
-				final Point tip = Point.of(end, 80D);
-				DrawUtils.SHAPE.drawPolygon(PipelineDiagramUI.ACCENT, tip, Point.of(end - 12D, 72D), Point.of(end - 12D, 88D));
+				DrawUtils.SHAPE.drawLine(PipelineDiagramUI.ACCENT, 3F, Point.of(start, 100D), Point.of(end, 100D));
+				final Point tip = Point.of(end, 100D);
+				DrawUtils.SHAPE.drawPolygon(PipelineDiagramUI.ACCENT, tip, Point.of(end - 12D, 92D), Point.of(end - 12D, 108D));
 			}
 		})
 		.attach(this);

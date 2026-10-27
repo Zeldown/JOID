@@ -1,4 +1,4 @@
-# crop depth-frame-lifecycle 370 190 1180 700
+# crop depth-frame-lifecycle 360 190 1200 700
 ui com.example.depth.FrameLifecycleUI
 wait 100
 shot depth-frame-lifecycle

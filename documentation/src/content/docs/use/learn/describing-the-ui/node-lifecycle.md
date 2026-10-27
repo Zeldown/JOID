@@ -20,7 +20,7 @@ Listeners run your code at each of these moments: to start a counter when the no
 
 <figure>
 
-![A flow from left to right: attach to a UI, then onInit once per attach, then onUpdate before drawing, onMount on the first drawn frame, onDraw and onRender while drawing, with a loop arrow from the drawing back to onUpdate labelled every frame while attached, and finally onDetach after remove.](/captures/describing-lifecycle-flow.webp)
+![A flow on two rows. The top row goes from left to right: attach to a UI, onInit once per attach, onUpdate before drawing, and onMount on the first drawn frame. An arrow goes down to onDraw and onRender while drawing, at the right of the bottom row; a loop arrow goes from there back up to onUpdate, labelled every frame while attached, and a last arrow goes left to onDetach after remove.](/captures/describing-lifecycle-flow.webp)
 
 <figcaption>
 `onInit` and `onDetach` frame the life of a node; the listeners in between run on every frame.

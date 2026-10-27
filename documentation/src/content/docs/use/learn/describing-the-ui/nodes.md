@@ -57,7 +57,7 @@ Here the first bar of the menu card of [UIs](/use/learn/describing-the-ui/uis/) 
 
 <figure>
 
-![On the left, a tree: MenuUI holds a RectNode named card at (760, 340), which holds a highlighted RectNode named bar at (50, 130) and a TextNode. On the right, a miniature canvas shows the card with its first bar highlighted. The labels read: card at (760, 340) on the canvas; bar at (50, 130) in the card; so bar at (810, 470) on the canvas.](/captures/describing-nodes-tree.webp)
+![On the left, a tree: MenuUI holds a RectNode named card at (760, 340), which holds a highlighted RectNode named bar at (50, 130) and a TextNode. On the right, a miniature canvas shows the card with its bar highlighted and the word Text under it. The labels read: card at (760, 340) on the canvas; bar at (50, 130) in the card; so bar at (810, 470) on the canvas.](/captures/describing-nodes-tree.webp)
 
 <figcaption>
 Positions add up along the tree: move the card and everything in it follows.
