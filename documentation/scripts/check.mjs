@@ -167,7 +167,8 @@ function generated(entry) {
 }
 
 function phrases() {
-	return scan([...pages(), ...descriptions()], PHRASES, (entry) => generated(entry));
+	const entries = [...pages(), ...descriptions()].map((entry) => (/errors\.md$/.test(entry.file) ? { ...entry, source: entry.source.replace(/^## .*$/gm, '') } : entry));
+	return scan(entries, PHRASES, (entry) => generated(entry));
 }
 
 function mentions() {
