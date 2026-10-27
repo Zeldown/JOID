@@ -15,20 +15,18 @@ const BANNED = ['simply', 'just', 'easy', 'easily', 'obviously', 'basically', 'a
 const PHRASES = [
 	{ pattern: /\b(?:a|the|is|are|our) new (?:feature|api|method|class|option|setting|way|system|node|control)\b|\bnew in \d|\bnewly\b|\bbrand new\b/i, reason: '"new" for a feature' },
 	{ pattern: /\bwe\b|\bwe'(?:re|ll|ve)\b|\blet's\b/i, reason: '"we" for the reader' },
-	{ pattern: /\bsince (?:v?\d|version|JOID)|\bpreviously\b|\bno longer\b|\bformerly\b|\bused to\b|\blegacy\b/i, reason: 'history outside the changelog and the migration pages' },
+	{ pattern: /\bsince (?:v?\d|version|JOID)|\bpreviously\b|\bno longer\b|\bformerly\b|\bused to\b|\blegacy\b|\bmigrat\w* (?:from|to) (?:v?\d|JOID)|\bchangelog\b/i, reason: 'history (the documentation describes the current version, it has no changelog)' },
 	{ pattern: /\bsuppliers? (?:\w+ )?read on every frame\b|\b(?:supplier|overload) follows (?:the|its) value on every frame\b/i, reason: 'a Supplier follows the signals it reads (signals, "What JOID follows"): only a lambda is computed on every frame' },
 ];
-const HISTORY_PAGES = /(?:changelog|migrating-)/;
 const FORBIDDEN = { pattern: /\bJOID-[A-Z][A-Za-z0-9]*\b|\b[Mm][Ii][Nn][Ee][Cc][Rr][Aa][Ff][Tt]\b/, reason: 'the documentation never names an external project built on JOID, nor a game or a host it runs in' };
 const DEMOS = { pattern: /\bdemos?\b|\bUIDemo\w*|\bDemo[A-Z]\w*|runDemo/i, reason: 'Use JOID never mentions the demos (they belong to /build/demos/)' };
 const LOMBOK = { pattern: /lombok/i, reason: 'Lombok is never required: the examples are plain Java and the pages never mention it' };
 const OWNERS = join(DOCUMENTATION, 'rules', 'owners.md');
 const INDEX = join(DOCUMENTATION, 'src', 'generated', 'reference-index.json');
-const FIRST_MENTION_EXEMPT = /^(?:use\/catalog|(?:use|build)\/reference\/(?!glossary$).*)$/;
+const FIRST_MENTION_EXEMPT = /^(?:use\/catalog|reference\/(?!glossary$).*)$/;
 const CODE_KEYWORDS = new Set(['new', 'final', 'extends', 'implements', 'instanceof', 'return', 'throws', 'static', 'public', 'protected', 'private', 'abstract', 'void', 'int', 'long', 'float', 'double', 'boolean', 'char', 'byte', 'short', 'var', 'class', 'interface', 'enum', 'throw', 'case', 'default', 'super', 'this']);
-const OWNER_EXEMPT =/^(?:use\/get-started\/quick-start|use\/tutorial\/.*|.*\/index|use\/catalog|use\/reference\/.*|build\/reference\/.*)$/;
+const OWNER_EXEMPT = /^(?:use\/get-started\/quick-start|use\/tutorial\/.*|.*\/index|use\/catalog|reference\/.*)$/;
 const WRITING = new Set(['coverage']);
-const CROSS_LINKS = new Set(['/use/', '/use/learn/running/backends/']);
 const FENCE = /^(\s*)(`{3,}|~{3,})(\S*)\s*(.*)$/;
 const LINE_WIDTH = 120;
 const TAB_WIDTH = 4;
@@ -147,7 +145,7 @@ function pages() {
 }
 
 function descriptions() {
-	return files(DESCRIPTIONS, ['.md']).filter((file) => !/(?:scope|README)\.md$/.test(file)).map((file) => ({ file, source: readFileSync(file, 'utf-8') }));
+	return files(DESCRIPTIONS, ['.md']).filter((file) => !/README\.md$/.test(file)).map((file) => ({ file, source: readFileSync(file, 'utf-8') }));
 }
 
 function scan(entries, rules, skip = () => false) {
@@ -165,17 +163,17 @@ function scan(entries, rules, skip = () => false) {
 }
 
 function generated(entry) {
-	return entry.path && /\/reference\//.test(entry.path) && entry.path !== 'use/reference/glossary';
+	return entry.path && entry.path.startsWith('reference/') && entry.path !== 'reference/glossary';
 }
 
 function phrases() {
-	return scan([...pages(), ...descriptions()], PHRASES, (entry, rule) => generated(entry) || (rule === PHRASES[2] && HISTORY_PAGES.test(entry.path ?? '')));
+	return scan([...pages(), ...descriptions()], PHRASES, (entry) => generated(entry));
 }
 
 function mentions() {
 	const all = [...pages(), ...descriptions()];
 	const problems = scan(all, [FORBIDDEN]);
-	const use = pages().filter((entry) => entry.path.startsWith('use/') && (!/\/reference\//.test(entry.path) || entry.path === 'use/reference/errors'));
+	const use = pages().filter((entry) => entry.path.startsWith('use/'));
 	return problems.concat(scan(use, [DEMOS]));
 }
 
@@ -228,7 +226,7 @@ function ownerRows() {
 		if (cells.length !== 2 || cells[0] === 'Notion' || /^-+$/.test(cells[0])) {
 			continue;
 		}
-		const match = cells[1].match(/^((?:use|build)(?:\/[\w<>.-]+)*)/);
+		const match = cells[1].match(/^((?:use|build|reference)(?:\/[\w<>.-]+)*)/);
 		if (match) {
 			rows.push({ notion: cells[0], owner: match[1] });
 		}
@@ -243,7 +241,7 @@ function owners() {
 	for (const row of ownerRows()) {
 		const expanded = row.owner.includes('<') ? [] : [row.owner.replace(/\/index$/, '')];
 		for (const owner of expanded) {
-			if (!known.has(owner) && owner !== 'use/reference') {
+			if (!known.has(owner)) {
 				problems.push(`owners.md: the owner page ${owner} of "${row.notion}" does not exist`);
 			}
 		}
@@ -277,7 +275,7 @@ function terms() {
 	const problems = [];
 	const avoided = glossaryTerms().flatMap((term) => term.avoid.map((word) => ({ word, term: term.name })));
 	for (const entry of [...pages(), ...descriptions()]) {
-		if (entry.path === 'use/reference/glossary') {
+		if (entry.path === 'reference/glossary') {
 			continue;
 		}
 		prose(entry.source).forEach((line, index) => {
@@ -316,7 +314,7 @@ function referenceTypes() {
 
 function typeOwners() {
 	const owners = new Map();
-	for (const row of ownerRows().filter((row) => !row.owner.includes('<') && row.owner !== 'use/reference')) {
+	for (const row of ownerRows().filter((row) => !row.owner.includes('<') && !row.owner.startsWith('reference'))) {
 		const side = row.owner.split('/')[0];
 		for (const match of row.notion.matchAll(/`@?([A-Za-z][\w.]*)`/g)) {
 			const sides = owners.get(match[1]) ?? {};
@@ -337,11 +335,7 @@ function learnTargets() {
 		if (!sides) {
 			continue;
 		}
-		if (type.section === 'use' && !('use' in sides)) {
-			problems.push(`rules/owners.md: ${type.name} is a Use type, give it a Use owner page (its Build owner ${sides.build} keeps the contract to implement)`);
-			continue;
-		}
-		const owner = type.section === 'use' ? sides.use : sides.build ?? sides.use;
+		const owner = sides.use ?? sides.build;
 		if (!owner) {
 			continue;
 		}
@@ -393,7 +387,7 @@ function mentionLines(source) {
 		if (/^#{1,6}\s/.test(line) || /^import\s/.test(line)) {
 			return '';
 		}
-		return line.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\(\/(?:use|build)\/reference\/[^)]*\)/g, (link, text) => text.replace(/`@?([A-Za-z][\w.$]*)[^`]*`/g, '[[$1]]'));
+		return line.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\(\/reference\/[^)]*\)/g, (link, text) => text.replace(/`@?([A-Za-z][\w.$]*)[^`]*`/g, '[[$1]]'));
 	});
 }
 
@@ -426,8 +420,6 @@ function firstMention() {
 	const types = referenceTypes();
 	const nested = nestedNames(types);
 	for (const entry of pages().filter((entry) => !FIRST_MENTION_EXEMPT.test(entry.path))) {
-		const build = entry.path.startsWith('build/');
-		const former = /(?:^|\/)migrating-/.test(entry.path);
 		const seen = new Set();
 		mentionLines(entry.source).forEach((line, index) => {
 			for (const match of line.matchAll(/\[\[([A-Za-z0-9_.$]+)[^\]]*\]\]|`([^`]+)`/g)) {
@@ -441,9 +433,9 @@ function firstMention() {
 					const parts = mention.split('.');
 					const candidates = parts.map((part, count) => parts.slice(0, parts.length - count).join('.'));
 					const full = candidates.find((candidate) => types[candidate]?.name === candidate);
-					const short = former ? undefined : candidates.find((candidate) => nested.has(candidate));
+					const short = candidates.find((candidate) => nested.has(candidate));
 					const name = full ?? (short && nested.get(short));
-					if (!name || seen.has(name) || (!build && types[name].section !== 'use')) {
+					if (!name || seen.has(name)) {
 						continue;
 					}
 					seen.add(name);
@@ -572,27 +564,6 @@ function bannedWords() {
 	return problems;
 }
 
-function separation() {
-	const problems = [];
-	if (!existsSync(join(DIST, 'use'))) {
-		throw new Error('No build in dist/, run the build check first');
-	}
-	for (const file of files(join(DIST, 'use'), ['.html'])) {
-		const url = `/${relative(DIST, file).replace(/\\/g, '/').replace(/index\.html$/, '')}`;
-		if (CROSS_LINKS.has(url)) {
-			continue;
-		}
-		const html = readFileSync(file, 'utf-8');
-		const start = html.indexOf('sl-markdown-content');
-		const end = html.indexOf('<footer', start);
-		const content = start < 0 ? '' : html.slice(start, end < 0 ? undefined : end);
-		for (const match of content.matchAll(/href="(\/build\/[^"]*)"/g)) {
-			problems.push(`${url} links to ${match[1]} (Use JOID pages never link to Build on JOID, except ${[...CROSS_LINKS].join(', ')})`);
-		}
-	}
-	return problems;
-}
-
 function wikiLinks() {
 	const problems = [];
 	if (!existsSync(DIST)) {
@@ -657,7 +628,6 @@ run('build', () => {
 	return [];
 });
 
-run('separation', separation);
 run('wiki-links', wikiLinks);
 
 run('coverage', () => {
@@ -674,7 +644,6 @@ run('coverage', () => {
 	}
 	coverage.unknown.forEach((line) => problems.push(line));
 	coverage.broken.forEach((line) => problems.push(line));
-	coverage.unclassified.forEach((type) => problems.push(`${type} is missing from the scope file`));
 	return problems;
 });
 

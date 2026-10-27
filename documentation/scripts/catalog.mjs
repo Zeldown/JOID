@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withLock } from './gradle.mjs';
 
@@ -138,6 +138,8 @@ function page(catalog, index) {
 export function generateCatalog() {
 	const catalog = loadCatalog();
 	const index = loadIndex();
+	mkdirSync(SCENARIOS, { recursive: true });
+	mkdirSync(dirname(PAGE), { recursive: true });
 	for (const file of readdirSync(SCENARIOS).filter((name) => name.startsWith('catalog-'))) {
 		rmSync(join(SCENARIOS, file));
 	}
@@ -155,7 +157,7 @@ export function checkCatalog() {
 	const problems = [];
 	const listed = new Set(catalog.sections.flatMap((section) => section.cards.filter((card) => card.type).map((card) => card.type)));
 	for (const entry of Object.values(index.byFqcn)) {
-		const concerned = entry.url.startsWith('/use/') && catalog.roots.some((root) => entry.fqcn === root || entry.ancestors.includes(root));
+		const concerned = catalog.roots.some((root) => entry.fqcn === root || entry.ancestors.includes(root));
 		if (concerned && !listed.has(entry.fqcn) && !catalog.excluded[entry.fqcn]) {
 			problems.push(`${entry.fqcn} has no card in documentation/catalog/catalog.json (add a card, or an "excluded" entry with the reason)`);
 		}

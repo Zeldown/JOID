@@ -8,8 +8,7 @@
 		"preview": "astro preview",
 		"check": "node scripts/check.mjs",
 		"captures": "node scripts/captures.mjs",
-		"docgen": "node scripts/docgen.mjs",
-		"scope": "python scripts/scope/run.py"
+		"docgen": "node scripts/docgen.mjs"
 	},
 	"dependencies": {
 		"@astrojs/markdown-remark": "7.3.2",

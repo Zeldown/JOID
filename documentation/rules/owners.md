@@ -56,17 +56,15 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Closing the UIs before the program ends (`closeAll()`), so that stores and remembered fields reach the disk, with the only loop that shows it | use/learn/running/backends (section "Close the UIs before the program ends"); every other page gives one sentence at most and links to that anchor |
 | Running JOID inside your own loop/host (user side of embedding), drawing JOID over the scene of the host (a UI bridge that keeps the scene, registered before the backend) | use/learn/running/embedding (build/embedding-in-a-host keeps only `isMouseGrabbed()` of the window bridge of a host, shows no UI bridge and links here for its hooks; following the screens that JOID opens, `attachScreen`/`detachScreen`, is taught in use/learn/running/embedding, section "Follow the screens that JOID opens", and the Build page links to it) |
 | Testing your UIs with the testkit (snapshots of your screens) | use/learn/running/testing |
-| Every command of a snapshot scenario | use/reference (SnapshotRunner page, generated); the testing page shows the commands of its example and links to it |
+| Every command of a snapshot scenario | reference (SnapshotRunner page, generated); the testing page shows the commands of its example and links to it |
 | Dev mode, inspector, hot reload, warnings (and the warnings catalog link) | use/get-started/dev-tools |
 | Frame lifecycle: the steps of one frame | use/in-depth/frame-lifecycle (embedding and the Build pages give one sentence and a link; build/bridges/render keeps only `beginFrame`/`endFrame`) |
 | How signals track reads | use/in-depth/how-signals-work |
 | Pixel alignment | use/in-depth/pixel-alignment |
 | MSDF text rendering, the atlas that the first load of a font generates and its cache | use/in-depth/msdf-text (section "What happens when a font loads"; fonts, files, performance and the guides give one sentence and a link) |
-| Every warning and exception message that a user of JOID's backends can meet | use/reference/errors (generated) |
-| Every message that only a backend author triggers (bridge contracts, contract suites, bridge registries) | build/reference/errors (generated; the classification is `tool/docgen/src/main/resources/errors-audience.txt`) |
-| Every key constant | use/reference (Key page, generated) |
-| Terms | use/reference/glossary |
-| Breaking changes 8.0.0 | use/migrating-to-8 |
+| Every warning and exception message | reference/errors (generated) |
+| Every key constant | reference (Key page, generated) |
+| Terms | reference/glossary |
 | How JOID thinks: 4 concepts without code (UI, node tree, design canvas, signals), first Learn page | use/learn/how-joid-thinks |
 | Position, size, anchors, aspect ratio, node `zindex`/`zlevel`, `visible`, `enabled`, `copy` | use/learn/describing-the-ui/position-and-size |
 | Node lifecycle and its callbacks (`onInit`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onDetach`) | use/learn/describing-the-ui/node-lifecycle |
@@ -92,7 +90,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Troubleshooting by symptom ("My node does not appear", "Text is blurry"…) | use/troubleshooting |
 | Best practices (DO / DON'T / PREFER / AVOID) | use/best-practices |
 | Performance and GPU resource lifetime | use/in-depth/performance |
-| The cause and the fix of every message | documentation/reference/errors.md, one `## <key>` entry per message, shown on use/reference/errors or build/reference/errors |
+| The cause and the fix of every message | documentation/reference/errors.md, one `## <key>` entry per message, shown on reference/errors |
 | Visual galleries: effects, transitions, easing curves, text effects and markup, cursors | use/catalog (one section each, generated cards) |
 
 ## Build on JOID
@@ -110,9 +108,8 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Framebuffers, depth and stencil (backend side) | build/framebuffers-and-depth |
 | Cross-backend tests, reference snapshots, contract suites | build/testing-a-backend |
 | The demo jar, demo launchers, running every demo on a backend, demo index (Use JOID never mentions demos) | build/demos |
-| Migrating a backend to 8.0.0 (RenderBridge hooks, `compileProgram`, `Backend<T>`, `registerDefault`, removed `getIndex`, demo jar) | build/migrating-a-backend-to-8 |
 | Texture and resource resolvers of a backend | build/resource-resolvers |
 | Each final backend (lwjgl2, lwjgl3, vulkan): what it is made of, what differs | build/backends/<backend> |
 | Embedding JOID in a GL host (contexts, state journal, sharing the window) | build/embedding-in-a-host |
 | Input forwarding contract (press/release, consumption, `keyReleased`) | build/input |
-| Writing your own UI bridge: the contract to implement, in the tables Required, Provided and Guarantees (`StackUIBridge`, `drawBackground`, `canHandle`, the hooks) | build/bridges/ui (it links to running/embedding for priorities and routing and shows no registration example; build/bridges, build/input and migrating-a-backend-to-8 give one sentence and a link) |
+| Writing your own UI bridge: the contract to implement, in the tables Required, Provided and Guarantees (`StackUIBridge`, `drawBackground`, `canHandle`, the hooks) | build/bridges/ui (it links to running/embedding for priorities and routing and shows no registration example; build/bridges and build/input give one sentence and a link) |

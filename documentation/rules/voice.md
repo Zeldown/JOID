@@ -7,14 +7,14 @@
 - A page belongs to exactly one documentation and one genre (tutorial, learn, guide, reference, in depth, build).
 - The JOID documentation never mentions an external project built on JOID, nor a particular game or host that JOID runs in: such a project documents itself and links to JOID's documentation, never the other way.
 - Use JOID never mentions the demos or the demo jar: they belong to Build on JOID (`build/demos`).
-- Use JOID links to Build on JOID from two pages only: `use/index` (which presents both documentations) and `use/learn/running/backends` (which points the reader who writes a backend to Build on JOID). No other Use page, reference page or error entry links to `/build/`; the `separation` check of `check.mjs` enforces it. Build on JOID links to Use JOID freely.
+- Use JOID links to Build on JOID from two pages only: `use/index` (which presents both documentations) and `use/learn/running/backends` (which points the reader who writes a backend to Build on JOID). No other Use page links to `/build/`. Build on JOID links to Use JOID freely, and both link to the reference (`/reference/`), which covers every public type and belongs to neither.
 
 ## Language
 - English only. Second person ("you"), present tense, active voice.
 - One sentence per source line (semantic line breaks).
 - Short sentences. One idea per paragraph. Paragraphs of 1 to 4 sentences.
 - Banned words and phrases: simply, just, easy, easily, obviously, basically, actually, currently, new (for a feature), of course, it's worth noting, note that, please. No "we" for the reader. No future tense to describe behavior. No anthropomorphism ("the node wants").
-- No history ("since 8.0.0", "previously"): history lives in the changelog and the migration page only.
+- No history ("since 8.0.0", "previously", "migrating from"): the documentation describes the current version and has no changelog.
 - No edge cases that nobody hits. A limit that a real user can hit goes in a Pitfall or a "Limits" section, once.
 - Name things exactly as the code does (`RectNode`, `onClick`, `@UIDataOverlay`), in `code` font, linked to their reference page on first mention in a page: write `[[Type]]` there (the `first-mention` check refuses a type of the reference written in bare `code` before its first link; headings and code blocks do not count).
 - Numbers follow the API: percentages on 1 (`0.5F` = 50 %), units named (design pixels, ms), literals in the code style (`1D`, `0.5F`).
