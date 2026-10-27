@@ -55,7 +55,7 @@ public class NodeSetterTest {
 		Assert.assertSame(Color.RED, ui.getRect().getHoveredColor());
 		Assert.assertSame(Color.BLUE, ui.getRect().getBorderColor());
 		Assert.assertEquals(2D, ui.getRect().getBorderStroke(), 0D);
-		Assert.assertFalse(ui.getRect().isBorderFill());
+		Assert.assertFalse(ui.getRect().isBorderCorners());
 		Assert.assertEquals(3D, ui.getRect().getZlevel(), 0D);
 		Assert.assertSame(Color.GREEN, ui.getCircle().getColor());
 		Assert.assertSame(Align.END, ui.getCircle().getAnchorX());
@@ -75,7 +75,7 @@ public class NodeSetterTest {
 		Assert.assertSame(Align.CENTER, ui.getFlex().getAlign());
 		Assert.assertEquals(2F, ui.getBorder().getWidth(), 0F);
 		Assert.assertSame(Color.RED, ui.getBorder().getColor(ui.getFlex()));
-		Assert.assertFalse(ui.getBorder().isFill());
+		Assert.assertFalse(ui.getBorder().isCorners());
 		Assert.assertEquals(1D, ui.getShadow().getOffsetX(), 0D);
 		Assert.assertEquals(3F, ui.getShadow().getBlur(), 0F);
 		Assert.assertEquals(3F, ui.getBlur().getRadius(), 0F);

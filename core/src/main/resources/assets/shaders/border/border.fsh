@@ -6,7 +6,7 @@ uniform sampler2D tex;
 uniform float u_BorderWidth;
 uniform vec4 u_BorderColor;
 uniform vec2 u_TexelSize;
-uniform int u_Fill;
+uniform int u_Corners;
 uniform int u_Mode;
 uniform vec4 u_Rect;
 
@@ -47,7 +47,7 @@ vec4 computeBorderColor() {
 void main() {
 	vec4 original = texture(tex, vTexCoord);
 
-	if (u_Fill == 0) {
+	if (u_Corners == 0) {
 		bool outsideX = snappedPosition().x < u_Rect.x || snappedPosition().x > u_Rect.z;
 		bool outsideY = snappedPosition().y < u_Rect.y || snappedPosition().y > u_Rect.w;
 		if (outsideX && outsideY) {

@@ -8,6 +8,7 @@ import java.util.Map;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderBuiltin;
@@ -178,10 +179,15 @@ public abstract class Shader implements IShader {
 		this.builtin(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting());
 		this.builtin(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F);
 		this.builtin(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaCutoff());
-		this.builtin(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth());
 		this.builtin(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight());
 		this.builtin(GlslShaderTranslator.VERTEX_COLOR, buffer.isColor());
 		this.builtin(GlslShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+
+		final UniformMember lineWidth = this.block.getMember(GlslShaderTranslator.LINE_WIDTH);
+		if (lineWidth != null) {
+			final PixelGrid grid = PixelGrid.of(projection, modelView.getRawMatrix(), state.getViewportWidth(), state.getViewportHeight());
+			lineWidth.value((float) (state.getLineWidth() * (grid.getScaleX() + grid.getScaleY()) / 2D));
+		}
 		return this.block;
 	}
 

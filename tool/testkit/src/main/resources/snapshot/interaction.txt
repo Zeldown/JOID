@@ -601,7 +601,7 @@ wait 1200
 shot inter-animation
 ui dev.joid.demo.ui.shader.UIDemoEffect
 wait 800
-move 1535 900
+move 1535 780
 wait 800
 shot inter-effect
 ui dev.joid.demo.ui.UIDemoChoice

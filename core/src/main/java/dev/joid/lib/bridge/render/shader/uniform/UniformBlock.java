@@ -100,6 +100,10 @@ public final class UniformBlock {
 
 	public @NonNull UniformMember requireMember(final @NonNull String name) {
 		final UniformMember member = this.memberMap.get(name);
+		if (member == null && name.startsWith("joid_")) {
+			throw new IllegalArgumentException("The shader declares no builtin uniform " + name + ": JOID declares its joid_ uniforms only where they are used, translate the shader with stencil(...) for the stencil ones (uniforms: " + this.memberMap.keySet() + ")");
+		}
+
 		if (member == null) {
 			throw new IllegalArgumentException("The shader declares no uniform " + name + ", declare it in the shader source or fix its name (uniforms: " + this.memberMap.keySet() + ")");
 		}

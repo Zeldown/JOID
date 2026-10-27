@@ -42,7 +42,7 @@ public class RectNodeTest {
 		Assert.assertSame(Color.TRANSPARENT, rect.getColor());
 		Assert.assertSame(Color.TRANSPARENT, rect.getBorderColor());
 		Assert.assertEquals(0D, rect.getBorderStroke(), 0D);
-		Assert.assertTrue(rect.isBorderFill());
+		Assert.assertTrue(rect.isBorderCorners());
 		Assert.assertTrue(RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).isEmpty());
 		this.bridges.open(new NodeUI(rect)).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
@@ -190,17 +190,17 @@ public class RectNodeTest {
 	}
 
 	@Test
-	public void outlinesItselfWithAFilledBorder() {
+	public void outlinesItselfWithABorderAndItsCorners() {
 		final Color color = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).borderColor(color).borderStroke(3D);
 		Assert.assertSame(color, rect.getBorderColor());
 		Assert.assertEquals(3D, rect.getBorderStroke(), 0D);
-		Assert.assertTrue(rect.isBorderFill());
+		Assert.assertTrue(rect.isBorderCorners());
 		this.bridges.open(new NodeUI(rect)).frame();
 		final Map<String, Object> values = this.border.getValues();
 		Assert.assertEquals(3F, (Float) values.get("u_BorderWidth"), 1E-4F);
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) values.get("u_BorderColor"), 0F);
-		Assert.assertEquals(1, values.get("u_Fill"));
+		Assert.assertEquals(1, values.get("u_Corners"));
 		Assert.assertEquals(0, values.get("u_HasGradient"));
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		final Draw quad = draws.get(draws.size() - 1);
@@ -214,10 +214,10 @@ public class RectNodeTest {
 	@Test
 	public void writesItsBorderIntoTheBorderEffectItAlreadyHas() {
 		final BorderNodeEffect effect = BorderNodeEffect.create(Color.RED, 2F);
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).<RectNode>effect(effect).borderStroke(5D).borderFill(false);
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).<RectNode>effect(effect).borderStroke(5D).borderCorners(false);
 		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
 		Assert.assertEquals(5D, rect.getBorderStroke(), 0D);
-		Assert.assertFalse(rect.isBorderFill());
+		Assert.assertFalse(rect.isBorderCorners());
 		Assert.assertSame(Color.RED, effect.getColor(rect));
 		rect.borderColor(Color.GREEN);
 		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
@@ -225,18 +225,18 @@ public class RectNodeTest {
 	}
 
 	@Test
-	public void leavesTheStrokeEmptyWithoutFill() {
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D).borderFill(false);
-		Assert.assertFalse(rect.isBorderFill());
+	public void cutsTheCornersOfItsBorder() {
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D).borderCorners(false);
+		Assert.assertFalse(rect.isBorderCorners());
 		this.bridges.open(new NodeUI(rect)).frame();
-		Assert.assertEquals(0, this.border.getValues().get("u_Fill"));
+		Assert.assertEquals(0, this.border.getValues().get("u_Corners"));
 	}
 
 	@Test
 	public void readsASuppliedBorderColor() {
 		final Color[] color = {new Color(0.6F, 0.4F, 0.2F, 1F)};
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(() -> color[0]).borderStroke(2D);
-		Assert.assertTrue(rect.isBorderFill());
+		Assert.assertTrue(rect.isBorderCorners());
 		this.bridges.open(new NodeUI(rect)).frame();
 		color[0] = new Color(0.4F, 0.6F, 0.2F, 1F);
 		this.bridges.frame();
@@ -245,17 +245,17 @@ public class RectNodeTest {
 	}
 
 	@Test
-	public void readsASuppliedBorderColorWithoutFill() {
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(() -> new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(2D).borderFill(false);
+	public void readsASuppliedBorderColorWithoutCorners() {
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(() -> new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(2D).borderCorners(false);
 		this.bridges.open(new NodeUI(rect)).frame();
-		Assert.assertEquals(0, this.border.getValues().get("u_Fill"));
+		Assert.assertEquals(0, this.border.getValues().get("u_Corners"));
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
 	}
 
 	@Test
 	public void turnsTheBorderIntoItsHoveredColorUnderTheMouse() {
 		final Color hovered = new Color(0.4F, 0.6F, 0.2F, 1F);
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor(hovered).borderStroke(3D).borderFill(true);
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor(hovered).borderStroke(3D).borderCorners(true);
 		Assert.assertSame(hovered, rect.getHoveredBorderColor());
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
@@ -267,8 +267,8 @@ public class RectNodeTest {
 
 	@Test
 	public void readsBothSuppliedBorderColors() {
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(() -> new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor(() -> new Color(0.4F, 0.6F, 0.2F, 1F)).borderStroke(3D).borderFill(false);
-		Assert.assertFalse(rect.isBorderFill());
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(() -> new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor(() -> new Color(0.4F, 0.6F, 0.2F, 1F)).borderStroke(3D).borderCorners(false);
+		Assert.assertFalse(rect.isBorderCorners());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		Assert.assertArrayEquals(new float[] {0.4F, 0.6F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
 	}
@@ -294,7 +294,7 @@ public class RectNodeTest {
 
 	@Test
 	public void keepsItsBorderColorWhenTheHoveredOneIsMissing() {
-		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor((Color) null).borderStroke(3D).borderFill(true);
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredBorderColor((Color) null).borderStroke(3D).borderCorners(true);
 		Assert.assertNull(rect.getHoveredBorderColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
@@ -354,11 +354,11 @@ public class RectNodeTest {
 		Assert.assertSame(rect, rect.hoveredColor(color));
 		Assert.assertSame(rect, rect.hoveredColor(() -> color));
 		Assert.assertSame(rect, rect.borderColor(color).borderStroke(1D));
-		Assert.assertSame(rect, rect.borderColor(color).borderStroke(1D).borderFill(false));
+		Assert.assertSame(rect, rect.borderColor(color).borderStroke(1D).borderCorners(false));
 		Assert.assertSame(rect, rect.borderColor(() -> color).borderStroke(1D));
-		Assert.assertSame(rect, rect.borderColor(() -> color).borderStroke(1D).borderFill(false));
-		Assert.assertSame(rect, rect.borderColor(color).hoveredBorderColor(color).borderStroke(1D).borderFill(false));
-		Assert.assertSame(rect, rect.borderColor(() -> color).hoveredBorderColor(() -> color).borderStroke(1D).borderFill(false));
+		Assert.assertSame(rect, rect.borderColor(() -> color).borderStroke(1D).borderCorners(false));
+		Assert.assertSame(rect, rect.borderColor(color).hoveredBorderColor(color).borderStroke(1D).borderCorners(false));
+		Assert.assertSame(rect, rect.borderColor(() -> color).hoveredBorderColor(() -> color).borderStroke(1D).borderCorners(false));
 		Assert.assertSame(rect, rect.hoveredBorderColor(color));
 		Assert.assertSame(rect, rect.hoveredBorderColor(() -> color));
 	}

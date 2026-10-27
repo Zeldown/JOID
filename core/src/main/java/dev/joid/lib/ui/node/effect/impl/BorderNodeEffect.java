@@ -15,16 +15,16 @@ import lombok.NonNull;
 public class BorderNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float>       widthSupplier;
-	private Supplier<Boolean>     fillSupplier;
+	private Supplier<Boolean>     cornersSupplier;
 	private Supplier<BorderMode>  modeSupplier;
 	private Function<Node, Color> colorFunction;
 
 	protected BorderNodeEffect(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> widthSupplier) {
 		super(200);
-		this.fillSupplier  = () -> true;
-		this.modeSupplier  = () -> BorderMode.OUT;
-		this.colorFunction = node -> colorSupplier.get();
-		this.widthSupplier = widthSupplier;
+		this.modeSupplier    = () -> BorderMode.OUT;
+		this.colorFunction   = node -> colorSupplier.get();
+		this.widthSupplier   = widthSupplier;
+		this.cornersSupplier = () -> true;
 	}
 
 	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width) {
@@ -43,8 +43,8 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 		return this.colorFunction.apply(node);
 	}
 
-	public boolean isFill() {
-		return this.fillSupplier.get();
+	public boolean isCorners() {
+		return this.cornersSupplier.get();
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
-		return BorderShaderPass.create(this.colorFunction.apply(node), this.widthSupplier.get()).fill(this.fillSupplier.get()).mode(this.modeSupplier.get());
+		return BorderShaderPass.create(this.colorFunction.apply(node), this.widthSupplier.get()).corners(this.cornersSupplier.get()).mode(this.modeSupplier.get());
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Color color) {
@@ -89,12 +89,12 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 		return (E) this;
 	}
 
-	public final <E extends BorderNodeEffect> @NonNull E fill(final boolean fill) {
-		return this.fill(Signal.from(fill));
+	public final <E extends BorderNodeEffect> @NonNull E corners(final boolean corners) {
+		return this.corners(Signal.from(corners));
 	}
 
-	public final <E extends BorderNodeEffect> @NonNull E fill(final @NonNull Supplier<Boolean> fillSupplier) {
-		this.fillSupplier = fillSupplier;
+	public final <E extends BorderNodeEffect> @NonNull E corners(final @NonNull Supplier<Boolean> cornersSupplier) {
+		this.cornersSupplier = cornersSupplier;
 		return (E) this;
 	}
 

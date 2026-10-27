@@ -40,9 +40,9 @@ public class RectNode extends Node {
 		return border == null ? 0D : border.getWidth();
 	}
 
-	public final boolean isBorderFill() {
+	public final boolean isBorderCorners() {
 		final BorderNodeEffect border = super.getEffect(BorderNodeEffect.class);
-		return border == null || border.isFill();
+		return border == null || border.isCorners();
 	}
 
 	public final <T extends RectNode> @NonNull T color(final @NonNull Color color) {
@@ -90,12 +90,12 @@ public class RectNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends RectNode> @NonNull T borderFill(final boolean borderFill) {
-		return this.borderFill(Signal.from(borderFill));
+	public final <T extends RectNode> @NonNull T borderCorners(final boolean borderCorners) {
+		return this.borderCorners(Signal.from(borderCorners));
 	}
 
-	public final <T extends RectNode> @NonNull T borderFill(final @NonNull Supplier<Boolean> borderFill) {
-		this.getBorder().fill(borderFill);
+	public final <T extends RectNode> @NonNull T borderCorners(final @NonNull Supplier<Boolean> borderCorners) {
+		this.getBorder().corners(borderCorners);
 		return (T) this;
 	}
 

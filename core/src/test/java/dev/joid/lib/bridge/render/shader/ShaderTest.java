@@ -167,6 +167,16 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void namesTheStencilTranslationForAnUndeclaredBuiltin() {
+		try {
+			ShaderTest.create().uniform("joid_StencilTest", 1);
+			Assert.fail("An undeclared builtin must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The shader declares no builtin uniform joid_StencilTest: JOID declares its joid_ uniforms only where they are used, translate the shader with stencil(...) for the stencil ones (uniforms: "));
+		}
+	}
+
+	@Test
 	public void refusesAnUndeclaredSampler() {
 		try {
 			ShaderTest.create().sampler("u_Mask", new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.REPEAT);
@@ -322,12 +332,24 @@ public class ShaderTest {
 		final RenderState state = RenderState.create();
 		state.lineWidth(3F);
 		state.viewport(0, 0, 800, 600);
-		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
+		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), ShaderTest.projection(), new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), ShaderTest.projection(), new MatrixStack());
 		final UniformBlock block = ((Shader) shader.getLineShader()).getBlock();
-		Assert.assertEquals(3F, block.getMember(GlslShaderTranslator.LINE_WIDTH).getValues().getFloat(0), 0F);
+		Assert.assertEquals(3F, block.getMember(GlslShaderTranslator.LINE_WIDTH).getValues().getFloat(0), 1E-4F);
 		Assert.assertEquals(600F, block.getMember(GlslShaderTranslator.LINE_VIEWPORT).getValues().getFloat(4), 0F);
 		Assert.assertNull(shader.getBlock().getMember(GlslShaderTranslator.LINE_WIDTH));
+	}
+
+	@Test
+	public void writesTheLineWidthInDesignUnitsScaledToTheFramebuffer() {
+		final TestShader shader = ShaderTest.create(new LineRenderBridge());
+		final RenderState state = RenderState.create();
+		final MatrixStack modelView = new MatrixStack();
+		state.lineWidth(3F);
+		state.viewport(0, 0, 800, 600);
+		modelView.scale(2D, 2D, 1D);
+		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), ShaderTest.projection(), modelView);
+		Assert.assertEquals(6F, ((Shader) shader.getLineShader()).getBlock().getMember(GlslShaderTranslator.LINE_WIDTH).getValues().getFloat(0), 1E-4F);
 	}
 
 	private static void assertBorder(final TestShader shader, final String sampler, final float mode, final float width, final float height) {
@@ -339,6 +361,12 @@ public class ShaderTest {
 
 	private static VertexBuffer vertices(final boolean color) {
 		return VertexBuffer.of(ByteBuffer.allocateDirect(VertexBuffer.STRIDE), 1, false, color, false);
+	}
+
+	private static float[] projection() {
+		final MatrixStack projection = new MatrixStack();
+		projection.ortho(0D, 800D, 600D, 0D, 0D, 10000D);
+		return projection.getRawMatrix();
 	}
 
 	private static TestShader create() {

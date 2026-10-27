@@ -68,86 +68,86 @@ public class UIDemoEffect extends UIDemo {
 		.attach(this);
 		TextNode.create(1765, 175).text(Text.create("Rounded subtree", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(55, 240, 200, 120).color(Color.GRAY).effect(ShadowNodeEffect.create(Color.WHITE.withAlpha(0.5F), 16F).offsetY(8D)).attach(this);
-		TextNode.create(155, 375).text(Text.create("Shadow", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(55, 210, 200, 120).color(Color.GRAY).effect(ShadowNodeEffect.create(Color.WHITE.withAlpha(0.5F), 16F).offsetY(8D)).attach(this);
+		TextNode.create(155, 345).text(Text.create("Shadow", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(285, 240, 200, 120).color(Color.WHITE).effect(ShadowNodeEffect.create(UIDemoEffect.INK, 24F)).attach(this);
-		TextNode.create(385, 375).text(Text.create("Glow", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(285, 210, 200, 120).color(Color.WHITE).effect(ShadowNodeEffect.create(UIDemoEffect.INK, 24F)).attach(this);
+		TextNode.create(385, 345).text(Text.create("Glow", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(515, 240, 200, 120)
+		.create(515, 210, 200, 120)
 		.color(Color.WHITE)
 		.effect(RoundedNodeEffect.create(20F))
 		.effect(ShadowNodeEffect.create(UIDemoEffect.INK, 24F))
 		.attach(this);
-		TextNode.create(615, 375).text(Text.create("Rounded glow", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(615, 345).text(Text.create("Rounded glow", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(785, 240, 120, 120)
+		.create(785, 210, 120, 120)
 		.color(UIDemoEffect.INK)
 		.effect(CircleNodeEffect.create())
 		.effect(ShadowNodeEffect.create(UIDemoEffect.INK, 24F))
 		.attach(this);
-		TextNode.create(845, 375).text(Text.create("Circle glow", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(845, 345).text(Text.create("Circle glow", caption)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(975, 240, 200, 120).resource(image).stretch(StretchType.COVER).effect(BlurNodeEffect.create(3F)).attach(this);
-		TextNode.create(1075, 375).text(Text.create("Blur", caption)).anchorX(Align.CENTER).attach(this);
+		ResourceNode.create(975, 210, 200, 120).resource(image).stretch(StretchType.COVER).effect(BlurNodeEffect.create(3F)).attach(this);
+		TextNode.create(1075, 345).text(Text.create("Blur", caption)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1205, 240, 200, 120).resource(image).stretch(StretchType.COVER).effect(BlurNodeEffect.create(10F)).attach(this);
-		TextNode.create(1305, 375).text(Text.create("Strong blur", caption)).anchorX(Align.CENTER).attach(this);
+		ResourceNode.create(1205, 210, 200, 120).resource(image).stretch(StretchType.COVER).effect(BlurNodeEffect.create(10F)).attach(this);
+		TextNode.create(1305, 345).text(Text.create("Strong blur", caption)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1535, 270).text(Text.create("Blurred", TextInfo.create(DemoFont.MONTSERRAT, 44).color(Color.WHITE))).effect(BlurNodeEffect.create(4F)).anchorX(Align.CENTER).attach(this);
-		TextNode.create(1535, 375).text(Text.create("Blurred text", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 240).text(Text.create("Blurred", TextInfo.create(DemoFont.MONTSERRAT, 44).color(Color.WHITE))).effect(BlurNodeEffect.create(4F)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 345).text(Text.create("Blurred text", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode
-		.create(1665, 240, 200, 120)
+		.create(1665, 210, 200, 120)
 		.resource(image)
 		.stretch(StretchType.COVER)
 		.effect(RoundedNodeEffect.create(30F))
 		.effect(BlurNodeEffect.create(6F))
 		.attach(this);
-		TextNode.create(1765, 375).text(Text.create("Rounded blur", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 345).text(Text.create("Rounded blur", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(55, 440, 200, 120).color(UIDemoEffect.INK).effect(BorderNodeEffect.create(Color.WHITE, 4F)).attach(this);
-		TextNode.create(155, 575).text(Text.create("Border out", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(55, 380, 200, 120).color(UIDemoEffect.INK).effect(BorderNodeEffect.create(Color.WHITE, 4F)).attach(this);
+		TextNode.create(155, 515).text(Text.create("Border out", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(285, 440, 200, 120).color(UIDemoEffect.INK).effect(BorderNodeEffect.create(Color.WHITE, 4F).mode(BorderMode.IN)).attach(this);
-		TextNode.create(385, 575).text(Text.create("Border in", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(285, 380, 200, 120).color(UIDemoEffect.INK).effect(BorderNodeEffect.create(Color.WHITE, 4F).mode(BorderMode.IN)).attach(this);
+		TextNode.create(385, 515).text(Text.create("Border in", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(515, 440, 200, 120)
+		.create(515, 380, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(RoundedNodeEffect.create(20F))
 		.effect(BorderNodeEffect.create(Color.WHITE, 3F))
 		.attach(this);
-		TextNode.create(615, 575).text(Text.create("Rounded out", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(615, 515).text(Text.create("Rounded out", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(745, 440, 200, 120)
+		.create(745, 380, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(RoundedNodeEffect.create(20F))
 		.effect(BorderNodeEffect.create(Color.WHITE, 3F).mode(BorderMode.IN))
 		.attach(this);
-		TextNode.create(845, 575).text(Text.create("Rounded in", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(845, 515).text(Text.create("Rounded in", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1015, 440, 120, 120)
+		.create(1015, 380, 120, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(CircleNodeEffect.create())
 		.effect(BorderNodeEffect.create(Color.WHITE, 5F))
 		.attach(this);
-		TextNode.create(1075, 575).text(Text.create("Circle out", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1075, 515).text(Text.create("Circle out", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1245, 440, 120, 120)
+		.create(1245, 380, 120, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(CircleNodeEffect.create())
 		.effect(BorderNodeEffect.create(Color.WHITE, 5F).mode(BorderMode.IN))
 		.attach(this);
-		TextNode.create(1305, 575).text(Text.create("Circle in", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1305, 515).text(Text.create("Circle in", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1435, 440, 200, 120)
+		.create(1435, 380, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(RoundedNodeEffect.create(20F))
 		.effect(BorderNodeEffect.create(Color.WHITE, 3F))
@@ -155,10 +155,10 @@ public class UIDemoEffect extends UIDemo {
 			ResourceNode.create(50, 30, 100, 60).resource(image).attach(rect);
 		})
 		.attach(this);
-		TextNode.create(1535, 575).text(Text.create("Out with child", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 515).text(Text.create("Out with child", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1665, 440, 200, 120)
+		.create(1665, 380, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(RoundedNodeEffect.create(20F))
 		.effect(BorderNodeEffect.create(Color.WHITE, 3F).mode(BorderMode.IN))
@@ -166,118 +166,121 @@ public class UIDemoEffect extends UIDemo {
 			ResourceNode.create(50, 30, 100, 60).resource(image).attach(rect);
 		})
 		.attach(this);
-		TextNode.create(1765, 575).text(Text.create("In with child", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 515).text(Text.create("In with child", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(55, 640, 200, 120).color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK)).effect(MaskNodeEffect.create().width(140D).height(80D)).attach(this);
-		TextNode.create(155, 775).text(Text.create("Mask", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(55, 550, 200, 120).color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK)).effect(MaskNodeEffect.create().width(140D).height(80D)).attach(this);
+		TextNode.create(155, 685).text(Text.create("Mask", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(285, 640, 200, 120).color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK)).effect(MaskNodeEffect.create().x(50D).y(30D).width(100D).height(60D)).attach(this);
-		TextNode.create(385, 775).text(Text.create("Offset mask", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(285, 550, 200, 120).color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK)).effect(MaskNodeEffect.create().x(50D).y(30D).width(100D).height(60D)).attach(this);
+		TextNode.create(385, 685).text(Text.create("Offset mask", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(555, 640, 120, 120)
+		.create(555, 550, 120, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(MaskNodeEffect.create().resource(Resource.of("assets/demo/textures/vector/mask.svg")))
 		.attach(this);
-		TextNode.create(615, 775).text(Text.create("Image mask", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(615, 685).text(Text.create("Image mask", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(745, 640, 200, 120)
+		.create(745, 550, 200, 120)
 		.color(UIDemoEffect.INK)
 		.effect(MaskNodeEffect.create())
 		.body(rect -> {
 			RectNode.create(-30, 70, 260, 80).color(UIDemoEffect.PLACEHOLDER).attach(rect);
 		})
 		.attach(this);
-		TextNode.create(845, 775).text(Text.create("Masked children", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(845, 685).text(Text.create("Masked children", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(995, 660, 160, 80)
+		.create(995, 570, 160, 80)
 		.color(UIDemoEffect.INK)
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(15D, Rotation.ROLL)))
 		.attach(this);
-		TextNode.create(1075, 775).text(Text.create("Rotate", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1075, 685).text(Text.create("Rotate", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1245, 660, 120, 80)
+		.create(1245, 570, 120, 80)
 		.color(UIDemoEffect.INK)
 		.effect(TransformNodeEffect.create(Transformation.create().scale(Scale.create(1.5D, 0.7D, 1D))))
 		.attach(this);
-		TextNode.create(1305, 775).text(Text.create("Scale", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1305, 685).text(Text.create("Scale", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1435, 640, 120, 80).color(UIDemoEffect.INK).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(60D, 30D)))).attach(this);
-		TextNode.create(1535, 775).text(Text.create("Translate", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(1435, 550, 120, 80).color(UIDemoEffect.INK).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(60D, 30D)))).attach(this);
+		TextNode.create(1535, 685).text(Text.create("Translate", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1705, 660, 120, 80)
+		.create(1705, 570, 120, 80)
 		.color(UIDemoEffect.INK)
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(-12D, Rotation.ROLL).scale(Scale.create(1.3D, 1.3D, 1D))))
 		.attach(this);
-		TextNode.create(1765, 775).text(Text.create("Transformation", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 685).text(Text.create("Transformation", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(95, 840, 120, 120)
+		.create(95, 720, 120, 120)
 		.color(UIDemoEffect.INK)
 		.effect(CircleNodeEffect.create().scope(NodeEffectScope.SELF))
 		.body(rect -> {
 			RectNode.create(-40, 45, 200, 30).color(UIDemoEffect.PLACEHOLDER).attach(rect);
 		})
 		.attach(this);
-		TextNode.create(155, 975).text(Text.create("Self scope", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(155, 855).text(Text.create("Self scope", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(325, 840, 120, 120)
+		.create(325, 720, 120, 120)
 		.color(UIDemoEffect.INK)
 		.effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN))
 		.body(rect -> {
 			RectNode.create(-40, 45, 200, 30).color(UIDemoEffect.PLACEHOLDER).attach(rect);
 		})
 		.attach(this);
-		TextNode.create(385, 975).text(Text.create("Children scope", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(385, 855).text(Text.create("Children scope", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(535, 860, 160, 80)
+		.create(535, 740, 160, 80)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(MaskNodeEffect.create().priority(0))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(20D, Rotation.ROLL)).priority(1))
 		.attach(this);
-		TextNode.create(615, 975).text(Text.create("Mask first", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(615, 855).text(Text.create("Mask first", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(765, 860, 160, 80)
+		.create(765, 740, 160, 80)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(20D, Rotation.ROLL)).priority(0))
 		.effect(MaskNodeEffect.create().priority(1))
 		.attach(this);
-		TextNode.create(845, 975).text(Text.create("Rotation first", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(845, 855).text(Text.create("Rotation first", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(975, 840, 200, 120)
+		.create(975, 720, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.effect(RoundedNodeEffect.create(24F))
 		.effect(BorderNodeEffect.create(Color.WHITE, 3F))
 		.effect(ShadowNodeEffect.create(UIDemoEffect.INK, 20F))
 		.attach(this);
-		TextNode.create(1075, 975).text(Text.create("Stacked effects", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1075, 855).text(Text.create("Stacked effects", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1205, 840, 200, 120).color(UIDemoEffect.INK.withAlpha(0.3F)).effect(BorderNodeEffect.create(UIDemoEffect.INK, 3F)).attach(this);
-		TextNode.create(1305, 975).text(Text.create("Alpha and border", caption)).anchorX(Align.CENTER).attach(this);
+		RectNode.create(1205, 720, 200, 120).color(UIDemoEffect.INK.withAlpha(0.3F)).effect(BorderNodeEffect.create(UIDemoEffect.INK, 3F)).attach(this);
+		TextNode.create(1305, 855).text(Text.create("Alpha and border", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1435, 840, 200, 120)
+		.create(1435, 720, 200, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.hoveredColor(UIDemoEffect.INK.toGradient(UIDemoEffect.PLACEHOLDER))
 		.effect(RoundedNodeEffect.create(20F))
 		.attach(this);
-		TextNode.create(1535, 975).text(Text.create("Hover gradient", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 855).text(Text.create("Hover gradient", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
-		.create(1705, 840, 120, 120)
+		.create(1705, 720, 120, 120)
 		.color(UIDemoEffect.PLACEHOLDER.toGradient(UIDemoEffect.INK))
 		.hoveredColor(UIDemoEffect.INK.toGradient(UIDemoEffect.PLACEHOLDER))
 		.effect(CircleNodeEffect.create())
 		.attach(this);
-		TextNode.create(1765, 975).text(Text.create("Hover circle", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 855).text(Text.create("Hover circle", caption)).anchorX(Align.CENTER).attach(this);
+
+		RectNode.create(55, 890, 200, 120).color(UIDemoEffect.INK).effect(BorderNodeEffect.create(Color.WHITE, 8F).corners(false)).attach(this);
+		TextNode.create(155, 1025).text(Text.create("No corners", caption)).anchorX(Align.CENTER).attach(this);
 	}
 
 }

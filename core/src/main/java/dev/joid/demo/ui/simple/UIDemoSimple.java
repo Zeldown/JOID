@@ -58,7 +58,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(50, 60, 90, 100).color(Color.WHITE).borderColor(UIDemoSimple.INK).borderStroke(10D).attach(rect);
-			RectNode.create(180, 60, 90, 100).color(Color.WHITE).borderColor(UIDemoSimple.INK).borderStroke(10D).borderFill(false).attach(rect);
+			RectNode.create(180, 60, 90, 100).color(Color.WHITE).borderColor(UIDemoSimple.INK).borderStroke(10D).borderCorners(false).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Border corners", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

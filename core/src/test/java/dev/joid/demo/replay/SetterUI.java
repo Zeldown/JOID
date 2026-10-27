@@ -76,7 +76,7 @@ public class SetterUI extends UI {
 		.hoveredColor(this.step.get() > 0 ? Color.RED : null)
 		.borderColor(this.step.get() > 0 ? Color.BLUE : Color.WHITE)
 		.borderStroke(this.step.get() * 2D)
-		.borderFill(this.step.get() == 0)
+		.borderCorners(this.step.get() == 0)
 		.x(this.step.get() * 10D)
 		.y(5D + this.step.get())
 		.width(10D + this.step.get())
@@ -143,7 +143,7 @@ public class SetterUI extends UI {
 		.create(Color.WHITE, 1F)
 		.width(1F + this.step.get())
 		.color(this.step.get() > 0 ? Color.RED : Color.WHITE)
-		.fill(this.step.get() == 0);
+		.corners(this.step.get() == 0);
 		this.shadow = ShadowNodeEffect
 		.create(Color.BLACK, 2F)
 		.offsetX(this.step.get() * 1D)

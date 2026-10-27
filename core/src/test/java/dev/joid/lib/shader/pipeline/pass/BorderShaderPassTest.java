@@ -28,25 +28,25 @@ public class BorderShaderPassTest {
 	}
 
 	@Test
-	public void drawsAFilledOuterBorderByDefault() {
+	public void drawsAnOuterBorderWithItsCornersByDefault() {
 		final BorderShaderPass pass = BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		pass.bind(this.context());
-		Assert.assertEquals(1, this.shader.getValues().get("u_Fill"));
+		Assert.assertEquals(1, this.shader.getValues().get("u_Corners"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
 		Assert.assertEquals(5F, pass.expansion(), 0F);
 		Assert.assertEquals(13D, pass.reach(2D), 0D);
 	}
 
 	@Test
-	public void leavesTheInsideEmpty() {
-		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).fill(false).bind(this.context());
-		Assert.assertEquals(0, this.shader.getValues().get("u_Fill"));
+	public void cutsItsOuterCorners() {
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).corners(false).bind(this.context());
+		Assert.assertEquals(0, this.shader.getValues().get("u_Corners"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
 	}
 
 	@Test
 	public void drawsAnInnerBorder() {
-		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).fill(true).mode(BorderMode.IN).bind(this.context());
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).corners(true).mode(BorderMode.IN).bind(this.context());
 		Assert.assertEquals(BorderMode.IN.ordinal(), this.shader.getValues().get("u_Mode"));
 	}
 

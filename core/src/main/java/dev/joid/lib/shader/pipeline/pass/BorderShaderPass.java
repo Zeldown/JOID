@@ -12,22 +12,22 @@ public class BorderShaderPass implements IShaderPass {
 	private final Color color;
 	private final float width;
 
-	private boolean    fill;
+	private boolean    corners;
 	private BorderMode mode;
 
 	protected BorderShaderPass(final @NonNull Color color, final float width) {
-		this.color = color;
-		this.width = width;
-		this.fill  = true;
-		this.mode  = BorderMode.OUT;
+		this.color   = color;
+		this.width   = width;
+		this.corners = true;
+		this.mode    = BorderMode.OUT;
 	}
 
 	public static @NonNull BorderShaderPass create(final @NonNull Color color, final float width) {
 		return new BorderShaderPass(color, width);
 	}
 
-	public final <T extends BorderShaderPass> @NonNull T fill(final boolean fill) {
-		this.fill = fill;
+	public final <T extends BorderShaderPass> @NonNull T corners(final boolean corners) {
+		this.corners = corners;
 		return (T) this;
 	}
 
@@ -44,7 +44,7 @@ public class BorderShaderPass implements IShaderPass {
 
 		final float x = (float) context.getX();
 		final float y = (float) context.getY();
-		BorderShader.inst().bind((float) (this.width * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode, x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
+		BorderShader.inst().bind((float) (this.width * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight(), this.corners, this.mode, x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
 	}
 
 	@Override

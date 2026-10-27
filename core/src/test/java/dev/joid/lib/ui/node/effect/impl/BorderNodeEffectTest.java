@@ -33,9 +33,9 @@ public class BorderNodeEffectTest {
 	}
 
 	@Test
-	public void drawsAFilledOuterBorderByDefault() {
+	public void drawsAnOuterBorderWithItsCornersByDefault() {
 		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
-		Assert.assertTrue(effect.isFill());
+		Assert.assertTrue(effect.isCorners());
 		Assert.assertSame(BorderMode.OUT, effect.getMode());
 		Assert.assertEquals(3F, effect.getWidth(), 0F);
 	}
@@ -47,14 +47,14 @@ public class BorderNodeEffectTest {
 
 	@Test
 	public void passesItsValuesToTheShader() {
-		final IShaderPass pass = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).mode(BorderMode.IN).fill(false).toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
+		final IShaderPass pass = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).mode(BorderMode.IN).corners(false).toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
 		pass.bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(5F, pass.expansion(), 0F);
 		Assert.assertEquals(200, BorderNodeEffect.create(Color.RED, 3F).getPriority());
 		Assert.assertEquals(3F, (Float) values.get("u_BorderWidth"), 1E-4F);
 		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("u_BorderColor"), 0F);
-		Assert.assertEquals(0, values.get("u_Fill"));
+		Assert.assertEquals(0, values.get("u_Corners"));
 		Assert.assertEquals(BorderMode.IN.ordinal(), values.get("u_Mode"));
 	}
 
@@ -62,11 +62,11 @@ public class BorderNodeEffectTest {
 	public void replacesEachValue() {
 		final Color color = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
-		Assert.assertSame(effect, effect.color(color).width(6F).mode(BorderMode.IN).fill(false));
+		Assert.assertSame(effect, effect.color(color).width(6F).mode(BorderMode.IN).corners(false));
 		Assert.assertSame(color, effect.getColor(RectNode.create(0D, 0D, 10D, 10D)));
 		Assert.assertEquals(6F, effect.getWidth(), 0F);
 		Assert.assertSame(BorderMode.IN, effect.getMode());
-		Assert.assertFalse(effect.isFill());
+		Assert.assertFalse(effect.isCorners());
 	}
 
 	@Test

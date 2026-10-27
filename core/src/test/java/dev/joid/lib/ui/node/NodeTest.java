@@ -889,10 +889,10 @@ public class NodeTest {
 
 	@Test
 	public void chainsAConfiguredCustomEffectWithoutTypeWitness() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).corners(false));
 		final BorderNodeEffect border = node.getEffect(BorderNodeEffect.class);
 		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).getPriority());
-		Assert.assertFalse(border.isFill());
+		Assert.assertFalse(border.isCorners());
 	}
 
 	@Test
@@ -906,11 +906,11 @@ public class NodeTest {
 
 	@Test
 	public void chainsAnExtendedBuiltInEffectWithATypeWitness() {
-		final GlowBorderEffect glow = GlowBorderEffect.create().<GlowBorderEffect>fill(false).glow(4F);
+		final GlowBorderEffect glow = GlowBorderEffect.create().<GlowBorderEffect>corners(false).glow(4F);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(glow);
 		Assert.assertSame(glow, node.getEffect(GlowBorderEffect.class));
 		Assert.assertSame(glow, node.getEffect(BorderNodeEffect.class));
-		Assert.assertFalse(glow.isFill());
+		Assert.assertFalse(glow.isCorners());
 		Assert.assertEquals(4F, glow.getGlow(), 0F);
 		Assert.assertFalse(node.removeEffect(BorderNodeEffect.class).hasEffect(GlowBorderEffect.class));
 	}
