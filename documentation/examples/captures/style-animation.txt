@@ -1,0 +1,30 @@
+# crop style-appear 140 60 340 280
+# hold style-appear 1000
+# crop style-loop 600 100 360 100
+# crop style-click 1080 100 420 200
+# crop style-follow 140 480 1640 160
+# hold style-follow 600
+ui com.example.style.AnimationUI
+move 1700 950
+# film style-appear
+wait 800
+cut
+# film style-loop
+wait 1400
+cut
+move 1200 250
+# film style-click
+wait 200
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 600
+cut
+move 300 560
+wait 1500
+# film style-follow
+wait 200
+moveto 1500 560 400
+wait 1200
