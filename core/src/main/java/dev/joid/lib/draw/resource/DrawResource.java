@@ -1,6 +1,6 @@
 package dev.joid.lib.draw.resource;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.BlendState;

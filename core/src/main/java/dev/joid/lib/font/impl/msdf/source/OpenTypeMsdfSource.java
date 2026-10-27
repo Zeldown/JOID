@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import com.google.common.hash.Hashing;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;

@@ -11,6 +11,8 @@ import java.util.function.BooleanSupplier;
 import org.junit.Assert;
 
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;

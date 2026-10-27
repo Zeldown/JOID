@@ -39,7 +39,7 @@ import dev.joid.demo.ui.slider.UIDemoSlider;
 import dev.joid.demo.ui.store.UIDemoOtherStore;
 import dev.joid.demo.ui.store.UIDemoStore;
 import dev.joid.demo.ui.textfield.UIDemoTextField;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;

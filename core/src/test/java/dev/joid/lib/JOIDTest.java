@@ -1,4 +1,4 @@
-package dev.joid.internal;
+package dev.joid.lib;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.impl.bitmap.DemoPixelFont;
+import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;

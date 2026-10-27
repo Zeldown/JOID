@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 import com.google.common.collect.Lists;
 
 import dev.joid.internal.HotReload;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.StencilFunction;

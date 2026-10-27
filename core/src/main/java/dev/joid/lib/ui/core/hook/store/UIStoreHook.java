@@ -10,9 +10,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.ToNumberPolicy;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.internal.JsonFiles;
+import dev.joid.lib.JOIDEnv;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

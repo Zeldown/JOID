@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.impl.UrlAsset;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;

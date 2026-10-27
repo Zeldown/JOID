@@ -3,7 +3,7 @@ package dev.joid.demo.ui;
 import java.util.function.BooleanSupplier;
 
 import dev.joid.demo.ui.core.transition.DemoPushTransition;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
 import lombok.Getter;

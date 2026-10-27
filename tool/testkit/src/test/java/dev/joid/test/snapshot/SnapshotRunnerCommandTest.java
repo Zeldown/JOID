@@ -11,8 +11,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;

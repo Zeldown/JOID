@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 
 public class Lwjgl2NativesTest {
 

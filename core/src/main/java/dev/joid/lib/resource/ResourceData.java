@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;

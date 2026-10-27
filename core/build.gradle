@@ -32,7 +32,7 @@ dependencies {
 
 processResources {
     inputs.property 'version', project.version
-    filesMatching('dev/joid/internal/joid.properties') {
+    filesMatching('dev/joid/lib/joid.properties') {
         expand(version: project.version)
     }
 }

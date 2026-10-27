@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 
 public class SnapshotUrlAssetLocatorTest {

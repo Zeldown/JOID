@@ -1,4 +1,4 @@
-package dev.joid.internal;
+package dev.joid.lib;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.internal.JOIDLog;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;

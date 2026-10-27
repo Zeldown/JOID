@@ -19,7 +19,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;

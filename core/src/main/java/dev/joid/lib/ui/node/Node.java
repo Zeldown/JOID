@@ -26,8 +26,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;

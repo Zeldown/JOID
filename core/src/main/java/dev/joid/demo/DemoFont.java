@@ -8,8 +8,8 @@ import java.io.UncheckedIOException;
 import javax.imageio.ImageIO;
 
 import dev.joid.demo.font.impl.bitmap.DemoPixelFont;
-import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOID;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import lombok.AccessLevel;

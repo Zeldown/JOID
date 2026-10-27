@@ -19,7 +19,7 @@ import dev.joid.demo.ui.option.popup.UIDemoLockedPopup;
 import dev.joid.demo.ui.option.popup.UIDemoPopInPopup;
 import dev.joid.demo.ui.option.popup.UIDemoSlidePopup;
 import dev.joid.demo.ui.option.popup.UIDemoTintedPopup;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;

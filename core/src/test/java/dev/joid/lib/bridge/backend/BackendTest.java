@@ -14,9 +14,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.ConsoleCapture;
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.audio.IAudioBridge;

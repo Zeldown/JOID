@@ -2,9 +2,9 @@ package dev.joid.lib.bridge.backend;
 
 import java.io.File;
 
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;

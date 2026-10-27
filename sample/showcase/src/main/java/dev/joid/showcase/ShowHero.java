@@ -6,7 +6,7 @@ import java.util.Locale;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;

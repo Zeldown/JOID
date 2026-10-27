@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.JOIDEnv;
+
 public class JOIDLogTest {
 
 	@After

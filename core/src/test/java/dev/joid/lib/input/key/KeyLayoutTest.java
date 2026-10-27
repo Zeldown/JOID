@@ -18,8 +18,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.TextInfo;

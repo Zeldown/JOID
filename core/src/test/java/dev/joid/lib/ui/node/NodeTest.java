@@ -17,10 +17,10 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;

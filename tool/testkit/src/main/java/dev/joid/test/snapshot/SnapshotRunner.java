@@ -20,9 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;

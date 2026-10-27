@@ -22,8 +22,8 @@ import org.bytedeco.javacpp.Loader;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.utils.thread.ThreadUtils;

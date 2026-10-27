@@ -1,6 +1,6 @@
 package dev.joid.demo.ui;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.ui.core.UI;
 
 public class UIDemo extends UI {

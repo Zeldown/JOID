@@ -21,7 +21,7 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;

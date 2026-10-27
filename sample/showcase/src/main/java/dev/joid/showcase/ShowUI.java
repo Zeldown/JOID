@@ -2,7 +2,7 @@ package dev.joid.showcase;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.core.transition.DemoPushTransition;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;

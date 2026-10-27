@@ -21,7 +21,7 @@ import dev.joid.base.opengl.render.framebuffer.GlFrameBuffer;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.resource.Resource;
 

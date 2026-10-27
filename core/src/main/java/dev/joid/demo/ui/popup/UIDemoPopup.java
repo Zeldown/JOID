@@ -4,7 +4,7 @@ import java.util.Random;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;

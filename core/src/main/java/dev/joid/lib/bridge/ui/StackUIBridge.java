@@ -2,8 +2,8 @@ package dev.joid.lib.bridge.ui;
 
 import com.google.common.collect.Lists;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;

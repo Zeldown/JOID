@@ -12,9 +12,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.internal.JsonFiles;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

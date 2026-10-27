@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import lombok.Getter;
 import lombok.NonNull;
 

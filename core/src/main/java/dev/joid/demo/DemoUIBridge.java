@@ -1,8 +1,8 @@
 package dev.joid.demo;
 
 import dev.joid.demo.ui.UIDemoChoice;
-import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;

@@ -9,8 +9,8 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;

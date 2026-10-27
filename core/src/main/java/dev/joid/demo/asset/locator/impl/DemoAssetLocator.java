@@ -2,7 +2,7 @@ package dev.joid.demo.asset.locator.impl;
 
 import java.net.URL;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.ClasspathAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;

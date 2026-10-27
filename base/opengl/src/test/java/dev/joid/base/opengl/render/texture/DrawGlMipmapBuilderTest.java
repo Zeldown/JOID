@@ -13,7 +13,7 @@ import dev.joid.base.opengl.binding.GlFakes;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 
 public class DrawGlMipmapBuilderTest {

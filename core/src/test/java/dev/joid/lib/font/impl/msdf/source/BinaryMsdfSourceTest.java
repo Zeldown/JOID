@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontWeight;

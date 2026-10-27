@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.backend.Backend;
 import lombok.AccessLevel;

@@ -4,9 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;

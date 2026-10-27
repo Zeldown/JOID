@@ -8,16 +8,16 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.control.choice.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;

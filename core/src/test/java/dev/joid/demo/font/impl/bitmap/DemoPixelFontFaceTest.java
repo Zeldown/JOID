@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.font.FontWeight;
 
 public class DemoPixelFontFaceTest {

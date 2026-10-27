@@ -10,7 +10,7 @@ import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.backend.lwjgl2.Lwjgl2Natives;
 import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

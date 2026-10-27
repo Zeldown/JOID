@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;

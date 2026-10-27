@@ -2,7 +2,7 @@ package dev.joid.internal.font;
 
 import java.io.InputStream;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import lombok.AccessLevel;

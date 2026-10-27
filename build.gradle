@@ -170,10 +170,10 @@ task checkJars {
                 def holds = { prefix -> entries.any { entry -> entry.startsWith(prefix) } }
                 def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/demo\/.*/ }
                 def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*/ }
-                if (!holds('dev/joid/internal/JOID.class')) {
+                if (!holds('dev/joid/lib/JOID.class')) {
                     failures << "${jar.name} misses JOID"
                 }
-                (['dev/joid/internal/joid.properties'] + (module == ':core' ? [] : ["dev/joid/backend/${module - ':backend-'}/backend.properties"])).each { path ->
+                (['dev/joid/lib/joid.properties'] + (module == ':core' ? [] : ["dev/joid/backend/${module - ':backend-'}/backend.properties"])).each { path ->
                     def version = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.getEntry(path)?.with { entry -> def properties = new Properties(); zip.getInputStream(entry).withCloseable { input -> properties.load(input) }; properties.getProperty('version') } }
                     if (version != project.version.toString()) {
                         failures << "${jar.name} gives the version $version instead of ${project.version} in $path"

@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;

@@ -14,7 +14,7 @@ import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.resource.Resource;
 

@@ -6,7 +6,7 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.effect.DemoRainbowTextEffect;
 import dev.joid.demo.font.effect.DemoWaveTextEffect;
 import dev.joid.demo.font.markup.DemoTextMarkup;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;

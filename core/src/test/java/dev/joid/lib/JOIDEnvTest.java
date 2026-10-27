@@ -1,4 +1,4 @@
-package dev.joid.internal;
+package dev.joid.lib;
 
 import java.io.File;
 import java.io.IOException;

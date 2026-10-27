@@ -46,10 +46,10 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.HotReload;
-import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOID;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;

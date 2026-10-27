@@ -4,7 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.demo.DemoWindow;
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

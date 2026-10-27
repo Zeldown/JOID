@@ -14,9 +14,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.cache.TemporaryCache;

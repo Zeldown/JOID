@@ -9,8 +9,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;

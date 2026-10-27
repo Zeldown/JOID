@@ -7,7 +7,7 @@ import java.nio.file.Files;
 
 import org.junit.rules.ExternalResource;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.JOIDEnv;
 
 public final class TemporaryCache extends ExternalResource {
 

@@ -25,9 +25,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOIDEnv;
 
 public class FileCacheTest {
 

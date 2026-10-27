@@ -20,8 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
