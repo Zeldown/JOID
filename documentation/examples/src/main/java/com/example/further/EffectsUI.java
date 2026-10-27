@@ -36,6 +36,7 @@ public class EffectsUI extends UI {
 		.create(700, 100, 200, 120)
 		.color(EffectsUI.DARK)
 		.effect(InvertNodeEffect.create(1F))
+		.body(rect -> CircleNode.create(60, 20, 80).color(Color.WHITE).attach(rect))
 		.attach(this);
 
 		RectNode

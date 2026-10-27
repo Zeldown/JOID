@@ -81,10 +81,10 @@ The own position of a child adds to the place that the flex node gives it:
 
 <figure>
 
-![On a light grey card, three bars stacked: the white middle bar sits further right than the grey ones, and the gap above it is larger than the gap below it](/captures/describing-flex-offset.webp)
+![Three bars in a column on a light grey background: the white middle bar sits 40 design pixels right of the grey ones and 30 lower than its place, and overlaps the grey bar below it, which keeps its place](/captures/describing-flex-offset.webp)
 
 <figcaption>
-The white bar, created at (40, 30), moves 40 design pixels right and gets 30 more above it.
+The white bar, created at (40, 30), moves 40 design pixels right and 30 down, and the bar after it does not move.
 </figcaption>
 </figure>
 
@@ -119,7 +119,7 @@ Give the column a length and an [[OverflowProperty]] other than `NONE`: the leng
 
 <figure>
 
-![On a light grey card, a column of grey and white bars cut off near the bottom of the card; the wheel moves them up and the next bars come into view](/captures/describing-flex-scroll.webp)
+![On a light grey card, a column of grey and white bars cut off near the bottom of the card; the wheel moves them up so that the next bars come into view, then moves them back down](/captures/describing-flex-scroll.webp)
 
 <figcaption>
 The column stays 260 design pixels high, and its eight bars scroll inside it.

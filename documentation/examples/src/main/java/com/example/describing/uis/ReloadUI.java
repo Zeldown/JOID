@@ -25,7 +25,7 @@ public class ReloadUI extends UI {
 		// #region rebuild
 		this.builds++;
 
-		TextNode.create(760, 420).text(Text.create("Built " + this.builds + " times", info)).attach(this);
+		TextNode.create(760, 420).text(Text.create("Builds: " + this.builds, info)).attach(this);
 
 		RectNode
 		.create(760, 480, 190, 70)

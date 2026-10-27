@@ -143,10 +143,10 @@ A name that the shader does not declare, or values that do not fit its type, thr
 
 <figure>
 
-![A grey rectangle with blurred edges, ringed by a soft white halo that follows the blurred shape, on a light grey background](/captures/further-shaders-pipeline.webp)
+![A grey rectangle with blurred edges, ringed by a soft dark grey halo that follows the blurred shape, on a light grey background](/captures/further-shaders-pipeline.webp)
 
 <figcaption>
-Blurred horizontally, then vertically, then outlined: around a blurred shape, the white border of the last pass fades into a soft halo.
+Blurred horizontally, then vertically, then outlined: around a blurred shape, the dark border of the last pass fades into a soft halo.
 </figcaption>
 </figure>
 
@@ -231,6 +231,15 @@ For code built while the application runs, or for another blending, create the s
 
 ```java file="com/example/further/ShadersUI.java" region="create"
 ```
+
+<figure>
+
+![A grey rectangle on a light grey background](/captures/further-shaders-tint.webp)
+
+<figcaption>
+The shader built at run time multiplies the white of the rectangle by the tint of 0.6, which gives grey.
+</figcaption>
+</figure>
 
 [[ShaderSource]] gives each source: `ShaderSource.from(stage, code)` reads a string, and `ShaderSource.read(stage, handle)` reads an asset; the [[ShaderStage]] says which of the two shaders it is.
 `createShader(vertex, fragment, blend)` runs on the render thread, and `isActive()` tells whether the shader compiled.

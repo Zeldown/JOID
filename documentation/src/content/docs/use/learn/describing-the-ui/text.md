@@ -135,7 +135,7 @@ JOID calls it each time it measures or draws the text, so the text follows your 
 
 <figure>
 
-![A light grey card with Welcome back, Ada on its first line, Ada in bold, a white button that the pointer clicks three times, its text going from Clicked 0 times to Clicked 3 times, and a white box that fits the word Settings](/captures/describing-text-runs.webp)
+![A light grey card with Welcome back, Ada on its first line, Ada in bold, a white button that the pointer clicks three times, its text going from Clicks: 0 to Clicks: 3, and a white box that fits the word Settings](/captures/describing-text-runs.webp)
 
 <figcaption>
 Two runs on one line, a text that counts the clicks of its button, and a box sized from its label.

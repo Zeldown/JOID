@@ -2,10 +2,9 @@
 ui com.example.describing.media.GalleryUI
 wait 500
 shot describing-media-gallery
-# crop describing-media-animation 760 410 400 260
-# hold describing-media-animation 100
+# crop describing-media-animation 740 390 440 300
 ui com.example.describing.media.AnimationUI
 wait 500
 # film describing-media-animation
-wait 700
+wait 2367
 cut

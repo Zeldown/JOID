@@ -82,7 +82,7 @@ public class AnimationUI extends UI {
 
 		TextNode.create(1330, 232).text(Text.create(plays.map(count -> "Plays: " + count), info)).attach(this);
 
-		RectNode.create(160, 500, 1600, 120).color(Color.WHITE).attach(this);
+		RectNode.create(160, 500, 840, 120).color(Color.WHITE).attach(this);
 
 		// #region follow-node
 		CircleNode.create(0, 520, 80).color(AnimationUI.INK).x(() -> this.followX).attach(this);
@@ -92,7 +92,7 @@ public class AnimationUI extends UI {
 	// #region follow-update
 	@Override
 	public void update() {
-		final double target = Math.max(160D, Math.min(1680D, super.getMouseX() - 40D));
+		final double target = Math.max(160D, Math.min(920D, super.getMouseX() - 40D));
 		this.followX = super.lerpByFramerate(this.followX, target, 0.1D, 0.5D);
 	}
 	// #endregion

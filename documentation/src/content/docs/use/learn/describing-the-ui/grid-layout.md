@@ -99,7 +99,7 @@ A height that you give is a minimum, and a fixed height with an overflow, which 
 
 <figure>
 
-![On a light grey card, rows of grey and white squares cut off near the bottom of the card; the wheel moves them up and the next rows come into view](/captures/describing-grid-scroll.webp)
+![On a light grey card, rows of grey and white squares cut off near the bottom of the card; the wheel moves them up so that the next rows come into view, then moves them back down](/captures/describing-grid-scroll.webp)
 
 <figcaption>
 The grid stays 260 design pixels high, and its five rows scroll inside it.

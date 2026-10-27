@@ -25,7 +25,7 @@ This page shows where the node may go, how it lands on a target, and how to drag
 
 <figure>
 
-![The pointer presses a grey square at the top left of a card, drags it to the bottom right corner, and releases it; the text reads "Drops: 1"](/captures/interactivity-drag.webp)
+![The pointer presses a grey square at the top left of a card, drags it to the bottom right corner and releases it, then drags it back to its place; the text goes from "Drops: 0" to "Drops: 2"](/captures/interactivity-drag.webp)
 
 <figcaption>
 The square follows the pointer with a short easing, and never leaves its parent.

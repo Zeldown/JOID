@@ -43,7 +43,7 @@ public class RunsUI extends UI {
 			.body(button -> {
 				TextNode
 				.create(0, 0, 400, 80)
-				.text(Text.create(() -> "Clicked " + this.clicks + " times", info).align(Align.CENTER))
+				.text(Text.create(() -> "Clicks: " + this.clicks, info).align(Align.CENTER))
 				.attach(button);
 			})
 			.attach(card);

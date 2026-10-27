@@ -25,13 +25,13 @@ public class ChartsLineChartNode extends ChartNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 14F).color(ChartsLineChartNode.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsLineChartNode.INK);
 		final double min = super.getMin().doubleValue();
 		final double max = super.getMax().doubleValue();
 		final double left = super.getX() + 50D;
 		final double top = super.getY() + 15D;
 		final double width = super.getWidth() - 65D;
-		final double height = super.getHeight() - 40D;
+		final double height = super.getHeight() - 46D;
 		final double step = super.getLabels().size() > 1 ? width / (super.getLabels().size() - 1) : 0D;
 
 		final String high = super.getYAxis().format(Math.round(max));

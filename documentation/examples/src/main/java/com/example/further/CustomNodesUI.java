@@ -51,7 +51,7 @@ public class CustomNodesUI extends UI {
 			.create(160, 30)
 			.text(Text.create(() -> favorite.get() ? "Favorite" : "Plain", info))
 			.attach(container);
-			TextNode.create(160, 70).text(Text.create(() -> changes.get() + " changes", info)).attach(container);
+			TextNode.create(160, 70).text(Text.create(() -> "Changes: " + changes.get(), info)).attach(container);
 		})
 		.attach(this);
 		// #endregion

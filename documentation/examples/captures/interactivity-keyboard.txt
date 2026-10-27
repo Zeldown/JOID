@@ -21,30 +21,34 @@ ui com.example.interactivity.keyboard.WalkUI
 # film interactivity-walk 60
 wait 200
 down D
-wait 800
+wait 700
 up D
+wait 400
+down A
+wait 700
+up A
 wait 400
 cut
 ui com.example.interactivity.keyboard.ShortcutUI
 move 1120 650
 # film interactivity-shortcut
-wait 500
+wait 300
 key LEFT_CONTROL+S
-wait 700
+wait 500
 key F1
-wait 700
+wait 500
 moveto 1120 466 500
 wait 200
 press LEFT
 release LEFT
-wait 400
+wait 300
 type a
 wait 250
 type b
 wait 500
 key LEFT_CONTROL+S
-wait 700
+wait 500
 key F1
-wait 1000
+wait 700
 moveto 1120 650 400
 wait 300

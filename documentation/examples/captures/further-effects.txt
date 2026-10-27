@@ -9,7 +9,7 @@ shot further-effects-invert
 moveto 1300 700 100
 wait 200
 moveto 500 160 300
-wait 500
+wait 800
 moveto 1300 700 300
 wait 400
 cut

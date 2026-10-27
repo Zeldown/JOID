@@ -78,7 +78,7 @@ Build the suppliers that read the node inside [[Node#self]], which hands you the
 
 <figure>
 
-![The pointer enters a white rectangle: its corners round strongly and its grey border thickens](/captures/style-effect-hover.webp)
+![The pointer enters a white rectangle: its corners round strongly and its grey border thickens, then go back as the pointer leaves](/captures/style-effect-hover.webp)
 
 <figcaption>The radius goes from 8 to 48 design pixels and the border from 1 to 6 with the hover progress.</figcaption>
 </figure>

@@ -25,7 +25,7 @@ public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 16F).color(ChartsRadarChartNode.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsRadarChartNode.INK);
 		final int size = super.getDataList().size();
 		final Point[] outline = new Point[size];
 		final Point[] values = new Point[size];

@@ -3,7 +3,7 @@
 ui com.example.guides.KitGuideUI
 move 1290 780
 # film guides-kit 60
-wait 300
+wait 200
 moveto 1015 550 400
 wait 200
 press LEFT
@@ -14,7 +14,7 @@ moveto 1150 750 400
 wait 200
 press LEFT
 release LEFT
-wait 533
+wait 433
 moveto 850 550 400
 wait 200
 press LEFT
@@ -25,6 +25,6 @@ moveto 770 750 400
 wait 200
 press LEFT
 release LEFT
-wait 466
+wait 366
 moveto 1290 780 400
-wait 300
+wait 200

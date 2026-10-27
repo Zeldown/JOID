@@ -80,7 +80,7 @@ To act on every frame while it is held, read its state in an update:
 
 <figure>
 
-![A grey square that slides to the right of a card while D is held, and stops when it is released](/captures/interactivity-walk.webp)
+![A grey square that slides to the right of a card while D is held and stops when it is released, then slides back to its place while A is held](/captures/interactivity-walk.webp)
 
 <figcaption>
 The square moves 300 design pixels per second while D is held, at any frame rate.

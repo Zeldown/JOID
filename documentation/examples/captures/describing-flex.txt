@@ -13,8 +13,11 @@ shot describing-flex-grow
 # crop describing-flex-scroll 520 460 400 300
 move 720 610
 # film describing-flex-scroll 60
+wait 300
 scroll -4
-wait 1200
+wait 1100
+scroll 4
+wait 1500
 cut
 # crop describing-flex-list 660 340 600 400
 ui com.example.describing.flex.SettingsListUI

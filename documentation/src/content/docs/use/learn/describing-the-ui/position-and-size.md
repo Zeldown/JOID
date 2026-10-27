@@ -109,7 +109,14 @@ The order of whole UIs is another `zindex`, set on the UI ([Overlays and popups]
 ```java file="com/example/describing/position/HideUI.java" region="hide"
 ```
 
-A click on the white square hides the first square, and a second click shows it again; the second square stays grey under the pointer, because it is disabled.
+<figure>
+
+![Two grey squares and a white one in a row; the pointer rests on the second grey square, which keeps its color, then clicks the white square twice: the first grey square disappears, then comes back](/captures/describing-position-hide.webp)
+
+<figcaption>
+The hidden square is neither drawn nor clickable; the disabled one is drawn but shows no hover.
+</figcaption>
+</figure>
 
 - [[Node#visible(boolean)]] `false` hides the node and its children: they are not drawn and receive no input.
 - [[Node#enabled(boolean)]] `false` keeps the node and its children drawn, but they receive no input and show no hover.

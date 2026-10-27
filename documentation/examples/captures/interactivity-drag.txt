@@ -9,22 +9,26 @@ press LEFT
 moveto 1150 650 700
 release LEFT
 wait 600
+press LEFT
+moveto 740 420 700
+release LEFT
+wait 600
 cut
 ui com.example.interactivity.drag.SnapUI
 move 960 430
 # film interactivity-snap 60
-wait 200
+wait 400
 press LEFT
 moveto 1130 580 700
 release LEFT
-wait 700
+wait 1000
 cut
 ui com.example.interactivity.drag.CopyUI
 move 720 540
 # film interactivity-copy 60
-wait 200
+wait 400
 press LEFT
 moveto 1160 540 700
 release LEFT
-wait 500
+wait 1000
 cut

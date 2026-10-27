@@ -22,7 +22,7 @@ A [[ReorderableFlexNode]] is a [flex layout](/use/learn/describing-the-ui/flex-l
 
 <figure>
 
-![The pointer drags "Ocean" down a column of five white items; the items below it slide up to make room, and at the release "Ocean" lands in fourth place; the text reads "Moved: Ocean from 1 to 3"](/captures/interactivity-reorder.webp)
+![The pointer drags "Ocean" down a column of five white items; the items below it slide up to make room, and at the release "Ocean" lands in fourth place and the text reads "Moved: Ocean from 1 to 3"; a second drag puts it back in second place, and the text reads "Moved: Ocean from 3 to 1"](/captures/interactivity-reorder.webp)
 
 <figcaption>
 The other items slide as soon as the dragged one passes half of a neighbor; the order changes for good at the release.

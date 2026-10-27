@@ -1,6 +1,6 @@
 # crop interactivity-reorder 660 240 600 600
 # crop interactivity-reorder-handle 660 290 600 500
-# still interactivity-reorder-handle 190
+# still interactivity-reorder-handle 200
 ui com.example.interactivity.reorder.PlaylistUI
 move 960 395
 # film interactivity-reorder 60
@@ -9,31 +9,35 @@ press LEFT
 moveto 960 570 800
 release LEFT
 wait 700
+press LEFT
+moveto 960 395 800
+release LEFT
+wait 700
 cut
 ui com.example.interactivity.reorder.HandleListUI
 move 1000 720
 # film interactivity-reorder-handle 60
-wait 300
+wait 200
 moveto 880 450 400
 wait 200
 press LEFT
 moveto 880 610 400
-wait 300
+wait 200
 release LEFT
-wait 300
+wait 200
 moveto 1162 608 400
 wait 200
 press LEFT
 moveto 1162 520 480
-wait 400
+wait 300
 release LEFT
-wait 400
+wait 300
 moveto 1162 528 200
 wait 200
 press LEFT
 moveto 1162 616 480
-wait 300
+wait 200
 release LEFT
-wait 400
-moveto 1000 720 400
 wait 300
+moveto 1000 720 400
+wait 200

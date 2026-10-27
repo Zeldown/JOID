@@ -77,7 +77,7 @@ public class ShadersUI extends UI {
 		// #region pipeline
 		final BlurShaderPass blurX = BlurShaderPass.create(12F, true);
 		final BlurShaderPass blurY = BlurShaderPass.create(12F, false);
-		final BorderShaderPass border = BorderShaderPass.create(Color.WHITE, 4F);
+		final BorderShaderPass border = BorderShaderPass.create(ShadersUI.DARK, 4F);
 
 		ContainerNode
 		.create(80, 280, 400, 240)

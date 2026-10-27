@@ -58,7 +58,7 @@ The label also gives its render time in milliseconds.
 
 <figure>
 
-![The light grey window of the counter, crossed by two blue lines through the center of the canvas and by four blue lines from the pointer to the edges of the canvas, each labelled with its length in pixels; as the pointer moves, the four lines and their lengths follow it; the dev panel sits in the bottom-right corner](/captures/start-dev-grid.webp)
+![The middle of the light grey window of the counter, drawn large, crossed by two blue lines through the center of the canvas and by two blue lines through the pointer, labelled with the distances in pixels from the pointer to the edges of the canvas; as the pointer moves, the lines and the lengths follow it; the dev panel sits in the bottom-right corner](/captures/start-dev-grid.webp)
 
 <figcaption>
 The grid measures the canvas from the pointer: copy a position from a mockup and check it here.

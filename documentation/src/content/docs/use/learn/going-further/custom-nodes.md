@@ -135,7 +135,7 @@ The UI owns the signal and reads it anywhere:
 
 <figure>
 
-![The pointer moves onto a grey square and clicks it: a white frame appears inside the square, and the text next to it changes from Plain and 0 changes to Favorite and 1 changes](/captures/further-custom-nodes-swatch.webp)
+![The pointer moves onto a grey square and clicks it: a white frame appears inside the square, and the text next to it changes from Plain and Changes: 0 to Favorite and Changes: 1](/captures/further-custom-nodes-swatch.webp)
 
 <figcaption>
 The click selects the swatch, writes the signal and fires `onSelect`.

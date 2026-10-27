@@ -14,3 +14,21 @@ shot describing-position-order
 ui com.example.describing.position.CopyUI
 wait 100
 shot describing-position-copy
+# crop describing-position-hide 640 420 640 220
+ui com.example.describing.position.HideUI
+move 1000 635
+# film describing-position-hide
+wait 300
+moveto 960 590 500
+wait 600
+moveto 1170 590 400
+wait 150
+press LEFT
+release LEFT
+wait 800
+press LEFT
+release LEFT
+wait 700
+moveto 1000 635 400
+wait 300
+cut

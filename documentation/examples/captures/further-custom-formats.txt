@@ -3,5 +3,5 @@
 ui com.example.further.FormatsUI
 wait 200
 # film further-custom-formats
-wait 640
+wait 2527
 cut

@@ -10,8 +10,8 @@ moveto 990 752 400
 wait 100
 press LEFT
 release LEFT
-wait 500
+wait 900
 press LEFT
 release LEFT
-wait 300
+wait 600
 moveto 1250 760 300

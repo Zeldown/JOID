@@ -84,7 +84,7 @@ Every node of the UI receives every press, wherever the pointer is: a listener t
 
 <figure>
 
-![A grey card with a "Button" and four counts at 0; the pointer presses the button, the card, then leaves the card to press outside it, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
+![A white card with a grey "Button" and four counts at 0 on a light grey background; the pointer presses the button, the card, then leaves the card to press outside it, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
 
 <figcaption>
 Three presses: on the button, on the card, then outside the card.
@@ -108,7 +108,7 @@ This field never receives a digit:
 ![A white text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, and only "RD" appears](/captures/interactivity-consume.webp)
 
 <figcaption>
-The user types `R2D2`: the listener consumes both digits before the field sees them.
+The user types `R2D2`: the listener consumes both digits before they reach the field.
 </figcaption>
 </figure>
 

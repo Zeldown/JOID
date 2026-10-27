@@ -80,10 +80,11 @@ Resize the window: the mockup and the UI scale together, because both live on th
 
 <figure>
 
-![The same card; the exported mockup appears over it at half opacity, every edge overlapping, then disappears](/captures/guides-mockup-overlay.webp)
+![The same card; the exported mockup appears over it at half opacity, then disappears: the card, the circle and the button of the mockup land exactly on those of the UI, and grey bars mark the place of the name and of the role](/captures/guides-mockup-overlay.webp)
 
 <figcaption>
-`F2` shows and hides the mockup over the UI: a single edge everywhere means a pixel-for-pixel copy.
+`F2` shows and hides the mockup over the UI: a shape that keeps a single edge is copied pixel for pixel.
+The mockup marks each text with a bar, so the text only has to sit on its bar.
 </figcaption>
 </figure>
 

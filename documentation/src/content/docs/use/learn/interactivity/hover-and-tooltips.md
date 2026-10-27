@@ -41,7 +41,7 @@ The hover progress runs from `0F` (not hovered) to `1F` (hovered).
 
 <figure>
 
-![A grey "Settings" button with a grey line under it that grows from the left while the pointer stays on the button](/captures/interactivity-underline.webp)
+![A grey "Settings" button with a grey line under it that grows from the left while the pointer stays on the button, and shrinks back once the pointer leaves](/captures/interactivity-underline.webp)
 
 <figcaption>
 The underline is `0` px wide at rest and `220` px wide once the button is hovered.

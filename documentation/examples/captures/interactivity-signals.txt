@@ -22,15 +22,23 @@ moveto 1100 700 500
 wait 300
 cut
 ui com.example.interactivity.signals.RereadUI
-move 700 410
+move 900 650
 # film interactivity-reread
-wait 700
+wait 300
+moveto 765 432 500
+wait 150
 press LEFT
 release LEFT
+moveto 815 475 250
 wait 700
+moveto 765 432 250
+wait 100
 press LEFT
 release LEFT
+moveto 815 475 250
 wait 700
+moveto 900 650 400
+wait 300
 cut
 ui com.example.interactivity.signals.TypesUI
 move 1150 690

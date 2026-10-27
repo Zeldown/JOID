@@ -13,12 +13,15 @@ public class ColorsUI extends UI {
 	private static final Color BRAND = Color.decode("#3366CC").lock();
 	// #endregion
 
+	private static final Color DARK = Color.decode("#555555").lock();
+
 	@Override
 	public void init() {
 		RectNode
 		.create(360, 60, 1200, 260)
 		.color(Color.WHITE)
 		.body(card -> {
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.DARK).attach(card);
 			// #region create
 			RectNode.create(60, 60, 140, 140).color(Color.GRAY).attach(card);
 			RectNode.create(260, 60, 140, 140).color(new Color(0.2F, 0.4F, 0.8F)).attach(card);
@@ -33,6 +36,7 @@ public class ColorsUI extends UI {
 		.create(360, 410, 1200, 260)
 		.color(Color.WHITE)
 		.body(card -> {
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.DARK).attach(card);
 			// #region derive
 			RectNode.create(60, 60, 140, 140).color(ColorsUI.BRAND).attach(card);
 			RectNode.create(240, 60, 140, 140).color(ColorsUI.BRAND.darker()).attach(card);
@@ -48,6 +52,7 @@ public class ColorsUI extends UI {
 		.create(360, 760, 1200, 260)
 		.color(Color.WHITE)
 		.body(card -> {
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.DARK).attach(card);
 			// #region gradient
 			final Point top = Point.of(0D, 0D);
 			final Point bottom = Point.of(0D, 1D);

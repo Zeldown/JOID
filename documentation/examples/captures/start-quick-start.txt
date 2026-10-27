@@ -31,7 +31,7 @@ shot quick-start-image
 shot quick-start-effects
 ui com.example.start.TourUI
 # film quick-start-animation 60
-wait 1600
+wait 3200
 cut
 ui com.example.start.TourUI
 move 400 650

@@ -103,7 +103,7 @@ To play an animation on demand, call `sequence(...)` again: it replaces the runn
 
 <figure>
 
-![A click on the grey Toggle button slides a grey square to the right end of its track, and the next click slides it back; the counter reads "Plays: 2"](/captures/style-click.webp)
+![A click on the grey Toggle button slides a grey square to the right end of its track, and the next click slides it back; the counter goes from "Plays: 0" to "Plays: 2"](/captures/style-click.webp)
 
 <figcaption>Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.</figcaption>
 </figure>
@@ -135,7 +135,7 @@ When the target keeps moving, move the value a share of the remaining distance o
 
 <figure>
 
-![A grey disc follows the pointer from left to right along a white band, with a smooth delay](/captures/style-follow.webp)
+![A grey disc follows the pointer from left to right along a white band and back, with a smooth delay](/captures/style-follow.webp)
 
 <figcaption>The disc covers a share of the distance to the pointer on every frame, so it slows down as it arrives.</figcaption>
 </figure>

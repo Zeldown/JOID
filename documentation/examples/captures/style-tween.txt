@@ -2,4 +2,4 @@
 ui com.example.style.TweenUI
 move 1700 950
 # film style-tween 60
-wait 3200
+wait 4000

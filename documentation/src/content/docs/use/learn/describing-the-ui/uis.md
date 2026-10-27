@@ -114,8 +114,14 @@ Overlays and popups open above the current screen instead of replacing it, so se
 ```java file="com/example/describing/uis/ReloadUI.java" region="rebuild"
 ```
 
-Reload counts on: the instance and its field stay.
-Renew starts again from 1: a new instance replaces the UI.
+<figure>
+
+![The text Builds: 1 above two grey buttons, Reload and Renew; the pointer clicks Reload twice and the text counts to 3, then clicks Renew and the text is back to Builds: 1](/captures/describing-uis-rebuild.webp)
+
+<figcaption>
+Reload keeps the instance and its field, so the count goes on; Renew replaces the instance, so the count starts again from 1.
+</figcaption>
+</figure>
 
 [[UI#reload]] rebuilds an open UI on the same instance: it reads the annotations of the class again, then runs `init()` again, so its fields keep their values.
 [[UI#renew]] starts from a fresh state instead: it replaces the open UI by a new instance of its class, built by its constructor without argument, and returns that instance.

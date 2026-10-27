@@ -119,7 +119,7 @@ The zoom makes a UI smaller around its anchor, on top of the fit and the interfa
 
 <figure>
 
-![A light grey card, smaller than the window around it, that reads 80 % above two grey buttons marked minus and plus.](/captures/describing-canvas-zoom.webp)
+![A window whose light grey UI is drawn smaller than the window, framed by the dark window around it, with a white card in its middle that reads 80 % above two grey buttons marked minus and plus; the pointer clicks plus and the UI grows to 90 %, then clicks minus and the UI shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
 
 <figcaption>
 At a zoom of 0.8, the whole UI is drawn at 80 % of its size, around the center of the window.

@@ -79,10 +79,10 @@ An effect that changes the pixels returns a [shader pass](/use/learn/going-furth
 
 <figure>
 
-![On a light grey background, a light grey rectangle, then a light grey rectangle with a dark grey disc inside it](/captures/further-effects-invert.webp)
+![On a light grey background, two light grey rectangles side by side: the first holds a white disc, the second a black disc](/captures/further-effects-invert.webp)
 
 <figcaption>
-Both rectangles are dark grey and the disc is white: the first effect inverts the node alone, the second inverts the node and its children.
+Both rectangles are drawn dark grey with a white disc: `SELF` inverts the rectangle alone and its disc stays white, `CHILDREN` inverts the disc too, which turns black.
 </figcaption>
 </figure>
 

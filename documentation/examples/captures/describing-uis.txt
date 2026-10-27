@@ -2,3 +2,24 @@
 ui com.example.describing.uis.MenuUI
 wait 100
 shot describing-uis-menu
+# crop describing-uis-rebuild 730 390 460 200
+ui com.example.describing.uis.ReloadUI
+move 1120 575
+# film describing-uis-rebuild
+wait 300
+moveto 855 535 500
+wait 150
+press LEFT
+release LEFT
+wait 700
+press LEFT
+release LEFT
+wait 700
+moveto 1065 535 400
+wait 150
+press LEFT
+release LEFT
+wait 900
+moveto 1120 575 400
+wait 300
+cut

@@ -17,13 +17,15 @@ public class ZoomUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(ZoomUI.INK);
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 40F).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 56F).color(ZoomUI.INK);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 56F).color(Color.WHITE);
+
+		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.PLACEHOLDER).attach(this);
 
 		// #region zoom
 		RectNode
 		.create(760, 340, 400, 400)
-		.color(ZoomUI.PLACEHOLDER)
+		.color(Color.WHITE)
 		.body(card -> {
 			TextNode
 			.create(200, 120)
