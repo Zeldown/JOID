@@ -33,6 +33,7 @@ export default defineConfig({
 			customCss: ['./src/styles/joid.css'],
 			head: [
 				{ tag: 'script', attrs: { src: writeLegacyRedirectScript(), defer: true } },
+				{ tag: 'script', attrs: { src: '/film.js', defer: true } },
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16.png' } },
 				{ tag: 'link', attrs: { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' } },
 				{ tag: 'meta', attrs: { property: 'og:image', content: 'https://documentation.joid.dev/og.png' } },

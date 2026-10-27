@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { filmMarkup } from '../plugins/film.mjs';
 import { withLock } from './gradle.mjs';
 
 const DOCUMENTATION = fileURLToPath(new URL('..', import.meta.url));
@@ -124,7 +125,7 @@ function page(catalog, index) {
 			const name = cardName(card);
 			const shot = shotName(section, card);
 			const img = `<img src="/captures/${shot}.webp" alt="${escape(card.alt)}" loading="lazy" width="340" height="300" />`;
-			const still = existsSync(join(CAPTURES, `${shot}.still.webp`)) ? `<picture><source srcset="/captures/${shot}.still.webp" media="(prefers-reduced-motion: reduce)" />${img}</picture>` : img;
+			const still = existsSync(join(CAPTURES, `${shot}.still.webp`)) ? filmMarkup(`/captures/${shot}.webp`, `/captures/${shot}.still.webp`, img) : img;
 			const image = card.capture !== false && existsSync(join(CAPTURES, `${shot}.webp`)) ? still : `<div class="joid-card-empty" aria-hidden="true"><code>${escape(name)}</code></div>`;
 			const summary = card.type ? entry.summary : '';
 			const abstract = card.type && entry.abstract && entry.ancestors.includes('dev.joid.lib.ui.node.Node') ? ` <a class="joid-badge" href="${SKINS}">needs a skin</a>` : '';

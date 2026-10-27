@@ -128,3 +128,68 @@
 .joid-sidebar-section {
 	font-weight: 600;
 }
+
+.joid-film {
+	background: none;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+	display: block;
+	font: inherit;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+.joid-film:focus-visible {
+	outline: 2px solid var(--sl-color-accent);
+	outline-offset: 2px;
+}
+
+.joid-film img {
+	display: block;
+}
+
+.joid-card .joid-film {
+	width: 100%;
+}
+
+.joid-film-state {
+	background: rgb(0 0 0 / 0.6);
+	border-radius: 999px;
+	bottom: 0.5rem;
+	color: #ffffff;
+	font-size: 0;
+	height: 1.75rem;
+	opacity: 0;
+	position: absolute;
+	right: 0.5rem;
+	transition: opacity 0.15s;
+	width: 1.75rem;
+}
+
+.joid-film-state::before {
+	content: '❚❚';
+	font-size: 0.7rem;
+	left: 50%;
+	letter-spacing: -0.05em;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.joid-film[aria-pressed='true'] .joid-film-state::before {
+	content: '▶';
+}
+
+.joid-film:hover .joid-film-state,
+.joid-film:focus-visible .joid-film-state,
+.joid-film[aria-pressed='true'] .joid-film-state {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.joid-film-state {
+		transition: none;
+	}
+}

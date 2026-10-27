@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { visit, SKIP } from 'unist-util-visit';
+import { filmMarkup } from './film.mjs';
 import { readRegion, parseMeta, EXAMPLES, SOURCE } from './snippets.mjs';
 
 const INDEX = new URL('../src/generated/reference-index.json', import.meta.url);
@@ -138,7 +139,7 @@ function stillFrames(tree) {
 			return;
 		}
 		const title = node.title ? ` title="${escape(node.title)}"` : '';
-		parent.children.splice(position, 1, { type: 'html', value: `<picture><source srcset="/captures/${match[1]}.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="${node.url}" alt="${escape(node.alt)}"${title} loading="lazy" /></picture>` });
+		parent.children.splice(position, 1, { type: 'html', value: filmMarkup(node.url, `/captures/${match[1]}.still.webp`, `<img src="${node.url}" alt="${escape(node.alt)}"${title} loading="lazy" />`) });
 	});
 }
 
