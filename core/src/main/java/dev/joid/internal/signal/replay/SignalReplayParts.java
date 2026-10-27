@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-final class SignalReplayParts {
+public final class SignalReplayParts {
 
 	private final List<Object> partList = new ArrayList<>();
 

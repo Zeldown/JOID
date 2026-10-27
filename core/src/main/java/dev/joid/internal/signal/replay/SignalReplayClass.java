@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class SignalReplayClass {
+public final class SignalReplayClass {
 
 	private final File        file;
 	private final long        modified;

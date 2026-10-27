@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class SignalReplayCall {
+public final class SignalReplayCall {
 
 	private final StackTraceElement caller;
 	private final String            setter;

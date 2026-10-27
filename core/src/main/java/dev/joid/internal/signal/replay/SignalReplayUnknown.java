@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class SignalReplayUnknown {
+public final class SignalReplayUnknown {
 
 	private final Object key;
 	private final String description;

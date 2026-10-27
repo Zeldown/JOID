@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class SignalReplaySite {
+public final class SignalReplaySite {
 
 	private final List<SignalReplaySlice> sliceList;
 	private final SignalReplayException   failure;

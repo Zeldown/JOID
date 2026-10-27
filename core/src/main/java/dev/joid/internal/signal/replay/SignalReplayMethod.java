@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
@@ -38,7 +38,7 @@ import dev.joid.lib.bridge.signal.ISignalReplayBridge;
 import dev.joid.lib.signal.Signal;
 import lombok.Getter;
 
-final class SignalReplayMethod {
+public final class SignalReplayMethod {
 
 	@Getter private final boolean              isStatic;
 	@Getter private final MethodNode           method;

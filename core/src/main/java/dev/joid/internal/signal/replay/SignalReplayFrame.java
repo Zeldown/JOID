@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -29,7 +29,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import dev.joid.lib.signal.SignalContext;
 import lombok.Getter;
 
-final class SignalReplayFrame {
+public final class SignalReplayFrame {
 
 	private static final Map<Integer, String> OPCODE_MAP = new HashMap<>();
 

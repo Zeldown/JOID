@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 import lombok.Getter;
 
 @Getter
-final class SignalReplaySlice {
+public final class SignalReplaySlice {
 
 	private final int                start;
 	private final int                end;

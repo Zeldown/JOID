@@ -12,6 +12,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
+import dev.joid.internal.signal.replay.SignalReplayCall;
+import dev.joid.internal.signal.replay.SignalReplayClass;
+import dev.joid.internal.signal.replay.SignalReplayException;
+import dev.joid.internal.signal.replay.SignalReplayFailure;
+import dev.joid.internal.signal.replay.SignalReplayMatch;
+import dev.joid.internal.signal.replay.SignalReplayParts;
+import dev.joid.internal.signal.replay.SignalReplayRun;
+import dev.joid.internal.signal.replay.SignalReplaySite;
+import dev.joid.internal.signal.replay.SignalReplaySlice;
+import dev.joid.internal.signal.replay.SignalReplayUnknown;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
@@ -76,7 +86,7 @@ public final class SignalReplay {
 		SignalReplay.SITES.clear();
 	}
 
-	static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
+	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
 		JOIDLog.devWarnOnce("SignalReplay." + call.getKey(), () -> call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
 	}
 

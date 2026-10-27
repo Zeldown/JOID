@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-final class SignalReplayRun {
+public final class SignalReplayRun {
 
 	@Getter private final Object                 self;
 	@Getter private final boolean                definitions;

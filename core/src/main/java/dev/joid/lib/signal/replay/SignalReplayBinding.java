@@ -3,6 +3,13 @@ package dev.joid.lib.signal.replay;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.internal.signal.replay.SignalReplayCall;
+import dev.joid.internal.signal.replay.SignalReplayException;
+import dev.joid.internal.signal.replay.SignalReplayFailure;
+import dev.joid.internal.signal.replay.SignalReplayMatch;
+import dev.joid.internal.signal.replay.SignalReplayParts;
+import dev.joid.internal.signal.replay.SignalReplayRun;
+import dev.joid.internal.signal.replay.SignalReplayUnknown;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 
@@ -16,7 +23,7 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 	private T       value;
 	private boolean started;
 
-	SignalReplayBinding(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
+	public SignalReplayBinding(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
 		this.call     = call;
 		this.match    = match;
 		this.readList = readList;

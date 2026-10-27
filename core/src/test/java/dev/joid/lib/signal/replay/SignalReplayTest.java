@@ -17,6 +17,7 @@ import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
 import dev.joid.internal.TestUtils;
+import dev.joid.internal.signal.replay.SignalReplayMethod;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;

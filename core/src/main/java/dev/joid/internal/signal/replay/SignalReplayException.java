@@ -1,11 +1,11 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.Locale;
 
 import lombok.Getter;
 
 @Getter
-class SignalReplayException extends RuntimeException {
+public class SignalReplayException extends RuntimeException {
 
 	private final Object[]            arguments;
 	private final SignalReplayFailure failure;

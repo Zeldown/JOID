@@ -1,4 +1,4 @@
-package dev.joid.lib.signal.replay;
+package dev.joid.internal.signal.replay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-final class SignalReplayMatch {
+public final class SignalReplayMatch {
 
 	private final SignalReplaySlice      slice;
 	private final Object                 self;
