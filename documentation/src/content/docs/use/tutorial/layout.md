@@ -38,6 +38,11 @@ The menu looks the same as before, but you can insert a button anywhere by addin
 
 ## 2. Add the profile panel
 
+Add a light grey, `PAPER`, to the palette of `Theme`, for the cards and the rows:
+
+```java file="com/example/tutorial/layout/Theme.java" title="Theme.java" ins={15}
+```
+
 The panel needs three more styles: a heading, a caption and a large value.
 Declare them at the top of `init()`, with the other styles:
 
@@ -50,11 +55,13 @@ Add it after the column:
 ```java file="com/example/tutorial/layout/MenuUI.java" region="panel"
 ```
 
+- `body(...)` creates the children inside their parent, which the lambda receives ([Nodes and the tree](/use/learn/describing-the-ui/nodes/)).
 - A [[GridNode]], `GridNode.create(48, 120, 904, 150)`, places its children in rows, from left to right, and starts a new row when the next child does not fit in its 904 design pixels.
   Three cards of 280 with two gaps of 32 fill one row exactly.
 - The recent rounds are a second column: a `FlexNode.vertical` whose rows are 72 design pixels high, 12 apart.
   A plain Java loop creates the rows, one per entry of the array.
 - In each row, the points sit against the right edge: `row.aw(-24)` is the width of the row minus 24, and [[Align]]`.END`, given to `anchorX(...)`, puts the end of the text on that point.
+  `row.dh(2)` is half the height of the row, and `anchorY(Align.CENTER)` centers each text on it vertically ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
 
 **Run it.**
 You should see the panel with its three cards and its three rounds.

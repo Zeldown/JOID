@@ -28,12 +28,11 @@ A store holds values that outlive a UI.
 Its scope decides how long: `PERMANENT` keeps it for the whole run, shares it between every UI that asks for it, and saves it to a file.
 Create `SettingsStore.java`:
 
-```java file="com/example/tutorial/settings/SettingsStore.java" region="class" title="SettingsStore.java"
+```java file="com/example/tutorial/settings/SettingsStore.java" title="SettingsStore.java"
 ```
 
 - The annotation [[UIStoreData]] names the file of the store, and its scope, a [[UIStoreScope]], sets how long the store lives: `@UIStoreData(id = "settings", scope = UIStoreScope.PERMANENT)`.
 - `toJson()` writes the values when JOID saves the store; `fromJson(...)` reads them back when a file exists, and without one the store keeps the defaults of its fields.
-  `peek()` reads a signal without following it.
 - The values are signals, so every node built from them follows them.
 
 The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int`.
@@ -117,4 +116,4 @@ A property suits a value that belongs to one UI; a store suits values that sever
 - A [store](/use/learn/state/stores-and-properties/) holds values that outlive a UI; its scope decides how long it lives and whether it is saved.
 - Two UIs that ask for the same `PERMANENT` store share its signals.
 - JOID saves stores and properties when a UI closes, so [close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
-- A field marked `@UIProperty` keeps its value from one run to the next ([Stores and properties](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui)).
+- A field marked `@UIProperty` keeps its value from one run to the next ([Stores and remembered properties](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui)).

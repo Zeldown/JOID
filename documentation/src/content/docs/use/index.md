@@ -24,6 +24,8 @@ The button reads the signal `notifications`, so its color and its label follow e
 </figcaption>
 </figure>
 
+`ExampleFont` loads the font of the examples ([Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation)).
+
 The [Quick Start](/use/get-started/quick-start/) writes a smaller screen line by line and runs it in a window.
 
 ## What JOID gives you
@@ -31,7 +33,7 @@ The [Quick Start](/use/get-started/quick-start/) writes a smaller screen line by
 - **A tree of nodes.** Rectangles, text, images, videos, 3D models, controls and layouts, created by factories and nested in each other ([Nodes and the tree](/use/learn/describing-the-ui/nodes/)).
 - **A design canvas.** You copy positions and sizes from your mockup, and JOID scales the canvas to the window ([The design canvas](/use/learn/describing-the-ui/design-canvas/)).
 - **Signals.** A node that reads a signal follows its value: change the value, and the screen follows ([Signals](/use/learn/interactivity/signals/)).
-- **Your own look.** Controls handle the behavior and the input; you decide how they look ([UI kit](/use/learn/going-further/ui-kit/)).
+- **Your own look.** Controls handle the behavior and the input; you decide how they look ([Give your controls a look](/use/learn/going-further/ui-kit/)).
 - **Sharp rendering.** Text, curves and images stay sharp at every size, on every backend ([Pixel alignment](/use/in-depth/pixel-alignment/)).
 - **Dev tools.** With the dev jar, an inspector, a hot reload, and warnings that name the cause and the fix ([Dev tools](/use/get-started/dev-tools/)).
 
@@ -54,7 +56,7 @@ The sidebar follows the reading order from there: the [Tutorial](/use/tutorial/)
 ## How to read Learn
 
 The Learn chapters form one path, from describing a screen to running it in your application.
-Each page relies only on the pages before it, so read them in the sidebar order the first time, starting with [How JOID thinks](/use/learn/how-joid-thinks/).
+Each page relies only on the pages before it, so read them in the sidebar order the first time, starting with [How JOID works](/use/learn/how-joid-thinks/).
 A page explains one notion in full; any other page that needs it gives one sentence and a link.
 
 The examples of Learn and of the guides are UIs: the [launcher of the Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation) runs any of them.

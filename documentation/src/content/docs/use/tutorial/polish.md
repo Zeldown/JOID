@@ -122,11 +122,11 @@ At 0 the column sits 520 design pixels to the left of its place, outside the can
 
 - An [effect](/use/learn/style-and-motion/effects/) changes how a node is drawn: rounded corners, shadows, and more.
 - A [color](/use/learn/style-and-motion/styling/) carries its own opacity.
-- `cursor(...)` sets the pointer over a node ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node)).
+- `cursor(...)` sets the pointer over a node ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node)).
 - A `TweenAnimator` moves a value over time, and a setter that reads it in a lambda follows it on every frame ([Animation](/use/learn/style-and-motion/animation/)).
 - Popups play an opening and a closing [transition](/use/learn/style-and-motion/transitions/).
 
 ## Where to go next
 
 You have used most of what JOID offers.
-Read [How JOID thinks](/use/learn/how-joid-thinks/), then follow the Learn chapters to understand each tool in full, or browse the [Guides](/use/guides/) for precise tasks.
+Read [How JOID works](/use/learn/how-joid-thinks/), then follow the Learn chapters to understand each tool in full, or browse the [Guides](/use/guides/) for precise tasks.

@@ -57,7 +57,7 @@ The console prints `[JOID] 8.0.0 loaded in dev mode, …` ([Installation](/use/g
 
 Check, in this order:
 
-1. **`ExceptionInInitializerError` in `CounterUI`**: the font file is not at `src/main/resources/fonts/Montserrat/Montserrat-Regular.ttf`, so `getResourceAsStream` returns `null`.
+1. **`ExceptionInInitializerError` in `CounterUI`**: the font file is not at `src/main/resources/fonts/Montserrat/Montserrat-Regular.ttf`, and the stack trace reads `The asset fonts/Montserrat/Montserrat-Regular.ttf is not found in the classpath nor as a file`.
 2. **`UnsatisfiedLinkError`, `NoClassDefFoundError`, or a thread error on macOS**: an LWJGL module or its natives are missing; [If it does not work](/use/get-started/installation/#if-it-does-not-work) of Installation gives the cause of each.
 3. **`Unable to create the window`**: the driver offers no OpenGL 3.3 core context; call `GlContextRequest.COMPATIBILITY.apply()` instead, to take the default context of the driver.
 4. **The window stays black or empty**: [Troubleshooting](/use/troubleshooting/) lists the checks by symptom.
@@ -88,6 +88,9 @@ gradle run --args="com.example.start.CounterUI"
 An example that reads a file reads it from the resources, under the path that its code names.
 The [resources of the examples](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/resources) hold every one of them: fonts, images, a video and 3D models.
 Copy the folders you need into your `src/main/resources`, under the same paths.
+
+JOID draws no control by itself: the examples of controls, text fields, events and shortcuts use the skins of the example kit.
+Copy the [package `com.example.kit`](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/java/com/example/kit) next to `ExampleFont` to run them.
 
 ## Place nodes on the design canvas
 
@@ -153,7 +156,7 @@ Read [Images and media](/use/learn/describing-the-ui/media/), which also plays v
 `hoveredColor(...)` and `onClick(...)` in the program above are the most common reactions.
 Nodes also react to the pointer entering and leaving, to drags, to the wheel and to keys.
 
-Read [Events](/use/learn/interactivity/events/), [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/), [Drag and drop](/use/learn/interactivity/drag-and-drop/) and [Keyboard and shortcuts](/use/learn/interactivity/keyboard/).
+Read [Events](/use/learn/interactivity/events/), [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/), [Drag and drop](/use/learn/interactivity/drag-and-drop/) and [Keyboard and shortcuts](/use/learn/interactivity/keyboard/).
 [Controls](/use/learn/interactivity/controls/) and [Text fields](/use/learn/interactivity/text-fields/) cover checkboxes, sliders and text input.
 
 ## Follow a value with a signal
@@ -189,7 +192,7 @@ JOID saves it when the UI closes, which is why `Main` and the launcher call `clo
 ```java file="com/example/start/TourUI.java" region="visits"
 ```
 
-Read [Stores and properties](/use/learn/state/stores-and-properties/) to share values between UIs, and [Where JOID stores files](/use/learn/running/files/) to find the files.
+Read [Stores and remembered properties](/use/learn/state/stores-and-properties/) to share values between UIs, and [Where JOID stores files](/use/learn/running/files/) to find the files.
 
 ## Round the corners and add a shadow
 
@@ -254,4 +257,4 @@ Read [Dev tools](/use/get-started/dev-tools/).
 ## Next steps
 
 - Build a complete menu, lesson by lesson, in the [Tutorial](/use/tutorial/).
-- Learn the ideas behind JOID in [How JOID thinks](/use/learn/how-joid-thinks/), then follow the Learn chapters in order.
+- Learn the ideas behind JOID in [How JOID works](/use/learn/how-joid-thinks/), then follow the Learn chapters in order.
