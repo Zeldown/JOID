@@ -1,0 +1,8 @@
+# crop start-intro 600 380 720 340
+ui com.example.start.IntroUI
+move 1132 540
+press LEFT
+release LEFT
+move 1900 1070
+wait 300
+shot start-intro

@@ -1,0 +1,38 @@
+# crop quick-start-counter 560 380 800 320
+# crop quick-start-flex 30 30 440 320
+# crop quick-start-image 490 30 440 320
+# crop quick-start-effects 950 30 440 320
+# crop quick-start-animation 1410 30 440 320
+# crop quick-start-click 30 370 440 320
+ui com.example.start.CounterUI
+move 960 540
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+move 1900 1070
+wait 300
+shot quick-start-counter
+ui com.example.start.TourUI
+wait 300
+shot quick-start-flex
+shot quick-start-image
+shot quick-start-effects
+ui com.example.start.TourUI
+# film quick-start-animation
+wait 1600
+cut
+ui com.example.start.TourUI
+move 250 530
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+move 1900 1070
+wait 300
+shot quick-start-click

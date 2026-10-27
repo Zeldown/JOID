@@ -3,3 +3,13 @@
 # call <class> <static method or field>: the runner calls the method (or reads the field) with no argument, then draws 10 frames.
 # expect <class> <message>: the class prints this message on purpose, for example on a line marked with a cross.
 # A class that no UI and no call loads, and that has no skip line, fails the check.
+skip com.example.start.VersionCheck program that prints the version of JOID, it opens no UI
+skip com.example.start.Main program that opens its own GLFW window
+skip com.example.start.Launcher program that opens its own GLFW window
+skip com.example.tutorial.setup.Main program that opens its own GLFW window
+skip com.example.tutorial.menu.Main program that opens its own GLFW window
+skip com.example.tutorial.layout.Main program that opens its own GLFW window
+skip com.example.tutorial.interaction.Main program that opens its own GLFW window
+skip com.example.tutorial.state.Main program that opens its own GLFW window
+skip com.example.tutorial.settings.Main program that opens its own GLFW window
+skip com.example.tutorial.polish.Main program that opens its own GLFW window
