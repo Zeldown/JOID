@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.WebpResourceAnimationReader.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [WebpResourceAnimationReader](#WebpResourceAnimationReader-constructor)() |  |
+
 <a id="WebpResourceAnimationReader-methods"></a>
 
 ## Methods
@@ -25,6 +31,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | [`ResourceAnimation`](/reference/resources/resourceanimation/) | [read](#WebpResourceAnimationReader-method-read)(InputStream stream) |  |
 | `boolean` | [isWebp](#WebpResourceAnimationReader-method-isWebp)(byte[] bytes) <span class="joid-qualifier">static</span> |  |
 | `boolean` | [isAnimated](#WebpResourceAnimationReader-method-isAnimated)(byte[] bytes) <span class="joid-qualifier">static</span> |  |
+
+## Creation details
+
+<a id="WebpResourceAnimationReader-constructor"></a>
+
+### WebpResourceAnimationReader
+
+`WebpResourceAnimationReader()` 
+
+<div class="joid-missing">Missing description: add <code>## WebpResourceAnimationReader()</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.WebpResourceAnimationReader.md</code>.</div>
 
 ## Method details
 

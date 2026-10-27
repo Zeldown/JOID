@@ -21,16 +21,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataDebugObject`](/reference/annotations/uidatadebugobject/) | [create](#UIDataDebugObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataDebugObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [profiler](#UIDataDebugObject-property-profiler) | `boolean` | `true` |  |
+| [hotreload](#UIDataDebugObject-property-hotreload) | `boolean` | `true` |  |
+
 <a id="UIDataDebugObject-methods"></a>
 
 ## Methods
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isProfiler](#UIDataDebugObject-method-isProfiler)() |  |
-| `void` | [setProfiler](#UIDataDebugObject-method-setProfiler)(boolean profiler) |  |
-| `boolean` | [isHotreload](#UIDataDebugObject-method-isHotreload)() |  |
-| `void` | [setHotreload](#UIDataDebugObject-method-setHotreload)(boolean hotreload) |  |
+| `String` | [toString](#UIDataDebugObject-method-toString)() |  |
 
 ## Creation details
 
@@ -42,39 +48,39 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataDebugObject-property-profiler"></a>
+
+### profiler
+
+- `this profiler(boolean profiler)` <span class="joid-qualifier">fluent</span>
+- `boolean profiler()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## profiler</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
+
+<a id="UIDataDebugObject-property-hotreload"></a>
+
+### hotreload
+
+- `this hotreload(boolean hotreload)` <span class="joid-qualifier">fluent</span>
+- `boolean hotreload()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## hotreload</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
+
 ## Method details
 
-<a id="UIDataDebugObject-method-isProfiler"></a>
+<a id="UIDataDebugObject-method-toString"></a>
 
-### isProfiler
+### toString
 
-`boolean isProfiler()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isProfiler()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
-
-<a id="UIDataDebugObject-method-setProfiler"></a>
-
-### setProfiler
-
-`void setProfiler(boolean profiler)` 
-
-<div class="joid-missing">Missing description: add <code>## setProfiler(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
-
-<a id="UIDataDebugObject-method-isHotreload"></a>
-
-### isHotreload
-
-`boolean isHotreload()` 
-
-<div class="joid-missing">Missing description: add <code>## isHotreload()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
-
-<a id="UIDataDebugObject-method-setHotreload"></a>
-
-### setHotreload
-
-`void setHotreload(boolean hotreload)` 
-
-<div class="joid-missing">Missing description: add <code>## setHotreload(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataDebugObject.md</code>.</div>
 
 ---
 

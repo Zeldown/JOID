@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.tool.msdf.geometry.Shape.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Shape](#Shape-constructor)() |  |
+
 <a id="Shape-methods"></a>
 
 ## Methods
@@ -26,6 +32,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `boolean` | [isEmpty](#Shape-method-isEmpty)() |  |
 | `double[]` | [bounds](#Shape-method-bounds)() |  |
 | `void` | [orient](#Shape-method-orient)() |  |
+
+## Creation details
+
+<a id="Shape-constructor"></a>
+
+### Shape
+
+`Shape()` 
+
+<div class="joid-missing">Missing description: add <code>## Shape()</code> to <code>documentation/reference/dev.joid.tool.msdf.geometry.Shape.md</code>.</div>
 
 ## Method details
 

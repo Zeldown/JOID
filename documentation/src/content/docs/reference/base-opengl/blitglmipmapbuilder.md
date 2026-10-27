@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [BlitGlMipmapBuilder](#BlitGlMipmapBuilder-constructor)() |  |
+
 <a id="BlitGlMipmapBuilder-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [build](#BlitGlMipmapBuilder-method-build)(GlRenderBridge bridge, GlTexture texture, MipmapChain chain) |  |
+
+## Creation details
+
+<a id="BlitGlMipmapBuilder-constructor"></a>
+
+### BlitGlMipmapBuilder
+
+`BlitGlMipmapBuilder()` 
+
+<div class="joid-missing">Missing description: add <code>## BlitGlMipmapBuilder()</code> to <code>documentation/reference/dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder.md</code>.</div>
 
 ## Method details
 

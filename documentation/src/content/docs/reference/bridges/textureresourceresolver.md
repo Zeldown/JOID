@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.resolver.impl.TextureResourceResolver.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [TextureResourceResolver](#TextureResourceResolver-constructor)() |  |
+
 <a id="TextureResourceResolver-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#TextureResourceResolver-method-supports)(Object input) |  |
 | [`Resource`](/reference/resources/resource/) | [resolve](#TextureResourceResolver-method-resolve)(ResourceBuilder builder, Object input) |  |
+
+## Creation details
+
+<a id="TextureResourceResolver-constructor"></a>
+
+### TextureResourceResolver
+
+`TextureResourceResolver()` 
+
+<div class="joid-missing">Missing description: add <code>## TextureResourceResolver()</code> to <code>documentation/reference/dev.joid.lib.resource.resolver.impl.TextureResourceResolver.md</code>.</div>
 
 ## Method details
 

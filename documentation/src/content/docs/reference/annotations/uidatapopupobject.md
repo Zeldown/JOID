@@ -21,16 +21,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataPopupObject`](/reference/annotations/uidatapopupobject/) | [create](#UIDataPopupObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataPopupObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [active](#UIDataPopupObject-property-active) | `boolean` | `false` |  |
+| [transition](#UIDataPopupObject-property-transition) | [`PopupTransition`](/reference/annotations/uidatapopup-popuptransition/) | `PopupTransition.IN_OUT` |  |
+
 <a id="UIDataPopupObject-methods"></a>
 
 ## Methods
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isActive](#UIDataPopupObject-method-isActive)() |  |
-| `void` | [setActive](#UIDataPopupObject-method-setActive)(boolean active) |  |
-| [`PopupTransition`](/reference/annotations/uidatapopup-popuptransition/) | [getTransition](#UIDataPopupObject-method-getTransition)() |  |
-| `void` | [setTransition](#UIDataPopupObject-method-setTransition)(PopupTransition transition) |  |
+| `String` | [toString](#UIDataPopupObject-method-toString)() |  |
 
 ## Creation details
 
@@ -42,39 +48,39 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataPopupObject-property-active"></a>
+
+### active
+
+- `this active(boolean active)` <span class="joid-qualifier">fluent</span>
+- `boolean active()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## active</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
+
+<a id="UIDataPopupObject-property-transition"></a>
+
+### transition
+
+- `this transition(PopupTransition transition)` <span class="joid-qualifier">fluent</span>
+- `PopupTransition transition()` 
+
+**Default:** `PopupTransition.IN_OUT`
+
+<div class="joid-missing">Missing description: add <code>## transition</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
+
 ## Method details
 
-<a id="UIDataPopupObject-method-isActive"></a>
+<a id="UIDataPopupObject-method-toString"></a>
 
-### isActive
+### toString
 
-`boolean isActive()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isActive()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
-
-<a id="UIDataPopupObject-method-setActive"></a>
-
-### setActive
-
-`void setActive(boolean active)` 
-
-<div class="joid-missing">Missing description: add <code>## setActive(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
-
-<a id="UIDataPopupObject-method-getTransition"></a>
-
-### getTransition
-
-`PopupTransition getTransition()` 
-
-<div class="joid-missing">Missing description: add <code>## getTransition()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
-
-<a id="UIDataPopupObject-method-setTransition"></a>
-
-### setTransition
-
-`void setTransition(PopupTransition transition)` 
-
-<div class="joid-missing">Missing description: add <code>## setTransition(PopupTransition)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataPopupObject.md</code>.</div>
 
 ---
 

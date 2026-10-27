@@ -34,6 +34,8 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | [`Factor`](/reference/pipeline/blendstate-factor/) | [getDestinationColor](#BlendState-method-getDestinationColor)() |  |
 | [`Factor`](/reference/pipeline/blendstate-factor/) | [getSourceAlpha](#BlendState-method-getSourceAlpha)() |  |
 | [`Factor`](/reference/pipeline/blendstate-factor/) | [getDestinationAlpha](#BlendState-method-getDestinationAlpha)() |  |
+| `boolean` | [equals](#BlendState-method-equals)(Object other) |  |
+| `int` | [hashCode](#BlendState-method-hashCode)() |  |
 
 ## Constants and fields
 
@@ -106,6 +108,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `Factor getDestinationAlpha()` 
 
 <div class="joid-missing">Missing description: add <code>## getDestinationAlpha()</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.BlendState.md</code>.</div>
+
+<a id="BlendState-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.BlendState.md</code>.</div>
+
+<a id="BlendState-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.BlendState.md</code>.</div>
 
 ## Constant and field details
 

@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotAudioSource.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SnapshotAudioSource](#SnapshotAudioSource-constructor)() |  |
+
 <a id="SnapshotAudioSource-methods"></a>
 
 ## Methods
@@ -31,6 +37,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [write](#SnapshotAudioSource-method-write)(short[] samples) |  |
 | `boolean` | [isPlaying](#SnapshotAudioSource-method-isPlaying)() |  |
 | `int` | [getBufferedSamples](#SnapshotAudioSource-method-getBufferedSamples)() |  |
+
+## Creation details
+
+<a id="SnapshotAudioSource-constructor"></a>
+
+### SnapshotAudioSource
+
+`SnapshotAudioSource()` 
+
+<div class="joid-missing">Missing description: add <code>## SnapshotAudioSource()</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotAudioSource.md</code>.</div>
 
 ## Method details
 

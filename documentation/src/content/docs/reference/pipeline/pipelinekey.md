@@ -36,6 +36,8 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `boolean` | [isCull](#PipelineKey-method-isCull)() |  |
 | [`Primitive`](/reference/pipeline/primitive/) | [getPrimitive](#PipelineKey-method-getPrimitive)() |  |
 | `boolean` | [isStencil](#PipelineKey-method-isStencil)() |  |
+| `boolean` | [equals](#PipelineKey-method-equals)(Object other) |  |
+| `int` | [hashCode](#PipelineKey-method-hashCode)() |  |
 
 ## Creation details
 
@@ -120,6 +122,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `boolean isStencil()` 
 
 <div class="joid-missing">Missing description: add <code>## isStencil()</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.PipelineKey.md</code>.</div>
+
+<a id="PipelineKey-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.PipelineKey.md</code>.</div>
+
+<a id="PipelineKey-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.bridge.render.state.PipelineKey.md</code>.</div>
 
 ---
 

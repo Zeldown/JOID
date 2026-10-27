@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.utils.registry.Registry.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Registry](#Registry-constructor)() |  |
+
 <a id="Registry-methods"></a>
 
 ## Methods
@@ -25,6 +31,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [unregister](#Registry-method-unregister)(T value) |  |
 | `T` | [find](#Registry-method-find)(Predicate<T> predicate) |  |
 | `List<T>` | [getAll](#Registry-method-getAll)() |  |
+
+## Creation details
+
+<a id="Registry-constructor"></a>
+
+### Registry
+
+`Registry()` 
+
+<div class="joid-missing">Missing description: add <code>## Registry()</code> to <code>documentation/reference/dev.joid.lib.utils.registry.Registry.md</code>.</div>
 
 ## Method details
 

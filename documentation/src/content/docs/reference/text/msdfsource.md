@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.font.impl.msdf.source.MsdfSource.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [MsdfSource](#MsdfSource-constructor)() |  |
+
 <a id="MsdfSource-properties"></a>
 
 ## Properties
@@ -46,6 +52,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 [`describe`](/reference/text/imsdfsource/#IMsdfSource-method-describe)
 
 </details>
+
+## Creation details
+
+<a id="MsdfSource-constructor"></a>
+
+### MsdfSource
+
+`MsdfSource()` 
+
+<div class="joid-missing">Missing description: add <code>## MsdfSource()</code> to <code>documentation/reference/dev.joid.lib.font.impl.msdf.source.MsdfSource.md</code>.</div>
 
 ## Property details
 

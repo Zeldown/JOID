@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Lwjgl2WindowBridge](#Lwjgl2WindowBridge-constructor)() |  |
+
 <a id="Lwjgl2WindowBridge-methods"></a>
 
 ## Methods
@@ -31,6 +37,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `boolean` | [isKeyDown](#Lwjgl2WindowBridge-method-isKeyDown)(Key physicalKey) |  |
 | `String` | [getClipboard](#Lwjgl2WindowBridge-method-getClipboard)() |  |
 | `void` | [setClipboard](#Lwjgl2WindowBridge-method-setClipboard)(String text) |  |
+
+## Creation details
+
+<a id="Lwjgl2WindowBridge-constructor"></a>
+
+### Lwjgl2WindowBridge
+
+`Lwjgl2WindowBridge()` 
+
+<div class="joid-missing">Missing description: add <code>## Lwjgl2WindowBridge()</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge.md</code>.</div>
 
 ## Method details
 

@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Lwjgl2SnapshotBackend](#Lwjgl2SnapshotBackend-constructor)() |  |
+
 <a id="Lwjgl2SnapshotBackend-methods"></a>
 
 ## Methods
@@ -30,6 +36,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `String` | [getRenderer](#Lwjgl2SnapshotBackend-method-getRenderer)() |  |
 | `Pbuffer` | [getBuffer](#Lwjgl2SnapshotBackend-method-getBuffer)() |  |
 | [`GlRenderBridge`](/reference/base-opengl/glrenderbridge/) | [getBridge](#Lwjgl2SnapshotBackend-method-getBridge)() |  |
+
+## Creation details
+
+<a id="Lwjgl2SnapshotBackend-constructor"></a>
+
+### Lwjgl2SnapshotBackend
+
+`Lwjgl2SnapshotBackend()` 
+
+<div class="joid-missing">Missing description: add <code>## Lwjgl2SnapshotBackend()</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend.md</code>.</div>
 
 ## Method details
 

@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.contract.BitmapFontContractSuite.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [BitmapFontContractSuite](#BitmapFontContractSuite-constructor)() |  |
+
 <a id="BitmapFontContractSuite-methods"></a>
 
 ## Methods
@@ -32,6 +38,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | [`ISnapshotBackend`](/reference/testing/isnapshotbackend/) | [createBackend](#BitmapFontContractSuite-method-createBackend)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="BitmapFontContractSuite-constructor"></a>
+
+### BitmapFontContractSuite
+
+`BitmapFontContractSuite()` 
+
+<div class="joid-missing">Missing description: add <code>## BitmapFontContractSuite()</code> to <code>documentation/reference/dev.joid.test.contract.BitmapFontContractSuite.md</code>.</div>
 
 ## Method details
 

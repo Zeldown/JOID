@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.VideoResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [VideoResourceFormat](#VideoResourceFormat-constructor)() |  |
+
 <a id="VideoResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#VideoResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#VideoResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="VideoResourceFormat-constructor"></a>
+
+### VideoResourceFormat
+
+`VideoResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## VideoResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.VideoResourceFormat.md</code>.</div>
 
 ## Method details
 

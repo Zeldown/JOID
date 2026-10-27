@@ -21,6 +21,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataScaleObject`](/reference/annotations/uidatascaleobject/) | [create](#UIDataScaleObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataScaleObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [limit](#UIDataScaleObject-property-limit) | `double` | `1D` |  |
+| [active](#UIDataScaleObject-property-active) | `boolean` | `true` |  |
+| [limited](#UIDataScaleObject-property-limited) | `boolean` | `false` |  |
+
 <a id="UIDataScaleObject-methods"></a>
 
 ## Methods
@@ -28,12 +38,7 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `double` | [apply](#UIDataScaleObject-method-apply)(double interfaceScale) |  |
-| `double` | [getLimit](#UIDataScaleObject-method-getLimit)() |  |
-| `void` | [setLimit](#UIDataScaleObject-method-setLimit)(double limit) |  |
-| `boolean` | [isActive](#UIDataScaleObject-method-isActive)() |  |
-| `void` | [setActive](#UIDataScaleObject-method-setActive)(boolean active) |  |
-| `boolean` | [isLimited](#UIDataScaleObject-method-isLimited)() |  |
-| `void` | [setLimited](#UIDataScaleObject-method-setLimited)(boolean limited) |  |
+| `String` | [toString](#UIDataScaleObject-method-toString)() |  |
 
 ## Creation details
 
@@ -45,6 +50,41 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataScaleObject-property-limit"></a>
+
+### limit
+
+- `this limit(double limit)` <span class="joid-qualifier">fluent</span>
+- `double limit()` 
+
+**Default:** `1D`
+
+<div class="joid-missing">Missing description: add <code>## limit</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
+
+<a id="UIDataScaleObject-property-active"></a>
+
+### active
+
+- `this active(boolean active)` <span class="joid-qualifier">fluent</span>
+- `boolean active()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## active</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
+
+<a id="UIDataScaleObject-property-limited"></a>
+
+### limited
+
+- `this limited(boolean limited)` <span class="joid-qualifier">fluent</span>
+- `boolean limited()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## limited</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
+
 ## Method details
 
 <a id="UIDataScaleObject-method-apply"></a>
@@ -55,53 +95,13 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## apply(double)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
 
-<a id="UIDataScaleObject-method-getLimit"></a>
+<a id="UIDataScaleObject-method-toString"></a>
 
-### getLimit
+### toString
 
-`double getLimit()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## getLimit()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
-
-<a id="UIDataScaleObject-method-setLimit"></a>
-
-### setLimit
-
-`void setLimit(double limit)` 
-
-<div class="joid-missing">Missing description: add <code>## setLimit(double)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
-
-<a id="UIDataScaleObject-method-isActive"></a>
-
-### isActive
-
-`boolean isActive()` 
-
-<div class="joid-missing">Missing description: add <code>## isActive()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
-
-<a id="UIDataScaleObject-method-setActive"></a>
-
-### setActive
-
-`void setActive(boolean active)` 
-
-<div class="joid-missing">Missing description: add <code>## setActive(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
-
-<a id="UIDataScaleObject-method-isLimited"></a>
-
-### isLimited
-
-`boolean isLimited()` 
-
-<div class="joid-missing">Missing description: add <code>## isLimited()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
-
-<a id="UIDataScaleObject-method-setLimited"></a>
-
-### setLimited
-
-`void setLimited(boolean limited)` 
-
-<div class="joid-missing">Missing description: add <code>## setLimited(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataScaleObject.md</code>.</div>
 
 ---
 

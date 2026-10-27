@@ -31,6 +31,9 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `double` | [getX](#Point-method-getX)() |  |
 | `double` | [getY](#Point-method-getY)() |  |
 | `double` | [getZ](#Point-method-getZ)() |  |
+| `String` | [toString](#Point-method-toString)() |  |
+| `boolean` | [equals](#Point-method-equals)(Object other) |  |
+| `int` | [hashCode](#Point-method-hashCode)() |  |
 
 ## Creation details
 
@@ -71,6 +74,30 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `double getZ()` 
 
 <div class="joid-missing">Missing description: add <code>## getZ()</code> to <code>documentation/reference/dev.joid.lib.utils.geom.Point.md</code>.</div>
+
+<a id="Point-method-toString"></a>
+
+### toString
+
+`String toString()` 
+
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.utils.geom.Point.md</code>.</div>
+
+<a id="Point-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.utils.geom.Point.md</code>.</div>
+
+<a id="Point-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.utils.geom.Point.md</code>.</div>
 
 ---
 

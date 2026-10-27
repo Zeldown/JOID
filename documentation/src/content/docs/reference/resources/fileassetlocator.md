@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.FileAssetLocator.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [FileAssetLocator](#FileAssetLocator-constructor)() |  |
+
 <a id="FileAssetLocator-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#FileAssetLocator-method-supports)(Object handle) |  |
 | [`Asset`](/reference/resources/asset/) | [locate](#FileAssetLocator-method-locate)(Object handle) |  |
+
+## Creation details
+
+<a id="FileAssetLocator-constructor"></a>
+
+### FileAssetLocator
+
+`FileAssetLocator()` 
+
+<div class="joid-missing">Missing description: add <code>## FileAssetLocator()</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.FileAssetLocator.md</code>.</div>
 
 ## Method details
 

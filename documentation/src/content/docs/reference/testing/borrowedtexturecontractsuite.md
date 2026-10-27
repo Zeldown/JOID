@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.contract.BorrowedTextureContractSuite.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [BorrowedTextureContractSuite](#BorrowedTextureContractSuite-constructor)() |  |
+
 <a id="BorrowedTextureContractSuite-methods"></a>
 
 ## Methods
@@ -35,6 +41,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | [`IBorrowedTextureBackend`](/reference/testing/iborrowedtexturebackend/) | [createBackend](#BorrowedTextureContractSuite-method-createBackend)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="BorrowedTextureContractSuite-constructor"></a>
+
+### BorrowedTextureContractSuite
+
+`BorrowedTextureContractSuite()` 
+
+<div class="joid-missing">Missing description: add <code>## BorrowedTextureContractSuite()</code> to <code>documentation/reference/dev.joid.test.contract.BorrowedTextureContractSuite.md</code>.</div>
 
 ## Method details
 

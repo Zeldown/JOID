@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.animation.tween.path.CatmullRomTweenPath.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [CatmullRomTweenPath](#CatmullRomTweenPath-constructor)() |  |
+
 <a id="CatmullRomTweenPath-methods"></a>
 
 ## Methods
@@ -23,6 +29,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `float` | [compute](#CatmullRomTweenPath-method-compute)(float t, float[] points, int pointCount) |  |
+
+## Creation details
+
+<a id="CatmullRomTweenPath-constructor"></a>
+
+### CatmullRomTweenPath
+
+`CatmullRomTweenPath()` 
+
+<div class="joid-missing">Missing description: add <code>## CatmullRomTweenPath()</code> to <code>documentation/reference/dev.joid.lib.animation.tween.path.CatmullRomTweenPath.md</code>.</div>
 
 ## Method details
 

@@ -42,6 +42,8 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `double[]` | [getTextureCoords](#ResourceProperties-method-getTextureCoords)() |  |
 | [`ResourceProperties`](/reference/resources/resourceproperties/) | [copy](#ResourceProperties-method-copy)() |  |
 | `this` | [set](#ResourceProperties-method-set)(ResourceProperties properties) <span class="joid-qualifier">fluent</span> |  |
+| `boolean` | [equals](#ResourceProperties-method-equals)(Object other) |  |
+| `int` | [hashCode](#ResourceProperties-method-hashCode)() |  |
 
 ## Creation details
 
@@ -126,6 +128,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `this set(ResourceProperties properties)` <span class="joid-qualifier">fluent</span>
 
 <div class="joid-missing">Missing description: add <code>## set(ResourceProperties)</code> to <code>documentation/reference/dev.joid.lib.resource.ResourceProperties.md</code>.</div>
+
+<a id="ResourceProperties-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.resource.ResourceProperties.md</code>.</div>
+
+<a id="ResourceProperties-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.resource.ResourceProperties.md</code>.</div>
 
 ---
 

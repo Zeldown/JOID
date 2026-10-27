@@ -33,6 +33,8 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | [`Color`](/reference/drawing/color/) | [getEndColor](#ColorGradient-method-getEndColor)() |  |
 | [`Point`](/reference/utilities/point/) | [getStartPoint](#ColorGradient-method-getStartPoint)() |  |
 | [`Point`](/reference/utilities/point/) | [getEndPoint](#ColorGradient-method-getEndPoint)() |  |
+| `boolean` | [equals](#ColorGradient-method-equals)(Object other) |  |
+| `int` | [hashCode](#ColorGradient-method-hashCode)() |  |
 
 ## Creation details
 
@@ -89,6 +91,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `Point getEndPoint()` 
 
 <div class="joid-missing">Missing description: add <code>## getEndPoint()</code> to <code>documentation/reference/dev.joid.lib.color.ColorGradient.md</code>.</div>
+
+<a id="ColorGradient-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.color.ColorGradient.md</code>.</div>
+
+<a id="ColorGradient-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.color.ColorGradient.md</code>.</div>
 
 ---
 

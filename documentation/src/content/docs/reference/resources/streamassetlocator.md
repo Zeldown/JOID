@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.StreamAssetLocator.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [StreamAssetLocator](#StreamAssetLocator-constructor)() |  |
+
 <a id="StreamAssetLocator-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#StreamAssetLocator-method-supports)(Object handle) |  |
 | [`Asset`](/reference/resources/asset/) | [locate](#StreamAssetLocator-method-locate)(Object handle) |  |
+
+## Creation details
+
+<a id="StreamAssetLocator-constructor"></a>
+
+### StreamAssetLocator
+
+`StreamAssetLocator()` 
+
+<div class="joid-missing">Missing description: add <code>## StreamAssetLocator()</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.StreamAssetLocator.md</code>.</div>
 
 ## Method details
 

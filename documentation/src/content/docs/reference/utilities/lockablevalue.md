@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.utils.lock.LockableValue.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [LockableValue](#LockableValue-constructor)() |  |
+
 <a id="LockableValue-methods"></a>
 
 ## Methods
@@ -33,6 +39,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `T` | [copy](#LockableValue-method-copy)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> |  |
 | `String` | [describeLocked](#LockableValue-method-describeLocked)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="LockableValue-constructor"></a>
+
+### LockableValue
+
+`LockableValue()` 
+
+<div class="joid-missing">Missing description: add <code>## LockableValue()</code> to <code>documentation/reference/dev.joid.lib.utils.lock.LockableValue.md</code>.</div>
 
 ## Method details
 

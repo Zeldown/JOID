@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +50,7 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 import com.github.javaparser.ast.nodeTypes.NodeWithModifiers;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
@@ -68,8 +70,9 @@ import dev.joid.tool.docgen.model.TypeNames;
 
 public final class SourceReader {
 
-	private static final Set<String> FACTORY_NAMES = new HashSet<>(Arrays.asList("create", "of", "from", "inst"));
-	private static final Set<String> LOG_NAMES     = new HashSet<>(Arrays.asList("warn", "warnOnce", "devWarnOnce"));
+	private static final Set<String>  FACTORY_NAMES     = new HashSet<>(Arrays.asList("create", "of", "from", "inst"));
+	private static final Set<String>  LOG_NAMES         = new HashSet<>(Arrays.asList("warn", "warnOnce", "devWarnOnce"));
+	private static final List<String> CONSTRUCTOR_NAMES = Arrays.asList("AllArgsConstructor", "RequiredArgsConstructor", "NoArgsConstructor");
 
 	private final File                 root;
 	private final JavaParser           parser;
@@ -250,7 +253,7 @@ public final class SourceReader {
 		for (final BodyDeclaration<?> member : declaration.getMembers()) {
 			if (member instanceof MethodDeclaration) {
 				final MethodDeclaration method = (MethodDeclaration) member;
-				declared.computeIfAbsent(method.getNameAsString(), key -> new HashSet<>()).add(method.getParameters().size());
+				declared.computeIfAbsent(method.getNameAsString().toLowerCase(Locale.ROOT), key -> new HashSet<>()).add(method.getParameters().size());
 			}
 		}
 
@@ -302,6 +305,13 @@ public final class SourceReader {
 
 		if (type.getKind() == TypeKind.CLASS || type.getKind() == TypeKind.ENUM) {
 			this.addLombok(type, declaration, fields, declared);
+		}
+
+		final boolean implicit = declaration.getMembers().stream().noneMatch(member -> member instanceof ConstructorDeclaration) && SourceReader.CONSTRUCTOR_NAMES.stream().noneMatch(annotation -> declaration.getAnnotationByName(annotation).isPresent());
+		if (type.getKind() == TypeKind.CLASS && implicit && (!declaration.isProtected() || type.isExtensible())) {
+			final ApiMember api = ApiMember.create(MemberKind.CONSTRUCTOR, type.getSimpleName());
+			api.setProtectedAccess(declaration.isProtected());
+			this.add(type, api);
 		}
 	}
 
@@ -365,12 +375,18 @@ public final class SourceReader {
 		for (final FieldDeclaration field : fields) {
 			final String getter = Optional.ofNullable(SourceReader.lombokAccess(field.getAnnotations(), "Getter")).orElse(field.isStatic() ? null : classGetter);
 			final String setter = Optional.ofNullable(SourceReader.lombokAccess(field.getAnnotations(), "Setter")).orElse(field.isStatic() ? null : classSetter);
+			final boolean fluent = SourceReader.accessors(field, "fluent", false);
+			final boolean chain = SourceReader.accessors(field, "chain", fluent);
 			for (final VariableDeclarator variable : field.getVariables()) {
 				final String fieldType = TypeNames.clean(variable.getType().asString());
 				final String fieldName = variable.getNameAsString();
+				final boolean bool = "boolean".equals(fieldType);
+				final String property = SourceReader.capitalize(bool && fieldName.matches("is[A-Z].*") ? fieldName.substring(2) : fieldName);
+				final String capitalized = SourceReader.capitalize(fieldName);
 				if (SourceReader.isExposed(getter, type)) {
-					final String getterName = "boolean".equals(fieldType) ? (fieldName.matches("is[A-Z].*") ? fieldName : "is" + SourceReader.capitalize(fieldName)) : "get" + SourceReader.capitalize(fieldName);
-					if (!declared.getOrDefault(getterName, new HashSet<>()).contains(0)) {
+					final String getterName = fluent ? fieldName : (bool ? "is" : "get") + property;
+					final List<String> getterNames = fluent ? Arrays.asList(fieldName) : bool ? Arrays.asList("is" + property, "get" + property, "is" + capitalized, "get" + capitalized) : Arrays.asList("get" + property);
+					if (!SourceReader.isDeclared(declared, getterNames, 0)) {
 						final ApiMember api = ApiMember.create(MemberKind.METHOD, getterName);
 						api.setReturnType(fieldType);
 						api.setStaticMember(field.isStatic());
@@ -382,10 +398,11 @@ public final class SourceReader {
 				}
 
 				if (SourceReader.isExposed(setter, type) && !field.isFinal()) {
-					final String setterName = "set" + SourceReader.capitalize(fieldName.matches("is[A-Z].*") && "boolean".equals(fieldType) ? fieldName.substring(2) : fieldName);
-					if (!declared.getOrDefault(setterName, new HashSet<>()).contains(1)) {
+					final String setterName = fluent ? fieldName : "set" + property;
+					if (!SourceReader.isDeclared(declared, fluent ? Arrays.asList(fieldName) : Arrays.asList("set" + property, "set" + capitalized), 1)) {
 						final ApiMember api = ApiMember.create(MemberKind.METHOD, setterName);
-						api.setReturnType("void");
+						api.setReturnType(chain ? type.getSimpleName() : "void");
+						api.setFluent(chain);
 						api.setStaticMember(field.isStatic());
 						api.setProtectedAccess("protected".equals(setter));
 						api.setFinalMember(true);
@@ -397,7 +414,21 @@ public final class SourceReader {
 			}
 		}
 
-		for (final String annotation : Arrays.asList("AllArgsConstructor", "RequiredArgsConstructor", "NoArgsConstructor")) {
+		if (declaration.getAnnotationByName("ToString").isPresent() && !SourceReader.isDeclared(declared, Arrays.asList("toString"), 0)) {
+			this.add(type, SourceReader.objectMethod("ToString", "toString", "String", null));
+		}
+
+		if (declaration.getAnnotationByName("EqualsAndHashCode").isPresent()) {
+			if (!SourceReader.isDeclared(declared, Arrays.asList("equals"), 1)) {
+				this.add(type, SourceReader.objectMethod("EqualsAndHashCode", "equals", "boolean", "Object"));
+			}
+
+			if (!SourceReader.isDeclared(declared, Arrays.asList("hashCode"), 0)) {
+				this.add(type, SourceReader.objectMethod("EqualsAndHashCode", "hashCode", "int", null));
+			}
+		}
+
+		for (final String annotation : SourceReader.CONSTRUCTOR_NAMES) {
 			final String access = SourceReader.lombokAccess(declaration.getAnnotations(), annotation);
 			if (!SourceReader.isExposed(access, type) || type.getKind() == TypeKind.ENUM) {
 				continue;
@@ -804,6 +835,38 @@ public final class SourceReader {
 			return value.contains("PROTECTED") ? "protected" : "public";
 		}
 		return null;
+	}
+
+	private static boolean accessors(final FieldDeclaration field, final String name, final boolean fallback) {
+		Node current = field;
+		while (current != null) {
+			if (current instanceof NodeWithAnnotations) {
+				final Optional<AnnotationExpr> annotation = ((NodeWithAnnotations<?>) current).getAnnotationByName("Accessors");
+				if (annotation.isPresent() && annotation.get() instanceof NormalAnnotationExpr) {
+					final Optional<String> value = ((NormalAnnotationExpr) annotation.get()).getPairs().stream().filter(pair -> name.equals(pair.getNameAsString())).map(pair -> pair.getValue().toString()).findFirst();
+					if (value.isPresent()) {
+						return "true".equals(value.get());
+					}
+				}
+			}
+			current = current.getParentNode().orElse(null);
+		}
+		return fallback;
+	}
+
+	private static boolean isDeclared(final Map<String, Set<Integer>> declared, final List<String> names, final int parameters) {
+		return names.stream().anyMatch(name -> declared.getOrDefault(name.toLowerCase(Locale.ROOT), new HashSet<>()).contains(parameters));
+	}
+
+	private static ApiMember objectMethod(final String annotation, final String name, final String returnType, final String parameter) {
+		final ApiMember api = ApiMember.create(MemberKind.METHOD, name);
+		api.setReturnType(returnType);
+		api.setOverriding(true);
+		api.setLombok(annotation);
+		if (parameter != null) {
+			api.getParameters().add(ApiParameter.create(parameter, "other", false));
+		}
+		return api;
 	}
 
 	private static boolean isExposed(final String access, final ApiType type) {

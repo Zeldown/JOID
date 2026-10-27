@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.animation.tween.TweenManager.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [TweenManager](#TweenManager-constructor)() |  |
+
 <a id="TweenManager-methods"></a>
 
 ## Methods
@@ -30,6 +36,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `int` | [getRunningTweensCount](#TweenManager-method-getRunningTweensCount)() |  |
 | `int` | [getRunningTimelinesCount](#TweenManager-method-getRunningTimelinesCount)() |  |
 | `List<BaseTween<?>>` | [getObjects](#TweenManager-method-getObjects)() |  |
+
+## Creation details
+
+<a id="TweenManager-constructor"></a>
+
+### TweenManager
+
+`TweenManager()` 
+
+<div class="joid-missing">Missing description: add <code>## TweenManager()</code> to <code>documentation/reference/dev.joid.lib.animation.tween.TweenManager.md</code>.</div>
 
 ## Method details
 

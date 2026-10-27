@@ -21,16 +21,23 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataOverlayObject`](/reference/annotations/uidataoverlayobject/) | [create](#UIDataOverlayObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataOverlayObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [active](#UIDataOverlayObject-property-active) | `boolean` | `false` |  |
+
 <a id="UIDataOverlayObject-methods"></a>
 
 ## Methods
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`UIDataOverlayRenderObject`](/reference/annotations/uidataoverlayrenderobject/) | [getRender](#UIDataOverlayObject-method-getRender)() |  |
-| [`UIDataOverlayInteractionObject`](/reference/annotations/uidataoverlayinteractionobject/) | [getInteraction](#UIDataOverlayObject-method-getInteraction)() |  |
-| `boolean` | [isActive](#UIDataOverlayObject-method-isActive)() |  |
-| `void` | [setActive](#UIDataOverlayObject-method-setActive)(boolean active) |  |
+| [`UIDataOverlayRenderObject`](/reference/annotations/uidataoverlayrenderobject/) | [render](#UIDataOverlayObject-method-render)() |  |
+| [`UIDataOverlayInteractionObject`](/reference/annotations/uidataoverlayinteractionobject/) | [interaction](#UIDataOverlayObject-method-interaction)() |  |
+| `String` | [toString](#UIDataOverlayObject-method-toString)() |  |
 
 ## Creation details
 
@@ -42,39 +49,44 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataOverlayObject-property-active"></a>
+
+### active
+
+- `this active(boolean active)` <span class="joid-qualifier">fluent</span>
+- `boolean active()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## active</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
+
 ## Method details
 
-<a id="UIDataOverlayObject-method-getRender"></a>
+<a id="UIDataOverlayObject-method-render"></a>
 
-### getRender
+### render
 
-`UIDataOverlayRenderObject getRender()` 
+`UIDataOverlayRenderObject render()` 
 
-<div class="joid-missing">Missing description: add <code>## getRender()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## render()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
 
-<a id="UIDataOverlayObject-method-getInteraction"></a>
+<a id="UIDataOverlayObject-method-interaction"></a>
 
-### getInteraction
+### interaction
 
-`UIDataOverlayInteractionObject getInteraction()` 
+`UIDataOverlayInteractionObject interaction()` 
 
-<div class="joid-missing">Missing description: add <code>## getInteraction()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## interaction()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
 
-<a id="UIDataOverlayObject-method-isActive"></a>
+<a id="UIDataOverlayObject-method-toString"></a>
 
-### isActive
+### toString
 
-`boolean isActive()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isActive()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
-
-<a id="UIDataOverlayObject-method-setActive"></a>
-
-### setActive
-
-`void setActive(boolean active)` 
-
-<div class="joid-missing">Missing description: add <code>## setActive(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayObject.md</code>.</div>
 
 ---
 

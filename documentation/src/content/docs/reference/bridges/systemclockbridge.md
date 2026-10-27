@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.SystemClockBridge.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SystemClockBridge](#SystemClockBridge-constructor)() |  |
+
 <a id="SystemClockBridge-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `long` | [nanoTime](#SystemClockBridge-method-nanoTime)() |  |
 | `long` | [currentTimeMillis](#SystemClockBridge-method-currentTimeMillis)() |  |
+
+## Creation details
+
+<a id="SystemClockBridge-constructor"></a>
+
+### SystemClockBridge
+
+`SystemClockBridge()` 
+
+<div class="joid-missing">Missing description: add <code>## SystemClockBridge()</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.SystemClockBridge.md</code>.</div>
 
 ## Method details
 

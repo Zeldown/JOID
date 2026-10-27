@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.resolver.impl.BufferedImageResourceResolver.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [BufferedImageResourceResolver](#BufferedImageResourceResolver-constructor)() |  |
+
 <a id="BufferedImageResourceResolver-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#BufferedImageResourceResolver-method-supports)(Object input) |  |
 | [`Resource`](/reference/resources/resource/) | [resolve](#BufferedImageResourceResolver-method-resolve)(ResourceBuilder builder, Object input) |  |
+
+## Creation details
+
+<a id="BufferedImageResourceResolver-constructor"></a>
+
+### BufferedImageResourceResolver
+
+`BufferedImageResourceResolver()` 
+
+<div class="joid-missing">Missing description: add <code>## BufferedImageResourceResolver()</code> to <code>documentation/reference/dev.joid.lib.resource.resolver.impl.BufferedImageResourceResolver.md</code>.</div>
 
 ## Method details
 

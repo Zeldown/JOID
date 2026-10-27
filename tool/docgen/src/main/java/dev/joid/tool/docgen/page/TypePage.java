@@ -100,7 +100,7 @@ public final class TypePage {
 				if (member.isEvent()) {
 					this.events.add(member);
 				} else if (!this.properties.containsKey(member.getName()) || !this.properties.get(member.getName()).getSetters().contains(member)) {
-					final ApiProperty property = this.getterOf(member);
+					final ApiProperty property = this.getterOf(member, members);
 					if (property != null) {
 						property.setGetter(member);
 					} else {
@@ -149,22 +149,32 @@ public final class TypePage {
 		return this.factories.isEmpty() && this.constructors.isEmpty() && this.properties.isEmpty() && this.methods.isEmpty() && this.events.isEmpty() && this.constants.isEmpty() && this.fields.isEmpty() && this.values.isEmpty() && this.elements.isEmpty();
 	}
 
-	private ApiProperty getterOf(final ApiMember member) {
-		if (member.getKind() != MemberKind.METHOD || !member.getParameters().isEmpty() || member.isStaticMember()) {
+	private ApiProperty getterOf(final ApiMember member, final List<ApiMember> members) {
+		if (!TypePage.isGetter(member)) {
 			return null;
 		}
 
 		final String name = member.getName();
+		if (this.properties.containsKey(name)) {
+			return this.properties.get(name);
+		}
+
 		final String stripped = name.startsWith("get") && name.length() > 3 ? name.substring(3) : name.startsWith("is") && name.length() > 2 ? name.substring(2) : null;
 		if (stripped == null) {
 			return null;
 		}
-		return this.properties.get(Character.toLowerCase(stripped.charAt(0)) + stripped.substring(1));
+
+		final String property = Character.toLowerCase(stripped.charAt(0)) + stripped.substring(1);
+		return members.stream().anyMatch(other -> TypePage.isGetter(other) && other.getName().equals(property)) ? null : this.properties.get(property);
+	}
+
+	private static boolean isGetter(final ApiMember member) {
+		return member.getKind() == MemberKind.METHOD && member.getParameters().isEmpty() && !member.isStaticMember() && !member.isFluent();
 	}
 
 	private static boolean hasGetter(final String name, final List<ApiMember> members) {
 		final String capitalized = Character.toUpperCase(name.charAt(0)) + name.substring(1);
-		return members.stream().anyMatch(member -> member.getParameters().isEmpty() && member.getKind() == MemberKind.METHOD && (member.getName().equals("get" + capitalized) || member.getName().equals("is" + capitalized)));
+		return members.stream().anyMatch(member -> TypePage.isGetter(member) && (member.getName().equals(name) || member.getName().equals("get" + capitalized) || member.getName().equals("is" + capitalized)));
 	}
 
 	private static boolean hasField(final ApiProperty property, final Map<String, ApiType> types) {

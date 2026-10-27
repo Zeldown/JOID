@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.HeifResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [HeifResourceFormat](#HeifResourceFormat-constructor)() |  |
+
 <a id="HeifResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#HeifResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#HeifResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="HeifResourceFormat-constructor"></a>
+
+### HeifResourceFormat
+
+`HeifResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## HeifResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.HeifResourceFormat.md</code>.</div>
 
 ## Method details
 

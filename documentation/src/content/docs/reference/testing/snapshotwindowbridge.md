@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotWindowBridge.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SnapshotWindowBridge](#SnapshotWindowBridge-constructor)() |  |
+
 <a id="SnapshotWindowBridge-methods"></a>
 
 ## Methods
@@ -59,6 +65,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [setClipboard](#SnapshotWindowBridge-method-setClipboard)(String clipboard) |  |
+
+## Creation details
+
+<a id="SnapshotWindowBridge-constructor"></a>
+
+### SnapshotWindowBridge
+
+`SnapshotWindowBridge()` 
+
+<div class="joid-missing">Missing description: add <code>## SnapshotWindowBridge()</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotWindowBridge.md</code>.</div>
 
 ## Method details
 
