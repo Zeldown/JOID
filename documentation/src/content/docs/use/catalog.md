@@ -46,7 +46,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 <figcaption><a href="/reference/nodes/modelnode/"><code>ModelNode</code></a><span>Draws a 3D model at a zoom and a rotation that your code sets.</span><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-modelviewernode.webp" alt="A textured cube turned the other way, which the mouse can turn and zoom" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-nodes-modelviewernode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-modelviewernode.webp" alt="A textured cube that the pointer drags: the cube turns under the mouse one way, then back" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/nodes/modelviewernode/"><code>ModelViewerNode</code></a><span>Draws a 3D model that the user turns by dragging and zooms with the wheel, within ranges.</span><small><a href="/use/learn/going-further/3d-models/">Learn</a> · <a href="/reference/nodes/modelviewernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
@@ -62,7 +62,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 <figcaption><a href="/reference/layout/gridnode/"><code>GridNode</code></a><span>Places its visible children in rows that wrap at its width, and takes the height of its content.</span><small><a href="/use/learn/describing-the-ui/grid-layout/">Learn</a> · <a href="/reference/layout/gridnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-reorderableflexnode.webp" alt="A vertical list of four rows, the second one grey" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-nodes-reorderableflexnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-reorderableflexnode.webp" alt="A vertical list of four rows, the second one grey; the pointer drags the grey row to the bottom, the other rows slide up, then it drags the row back to second place" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/layout/reorderableflexnode/"><code>ReorderableFlexNode</code></a><span>A flex column or row whose children the user reorders by dragging them.</span><small><a href="/use/learn/interactivity/reorderable-lists/">Learn</a> · <a href="/reference/layout/reorderableflexnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
@@ -82,47 +82,47 @@ These cards use plain skins like the ones that [Give your controls a look](/use/
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<img src="/captures/catalog-controls-textfieldnode.webp" alt="A one-line text field holding the words Text field" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-textfieldnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-textfieldnode.webp" alt="A one-line text field holding the words Text field; the pointer clicks at its end, the user types 26, then erases it" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/textfieldnode/"><code>TextFieldNode</code></a><span>A one-line field whose value is its text.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/textfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-multilinetextfieldnode.webp" alt="A multiline text field whose sentence wraps on two lines" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-multilinetextfieldnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-multilinetextfieldnode.webp" alt="A multiline text field whose sentence wraps on two lines; the pointer clicks it, the user goes to the end and types a third line, then erases it" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/multilinetextfieldnode/"><code>MultilineTextFieldNode</code></a><span>A field of several lines whose value is its text, wrapped in its width.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/multilinetextfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-integerfieldnode.webp" alt="A number field holding 42" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-integerfieldnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-integerfieldnode.webp" alt="A number field holding 42; the pointer clicks it, the Up arrow brings it to 44, the Down arrow back to 42" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/integerfieldnode/"><code>IntegerFieldNode</code></a><span>A one-line field that holds an <code>Integer</code> between a minimum and a maximum, stepped by Up, Down and the wheel.</span><small><a href="/use/learn/interactivity/text-fields/">Learn</a> · <a href="/reference/controls/integerfieldnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-checkboxnode.webp" alt="Two checkboxes, the second one checked" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-checkboxnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-checkboxnode.webp" alt="Two checkboxes, the second one checked; the pointer checks the first one, unchecks the second one, then puts both back" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/checkboxnode/"><code>CheckboxNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A checkbox made of two parts: a <code>box</code> that covers the control and a <code>mark</code> shown while it is checked.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/checkboxnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-togglenode.webp" alt="Two toggles, off and on" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-togglenode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-togglenode.webp" alt="Two toggles, off and on; the pointer turns the first one on and the second one off, then puts both back" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/togglenode/"><code>ToggleNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A toggle made of two parts: a <code>track</code> that covers the control and a <code>knob</code> that slides from the left (off) to the right (on).</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/togglenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-switchnode.webp" alt="A switch with three states, Two selected" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-switchnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-switchnode.webp" alt="A switch with three states, Two selected; the pointer selects Three, One, then Two" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/switchnode/"><code>SwitchNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A choice that shows every option side by side, one node per option, and selects the option under a left press.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/switchnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-selectornode.webp" alt="A closed selector showing its first option" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-selectornode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-selectornode.webp" alt="A closed selector showing its first option; the pointer opens it, picks Second, opens it again and picks First" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/selectornode/"><code>SelectorNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A drop-down list made of a <code>field</code> and one node per option, with the selected option on top and the others in rows under it or above it.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/selectornode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-integerslidernode.webp" alt="A slider whose thumb sits at 4 of 10" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-integerslidernode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-integerslidernode.webp" alt="A slider whose thumb sits at 4 of 10; the pointer drags the thumb to the end of the track, to its start, then back to 4" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/integerslidernode/"><code>IntegerSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a range of integers.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/integerslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-doubleslidernode.webp" alt="A slider whose thumb sits at three quarters" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-doubleslidernode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-doubleslidernode.webp" alt="A slider whose thumb sits at three quarters; the pointer drags the thumb to the start of the track, and it moves by quarters, then back to three quarters" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/doubleslidernode/"><code>DoubleSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a range of decimal numbers with a fixed step.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/doubleslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-stringslidernode.webp" alt="A slider above the labels Low, Medium and High, its thumb on Medium" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-stringslidernode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-stringslidernode.webp" alt="A slider above the labels Low, Medium and High, its thumb on Medium; the pointer presses High, then Low, then drags the thumb back to Medium" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/stringslidernode/"><code>StringSliderNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A slider over a list of texts, such as quality levels, given as texts or as the constants of an enum.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/controls/stringslidernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-controls-scrollbarnode.webp" alt="A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-controls-scrollbarnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-controls-scrollbarnode.webp" alt="A scrollable list of white rows, cut at the bottom, with a grey scrollbar on its right; the wheel scrolls the list down, then the pointer drags the thumb of the scrollbar back to the top" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/controls/scrollbarnode/"><code>ScrollbarNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>A scrollbar made of two parts: a <code>track</code> that covers the bar and a <code>thumb</code> sized and placed from the scroll of the node it serves.</span><small><a href="/use/learn/describing-the-ui/layout/#add-a-scrollbar">Learn</a> · <a href="/reference/controls/scrollbarnode/">Reference</a></small></figcaption>
 </figure>
 </div>
@@ -179,47 +179,47 @@ Each card plots the IN (grey), OUT (dark grey) and INOUT (white) curves of a fam
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<img src="/captures/catalog-easing-lineartweenequation.webp" alt="The Linear easing curve, a straight grey line across a white frame that marks 0 and 1" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-lineartweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-lineartweenequation.webp" alt="The Linear easing curve, a straight grey line across a white frame that marks 0 and 1, with a dot that runs along it" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/lineartweenequation/"><code>LinearTweenEquation</code></a><span>Easing curve of constant speed.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/lineartweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-quadtweenequation.webp" alt="The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-quadtweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-quadtweenequation.webp" alt="The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/quadtweenequation/"><code>QuadTweenEquation</code></a><span>Easing curves along a power of 2.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quadtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-cubictweenequation.webp" alt="The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-cubictweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-cubictweenequation.webp" alt="The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/cubictweenequation/"><code>CubicTweenEquation</code></a><span>Easing curves along a power of 3.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/cubictweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-quarttweenequation.webp" alt="The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-quarttweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-quarttweenequation.webp" alt="The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/quarttweenequation/"><code>QuartTweenEquation</code></a><span>Easing curves along a power of 4.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quarttweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-quinttweenequation.webp" alt="The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-quinttweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-quinttweenequation.webp" alt="The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/quinttweenequation/"><code>QuintTweenEquation</code></a><span>Easing curves along a power of 5.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/quinttweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-sinetweenequation.webp" alt="The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-sinetweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-sinetweenequation.webp" alt="The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/sinetweenequation/"><code>SineTweenEquation</code></a><span>Easing curves along a sine.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/sinetweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-expotweenequation.webp" alt="The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-expotweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-expotweenequation.webp" alt="The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/expotweenequation/"><code>ExpoTweenEquation</code></a><span>Easing curves along an exponential.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/expotweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-circtweenequation.webp" alt="The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-circtweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-circtweenequation.webp" alt="The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/circtweenequation/"><code>CircTweenEquation</code></a><span>Easing curves along quarter circles.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/circtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-backtweenequation.webp" alt="The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-backtweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-backtweenequation.webp" alt="The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/backtweenequation/"><code>BackTweenEquation</code></a><span>Easing curves that move back a little before they start or go past the end before they settle.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/backtweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-bouncetweenequation.webp" alt="The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-bouncetweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-bouncetweenequation.webp" alt="The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/bouncetweenequation/"><code>BounceTweenEquation</code></a><span>Easing curves that bounce, like a ball that falls and rebounds.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/bouncetweenequation/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-easing-elastictweenequation.webp" alt="The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white" loading="lazy" width="340" height="300" />
+<picture><source srcset="/captures/catalog-easing-elastictweenequation.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-easing-elastictweenequation.webp" alt="The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end" loading="lazy" width="340" height="300" /></picture>
 <figcaption><a href="/reference/animation/elastictweenequation/"><code>ElasticTweenEquation</code></a><span>Easing curves that oscillate like a spring at the start or at the end.</span><small><a href="/use/learn/style-and-motion/animation/">Learn</a> · <a href="/reference/animation/elastictweenequation/">Reference</a></small></figcaption>
 </figure>
 </div>
@@ -231,7 +231,7 @@ Text modifiers change the characters before layout.
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<picture><source srcset="/captures/catalog-text-wave-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-wave-effect.webp" alt="A sentence whose glyphs move up and down in a wave" loading="lazy" width="340" height="300" /></picture>
+<img src="/captures/catalog-text-wave-effect.webp" alt="A sentence whose glyphs rise and fall along a wave" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/itexteffect/"><code>Wave effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/describing/markup/WaveTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">

@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A one-line field whose value is its text.
 
-![A one-line text field holding the words Text field](/captures/catalog-controls-textfieldnode.webp)
+![A one-line text field holding the words Text field; the pointer clicks at its end, the user types 26, then erases it](/captures/catalog-controls-textfieldnode.webp)
 
 ## Description
 

@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Easing curves along a power of 3.
 
-![The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white](/captures/catalog-easing-cubictweenequation.webp)
+![The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end](/captures/catalog-easing-cubictweenequation.webp)
 
 ## Description
 

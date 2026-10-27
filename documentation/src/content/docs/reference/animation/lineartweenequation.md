@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Easing curve of constant speed.
 
-![The Linear easing curve, a straight grey line across a white frame that marks 0 and 1](/captures/catalog-easing-lineartweenequation.webp)
+![The Linear easing curve, a straight grey line across a white frame that marks 0 and 1, with a dot that runs along it](/captures/catalog-easing-lineartweenequation.webp)
 
 ## Description
 

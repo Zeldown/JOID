@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A field of several lines whose value is its text, wrapped in its width.
 
-![A multiline text field whose sentence wraps on two lines](/captures/catalog-controls-multilinetextfieldnode.webp)
+![A multiline text field whose sentence wraps on two lines; the pointer clicks it, the user goes to the end and types a third line, then erases it](/captures/catalog-controls-multilinetextfieldnode.webp)
 
 ## Description
 

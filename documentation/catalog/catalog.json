@@ -69,7 +69,25 @@
 				{
 					"type": "dev.joid.lib.ui.node.impl.model.ModelViewerNode",
 					"learn": "use/learn/going-further/3d-models",
-					"alt": "A textured cube turned the other way, which the mouse can turn and zoom"
+					"alt": "A textured cube that the pointer drags: the cube turns under the mouse one way, then back",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 150 150 500",
+						"wait 200",
+						"press LEFT",
+						"moveto 230 150 800",
+						"wait 200",
+						"moveto 150 150 800",
+						"release LEFT",
+						"wait 300",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.layout.ContainerNode",
@@ -89,7 +107,29 @@
 				{
 					"type": "dev.joid.lib.ui.node.impl.layout.ReorderableFlexNode",
 					"learn": "use/learn/interactivity/reorderable-lists",
-					"alt": "A vertical list of four rows, the second one grey"
+					"alt": "A vertical list of four rows, the second one grey; the pointer drags the grey row to the bottom, the other rows slide up, then it drags the row back to second place",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 170 120 500",
+						"wait 200",
+						"press LEFT",
+						"moveto 170 236 800",
+						"wait 200",
+						"release LEFT",
+						"wait 600",
+						"press LEFT",
+						"moveto 170 120 800",
+						"wait 200",
+						"release LEFT",
+						"wait 500",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.chart.ChartNode",
@@ -112,57 +152,331 @@
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.field.TextFieldNode",
 					"learn": "use/learn/interactivity/text-fields",
-					"alt": "A one-line text field holding the words Text field"
+					"alt": "A one-line text field holding the words Text field; the pointer clicks at its end, the user types 26, then erases it",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 270 152 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400",
+						"type 2",
+						"wait 250",
+						"type 6",
+						"wait 466",
+						"key BACKSPACE",
+						"wait 250",
+						"key BACKSPACE",
+						"wait 500",
+						"moveto 300 270 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.field.MultilineTextFieldNode",
 					"learn": "use/learn/interactivity/text-fields",
-					"alt": "A multiline text field whose sentence wraps on two lines"
+					"alt": "A multiline text field whose sentence wraps on two lines; the pointer clicks it, the user goes to the end and types a third line, then erases it",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 200 150 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400",
+						"key LEFT_CONTROL+END",
+						"wait 300",
+						"key ENTER",
+						"wait 200",
+						"type O",
+						"wait 200",
+						"type k",
+						"wait 600",
+						"key BACKSPACE",
+						"wait 200",
+						"key BACKSPACE",
+						"wait 200",
+						"key BACKSPACE",
+						"wait 500",
+						"moveto 300 270 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode",
 					"learn": "use/learn/interactivity/text-fields",
-					"alt": "A number field holding 42"
+					"alt": "A number field holding 42; the pointer clicks it, the Up arrow brings it to 44, the Down arrow back to 42",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 240 152 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400",
+						"key UP",
+						"wait 500",
+						"key UP",
+						"wait 800",
+						"key DOWN",
+						"wait 500",
+						"key DOWN",
+						"wait 500",
+						"moveto 300 270 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "Two checkboxes, the second one checked"
+					"alt": "Two checkboxes, the second one checked; the pointer checks the first one, unchecks the second one, then puts both back",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 104 144 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 224 144 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 104 144 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 224 144 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.toggle.ToggleNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "Two toggles, off and on"
+					"alt": "Two toggles, off and on; the pointer turns the first one on and the second one off, then puts both back",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 200 117 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 200 187 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 200 117 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 200 187 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.choice.SwitchNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A switch with three states, Two selected"
+					"alt": "A switch with three states, Two selected; the pointer selects Three, One, then Two",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 270 152 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 700",
+						"moveto 85 152 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 700",
+						"moveto 178 152 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 700",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.selector.SelectorNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A closed selector showing its first option"
+					"alt": "A closed selector showing its first option; the pointer opens it, picks Second, opens it again and picks First",
+					"pointer": [
+						300,
+						270
+					],
+					"steps": [
+						"wait 300",
+						"moveto 190 152 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400",
+						"moveto 190 202 400",
+						"wait 300",
+						"press LEFT",
+						"release LEFT",
+						"wait 533",
+						"moveto 190 152 400",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 400",
+						"moveto 190 202 300",
+						"wait 300",
+						"press LEFT",
+						"release LEFT",
+						"wait 466",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A slider whose thumb sits at 4 of 10"
+					"alt": "A slider whose thumb sits at 4 of 10; the pointer drags the thumb to the end of the track, to its start, then back to 4",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 150 152 500",
+						"wait 200",
+						"press LEFT",
+						"moveto 285 152 600",
+						"wait 200",
+						"moveto 55 152 900",
+						"wait 200",
+						"moveto 150 152 500",
+						"release LEFT",
+						"wait 400",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A slider whose thumb sits at three quarters"
+					"alt": "A slider whose thumb sits at three quarters; the pointer drags the thumb to the start of the track, and it moves by quarters, then back to three quarters",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 225 152 500",
+						"wait 200",
+						"press LEFT",
+						"moveto 55 152 1000",
+						"wait 300",
+						"moveto 225 152 800",
+						"release LEFT",
+						"wait 400",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.StringSliderNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A slider above the labels Low, Medium and High, its thumb on Medium"
+					"alt": "A slider above the labels Low, Medium and High, its thumb on Medium; the pointer presses High, then Low, then drags the thumb back to Medium",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 280 132 500",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 700",
+						"moveto 60 132 600",
+						"wait 200",
+						"press LEFT",
+						"release LEFT",
+						"wait 500",
+						"press LEFT",
+						"moveto 170 132 500",
+						"release LEFT",
+						"wait 500",
+						"moveto 300 270 500",
+						"wait 300"
+					]
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode",
 					"learn": "use/learn/describing-the-ui/layout#add-a-scrollbar",
-					"alt": "A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge"
+					"alt": "A scrollable list of white rows, cut at the bottom, with a grey scrollbar on its right; the wheel scrolls the list down, then the pointer drags the thumb of the scrollbar back to the top",
+					"pointer": [
+						300,
+						270
+					],
+					"fps": 60,
+					"steps": [
+						"wait 300",
+						"moveto 170 150 500",
+						"wait 200",
+						"scroll -3",
+						"wait 900",
+						"moveto 294 230 500",
+						"wait 200",
+						"press LEFT",
+						"moveto 294 60 700",
+						"release LEFT",
+						"wait 500",
+						"moveto 300 270 400",
+						"wait 300"
+					]
 				}
 			]
 		},
@@ -217,7 +531,7 @@
 			"commands": [
 				"ui com.example.catalog.TransitionsCatalogUI",
 				"open com.example.catalog.PopupCatalogUI",
-				"# film {shot}",
+				"# film {shot} 60",
 				"wait 480"
 			],
 			"crop": [
@@ -244,57 +558,79 @@
 				{
 					"type": "dev.joid.lib.animation.tween.equation.LinearTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Linear easing curve, a straight grey line across a white frame that marks 0 and 1"
+					"alt": "The Linear easing curve, a straight grey line across a white frame that marks 0 and 1, with a dot that runs along it",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuadTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CubicTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuartTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuintTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.SineTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ExpoTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CircTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BackTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BounceTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ElasticTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
-					"alt": "The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+					"alt": "The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end",
+					"film": 2000,
+					"fps": 60
 				}
 			]
 		},
@@ -310,8 +646,7 @@
 					"example": "com/example/describing/markup/WaveTextEffect.java",
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
-					"alt": "A sentence whose glyphs move up and down in a wave",
-					"film": 933
+					"alt": "A sentence whose glyphs rise and fall along a wave"
 				},
 				{
 					"name": "Rainbow effect",
@@ -319,7 +654,8 @@
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "A sentence whose glyphs cycle through colors",
-					"film": 2967
+					"film": 2967,
+					"fps": 60
 				},
 				{
 					"name": "Underline effect",
@@ -342,7 +678,7 @@
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "A sentence whose characters are scrambled while keeping their width",
 					"film": 600,
-					"fps": 25,
+					"fps": 30,
 					"hold": 40
 				},
 				{

@@ -2,11 +2,11 @@
 ui com.example.catalog.TextCatalogUI
 wait 100
 # crop catalog-text-wave-effect 40 40 340 300
-# film catalog-text-wave-effect
-wait 933
-cut
+shot catalog-text-wave-effect
 # crop catalog-text-rainbow-effect 410 40 340 300
-# film catalog-text-rainbow-effect
+ui com.example.catalog.TextCatalogUI
+wait 100
+# film catalog-text-rainbow-effect 60
 wait 2967
 cut
 # crop catalog-text-underline-effect 780 40 340 300
@@ -15,7 +15,9 @@ shot catalog-text-underline-effect
 shot catalog-text-highlight-effect
 # crop catalog-text-scramble-effect 1520 40 340 300
 # hold catalog-text-scramble-effect 40
-# film catalog-text-scramble-effect 25
+ui com.example.catalog.TextCatalogUI
+wait 100
+# film catalog-text-scramble-effect 30
 wait 600
 cut
 # crop catalog-text-markup 40 380 340 300

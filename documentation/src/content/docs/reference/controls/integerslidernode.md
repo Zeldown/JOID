@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A slider over a range of integers.
 
-![A slider whose thumb sits at 4 of 10](/captures/catalog-controls-integerslidernode.webp)
+![A slider whose thumb sits at 4 of 10; the pointer drags the thumb to the end of the track, to its start, then back to 4](/captures/catalog-controls-integerslidernode.webp)
 
 ## Description
 

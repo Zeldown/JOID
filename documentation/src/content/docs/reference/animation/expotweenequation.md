@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Easing curves along an exponential.
 
-![The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white](/captures/catalog-easing-expotweenequation.webp)
+![The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end](/captures/catalog-easing-expotweenequation.webp)
 
 ## Description
 

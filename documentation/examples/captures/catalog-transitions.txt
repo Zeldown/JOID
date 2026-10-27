@@ -3,5 +3,5 @@
 # hold catalog-transitions-poptransition 1000
 ui com.example.catalog.TransitionsCatalogUI
 open com.example.catalog.PopupCatalogUI
-# film catalog-transitions-poptransition
+# film catalog-transitions-poptransition 60
 wait 480

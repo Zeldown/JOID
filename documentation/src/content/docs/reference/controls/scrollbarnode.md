@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A scrollbar made of two parts: a `track` that covers the bar and a `thumb` sized and placed from the scroll of the node it serves.
 
-![A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge](/captures/catalog-controls-scrollbarnode.webp)
+![A scrollable list of white rows, cut at the bottom, with a grey scrollbar on its right; the wheel scrolls the list down, then the pointer drags the thumb of the scrollbar back to the top](/captures/catalog-controls-scrollbarnode.webp)
 
 ## Description
 

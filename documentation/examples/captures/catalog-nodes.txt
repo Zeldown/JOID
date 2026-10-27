@@ -11,6 +11,8 @@ shot catalog-nodes-textnode
 shot catalog-nodes-resourcenode
 # crop catalog-nodes-resourceplayernode 1520 40 340 300
 # still catalog-nodes-resourceplayernode 12
+ui com.example.catalog.NodesCatalogUI
+wait 100
 # film catalog-nodes-resourceplayernode
 wait 767
 cut
@@ -19,7 +21,22 @@ shot catalog-nodes-progressnode
 # crop catalog-nodes-modelnode 410 380 340 300
 shot catalog-nodes-modelnode
 # crop catalog-nodes-modelviewernode 780 380 340 300
-shot catalog-nodes-modelviewernode
+ui com.example.catalog.NodesCatalogUI
+wait 100
+move 1080 650
+# film catalog-nodes-modelviewernode 60
+wait 300
+moveto 930 530 500
+wait 200
+press LEFT
+moveto 1010 530 800
+wait 200
+moveto 930 530 800
+release LEFT
+wait 300
+moveto 1080 650 500
+wait 300
+cut
 # crop catalog-nodes-containernode 1150 380 340 300
 shot catalog-nodes-containernode
 # crop catalog-nodes-flexnode 1520 380 340 300
@@ -27,7 +44,26 @@ shot catalog-nodes-flexnode
 # crop catalog-nodes-gridnode 40 720 340 300
 shot catalog-nodes-gridnode
 # crop catalog-nodes-reorderableflexnode 410 720 340 300
-shot catalog-nodes-reorderableflexnode
+ui com.example.catalog.NodesCatalogUI
+wait 100
+move 710 990
+# film catalog-nodes-reorderableflexnode 60
+wait 300
+moveto 580 840 500
+wait 200
+press LEFT
+moveto 580 956 800
+wait 200
+release LEFT
+wait 600
+press LEFT
+moveto 580 840 800
+wait 200
+release LEFT
+wait 500
+moveto 710 990 500
+wait 300
+cut
 # crop catalog-nodes-chartnode 780 720 340 300
 shot catalog-nodes-chartnode
 # crop catalog-nodes-radarchartnode 1150 720 340 300

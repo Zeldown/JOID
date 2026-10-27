@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A slider over a list of texts, such as quality levels, given as texts or as the constants of an enum.
 
-![A slider above the labels Low, Medium and High, its thumb on Medium](/captures/catalog-controls-stringslidernode.webp)
+![A slider above the labels Low, Medium and High, its thumb on Medium; the pointer presses High, then Low, then drags the thumb back to Medium](/captures/catalog-controls-stringslidernode.webp)
 
 ## Description
 

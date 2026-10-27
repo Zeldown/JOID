@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A drop-down list made of a `field` and one node per option, with the selected option on top and the others in rows under it or above it.
 
-![A closed selector showing its first option](/captures/catalog-controls-selectornode.webp)
+![A closed selector showing its first option; the pointer opens it, picks Second, opens it again and picks First](/captures/catalog-controls-selectornode.webp)
 
 ## Description
 

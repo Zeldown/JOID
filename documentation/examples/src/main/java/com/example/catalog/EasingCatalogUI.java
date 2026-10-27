@@ -1,5 +1,7 @@
 package com.example.catalog;
 
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
@@ -28,17 +30,24 @@ public class EasingCatalogUI extends CatalogUI {
 		};
 		for (int i = 0; i < families.length; i++) {
 			final TweenEquation[] family = families[i];
-			super.card(i).body(card -> new CurveNode(family).attach(card)).attach(this);
+			final TweenAnimator progress = TweenAnimator
+			.create(0F)
+			.sequence(1500F, 1F, TweenEquations.LINEAR)
+			.repeat(BaseTween.INFINITY, 500F)
+			.start();
+			super.card(i).body(card -> new CurveNode(family, progress).attach(card)).onDetach(event -> progress.clear()).attach(this);
 		}
 	}
 
 	private static final class CurveNode extends Node {
 
+		private final TweenAnimator   progress;
 		private final TweenEquation[] equations;
 
-		private CurveNode(final TweenEquation[] equations) {
+		private CurveNode(final TweenEquation[] equations, final TweenAnimator progress) {
 			super(40, 60, 260, 180);
 			this.equations = equations;
+			this.progress = progress;
 		}
 
 		@Override
@@ -63,6 +72,14 @@ public class EasingCatalogUI extends CatalogUI {
 					points[step] = Point.of(super.getX() + t * super.getWidth(), middle - this.equations[i].compute(t) * unit);
 				}
 				DrawUtils.SHAPE.drawLine(colors[i], 4F, points);
+			}
+
+			final float time = this.progress.get();
+			final double x = super.getX() + time * super.getWidth();
+			for (int i = 0; i < this.equations.length; i++) {
+				final double y = middle - this.equations[i].compute(time) * unit;
+				DrawUtils.SHAPE.drawCircle(x, y, EasingCatalogUI.OUT, 10D);
+				DrawUtils.SHAPE.drawCircle(x, y, colors[i], 7D);
 			}
 		}
 

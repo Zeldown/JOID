@@ -86,14 +86,19 @@ function scenario(section) {
 		const x = CARD.x + (position % CARD.columns) * CARD.stepX;
 		const y = CARD.y + Math.floor(position / CARD.columns) * CARD.stepY;
 		lines.push(`# crop ${shot} ${x} ${y} ${CARD.width} ${CARD.height}`);
-		if (card.film) {
+		if (card.film || card.steps) {
 			if (card.hold) {
 				lines.push(`# hold ${shot} ${card.hold}`);
 			}
 			if (card.still !== undefined) {
 				lines.push(`# still ${shot} ${card.still}`);
 			}
-			lines.push(card.fps ? `# film ${shot} ${card.fps}` : `# film ${shot}`, `wait ${card.film}`, 'cut');
+			lines.push(`ui ${section.scene}`, 'wait 100');
+			if (card.pointer) {
+				lines.push(`move ${x + card.pointer[0]} ${y + card.pointer[1]}`);
+			}
+			lines.push(card.fps ? `# film ${shot} ${card.fps}` : `# film ${shot}`);
+			lines.push(...(card.steps ?? [`wait ${card.film}`]).map((step) => step.replace(/^(move|moveto) (-?[\d.]+) (-?[\d.]+)/, (match, command, left, top) => `${command} ${x + Number(left)} ${y + Number(top)}`)), 'cut');
 		} else {
 			lines.push(`shot ${shot}`);
 		}

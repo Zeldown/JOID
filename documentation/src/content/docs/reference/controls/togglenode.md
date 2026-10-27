@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A toggle made of two parts: a `track` that covers the control and a `knob` that slides from the left (off) to the right (on).
 
-![Two toggles, off and on](/captures/catalog-controls-togglenode.webp)
+![Two toggles, off and on; the pointer turns the first one on and the second one off, then puts both back](/captures/catalog-controls-togglenode.webp)
 
 ## Description
 
