@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.bridge.render.texture.Texture.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Texture](#Texture-constructor)() |  |
+
 <a id="Texture-methods"></a>
 
 ## Methods
@@ -55,6 +61,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [uploadPixels](#Texture-method-uploadPixels)(int[] pixels, MipmapChain chain) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
 | `void` | [generateMipmapLevels](#Texture-method-generateMipmapLevels)(MipmapChain chain, int allocatedLevels) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
 | `void` | [deleteStorage](#Texture-method-deleteStorage)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="Texture-constructor"></a>
+
+### Texture
+
+`Texture()` 
+
+<div class="joid-missing">Missing description: add <code>## Texture()</code> to <code>documentation/reference/dev.joid.lib.bridge.render.texture.Texture.md</code>.</div>
 
 ## Method details
 

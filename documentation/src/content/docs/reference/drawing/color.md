@@ -94,6 +94,8 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `this` | [withGreen](#Color-method-withGreen)(float green) <span class="joid-qualifier">fluent</span> |  |
 | [`Color`](/reference/drawing/color/) | [copy](#Color-method-copy)() |  |
 | `void` | [reset](#Color-method-reset)() <span class="joid-qualifier">static</span> |  |
+| `boolean` | [equals](#Color-method-equals)(Object other) |  |
+| `int` | [hashCode](#Color-method-hashCode)() |  |
 | `this` | [update](#Color-method-update)() <span class="joid-qualifier">fluent</span> |  |
 
 <details>
@@ -473,6 +475,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `void reset()` <span class="joid-qualifier">static</span>
 
 <div class="joid-missing">Missing description: add <code>## reset()</code> to <code>documentation/reference/dev.joid.lib.color.Color.md</code>.</div>
+
+<a id="Color-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.color.Color.md</code>.</div>
+
+<a id="Color-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.color.Color.md</code>.</div>
 
 <a id="Color-method-update"></a>
 

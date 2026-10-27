@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.signal.replay.SignalReplayParts.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SignalReplayParts](#SignalReplayParts-constructor)() |  |
+
 <a id="SignalReplayParts-methods"></a>
 
 ## Methods
@@ -29,6 +35,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `Map<String,String>` | [solve](#SignalReplayParts-method-solve)(String expected) |  |
 | `boolean` | [isLive](#SignalReplayParts-method-isLive)() |  |
 | `void` | [setLive](#SignalReplayParts-method-setLive)(boolean live) |  |
+
+## Creation details
+
+<a id="SignalReplayParts-constructor"></a>
+
+### SignalReplayParts
+
+`SignalReplayParts()` 
+
+<div class="joid-missing">Missing description: add <code>## SignalReplayParts()</code> to <code>documentation/reference/dev.joid.lib.signal.replay.SignalReplayParts.md</code>.</div>
 
 ## Method details
 

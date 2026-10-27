@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.contract.StateGuardContractSuite.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [StateGuardContractSuite](#StateGuardContractSuite-constructor)() |  |
+
 <a id="StateGuardContractSuite-methods"></a>
 
 ## Methods
@@ -56,6 +62,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | [`IStateGuardBackend`](/reference/testing/istateguardbackend/) | [createBackend](#StateGuardContractSuite-method-createBackend)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="StateGuardContractSuite-constructor"></a>
+
+### StateGuardContractSuite
+
+`StateGuardContractSuite()` 
+
+<div class="joid-missing">Missing description: add <code>## StateGuardContractSuite()</code> to <code>documentation/reference/dev.joid.test.contract.StateGuardContractSuite.md</code>.</div>
 
 ## Method details
 

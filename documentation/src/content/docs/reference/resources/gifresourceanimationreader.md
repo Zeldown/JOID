@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.GifResourceAnimationReader.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [GifResourceAnimationReader](#GifResourceAnimationReader-constructor)() |  |
+
 <a id="GifResourceAnimationReader-methods"></a>
 
 ## Methods
@@ -23,6 +29,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | [`ResourceAnimation`](/reference/resources/resourceanimation/) | [read](#GifResourceAnimationReader-method-read)(InputStream stream) |  |
+
+## Creation details
+
+<a id="GifResourceAnimationReader-constructor"></a>
+
+### GifResourceAnimationReader
+
+`GifResourceAnimationReader()` 
+
+<div class="joid-missing">Missing description: add <code>## GifResourceAnimationReader()</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.GifResourceAnimationReader.md</code>.</div>
 
 ## Method details
 

@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUrlAssetLocator.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SnapshotUrlAssetLocator](#SnapshotUrlAssetLocator-constructor)() |  |
+
 <a id="SnapshotUrlAssetLocator-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#SnapshotUrlAssetLocator-method-supports)(Object handle) |  |
 | [`Asset`](/reference/resources/asset/) | [locate](#SnapshotUrlAssetLocator-method-locate)(Object handle) |  |
+
+## Creation details
+
+<a id="SnapshotUrlAssetLocator-constructor"></a>
+
+### SnapshotUrlAssetLocator
+
+`SnapshotUrlAssetLocator()` 
+
+<div class="joid-missing">Missing description: add <code>## SnapshotUrlAssetLocator()</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUrlAssetLocator.md</code>.</div>
 
 ## Method details
 

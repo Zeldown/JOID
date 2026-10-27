@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.GifResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [GifResourceFormat](#GifResourceFormat-constructor)() |  |
+
 <a id="GifResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#GifResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#GifResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="GifResourceFormat-constructor"></a>
+
+### GifResourceFormat
+
+`GifResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## GifResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.GifResourceFormat.md</code>.</div>
 
 ## Method details
 

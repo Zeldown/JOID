@@ -22,6 +22,14 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 |  | [ManualClockBridge](#ManualClockBridge-constructor)(long time) |  |
 
+<a id="ManualClockBridge-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [time](#ManualClockBridge-property-time) | `long` |  |  |
+
 <a id="ManualClockBridge-methods"></a>
 
 ## Methods
@@ -31,7 +39,6 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [advance](#ManualClockBridge-method-advance)(long milliseconds) |  |
 | `long` | [nanoTime](#ManualClockBridge-method-nanoTime)() |  |
 | `long` | [currentTimeMillis](#ManualClockBridge-method-currentTimeMillis)() |  |
-| `void` | [setTime](#ManualClockBridge-method-setTime)(long time) |  |
 
 ## Creation details
 
@@ -42,6 +49,18 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `ManualClockBridge(long time)` 
 
 <div class="joid-missing">Missing description: add <code>## ManualClockBridge(long)</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.ManualClockBridge.md</code>.</div>
+
+## Property details
+
+<a id="ManualClockBridge-property-time"></a>
+
+### time
+
+- `this time(long time)` <span class="joid-qualifier">fluent</span>
+
+**Default:** 
+
+<div class="joid-missing">Missing description: add <code>## time</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.ManualClockBridge.md</code>.</div>
 
 ## Method details
 
@@ -68,14 +87,6 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `long currentTimeMillis()` 
 
 <div class="joid-missing">Missing description: add <code>## currentTimeMillis()</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.ManualClockBridge.md</code>.</div>
-
-<a id="ManualClockBridge-method-setTime"></a>
-
-### setTime
-
-`void setTime(long time)` 
-
-<div class="joid-missing">Missing description: add <code>## setTime(long)</code> to <code>documentation/reference/dev.joid.lib.bridge.clock.ManualClockBridge.md</code>.</div>
 
 ---
 

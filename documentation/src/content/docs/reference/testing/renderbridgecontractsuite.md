@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.test.contract.RenderBridgeContractSuite.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [RenderBridgeContractSuite](#RenderBridgeContractSuite-constructor)() |  |
+
 <a id="RenderBridgeContractSuite-methods"></a>
 
 ## Methods
@@ -80,6 +86,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | [`ISnapshotBackend`](/reference/testing/isnapshotbackend/) | [createBackend](#RenderBridgeContractSuite-method-createBackend)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="RenderBridgeContractSuite-constructor"></a>
+
+### RenderBridgeContractSuite
+
+`RenderBridgeContractSuite()` 
+
+<div class="joid-missing">Missing description: add <code>## RenderBridgeContractSuite()</code> to <code>documentation/reference/dev.joid.test.contract.RenderBridgeContractSuite.md</code>.</div>
 
 ## Method details
 

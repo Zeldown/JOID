@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.ApngResourceAnimationReader.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [ApngResourceAnimationReader](#ApngResourceAnimationReader-constructor)() |  |
+
 <a id="ApngResourceAnimationReader-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`ResourceAnimation`](/reference/resources/resourceanimation/) | [read](#ApngResourceAnimationReader-method-read)(InputStream stream) |  |
 | `Boolean` | [isAnimated](#ApngResourceAnimationReader-method-isAnimated)(byte[] bytes) <span class="joid-qualifier">static</span> |  |
+
+## Creation details
+
+<a id="ApngResourceAnimationReader-constructor"></a>
+
+### ApngResourceAnimationReader
+
+`ApngResourceAnimationReader()` 
+
+<div class="joid-missing">Missing description: add <code>## ApngResourceAnimationReader()</code> to <code>documentation/reference/dev.joid.lib.resource.animation.impl.ApngResourceAnimationReader.md</code>.</div>
 
 ## Method details
 

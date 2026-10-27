@@ -266,7 +266,7 @@ public final class PageWriter {
 					for (final ApiProperty property : group.getValue()) {
 						final List<String> keys = property.getMembers().stream().map(ApiMember::getKey).collect(Collectors.toList());
 						keys.add(0, property.getName());
-						out.append("| [").append(property.getName()).append("](#").append(page.anchor("property", property.getName())).append(")").append(property.isSignal() ? " <span class=\"joid-qualifier\">signal</span>" : "").append(" | ").append(this.typeLink(page, this.declaring(property.getSetters().get(0)), property.getType())).append(" | ").append(PageWriter.defaultValue(property.getDefaultValue())).append(" | ").append(this.summary(page, description, path, keys.toArray(new String[0]))).append(" |\n");
+						out.append("| [").append(property.getName()).append("](#").append(page.anchor("property", property.getName())).append(")").append(property.isSignal() ? " <span class=\"joid-qualifier\">signal</span>" : "").append(" | ").append(this.typeLink(page, this.declaring(property.getSetters().get(0)), property.getType())).append(" | ").append(this.defaultValue(page, description, path, property)).append(" | ").append(this.summary(page, description, path, keys.toArray(new String[0]))).append(" |\n");
 					}
 					out.append('\n');
 				}
@@ -368,7 +368,7 @@ public final class PageWriter {
 					for (final ApiMember member : property.getMembers()) {
 						out.append("- `").append(PageWriter.escapeCode(member.getSignature())).append("` ").append(PageWriter.qualifiers(member)).append('\n');
 					}
-					out.append("\n**Default:** ").append(PageWriter.defaultValue(property.getDefaultValue())).append("\n\n");
+					out.append("\n**Default:** ").append(this.defaultValue(page, description, path, property)).append("\n\n");
 					property.getMembers().forEach(member -> PageWriter.behavior(member, out));
 					this.entry(page, description, path, property.getName(), property.getMembers().stream().map(ApiMember::getKey).collect(Collectors.toList()), out);
 				}
@@ -452,6 +452,11 @@ public final class PageWriter {
 
 		this.coverage.expect(page.getFamily().getId(), path, key, text != null);
 		out.append(text == null ? PageWriter.missing(key, path) : this.text(page, text, path)).append("\n\n");
+	}
+
+	private String defaultValue(final TypePage page, final DescriptionFile description, final String path, final ApiProperty property) {
+		final String explained = description == null ? null : description.getDefaults().get(property.getName());
+		return explained == null ? PageWriter.defaultValue(property.getDefaultValue()) : PageWriter.escape(this.text(page, explained, path));
 	}
 
 	private String text(final TypePage page, final String text, final String path) {

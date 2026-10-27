@@ -21,20 +21,24 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataOverlayInteractionObject`](/reference/annotations/uidataoverlayinteractionobject/) | [create](#UIDataOverlayInteractionObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataOverlayInteractionObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [active](#UIDataOverlayInteractionObject-property-active) | `boolean` | `false` |  |
+| [cancelClick](#UIDataOverlayInteractionObject-property-cancelClick) | `boolean` | `true` |  |
+| [cancelScroll](#UIDataOverlayInteractionObject-property-cancelScroll) | `boolean` | `true` |  |
+| [cancelKeyboard](#UIDataOverlayInteractionObject-property-cancelKeyboard) | `boolean` | `true` |  |
+
 <a id="UIDataOverlayInteractionObject-methods"></a>
 
 ## Methods
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isActive](#UIDataOverlayInteractionObject-method-isActive)() |  |
-| `void` | [setActive](#UIDataOverlayInteractionObject-method-setActive)(boolean active) |  |
-| `boolean` | [isCancelClick](#UIDataOverlayInteractionObject-method-isCancelClick)() |  |
-| `void` | [setCancelClick](#UIDataOverlayInteractionObject-method-setCancelClick)(boolean cancelClick) |  |
-| `boolean` | [isCancelScroll](#UIDataOverlayInteractionObject-method-isCancelScroll)() |  |
-| `void` | [setCancelScroll](#UIDataOverlayInteractionObject-method-setCancelScroll)(boolean cancelScroll) |  |
-| `boolean` | [isCancelKeyboard](#UIDataOverlayInteractionObject-method-isCancelKeyboard)() |  |
-| `void` | [setCancelKeyboard](#UIDataOverlayInteractionObject-method-setCancelKeyboard)(boolean cancelKeyboard) |  |
+| `String` | [toString](#UIDataOverlayInteractionObject-method-toString)() |  |
 
 ## Creation details
 
@@ -46,71 +50,61 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataOverlayInteractionObject-property-active"></a>
+
+### active
+
+- `this active(boolean active)` <span class="joid-qualifier">fluent</span>
+- `boolean active()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## active</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
+
+<a id="UIDataOverlayInteractionObject-property-cancelClick"></a>
+
+### cancelClick
+
+- `this cancelClick(boolean cancelClick)` <span class="joid-qualifier">fluent</span>
+- `boolean cancelClick()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## cancelClick</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
+
+<a id="UIDataOverlayInteractionObject-property-cancelScroll"></a>
+
+### cancelScroll
+
+- `this cancelScroll(boolean cancelScroll)` <span class="joid-qualifier">fluent</span>
+- `boolean cancelScroll()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## cancelScroll</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
+
+<a id="UIDataOverlayInteractionObject-property-cancelKeyboard"></a>
+
+### cancelKeyboard
+
+- `this cancelKeyboard(boolean cancelKeyboard)` <span class="joid-qualifier">fluent</span>
+- `boolean cancelKeyboard()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## cancelKeyboard</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
+
 ## Method details
 
-<a id="UIDataOverlayInteractionObject-method-isActive"></a>
+<a id="UIDataOverlayInteractionObject-method-toString"></a>
 
-### isActive
+### toString
 
-`boolean isActive()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isActive()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-setActive"></a>
-
-### setActive
-
-`void setActive(boolean active)` 
-
-<div class="joid-missing">Missing description: add <code>## setActive(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-isCancelClick"></a>
-
-### isCancelClick
-
-`boolean isCancelClick()` 
-
-<div class="joid-missing">Missing description: add <code>## isCancelClick()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-setCancelClick"></a>
-
-### setCancelClick
-
-`void setCancelClick(boolean cancelClick)` 
-
-<div class="joid-missing">Missing description: add <code>## setCancelClick(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-isCancelScroll"></a>
-
-### isCancelScroll
-
-`boolean isCancelScroll()` 
-
-<div class="joid-missing">Missing description: add <code>## isCancelScroll()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-setCancelScroll"></a>
-
-### setCancelScroll
-
-`void setCancelScroll(boolean cancelScroll)` 
-
-<div class="joid-missing">Missing description: add <code>## setCancelScroll(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-isCancelKeyboard"></a>
-
-### isCancelKeyboard
-
-`boolean isCancelKeyboard()` 
-
-<div class="joid-missing">Missing description: add <code>## isCancelKeyboard()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
-
-<a id="UIDataOverlayInteractionObject-method-setCancelKeyboard"></a>
-
-### setCancelKeyboard
-
-`void setCancelKeyboard(boolean cancelKeyboard)` 
-
-<div class="joid-missing">Missing description: add <code>## setCancelKeyboard(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayInteractionObject.md</code>.</div>
 
 ---
 

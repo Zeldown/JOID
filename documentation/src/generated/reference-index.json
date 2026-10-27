@@ -1208,9 +1208,11 @@
       ],
       "url": "/reference/animation/catmullromtweenpath/",
       "members": {
+        "CatmullRomTweenPath": "CatmullRomTweenPath-constructor",
         "compute": "CatmullRomTweenPath-method-compute"
       },
       "overloads": [
+        "CatmullRomTweenPath()",
         "compute(float,float[],int)"
       ]
     },
@@ -1226,9 +1228,11 @@
       ],
       "url": "/reference/animation/catmullromtweenpath/",
       "members": {
+        "CatmullRomTweenPath": "CatmullRomTweenPath-constructor",
         "compute": "CatmullRomTweenPath-method-compute"
       },
       "overloads": [
+        "CatmullRomTweenPath()",
         "compute(float,float[],int)"
       ]
     },
@@ -1244,9 +1248,11 @@
       ],
       "url": "/reference/animation/lineartweenpath/",
       "members": {
+        "LinearTweenPath": "LinearTweenPath-constructor",
         "compute": "LinearTweenPath-method-compute"
       },
       "overloads": [
+        "LinearTweenPath()",
         "compute(float,float[],int)"
       ]
     },
@@ -1262,9 +1268,11 @@
       ],
       "url": "/reference/animation/lineartweenpath/",
       "members": {
+        "LinearTweenPath": "LinearTweenPath-constructor",
         "compute": "LinearTweenPath-method-compute"
       },
       "overloads": [
+        "LinearTweenPath()",
         "compute(float,float[],int)"
       ]
     },
@@ -1654,6 +1662,7 @@
       "ancestors": [],
       "url": "/reference/animation/tweenmanager/",
       "members": {
+        "TweenManager": "TweenManager-constructor",
         "add": "TweenManager-method-add",
         "killAll": "TweenManager-method-killAll",
         "pause": "TweenManager-method-pause",
@@ -1665,6 +1674,7 @@
         "getObjects": "TweenManager-method-getObjects"
       },
       "overloads": [
+        "TweenManager()",
         "add(BaseTween)",
         "killAll()",
         "pause()",
@@ -1686,6 +1696,7 @@
       "ancestors": [],
       "url": "/reference/animation/tweenmanager/",
       "members": {
+        "TweenManager": "TweenManager-constructor",
         "add": "TweenManager-method-add",
         "killAll": "TweenManager-method-killAll",
         "pause": "TweenManager-method-pause",
@@ -1697,6 +1708,7 @@
         "getObjects": "TweenManager-method-getObjects"
       },
       "overloads": [
+        "TweenManager()",
         "add(BaseTween)",
         "killAll()",
         "pause()",
@@ -2088,10 +2100,12 @@
       ],
       "url": "/reference/resources/fileassetlocator/",
       "members": {
+        "FileAssetLocator": "FileAssetLocator-constructor",
         "supports": "FileAssetLocator-method-supports",
         "locate": "FileAssetLocator-method-locate"
       },
       "overloads": [
+        "FileAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2108,10 +2122,12 @@
       ],
       "url": "/reference/resources/fileassetlocator/",
       "members": {
+        "FileAssetLocator": "FileAssetLocator-constructor",
         "supports": "FileAssetLocator-method-supports",
         "locate": "FileAssetLocator-method-locate"
       },
       "overloads": [
+        "FileAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2128,10 +2144,12 @@
       ],
       "url": "/reference/resources/streamassetlocator/",
       "members": {
+        "StreamAssetLocator": "StreamAssetLocator-constructor",
         "supports": "StreamAssetLocator-method-supports",
         "locate": "StreamAssetLocator-method-locate"
       },
       "overloads": [
+        "StreamAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2148,10 +2166,12 @@
       ],
       "url": "/reference/resources/streamassetlocator/",
       "members": {
+        "StreamAssetLocator": "StreamAssetLocator-constructor",
         "supports": "StreamAssetLocator-method-supports",
         "locate": "StreamAssetLocator-method-locate"
       },
       "overloads": [
+        "StreamAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2168,10 +2188,12 @@
       ],
       "url": "/reference/resources/stringassetlocator/",
       "members": {
+        "StringAssetLocator": "StringAssetLocator-constructor",
         "supports": "StringAssetLocator-method-supports",
         "locate": "StringAssetLocator-method-locate"
       },
       "overloads": [
+        "StringAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2188,10 +2210,12 @@
       ],
       "url": "/reference/resources/stringassetlocator/",
       "members": {
+        "StringAssetLocator": "StringAssetLocator-constructor",
         "supports": "StringAssetLocator-method-supports",
         "locate": "StringAssetLocator-method-locate"
       },
       "overloads": [
+        "StringAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -2589,18 +2613,18 @@
       ],
       "url": "/reference/bridges/manualclockbridge/",
       "members": {
+        "time": "ManualClockBridge-property-time",
         "ManualClockBridge": "ManualClockBridge-constructor",
         "advance": "ManualClockBridge-method-advance",
         "nanoTime": "ManualClockBridge-method-nanoTime",
-        "currentTimeMillis": "ManualClockBridge-method-currentTimeMillis",
-        "setTime": "ManualClockBridge-method-setTime"
+        "currentTimeMillis": "ManualClockBridge-method-currentTimeMillis"
       },
       "overloads": [
+        "time(long)",
         "ManualClockBridge(long)",
         "advance(long)",
         "nanoTime()",
-        "currentTimeMillis()",
-        "setTime(long)"
+        "currentTimeMillis()"
       ]
     },
     "ManualClockBridge": {
@@ -2616,18 +2640,18 @@
       ],
       "url": "/reference/bridges/manualclockbridge/",
       "members": {
+        "time": "ManualClockBridge-property-time",
         "ManualClockBridge": "ManualClockBridge-constructor",
         "advance": "ManualClockBridge-method-advance",
         "nanoTime": "ManualClockBridge-method-nanoTime",
-        "currentTimeMillis": "ManualClockBridge-method-currentTimeMillis",
-        "setTime": "ManualClockBridge-method-setTime"
+        "currentTimeMillis": "ManualClockBridge-method-currentTimeMillis"
       },
       "overloads": [
+        "time(long)",
         "ManualClockBridge(long)",
         "advance(long)",
         "nanoTime()",
-        "currentTimeMillis()",
-        "setTime(long)"
+        "currentTimeMillis()"
       ]
     },
     "dev.joid.lib.bridge.clock.SystemClockBridge": {
@@ -2643,10 +2667,12 @@
       ],
       "url": "/reference/bridges/systemclockbridge/",
       "members": {
+        "SystemClockBridge": "SystemClockBridge-constructor",
         "nanoTime": "SystemClockBridge-method-nanoTime",
         "currentTimeMillis": "SystemClockBridge-method-currentTimeMillis"
       },
       "overloads": [
+        "SystemClockBridge()",
         "nanoTime()",
         "currentTimeMillis()"
       ]
@@ -2664,10 +2690,12 @@
       ],
       "url": "/reference/bridges/systemclockbridge/",
       "members": {
+        "SystemClockBridge": "SystemClockBridge-constructor",
         "nanoTime": "SystemClockBridge-method-nanoTime",
         "currentTimeMillis": "SystemClockBridge-method-currentTimeMillis"
       },
       "overloads": [
+        "SystemClockBridge()",
         "nanoTime()",
         "currentTimeMillis()"
       ]
@@ -4787,6 +4815,8 @@
         "getDestinationColor": "BlendState-method-getDestinationColor",
         "getSourceAlpha": "BlendState-method-getSourceAlpha",
         "getDestinationAlpha": "BlendState-method-getDestinationAlpha",
+        "equals": "BlendState-method-equals",
+        "hashCode": "BlendState-method-hashCode",
         "NORMAL": "BlendState-constant-NORMAL",
         "DISABLED": "BlendState-constant-DISABLED",
         "PREMULTIPLIED": "BlendState-constant-PREMULTIPLIED"
@@ -4800,6 +4830,8 @@
         "getDestinationColor()",
         "getSourceAlpha()",
         "getDestinationAlpha()",
+        "equals(Object)",
+        "hashCode()",
         "NORMAL",
         "DISABLED",
         "PREMULTIPLIED"
@@ -4822,6 +4854,8 @@
         "getDestinationColor": "BlendState-method-getDestinationColor",
         "getSourceAlpha": "BlendState-method-getSourceAlpha",
         "getDestinationAlpha": "BlendState-method-getDestinationAlpha",
+        "equals": "BlendState-method-equals",
+        "hashCode": "BlendState-method-hashCode",
         "NORMAL": "BlendState-constant-NORMAL",
         "DISABLED": "BlendState-constant-DISABLED",
         "PREMULTIPLIED": "BlendState-constant-PREMULTIPLIED"
@@ -4835,6 +4869,8 @@
         "getDestinationColor()",
         "getSourceAlpha()",
         "getDestinationAlpha()",
+        "equals(Object)",
+        "hashCode()",
         "NORMAL",
         "DISABLED",
         "PREMULTIPLIED"
@@ -4975,7 +5011,9 @@
         "isDepthWrite": "PipelineKey-method-isDepthWrite",
         "isCull": "PipelineKey-method-isCull",
         "getPrimitive": "PipelineKey-method-getPrimitive",
-        "isStencil": "PipelineKey-method-isStencil"
+        "isStencil": "PipelineKey-method-isStencil",
+        "equals": "PipelineKey-method-equals",
+        "hashCode": "PipelineKey-method-hashCode"
       },
       "overloads": [
         "of(IShader,RenderState,Primitive)",
@@ -4987,7 +5025,9 @@
         "isDepthWrite()",
         "isCull()",
         "getPrimitive()",
-        "isStencil()"
+        "isStencil()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "PipelineKey": {
@@ -5009,7 +5049,9 @@
         "isDepthWrite": "PipelineKey-method-isDepthWrite",
         "isCull": "PipelineKey-method-isCull",
         "getPrimitive": "PipelineKey-method-getPrimitive",
-        "isStencil": "PipelineKey-method-isStencil"
+        "isStencil": "PipelineKey-method-isStencil",
+        "equals": "PipelineKey-method-equals",
+        "hashCode": "PipelineKey-method-hashCode"
       },
       "overloads": [
         "of(IShader,RenderState,Primitive)",
@@ -5021,7 +5063,9 @@
         "isDepthWrite()",
         "isCull()",
         "getPrimitive()",
-        "isStencil()"
+        "isStencil()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.bridge.render.state.RenderState": {
@@ -5434,6 +5478,8 @@
         "getFail": "StencilState-method-getFail",
         "getDepthFail": "StencilState-method-getDepthFail",
         "getPass": "StencilState-method-getPass",
+        "equals": "StencilState-method-equals",
+        "hashCode": "StencilState-method-hashCode",
         "DISABLED": "StencilState-constant-DISABLED"
       },
       "overloads": [
@@ -5445,6 +5491,8 @@
         "getFail()",
         "getDepthFail()",
         "getPass()",
+        "equals(Object)",
+        "hashCode()",
         "DISABLED"
       ]
     },
@@ -5466,6 +5514,8 @@
         "getFail": "StencilState-method-getFail",
         "getDepthFail": "StencilState-method-getDepthFail",
         "getPass": "StencilState-method-getPass",
+        "equals": "StencilState-method-equals",
+        "hashCode": "StencilState-method-hashCode",
         "DISABLED": "StencilState-constant-DISABLED"
       },
       "overloads": [
@@ -5477,6 +5527,8 @@
         "getFail()",
         "getDepthFail()",
         "getPass()",
+        "equals(Object)",
+        "hashCode()",
         "DISABLED"
       ]
     },
@@ -5724,6 +5776,7 @@
       ],
       "url": "/reference/bridges/texture/",
       "members": {
+        "Texture": "Texture-constructor",
         "mipmap": "Texture-method-mipmap",
         "allocate": "Texture-method-allocate",
         "upload": "Texture-method-upload",
@@ -5741,6 +5794,7 @@
         "isMipmapped": "Texture-method-isMipmapped"
       },
       "overloads": [
+        "Texture()",
         "mipmap(boolean)",
         "allocate(int,int)",
         "upload(int[])",
@@ -5770,6 +5824,7 @@
       ],
       "url": "/reference/bridges/texture/",
       "members": {
+        "Texture": "Texture-constructor",
         "mipmap": "Texture-method-mipmap",
         "allocate": "Texture-method-allocate",
         "upload": "Texture-method-upload",
@@ -5787,6 +5842,7 @@
         "isMipmapped": "Texture-method-isMipmapped"
       },
       "overloads": [
+        "Texture()",
         "mipmap(boolean)",
         "allocate(int,int)",
         "upload(int[])",
@@ -6233,10 +6289,12 @@
       ],
       "url": "/reference/bridges/directthreadbridge/",
       "members": {
+        "DirectThreadBridge": "DirectThreadBridge-constructor",
         "isRenderThread": "DirectThreadBridge-method-isRenderThread",
         "execute": "DirectThreadBridge-method-execute"
       },
       "overloads": [
+        "DirectThreadBridge()",
         "isRenderThread()",
         "execute(Runnable)"
       ]
@@ -6254,10 +6312,12 @@
       ],
       "url": "/reference/bridges/directthreadbridge/",
       "members": {
+        "DirectThreadBridge": "DirectThreadBridge-constructor",
         "isRenderThread": "DirectThreadBridge-method-isRenderThread",
         "execute": "DirectThreadBridge-method-execute"
       },
       "overloads": [
+        "DirectThreadBridge()",
         "isRenderThread()",
         "execute(Runnable)"
       ]
@@ -6452,6 +6512,7 @@
       ],
       "url": "/reference/backends/stackuibridge/",
       "members": {
+        "StackUIBridge": "StackUIBridge-constructor",
         "open": "StackUIBridge-method-open",
         "close": "StackUIBridge-method-close",
         "add": "StackUIBridge-method-add",
@@ -6464,6 +6525,7 @@
         "detachScreen": "StackUIBridge-method-detachScreen"
       },
       "overloads": [
+        "StackUIBridge()",
         "open(UI)",
         "close(UI)",
         "add(UI)",
@@ -6490,6 +6552,7 @@
       ],
       "url": "/reference/backends/stackuibridge/",
       "members": {
+        "StackUIBridge": "StackUIBridge-constructor",
         "open": "StackUIBridge-method-open",
         "close": "StackUIBridge-method-close",
         "add": "StackUIBridge-method-add",
@@ -6502,6 +6565,7 @@
         "detachScreen": "StackUIBridge-method-detachScreen"
       },
       "overloads": [
+        "StackUIBridge()",
         "open(UI)",
         "close(UI)",
         "add(UI)",
@@ -7063,6 +7127,8 @@
         "reset": "Color-method-reset",
         "toString": "Color-method-toString",
         "getGradient": "Color-method-getGradient",
+        "equals": "Color-method-equals",
+        "hashCode": "Color-method-hashCode",
         "RED": "Color-constant-RED",
         "BLUE": "Color-constant-BLUE",
         "GRAY": "Color-constant-GRAY",
@@ -7132,6 +7198,8 @@
         "reset()",
         "toString()",
         "getGradient()",
+        "equals(Object)",
+        "hashCode()",
         "RED",
         "BLUE",
         "GRAY",
@@ -7197,6 +7265,8 @@
         "reset": "Color-method-reset",
         "toString": "Color-method-toString",
         "getGradient": "Color-method-getGradient",
+        "equals": "Color-method-equals",
+        "hashCode": "Color-method-hashCode",
         "RED": "Color-constant-RED",
         "BLUE": "Color-constant-BLUE",
         "GRAY": "Color-constant-GRAY",
@@ -7266,6 +7336,8 @@
         "reset()",
         "toString()",
         "getGradient()",
+        "equals(Object)",
+        "hashCode()",
         "RED",
         "BLUE",
         "GRAY",
@@ -7299,7 +7371,9 @@
         "getStartColor": "ColorGradient-method-getStartColor",
         "getEndColor": "ColorGradient-method-getEndColor",
         "getStartPoint": "ColorGradient-method-getStartPoint",
-        "getEndPoint": "ColorGradient-method-getEndPoint"
+        "getEndPoint": "ColorGradient-method-getEndPoint",
+        "equals": "ColorGradient-method-equals",
+        "hashCode": "ColorGradient-method-hashCode"
       },
       "overloads": [
         "of(Color,Color,Point,Point)",
@@ -7308,7 +7382,9 @@
         "getStartColor()",
         "getEndColor()",
         "getStartPoint()",
-        "getEndPoint()"
+        "getEndPoint()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "ColorGradient": {
@@ -7326,7 +7402,9 @@
         "getStartColor": "ColorGradient-method-getStartColor",
         "getEndColor": "ColorGradient-method-getEndColor",
         "getStartPoint": "ColorGradient-method-getStartPoint",
-        "getEndPoint": "ColorGradient-method-getEndPoint"
+        "getEndPoint": "ColorGradient-method-getEndPoint",
+        "equals": "ColorGradient-method-equals",
+        "hashCode": "ColorGradient-method-hashCode"
       },
       "overloads": [
         "of(Color,Color,Point,Point)",
@@ -7335,7 +7413,9 @@
         "getStartColor()",
         "getEndColor()",
         "getStartPoint()",
-        "getEndPoint()"
+        "getEndPoint()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.draw.DrawUtils": {
@@ -9140,14 +9220,16 @@
         "getLeft": "MsdfBounds-method-getLeft",
         "getBottom": "MsdfBounds-method-getBottom",
         "getRight": "MsdfBounds-method-getRight",
-        "getTop": "MsdfBounds-method-getTop"
+        "getTop": "MsdfBounds-method-getTop",
+        "toString": "MsdfBounds-method-toString"
       },
       "overloads": [
         "of(float,float,float,float)",
         "getLeft()",
         "getBottom()",
         "getRight()",
-        "getTop()"
+        "getTop()",
+        "toString()"
       ]
     },
     "MsdfBounds": {
@@ -9164,14 +9246,16 @@
         "getLeft": "MsdfBounds-method-getLeft",
         "getBottom": "MsdfBounds-method-getBottom",
         "getRight": "MsdfBounds-method-getRight",
-        "getTop": "MsdfBounds-method-getTop"
+        "getTop": "MsdfBounds-method-getTop",
+        "toString": "MsdfBounds-method-toString"
       },
       "overloads": [
         "of(float,float,float,float)",
         "getLeft()",
         "getBottom()",
         "getRight()",
-        "getTop()"
+        "getTop()",
+        "toString()"
       ]
     },
     "dev.joid.lib.font.impl.msdf.MsdfFont": {
@@ -9598,12 +9682,14 @@
       "members": {
         "italic": "MsdfSource-property-italic",
         "weight": "MsdfSource-property-weight",
+        "MsdfSource": "MsdfSource-constructor",
         "read": "MsdfSource-method-read",
         "parse": "MsdfSource-method-parse"
       },
       "overloads": [
         "italic(boolean)",
         "weight(FontWeight)",
+        "MsdfSource()",
         "read()",
         "parse()"
       ]
@@ -9622,12 +9708,14 @@
       "members": {
         "italic": "MsdfSource-property-italic",
         "weight": "MsdfSource-property-weight",
+        "MsdfSource": "MsdfSource-constructor",
         "read": "MsdfSource-method-read",
         "parse": "MsdfSource-method-parse"
       },
       "overloads": [
         "italic(boolean)",
         "weight(FontWeight)",
+        "MsdfSource()",
         "read()",
         "parse()"
       ]
@@ -10844,12 +10932,14 @@
       "ancestors": [],
       "url": "/reference/input/keystate/",
       "members": {
+        "KeyState": "KeyState-constructor",
         "press": "KeyState-method-press",
         "release": "KeyState-method-release",
         "isDown": "KeyState-method-isDown",
         "getKey": "KeyState-method-getKey"
       },
       "overloads": [
+        "KeyState()",
         "press(Key,Key)",
         "release(Key)",
         "isDown(Key)",
@@ -10866,12 +10956,14 @@
       "ancestors": [],
       "url": "/reference/input/keystate/",
       "members": {
+        "KeyState": "KeyState-constructor",
         "press": "KeyState-method-press",
         "release": "KeyState-method-release",
         "isDown": "KeyState-method-isDown",
         "getKey": "KeyState-method-getKey"
       },
       "overloads": [
+        "KeyState()",
         "press(Key,Key)",
         "release(Key)",
         "isDown(Key)",
@@ -11882,10 +11974,12 @@
       ],
       "url": "/reference/resources/apngresourceanimationreader/",
       "members": {
+        "ApngResourceAnimationReader": "ApngResourceAnimationReader-constructor",
         "read": "ApngResourceAnimationReader-method-read",
         "isAnimated": "ApngResourceAnimationReader-method-isAnimated"
       },
       "overloads": [
+        "ApngResourceAnimationReader()",
         "read(InputStream)",
         "isAnimated(byte[])"
       ]
@@ -11902,10 +11996,12 @@
       ],
       "url": "/reference/resources/apngresourceanimationreader/",
       "members": {
+        "ApngResourceAnimationReader": "ApngResourceAnimationReader-constructor",
         "read": "ApngResourceAnimationReader-method-read",
         "isAnimated": "ApngResourceAnimationReader-method-isAnimated"
       },
       "overloads": [
+        "ApngResourceAnimationReader()",
         "read(InputStream)",
         "isAnimated(byte[])"
       ]
@@ -11922,9 +12018,11 @@
       ],
       "url": "/reference/resources/gifresourceanimationreader/",
       "members": {
+        "GifResourceAnimationReader": "GifResourceAnimationReader-constructor",
         "read": "GifResourceAnimationReader-method-read"
       },
       "overloads": [
+        "GifResourceAnimationReader()",
         "read(InputStream)"
       ]
     },
@@ -11940,9 +12038,11 @@
       ],
       "url": "/reference/resources/gifresourceanimationreader/",
       "members": {
+        "GifResourceAnimationReader": "GifResourceAnimationReader-constructor",
         "read": "GifResourceAnimationReader-method-read"
       },
       "overloads": [
+        "GifResourceAnimationReader()",
         "read(InputStream)"
       ]
     },
@@ -11958,11 +12058,13 @@
       ],
       "url": "/reference/resources/webpresourceanimationreader/",
       "members": {
+        "WebpResourceAnimationReader": "WebpResourceAnimationReader-constructor",
         "read": "WebpResourceAnimationReader-method-read",
         "isWebp": "WebpResourceAnimationReader-method-isWebp",
         "isAnimated": "WebpResourceAnimationReader-method-isAnimated"
       },
       "overloads": [
+        "WebpResourceAnimationReader()",
         "read(InputStream)",
         "isWebp(byte[])",
         "isAnimated(byte[])"
@@ -11980,11 +12082,13 @@
       ],
       "url": "/reference/resources/webpresourceanimationreader/",
       "members": {
+        "WebpResourceAnimationReader": "WebpResourceAnimationReader-constructor",
         "read": "WebpResourceAnimationReader-method-read",
         "isWebp": "WebpResourceAnimationReader-method-isWebp",
         "isAnimated": "WebpResourceAnimationReader-method-isAnimated"
       },
       "overloads": [
+        "WebpResourceAnimationReader()",
         "read(InputStream)",
         "isWebp(byte[])",
         "isAnimated(byte[])"
@@ -12860,10 +12964,12 @@
       ],
       "url": "/reference/resources/apngresourceformat/",
       "members": {
+        "ApngResourceFormat": "ApngResourceFormat-constructor",
         "supports": "ApngResourceFormat-method-supports",
         "decoder": "ApngResourceFormat-method-decoder"
       },
       "overloads": [
+        "ApngResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12880,10 +12986,12 @@
       ],
       "url": "/reference/resources/apngresourceformat/",
       "members": {
+        "ApngResourceFormat": "ApngResourceFormat-constructor",
         "supports": "ApngResourceFormat-method-supports",
         "decoder": "ApngResourceFormat-method-decoder"
       },
       "overloads": [
+        "ApngResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12900,10 +13008,12 @@
       ],
       "url": "/reference/resources/gifresourceformat/",
       "members": {
+        "GifResourceFormat": "GifResourceFormat-constructor",
         "supports": "GifResourceFormat-method-supports",
         "decoder": "GifResourceFormat-method-decoder"
       },
       "overloads": [
+        "GifResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12920,10 +13030,12 @@
       ],
       "url": "/reference/resources/gifresourceformat/",
       "members": {
+        "GifResourceFormat": "GifResourceFormat-constructor",
         "supports": "GifResourceFormat-method-supports",
         "decoder": "GifResourceFormat-method-decoder"
       },
       "overloads": [
+        "GifResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12940,10 +13052,12 @@
       ],
       "url": "/reference/resources/heifresourceformat/",
       "members": {
+        "HeifResourceFormat": "HeifResourceFormat-constructor",
         "supports": "HeifResourceFormat-method-supports",
         "decoder": "HeifResourceFormat-method-decoder"
       },
       "overloads": [
+        "HeifResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12960,10 +13074,12 @@
       ],
       "url": "/reference/resources/heifresourceformat/",
       "members": {
+        "HeifResourceFormat": "HeifResourceFormat-constructor",
         "supports": "HeifResourceFormat-method-supports",
         "decoder": "HeifResourceFormat-method-decoder"
       },
       "overloads": [
+        "HeifResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -12980,10 +13096,12 @@
       ],
       "url": "/reference/resources/svgresourceformat/",
       "members": {
+        "SvgResourceFormat": "SvgResourceFormat-constructor",
         "supports": "SvgResourceFormat-method-supports",
         "decoder": "SvgResourceFormat-method-decoder"
       },
       "overloads": [
+        "SvgResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13000,10 +13118,12 @@
       ],
       "url": "/reference/resources/svgresourceformat/",
       "members": {
+        "SvgResourceFormat": "SvgResourceFormat-constructor",
         "supports": "SvgResourceFormat-method-supports",
         "decoder": "SvgResourceFormat-method-decoder"
       },
       "overloads": [
+        "SvgResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13020,10 +13140,12 @@
       ],
       "url": "/reference/resources/videoresourceformat/",
       "members": {
+        "VideoResourceFormat": "VideoResourceFormat-constructor",
         "supports": "VideoResourceFormat-method-supports",
         "decoder": "VideoResourceFormat-method-decoder"
       },
       "overloads": [
+        "VideoResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13040,10 +13162,12 @@
       ],
       "url": "/reference/resources/videoresourceformat/",
       "members": {
+        "VideoResourceFormat": "VideoResourceFormat-constructor",
         "supports": "VideoResourceFormat-method-supports",
         "decoder": "VideoResourceFormat-method-decoder"
       },
       "overloads": [
+        "VideoResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13060,10 +13184,12 @@
       ],
       "url": "/reference/resources/webpresourceformat/",
       "members": {
+        "WebpResourceFormat": "WebpResourceFormat-constructor",
         "supports": "WebpResourceFormat-method-supports",
         "decoder": "WebpResourceFormat-method-decoder"
       },
       "overloads": [
+        "WebpResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13080,10 +13206,12 @@
       ],
       "url": "/reference/resources/webpresourceformat/",
       "members": {
+        "WebpResourceFormat": "WebpResourceFormat-constructor",
         "supports": "WebpResourceFormat-method-supports",
         "decoder": "WebpResourceFormat-method-decoder"
       },
       "overloads": [
+        "WebpResourceFormat()",
         "supports(byte[])",
         "decoder(Asset,byte[])"
       ]
@@ -13256,10 +13384,12 @@
       ],
       "url": "/reference/bridges/bufferedimageresourceresolver/",
       "members": {
+        "BufferedImageResourceResolver": "BufferedImageResourceResolver-constructor",
         "supports": "BufferedImageResourceResolver-method-supports",
         "resolve": "BufferedImageResourceResolver-method-resolve"
       },
       "overloads": [
+        "BufferedImageResourceResolver()",
         "supports(Object)",
         "resolve(ResourceBuilder,Object)"
       ]
@@ -13276,10 +13406,12 @@
       ],
       "url": "/reference/bridges/bufferedimageresourceresolver/",
       "members": {
+        "BufferedImageResourceResolver": "BufferedImageResourceResolver-constructor",
         "supports": "BufferedImageResourceResolver-method-supports",
         "resolve": "BufferedImageResourceResolver-method-resolve"
       },
       "overloads": [
+        "BufferedImageResourceResolver()",
         "supports(Object)",
         "resolve(ResourceBuilder,Object)"
       ]
@@ -13296,10 +13428,12 @@
       ],
       "url": "/reference/bridges/textureresourceresolver/",
       "members": {
+        "TextureResourceResolver": "TextureResourceResolver-constructor",
         "supports": "TextureResourceResolver-method-supports",
         "resolve": "TextureResourceResolver-method-resolve"
       },
       "overloads": [
+        "TextureResourceResolver()",
         "supports(Object)",
         "resolve(ResourceBuilder,Object)"
       ]
@@ -13316,10 +13450,12 @@
       ],
       "url": "/reference/bridges/textureresourceresolver/",
       "members": {
+        "TextureResourceResolver": "TextureResourceResolver-constructor",
         "supports": "TextureResourceResolver-method-supports",
         "resolve": "TextureResourceResolver-method-resolve"
       },
       "overloads": [
+        "TextureResourceResolver()",
         "supports(Object)",
         "resolve(ResourceBuilder,Object)"
       ]
@@ -13904,7 +14040,9 @@
         "textureCoords": "ResourceProperties-method-textureCoords",
         "getTextureCoords": "ResourceProperties-method-getTextureCoords",
         "copy": "ResourceProperties-method-copy",
-        "set": "ResourceProperties-method-set"
+        "set": "ResourceProperties-method-set",
+        "equals": "ResourceProperties-method-equals",
+        "hashCode": "ResourceProperties-method-hashCode"
       },
       "overloads": [
         "interpolation(TextureFilter)",
@@ -13917,7 +14055,9 @@
         "textureCoords(double,double,double,double)",
         "getTextureCoords()",
         "copy()",
-        "set(ResourceProperties)"
+        "set(ResourceProperties)",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "ResourceProperties": {
@@ -13938,7 +14078,9 @@
         "textureCoords": "ResourceProperties-method-textureCoords",
         "getTextureCoords": "ResourceProperties-method-getTextureCoords",
         "copy": "ResourceProperties-method-copy",
-        "set": "ResourceProperties-method-set"
+        "set": "ResourceProperties-method-set",
+        "equals": "ResourceProperties-method-equals",
+        "hashCode": "ResourceProperties-method-hashCode"
       },
       "overloads": [
         "interpolation(TextureFilter)",
@@ -13951,7 +14093,9 @@
         "textureCoords(double,double,double,double)",
         "getTextureCoords()",
         "copy()",
-        "set(ResourceProperties)"
+        "set(ResourceProperties)",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.shader.impl.BlurShader": {
@@ -14262,6 +14406,7 @@
       "ancestors": [],
       "url": "/reference/shaders/shaderprogram/",
       "members": {
+        "ShaderProgram": "ShaderProgram-constructor",
         "load": "ShaderProgram-method-load",
         "delete": "ShaderProgram-method-delete",
         "bind": "ShaderProgram-method-bind",
@@ -14274,6 +14419,7 @@
         "uniformGradient": "ShaderProgram-method-uniformGradient"
       },
       "overloads": [
+        "ShaderProgram()",
         "load(Object,Object)",
         "delete()",
         "bind()",
@@ -14297,6 +14443,7 @@
       "ancestors": [],
       "url": "/reference/shaders/shaderprogram/",
       "members": {
+        "ShaderProgram": "ShaderProgram-constructor",
         "load": "ShaderProgram-method-load",
         "delete": "ShaderProgram-method-delete",
         "bind": "ShaderProgram-method-bind",
@@ -14309,6 +14456,7 @@
         "uniformGradient": "ShaderProgram-method-uniformGradient"
       },
       "overloads": [
+        "ShaderProgram()",
         "load(Object,Object)",
         "delete()",
         "bind()",
@@ -15970,6 +16118,7 @@
       "ancestors": [],
       "url": "/reference/signals/signalreplayparts/",
       "members": {
+        "SignalReplayParts": "SignalReplayParts-constructor",
         "add": "SignalReplayParts-method-add",
         "addHole": "SignalReplayParts-method-addHole",
         "hasHoles": "SignalReplayParts-method-hasHoles",
@@ -15980,6 +16129,7 @@
         "setLive": "SignalReplayParts-method-setLive"
       },
       "overloads": [
+        "SignalReplayParts()",
         "add(Object)",
         "addHole(String,String)",
         "hasHoles()",
@@ -16000,6 +16150,7 @@
       "ancestors": [],
       "url": "/reference/signals/signalreplayparts/",
       "members": {
+        "SignalReplayParts": "SignalReplayParts-constructor",
         "add": "SignalReplayParts-method-add",
         "addHole": "SignalReplayParts-method-addHole",
         "hasHoles": "SignalReplayParts-method-hasHoles",
@@ -16010,6 +16161,7 @@
         "setLive": "SignalReplayParts-method-setLive"
       },
       "overloads": [
+        "SignalReplayParts()",
         "add(Object)",
         "addHole(String,String)",
         "hasHoles()",
@@ -16918,18 +17070,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatadebugobject/",
       "members": {
+        "profiler": "UIDataDebugObject-property-profiler",
+        "hotreload": "UIDataDebugObject-property-hotreload",
         "create": "UIDataDebugObject-factory-create",
-        "isProfiler": "UIDataDebugObject-method-isProfiler",
-        "setProfiler": "UIDataDebugObject-method-setProfiler",
-        "isHotreload": "UIDataDebugObject-method-isHotreload",
-        "setHotreload": "UIDataDebugObject-method-setHotreload"
+        "toString": "UIDataDebugObject-method-toString"
       },
       "overloads": [
+        "profiler(boolean)",
+        "profiler()",
+        "hotreload(boolean)",
+        "hotreload()",
         "create()",
-        "isProfiler()",
-        "setProfiler(boolean)",
-        "isHotreload()",
-        "setHotreload(boolean)"
+        "toString()"
       ]
     },
     "UIDataDebugObject": {
@@ -16942,18 +17094,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatadebugobject/",
       "members": {
+        "profiler": "UIDataDebugObject-property-profiler",
+        "hotreload": "UIDataDebugObject-property-hotreload",
         "create": "UIDataDebugObject-factory-create",
-        "isProfiler": "UIDataDebugObject-method-isProfiler",
-        "setProfiler": "UIDataDebugObject-method-setProfiler",
-        "isHotreload": "UIDataDebugObject-method-isHotreload",
-        "setHotreload": "UIDataDebugObject-method-setHotreload"
+        "toString": "UIDataDebugObject-method-toString"
       },
       "overloads": [
+        "profiler(boolean)",
+        "profiler()",
+        "hotreload(boolean)",
+        "hotreload()",
         "create()",
-        "isProfiler()",
-        "setProfiler(boolean)",
-        "isHotreload()",
-        "setHotreload(boolean)"
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataObject": {
@@ -16967,58 +17119,50 @@
       "url": "/reference/annotations/uidataobject/",
       "members": {
         "backgroundColor": "UIDataObject-property-backgroundColor",
+        "zindex": "UIDataObject-property-zindex",
+        "zlevel": "UIDataObject-property-zlevel",
+        "active": "UIDataObject-property-active",
+        "visible": "UIDataObject-property-visible",
+        "zoomable": "UIDataObject-property-zoomable",
+        "closeable": "UIDataObject-property-closeable",
+        "projection": "UIDataObject-property-projection",
+        "background": "UIDataObject-property-background",
+        "anchorX": "UIDataObject-property-anchorX",
+        "anchorY": "UIDataObject-property-anchorY",
         "create": "UIDataObject-factory-create",
         "getAnchorPositionX": "UIDataObject-method-getAnchorPositionX",
         "getAnchorPositionY": "UIDataObject-method-getAnchorPositionY",
-        "getZindex": "UIDataObject-method-getZindex",
-        "setZindex": "UIDataObject-method-setZindex",
-        "getZlevel": "UIDataObject-method-getZlevel",
-        "setZlevel": "UIDataObject-method-setZlevel",
-        "isActive": "UIDataObject-method-isActive",
-        "setActive": "UIDataObject-method-setActive",
-        "isVisible": "UIDataObject-method-isVisible",
-        "setVisible": "UIDataObject-method-setVisible",
-        "isZoomable": "UIDataObject-method-isZoomable",
-        "setZoomable": "UIDataObject-method-setZoomable",
-        "isCloseable": "UIDataObject-method-isCloseable",
-        "setCloseable": "UIDataObject-method-setCloseable",
-        "isProjection": "UIDataObject-method-isProjection",
-        "setProjection": "UIDataObject-method-setProjection",
-        "isBackground": "UIDataObject-method-isBackground",
-        "setBackground": "UIDataObject-method-setBackground",
-        "getAnchorX": "UIDataObject-method-getAnchorX",
-        "setAnchorX": "UIDataObject-method-setAnchorX",
-        "getAnchorY": "UIDataObject-method-getAnchorY",
-        "setAnchorY": "UIDataObject-method-setAnchorY",
-        "setBackgroundColor": "UIDataObject-method-setBackgroundColor"
+        "getBackgroundColor": "UIDataObject-method-getBackgroundColor",
+        "toString": "UIDataObject-method-toString"
       },
       "overloads": [
         "backgroundColor(String)",
-        "getBackgroundColor()",
+        "backgroundColor()",
+        "zindex(int)",
+        "zindex()",
+        "zlevel(double)",
+        "zlevel()",
+        "active(boolean)",
+        "active()",
+        "visible(boolean)",
+        "visible()",
+        "zoomable(boolean)",
+        "zoomable()",
+        "closeable(boolean)",
+        "closeable()",
+        "projection(boolean)",
+        "projection()",
+        "background(boolean)",
+        "background()",
+        "anchorX(Align)",
+        "anchorX()",
+        "anchorY(Align)",
+        "anchorY()",
         "create()",
         "getAnchorPositionX()",
         "getAnchorPositionY()",
-        "getZindex()",
-        "setZindex(int)",
-        "getZlevel()",
-        "setZlevel(double)",
-        "isActive()",
-        "setActive(boolean)",
-        "isVisible()",
-        "setVisible(boolean)",
-        "isZoomable()",
-        "setZoomable(boolean)",
-        "isCloseable()",
-        "setCloseable(boolean)",
-        "isProjection()",
-        "setProjection(boolean)",
-        "isBackground()",
-        "setBackground(boolean)",
-        "getAnchorX()",
-        "setAnchorX(Align)",
-        "getAnchorY()",
-        "setAnchorY(Align)",
-        "setBackgroundColor(String)"
+        "getBackgroundColor()",
+        "toString()"
       ]
     },
     "UIDataObject": {
@@ -17032,58 +17176,50 @@
       "url": "/reference/annotations/uidataobject/",
       "members": {
         "backgroundColor": "UIDataObject-property-backgroundColor",
+        "zindex": "UIDataObject-property-zindex",
+        "zlevel": "UIDataObject-property-zlevel",
+        "active": "UIDataObject-property-active",
+        "visible": "UIDataObject-property-visible",
+        "zoomable": "UIDataObject-property-zoomable",
+        "closeable": "UIDataObject-property-closeable",
+        "projection": "UIDataObject-property-projection",
+        "background": "UIDataObject-property-background",
+        "anchorX": "UIDataObject-property-anchorX",
+        "anchorY": "UIDataObject-property-anchorY",
         "create": "UIDataObject-factory-create",
         "getAnchorPositionX": "UIDataObject-method-getAnchorPositionX",
         "getAnchorPositionY": "UIDataObject-method-getAnchorPositionY",
-        "getZindex": "UIDataObject-method-getZindex",
-        "setZindex": "UIDataObject-method-setZindex",
-        "getZlevel": "UIDataObject-method-getZlevel",
-        "setZlevel": "UIDataObject-method-setZlevel",
-        "isActive": "UIDataObject-method-isActive",
-        "setActive": "UIDataObject-method-setActive",
-        "isVisible": "UIDataObject-method-isVisible",
-        "setVisible": "UIDataObject-method-setVisible",
-        "isZoomable": "UIDataObject-method-isZoomable",
-        "setZoomable": "UIDataObject-method-setZoomable",
-        "isCloseable": "UIDataObject-method-isCloseable",
-        "setCloseable": "UIDataObject-method-setCloseable",
-        "isProjection": "UIDataObject-method-isProjection",
-        "setProjection": "UIDataObject-method-setProjection",
-        "isBackground": "UIDataObject-method-isBackground",
-        "setBackground": "UIDataObject-method-setBackground",
-        "getAnchorX": "UIDataObject-method-getAnchorX",
-        "setAnchorX": "UIDataObject-method-setAnchorX",
-        "getAnchorY": "UIDataObject-method-getAnchorY",
-        "setAnchorY": "UIDataObject-method-setAnchorY",
-        "setBackgroundColor": "UIDataObject-method-setBackgroundColor"
+        "getBackgroundColor": "UIDataObject-method-getBackgroundColor",
+        "toString": "UIDataObject-method-toString"
       },
       "overloads": [
         "backgroundColor(String)",
-        "getBackgroundColor()",
+        "backgroundColor()",
+        "zindex(int)",
+        "zindex()",
+        "zlevel(double)",
+        "zlevel()",
+        "active(boolean)",
+        "active()",
+        "visible(boolean)",
+        "visible()",
+        "zoomable(boolean)",
+        "zoomable()",
+        "closeable(boolean)",
+        "closeable()",
+        "projection(boolean)",
+        "projection()",
+        "background(boolean)",
+        "background()",
+        "anchorX(Align)",
+        "anchorX()",
+        "anchorY(Align)",
+        "anchorY()",
         "create()",
         "getAnchorPositionX()",
         "getAnchorPositionY()",
-        "getZindex()",
-        "setZindex(int)",
-        "getZlevel()",
-        "setZlevel(double)",
-        "isActive()",
-        "setActive(boolean)",
-        "isVisible()",
-        "setVisible(boolean)",
-        "isZoomable()",
-        "setZoomable(boolean)",
-        "isCloseable()",
-        "setCloseable(boolean)",
-        "isProjection()",
-        "setProjection(boolean)",
-        "isBackground()",
-        "setBackground(boolean)",
-        "getAnchorX()",
-        "setAnchorX(Align)",
-        "getAnchorY()",
-        "setAnchorY(Align)",
-        "setBackgroundColor(String)"
+        "getBackgroundColor()",
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataOverlay": {
@@ -17180,26 +17316,24 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayinteractionobject/",
       "members": {
+        "active": "UIDataOverlayInteractionObject-property-active",
+        "cancelClick": "UIDataOverlayInteractionObject-property-cancelClick",
+        "cancelScroll": "UIDataOverlayInteractionObject-property-cancelScroll",
+        "cancelKeyboard": "UIDataOverlayInteractionObject-property-cancelKeyboard",
         "create": "UIDataOverlayInteractionObject-factory-create",
-        "isActive": "UIDataOverlayInteractionObject-method-isActive",
-        "setActive": "UIDataOverlayInteractionObject-method-setActive",
-        "isCancelClick": "UIDataOverlayInteractionObject-method-isCancelClick",
-        "setCancelClick": "UIDataOverlayInteractionObject-method-setCancelClick",
-        "isCancelScroll": "UIDataOverlayInteractionObject-method-isCancelScroll",
-        "setCancelScroll": "UIDataOverlayInteractionObject-method-setCancelScroll",
-        "isCancelKeyboard": "UIDataOverlayInteractionObject-method-isCancelKeyboard",
-        "setCancelKeyboard": "UIDataOverlayInteractionObject-method-setCancelKeyboard"
+        "toString": "UIDataOverlayInteractionObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
+        "cancelClick(boolean)",
+        "cancelClick()",
+        "cancelScroll(boolean)",
+        "cancelScroll()",
+        "cancelKeyboard(boolean)",
+        "cancelKeyboard()",
         "create()",
-        "isActive()",
-        "setActive(boolean)",
-        "isCancelClick()",
-        "setCancelClick(boolean)",
-        "isCancelScroll()",
-        "setCancelScroll(boolean)",
-        "isCancelKeyboard()",
-        "setCancelKeyboard(boolean)"
+        "toString()"
       ]
     },
     "UIDataOverlayInteractionObject": {
@@ -17212,26 +17346,24 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayinteractionobject/",
       "members": {
+        "active": "UIDataOverlayInteractionObject-property-active",
+        "cancelClick": "UIDataOverlayInteractionObject-property-cancelClick",
+        "cancelScroll": "UIDataOverlayInteractionObject-property-cancelScroll",
+        "cancelKeyboard": "UIDataOverlayInteractionObject-property-cancelKeyboard",
         "create": "UIDataOverlayInteractionObject-factory-create",
-        "isActive": "UIDataOverlayInteractionObject-method-isActive",
-        "setActive": "UIDataOverlayInteractionObject-method-setActive",
-        "isCancelClick": "UIDataOverlayInteractionObject-method-isCancelClick",
-        "setCancelClick": "UIDataOverlayInteractionObject-method-setCancelClick",
-        "isCancelScroll": "UIDataOverlayInteractionObject-method-isCancelScroll",
-        "setCancelScroll": "UIDataOverlayInteractionObject-method-setCancelScroll",
-        "isCancelKeyboard": "UIDataOverlayInteractionObject-method-isCancelKeyboard",
-        "setCancelKeyboard": "UIDataOverlayInteractionObject-method-setCancelKeyboard"
+        "toString": "UIDataOverlayInteractionObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
+        "cancelClick(boolean)",
+        "cancelClick()",
+        "cancelScroll(boolean)",
+        "cancelScroll()",
+        "cancelKeyboard(boolean)",
+        "cancelKeyboard()",
         "create()",
-        "isActive()",
-        "setActive(boolean)",
-        "isCancelClick()",
-        "setCancelClick(boolean)",
-        "isCancelScroll()",
-        "setCancelScroll(boolean)",
-        "isCancelKeyboard()",
-        "setCancelKeyboard(boolean)"
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataOverlayObject": {
@@ -17244,18 +17376,19 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayobject/",
       "members": {
+        "active": "UIDataOverlayObject-property-active",
         "create": "UIDataOverlayObject-factory-create",
-        "getRender": "UIDataOverlayObject-method-getRender",
-        "getInteraction": "UIDataOverlayObject-method-getInteraction",
-        "isActive": "UIDataOverlayObject-method-isActive",
-        "setActive": "UIDataOverlayObject-method-setActive"
+        "render": "UIDataOverlayObject-method-render",
+        "interaction": "UIDataOverlayObject-method-interaction",
+        "toString": "UIDataOverlayObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
         "create()",
-        "getRender()",
-        "getInteraction()",
-        "isActive()",
-        "setActive(boolean)"
+        "render()",
+        "interaction()",
+        "toString()"
       ]
     },
     "UIDataOverlayObject": {
@@ -17268,18 +17401,19 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayobject/",
       "members": {
+        "active": "UIDataOverlayObject-property-active",
         "create": "UIDataOverlayObject-factory-create",
-        "getRender": "UIDataOverlayObject-method-getRender",
-        "getInteraction": "UIDataOverlayObject-method-getInteraction",
-        "isActive": "UIDataOverlayObject-method-isActive",
-        "setActive": "UIDataOverlayObject-method-setActive"
+        "render": "UIDataOverlayObject-method-render",
+        "interaction": "UIDataOverlayObject-method-interaction",
+        "toString": "UIDataOverlayObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
         "create()",
-        "getRender()",
-        "getInteraction()",
-        "isActive()",
-        "setActive(boolean)"
+        "render()",
+        "interaction()",
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataOverlayRender": {
@@ -17328,18 +17462,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayrenderobject/",
       "members": {
+        "always": "UIDataOverlayRenderObject-property-always",
+        "aboveScreens": "UIDataOverlayRenderObject-property-aboveScreens",
         "create": "UIDataOverlayRenderObject-factory-create",
-        "isAlways": "UIDataOverlayRenderObject-method-isAlways",
-        "setAlways": "UIDataOverlayRenderObject-method-setAlways",
-        "isAboveScreens": "UIDataOverlayRenderObject-method-isAboveScreens",
-        "setAboveScreens": "UIDataOverlayRenderObject-method-setAboveScreens"
+        "toString": "UIDataOverlayRenderObject-method-toString"
       },
       "overloads": [
+        "always(boolean)",
+        "always()",
+        "aboveScreens(boolean)",
+        "aboveScreens()",
         "create()",
-        "isAlways()",
-        "setAlways(boolean)",
-        "isAboveScreens()",
-        "setAboveScreens(boolean)"
+        "toString()"
       ]
     },
     "UIDataOverlayRenderObject": {
@@ -17352,18 +17486,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayrenderobject/",
       "members": {
+        "always": "UIDataOverlayRenderObject-property-always",
+        "aboveScreens": "UIDataOverlayRenderObject-property-aboveScreens",
         "create": "UIDataOverlayRenderObject-factory-create",
-        "isAlways": "UIDataOverlayRenderObject-method-isAlways",
-        "setAlways": "UIDataOverlayRenderObject-method-setAlways",
-        "isAboveScreens": "UIDataOverlayRenderObject-method-isAboveScreens",
-        "setAboveScreens": "UIDataOverlayRenderObject-method-setAboveScreens"
+        "toString": "UIDataOverlayRenderObject-method-toString"
       },
       "overloads": [
+        "always(boolean)",
+        "always()",
+        "aboveScreens(boolean)",
+        "aboveScreens()",
         "create()",
-        "isAlways()",
-        "setAlways(boolean)",
-        "isAboveScreens()",
-        "setAboveScreens(boolean)"
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataPopup": {
@@ -17468,18 +17602,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatapopupobject/",
       "members": {
+        "active": "UIDataPopupObject-property-active",
+        "transition": "UIDataPopupObject-property-transition",
         "create": "UIDataPopupObject-factory-create",
-        "isActive": "UIDataPopupObject-method-isActive",
-        "setActive": "UIDataPopupObject-method-setActive",
-        "getTransition": "UIDataPopupObject-method-getTransition",
-        "setTransition": "UIDataPopupObject-method-setTransition"
+        "toString": "UIDataPopupObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
+        "transition(PopupTransition)",
+        "transition()",
         "create()",
-        "isActive()",
-        "setActive(boolean)",
-        "getTransition()",
-        "setTransition(PopupTransition)"
+        "toString()"
       ]
     },
     "UIDataPopupObject": {
@@ -17492,18 +17626,18 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatapopupobject/",
       "members": {
+        "active": "UIDataPopupObject-property-active",
+        "transition": "UIDataPopupObject-property-transition",
         "create": "UIDataPopupObject-factory-create",
-        "isActive": "UIDataPopupObject-method-isActive",
-        "setActive": "UIDataPopupObject-method-setActive",
-        "getTransition": "UIDataPopupObject-method-getTransition",
-        "setTransition": "UIDataPopupObject-method-setTransition"
+        "toString": "UIDataPopupObject-method-toString"
       },
       "overloads": [
+        "active(boolean)",
+        "active()",
+        "transition(PopupTransition)",
+        "transition()",
         "create()",
-        "isActive()",
-        "setActive(boolean)",
-        "getTransition()",
-        "setTransition(PopupTransition)"
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.data.UIDataScale": {
@@ -17556,24 +17690,23 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatascaleobject/",
       "members": {
+        "limit": "UIDataScaleObject-property-limit",
+        "active": "UIDataScaleObject-property-active",
+        "limited": "UIDataScaleObject-property-limited",
         "create": "UIDataScaleObject-factory-create",
         "apply": "UIDataScaleObject-method-apply",
-        "getLimit": "UIDataScaleObject-method-getLimit",
-        "setLimit": "UIDataScaleObject-method-setLimit",
-        "isActive": "UIDataScaleObject-method-isActive",
-        "setActive": "UIDataScaleObject-method-setActive",
-        "isLimited": "UIDataScaleObject-method-isLimited",
-        "setLimited": "UIDataScaleObject-method-setLimited"
+        "toString": "UIDataScaleObject-method-toString"
       },
       "overloads": [
+        "limit(double)",
+        "limit()",
+        "active(boolean)",
+        "active()",
+        "limited(boolean)",
+        "limited()",
         "create()",
         "apply(double)",
-        "getLimit()",
-        "setLimit(double)",
-        "isActive()",
-        "setActive(boolean)",
-        "isLimited()",
-        "setLimited(boolean)"
+        "toString()"
       ]
     },
     "UIDataScaleObject": {
@@ -17586,24 +17719,23 @@
       "ancestors": [],
       "url": "/reference/annotations/uidatascaleobject/",
       "members": {
+        "limit": "UIDataScaleObject-property-limit",
+        "active": "UIDataScaleObject-property-active",
+        "limited": "UIDataScaleObject-property-limited",
         "create": "UIDataScaleObject-factory-create",
         "apply": "UIDataScaleObject-method-apply",
-        "getLimit": "UIDataScaleObject-method-getLimit",
-        "setLimit": "UIDataScaleObject-method-setLimit",
-        "isActive": "UIDataScaleObject-method-isActive",
-        "setActive": "UIDataScaleObject-method-setActive",
-        "isLimited": "UIDataScaleObject-method-isLimited",
-        "setLimited": "UIDataScaleObject-method-setLimited"
+        "toString": "UIDataScaleObject-method-toString"
       },
       "overloads": [
+        "limit(double)",
+        "limit()",
+        "active(boolean)",
+        "active()",
+        "limited(boolean)",
+        "limited()",
         "create()",
         "apply(double)",
-        "getLimit()",
-        "setLimit(double)",
-        "isActive()",
-        "setActive(boolean)",
-        "isLimited()",
-        "setLimited(boolean)"
+        "toString()"
       ]
     },
     "dev.joid.lib.ui.core.hook.property.UIProperty": {
@@ -17684,6 +17816,7 @@
       "ancestors": [],
       "url": "/reference/ui/uistore/",
       "members": {
+        "UIStore": "UIStore-constructor",
         "init": "UIStore-method-init",
         "destroy": "UIStore-method-destroy",
         "save": "UIStore-method-save",
@@ -17692,6 +17825,7 @@
         "getData": "UIStore-method-getData"
       },
       "overloads": [
+        "UIStore()",
         "init()",
         "destroy()",
         "save()",
@@ -17710,6 +17844,7 @@
       "ancestors": [],
       "url": "/reference/ui/uistore/",
       "members": {
+        "UIStore": "UIStore-constructor",
         "init": "UIStore-method-init",
         "destroy": "UIStore-method-destroy",
         "save": "UIStore-method-save",
@@ -17718,6 +17853,7 @@
         "getData": "UIStore-method-getData"
       },
       "overloads": [
+        "UIStore()",
         "init()",
         "destroy()",
         "save()",
@@ -18544,10 +18680,12 @@
       "ancestors": [],
       "url": "/reference/events/event/",
       "members": {
+        "Event": "Event-constructor",
         "monitor": "Event-method-monitor",
         "checkWritable": "Event-method-checkWritable"
       },
       "overloads": [
+        "Event()",
         "monitor(boolean)",
         "checkWritable(String)"
       ]
@@ -18562,10 +18700,12 @@
       "ancestors": [],
       "url": "/reference/events/event/",
       "members": {
+        "Event": "Event-constructor",
         "monitor": "Event-method-monitor",
         "checkWritable": "Event-method-checkWritable"
       },
       "overloads": [
+        "Event()",
         "monitor(boolean)",
         "checkWritable(String)"
       ]
@@ -22693,13 +22833,19 @@
         "of": "FieldSelection-factory-of",
         "isEmpty": "FieldSelection-method-isEmpty",
         "getStart": "FieldSelection-method-getStart",
-        "getEnd": "FieldSelection-method-getEnd"
+        "getEnd": "FieldSelection-method-getEnd",
+        "toString": "FieldSelection-method-toString",
+        "equals": "FieldSelection-method-equals",
+        "hashCode": "FieldSelection-method-hashCode"
       },
       "overloads": [
         "of(int,int)",
         "isEmpty()",
         "getStart()",
-        "getEnd()"
+        "getEnd()",
+        "toString()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "FieldSelection": {
@@ -22715,13 +22861,19 @@
         "of": "FieldSelection-factory-of",
         "isEmpty": "FieldSelection-method-isEmpty",
         "getStart": "FieldSelection-method-getStart",
-        "getEnd": "FieldSelection-method-getEnd"
+        "getEnd": "FieldSelection-method-getEnd",
+        "toString": "FieldSelection-method-toString",
+        "equals": "FieldSelection-method-equals",
+        "hashCode": "FieldSelection-method-hashCode"
       },
       "overloads": [
         "of(int,int)",
         "isEmpty()",
         "getStart()",
-        "getEnd()"
+        "getEnd()",
+        "toString()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode": {
@@ -27329,14 +27481,20 @@
         "of": "Point-factory-of",
         "getX": "Point-method-getX",
         "getY": "Point-method-getY",
-        "getZ": "Point-method-getZ"
+        "getZ": "Point-method-getZ",
+        "toString": "Point-method-toString",
+        "equals": "Point-method-equals",
+        "hashCode": "Point-method-hashCode"
       },
       "overloads": [
         "of(double,double)",
         "of(double,double,double)",
         "getX()",
         "getY()",
-        "getZ()"
+        "getZ()",
+        "toString()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "Point": {
@@ -27352,14 +27510,20 @@
         "of": "Point-factory-of",
         "getX": "Point-method-getX",
         "getY": "Point-method-getY",
-        "getZ": "Point-method-getZ"
+        "getZ": "Point-method-getZ",
+        "toString": "Point-method-toString",
+        "equals": "Point-method-equals",
+        "hashCode": "Point-method-hashCode"
       },
       "overloads": [
         "of(double,double)",
         "of(double,double,double)",
         "getX()",
         "getY()",
-        "getZ()"
+        "getZ()",
+        "toString()",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.utils.image.ImageUtils": {
@@ -27608,6 +27772,7 @@
       "ancestors": [],
       "url": "/reference/utilities/lockablevalue/",
       "members": {
+        "LockableValue": "LockableValue-constructor",
         "copy": "LockableValue-method-copy",
         "lock": "LockableValue-method-lock",
         "mutate": "LockableValue-method-mutate",
@@ -27616,6 +27781,7 @@
         "isLocked": "LockableValue-method-isLocked"
       },
       "overloads": [
+        "LockableValue()",
         "copy()",
         "lock()",
         "mutate(String,Runnable)",
@@ -27634,6 +27800,7 @@
       "ancestors": [],
       "url": "/reference/utilities/lockablevalue/",
       "members": {
+        "LockableValue": "LockableValue-constructor",
         "copy": "LockableValue-method-copy",
         "lock": "LockableValue-method-lock",
         "mutate": "LockableValue-method-mutate",
@@ -27642,6 +27809,7 @@
         "isLocked": "LockableValue-method-isLocked"
       },
       "overloads": [
+        "LockableValue()",
         "copy()",
         "lock()",
         "mutate(String,Runnable)",
@@ -27712,12 +27880,14 @@
       "ancestors": [],
       "url": "/reference/utilities/registry/",
       "members": {
+        "Registry": "Registry-constructor",
         "register": "Registry-method-register",
         "unregister": "Registry-method-unregister",
         "find": "Registry-method-find",
         "getAll": "Registry-method-getAll"
       },
       "overloads": [
+        "Registry()",
         "register(T)",
         "unregister(T)",
         "find(Predicate)",
@@ -27734,12 +27904,14 @@
       "ancestors": [],
       "url": "/reference/utilities/registry/",
       "members": {
+        "Registry": "Registry-constructor",
         "register": "Registry-method-register",
         "unregister": "Registry-method-unregister",
         "find": "Registry-method-find",
         "getAll": "Registry-method-getAll"
       },
       "overloads": [
+        "Registry()",
         "register(T)",
         "unregister(T)",
         "find(Predicate)",
@@ -30928,9 +31100,11 @@
       ],
       "url": "/reference/base-opengl/blitglmipmapbuilder/",
       "members": {
+        "BlitGlMipmapBuilder": "BlitGlMipmapBuilder-constructor",
         "build": "BlitGlMipmapBuilder-method-build"
       },
       "overloads": [
+        "BlitGlMipmapBuilder()",
         "build(GlRenderBridge,GlTexture,MipmapChain)"
       ]
     },
@@ -30946,9 +31120,11 @@
       ],
       "url": "/reference/base-opengl/blitglmipmapbuilder/",
       "members": {
+        "BlitGlMipmapBuilder": "BlitGlMipmapBuilder-constructor",
         "build": "BlitGlMipmapBuilder-method-build"
       },
       "overloads": [
+        "BlitGlMipmapBuilder()",
         "build(GlRenderBridge,GlTexture,MipmapChain)"
       ]
     },
@@ -31374,6 +31550,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2coreglframebufferbinding/",
       "members": {
+        "Lwjgl2CoreGlFrameBufferBinding": "Lwjgl2CoreGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-bindFramebuffer",
@@ -31386,6 +31563,7 @@
         "blitFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl2CoreGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -31410,6 +31588,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2coreglframebufferbinding/",
       "members": {
+        "Lwjgl2CoreGlFrameBufferBinding": "Lwjgl2CoreGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-bindFramebuffer",
@@ -31422,6 +31601,7 @@
         "blitFramebuffer": "Lwjgl2CoreGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl2CoreGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -31446,6 +31626,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2extglframebufferbinding/",
       "members": {
+        "Lwjgl2ExtGlFrameBufferBinding": "Lwjgl2ExtGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-bindFramebuffer",
@@ -31458,6 +31639,7 @@
         "blitFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl2ExtGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -31482,6 +31664,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2extglframebufferbinding/",
       "members": {
+        "Lwjgl2ExtGlFrameBufferBinding": "Lwjgl2ExtGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-bindFramebuffer",
@@ -31494,6 +31677,7 @@
         "blitFramebuffer": "Lwjgl2ExtGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl2ExtGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -32016,6 +32200,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2snapshotbackend/",
       "members": {
+        "Lwjgl2SnapshotBackend": "Lwjgl2SnapshotBackend-constructor",
         "create": "Lwjgl2SnapshotBackend-method-create",
         "destroy": "Lwjgl2SnapshotBackend-method-destroy",
         "present": "Lwjgl2SnapshotBackend-method-present",
@@ -32025,6 +32210,7 @@
         "getBridge": "Lwjgl2SnapshotBackend-method-getBridge"
       },
       "overloads": [
+        "Lwjgl2SnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -32046,6 +32232,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2snapshotbackend/",
       "members": {
+        "Lwjgl2SnapshotBackend": "Lwjgl2SnapshotBackend-constructor",
         "create": "Lwjgl2SnapshotBackend-method-create",
         "destroy": "Lwjgl2SnapshotBackend-method-destroy",
         "present": "Lwjgl2SnapshotBackend-method-present",
@@ -32055,6 +32242,7 @@
         "getBridge": "Lwjgl2SnapshotBackend-method-getBridge"
       },
       "overloads": [
+        "Lwjgl2SnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -32229,6 +32417,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2windowbridge/",
       "members": {
+        "Lwjgl2WindowBridge": "Lwjgl2WindowBridge-constructor",
         "getWidth": "Lwjgl2WindowBridge-method-getWidth",
         "getHeight": "Lwjgl2WindowBridge-method-getHeight",
         "getMouseX": "Lwjgl2WindowBridge-method-getMouseX",
@@ -32239,6 +32428,7 @@
         "setClipboard": "Lwjgl2WindowBridge-method-setClipboard"
       },
       "overloads": [
+        "Lwjgl2WindowBridge()",
         "getWidth()",
         "getHeight()",
         "getMouseX()",
@@ -32262,6 +32452,7 @@
       ],
       "url": "/reference/lwjgl2/lwjgl2windowbridge/",
       "members": {
+        "Lwjgl2WindowBridge": "Lwjgl2WindowBridge-constructor",
         "getWidth": "Lwjgl2WindowBridge-method-getWidth",
         "getHeight": "Lwjgl2WindowBridge-method-getHeight",
         "getMouseX": "Lwjgl2WindowBridge-method-getMouseX",
@@ -32272,6 +32463,7 @@
         "setClipboard": "Lwjgl2WindowBridge-method-setClipboard"
       },
       "overloads": [
+        "Lwjgl2WindowBridge()",
         "getWidth()",
         "getHeight()",
         "getMouseX()",
@@ -32294,6 +32486,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3coreglframebufferbinding/",
       "members": {
+        "Lwjgl3CoreGlFrameBufferBinding": "Lwjgl3CoreGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-bindFramebuffer",
@@ -32306,6 +32499,7 @@
         "blitFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl3CoreGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -32330,6 +32524,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3coreglframebufferbinding/",
       "members": {
+        "Lwjgl3CoreGlFrameBufferBinding": "Lwjgl3CoreGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-bindFramebuffer",
@@ -32342,6 +32537,7 @@
         "blitFramebuffer": "Lwjgl3CoreGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl3CoreGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -32366,6 +32562,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3extglframebufferbinding/",
       "members": {
+        "Lwjgl3ExtGlFrameBufferBinding": "Lwjgl3ExtGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-bindFramebuffer",
@@ -32378,6 +32575,7 @@
         "blitFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl3ExtGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -32402,6 +32600,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3extglframebufferbinding/",
       "members": {
+        "Lwjgl3ExtGlFrameBufferBinding": "Lwjgl3ExtGlFrameBufferBinding-constructor",
         "genFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-genFramebuffer",
         "deleteFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-deleteFramebuffer",
         "bindFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-bindFramebuffer",
@@ -32414,6 +32613,7 @@
         "blitFramebuffer": "Lwjgl3ExtGlFrameBufferBinding-method-blitFramebuffer"
       },
       "overloads": [
+        "Lwjgl3ExtGlFrameBufferBinding()",
         "genFramebuffer()",
         "deleteFramebuffer(int)",
         "bindFramebuffer(int,int)",
@@ -32888,6 +33088,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3snapshotbackend/",
       "members": {
+        "Lwjgl3SnapshotBackend": "Lwjgl3SnapshotBackend-constructor",
         "create": "Lwjgl3SnapshotBackend-method-create",
         "destroy": "Lwjgl3SnapshotBackend-method-destroy",
         "present": "Lwjgl3SnapshotBackend-method-present",
@@ -32898,6 +33099,7 @@
         "getWindow": "Lwjgl3SnapshotBackend-method-getWindow"
       },
       "overloads": [
+        "Lwjgl3SnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -32920,6 +33122,7 @@
       ],
       "url": "/reference/lwjgl3/lwjgl3snapshotbackend/",
       "members": {
+        "Lwjgl3SnapshotBackend": "Lwjgl3SnapshotBackend-constructor",
         "create": "Lwjgl3SnapshotBackend-method-create",
         "destroy": "Lwjgl3SnapshotBackend-method-destroy",
         "present": "Lwjgl3SnapshotBackend-method-present",
@@ -32930,6 +33133,7 @@
         "getWindow": "Lwjgl3SnapshotBackend-method-getWindow"
       },
       "overloads": [
+        "Lwjgl3SnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -34154,6 +34358,7 @@
       ],
       "url": "/reference/vulkan/vulkansnapshotbackend/",
       "members": {
+        "VulkanSnapshotBackend": "VulkanSnapshotBackend-constructor",
         "create": "VulkanSnapshotBackend-method-create",
         "destroy": "VulkanSnapshotBackend-method-destroy",
         "present": "VulkanSnapshotBackend-method-present",
@@ -34164,6 +34369,7 @@
         "getWindow": "VulkanSnapshotBackend-method-getWindow"
       },
       "overloads": [
+        "VulkanSnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -34186,6 +34392,7 @@
       ],
       "url": "/reference/vulkan/vulkansnapshotbackend/",
       "members": {
+        "VulkanSnapshotBackend": "VulkanSnapshotBackend-constructor",
         "create": "VulkanSnapshotBackend-method-create",
         "destroy": "VulkanSnapshotBackend-method-destroy",
         "present": "VulkanSnapshotBackend-method-present",
@@ -34196,6 +34403,7 @@
         "getWindow": "VulkanSnapshotBackend-method-getWindow"
       },
       "overloads": [
+        "VulkanSnapshotBackend()",
         "create(int,int)",
         "destroy()",
         "present()",
@@ -34708,6 +34916,7 @@
       "ancestors": [],
       "url": "/reference/tools/shape/",
       "members": {
+        "Shape": "Shape-constructor",
         "add": "Shape-method-add",
         "getContours": "Shape-method-getContours",
         "isEmpty": "Shape-method-isEmpty",
@@ -34715,6 +34924,7 @@
         "orient": "Shape-method-orient"
       },
       "overloads": [
+        "Shape()",
         "add(List)",
         "getContours()",
         "isEmpty()",
@@ -34732,6 +34942,7 @@
       "ancestors": [],
       "url": "/reference/tools/shape/",
       "members": {
+        "Shape": "Shape-constructor",
         "add": "Shape-method-add",
         "getContours": "Shape-method-getContours",
         "isEmpty": "Shape-method-isEmpty",
@@ -34739,6 +34950,7 @@
         "orient": "Shape-method-orient"
       },
       "overloads": [
+        "Shape()",
         "add(List)",
         "getContours()",
         "isEmpty()",
@@ -34952,6 +35164,7 @@
       "ancestors": [],
       "url": "/reference/testing/bitmapfontcontractsuite/",
       "members": {
+        "BitmapFontContractSuite": "BitmapFontContractSuite-constructor",
         "createBackend": "BitmapFontContractSuite-method-createBackend",
         "startBackend": "BitmapFontContractSuite-method-startBackend",
         "stopBackend": "BitmapFontContractSuite-method-stopBackend",
@@ -34960,6 +35173,7 @@
         "drawsTheSameGlyphFromEveryAtlas": "BitmapFontContractSuite-method-drawsTheSameGlyphFromEveryAtlas"
       },
       "overloads": [
+        "BitmapFontContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -34978,6 +35192,7 @@
       "ancestors": [],
       "url": "/reference/testing/bitmapfontcontractsuite/",
       "members": {
+        "BitmapFontContractSuite": "BitmapFontContractSuite-constructor",
         "createBackend": "BitmapFontContractSuite-method-createBackend",
         "startBackend": "BitmapFontContractSuite-method-startBackend",
         "stopBackend": "BitmapFontContractSuite-method-stopBackend",
@@ -34986,6 +35201,7 @@
         "drawsTheSameGlyphFromEveryAtlas": "BitmapFontContractSuite-method-drawsTheSameGlyphFromEveryAtlas"
       },
       "overloads": [
+        "BitmapFontContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35004,6 +35220,7 @@
       "ancestors": [],
       "url": "/reference/testing/borrowedtexturecontractsuite/",
       "members": {
+        "BorrowedTextureContractSuite": "BorrowedTextureContractSuite-constructor",
         "createBackend": "BorrowedTextureContractSuite-method-createBackend",
         "startBackend": "BorrowedTextureContractSuite-method-startBackend",
         "stopBackend": "BorrowedTextureContractSuite-method-stopBackend",
@@ -35015,6 +35232,7 @@
         "followsTheHandleOfItsSupplier": "BorrowedTextureContractSuite-method-followsTheHandleOfItsSupplier"
       },
       "overloads": [
+        "BorrowedTextureContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35036,6 +35254,7 @@
       "ancestors": [],
       "url": "/reference/testing/borrowedtexturecontractsuite/",
       "members": {
+        "BorrowedTextureContractSuite": "BorrowedTextureContractSuite-constructor",
         "createBackend": "BorrowedTextureContractSuite-method-createBackend",
         "startBackend": "BorrowedTextureContractSuite-method-startBackend",
         "stopBackend": "BorrowedTextureContractSuite-method-stopBackend",
@@ -35047,6 +35266,7 @@
         "followsTheHandleOfItsSupplier": "BorrowedTextureContractSuite-method-followsTheHandleOfItsSupplier"
       },
       "overloads": [
+        "BorrowedTextureContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35220,6 +35440,7 @@
       "ancestors": [],
       "url": "/reference/testing/renderbridgecontractsuite/",
       "members": {
+        "RenderBridgeContractSuite": "RenderBridgeContractSuite-constructor",
         "createBackend": "RenderBridgeContractSuite-method-createBackend",
         "startBackend": "RenderBridgeContractSuite-method-startBackend",
         "stopBackend": "RenderBridgeContractSuite-method-stopBackend",
@@ -35264,6 +35485,7 @@
         "restoresTheMatrixAfterATransformation": "RenderBridgeContractSuite-method-restoresTheMatrixAfterATransformation"
       },
       "overloads": [
+        "RenderBridgeContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35318,6 +35540,7 @@
       "ancestors": [],
       "url": "/reference/testing/renderbridgecontractsuite/",
       "members": {
+        "RenderBridgeContractSuite": "RenderBridgeContractSuite-constructor",
         "createBackend": "RenderBridgeContractSuite-method-createBackend",
         "startBackend": "RenderBridgeContractSuite-method-startBackend",
         "stopBackend": "RenderBridgeContractSuite-method-stopBackend",
@@ -35362,6 +35585,7 @@
         "restoresTheMatrixAfterATransformation": "RenderBridgeContractSuite-method-restoresTheMatrixAfterATransformation"
       },
       "overloads": [
+        "RenderBridgeContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35416,6 +35640,7 @@
       "ancestors": [],
       "url": "/reference/testing/stateguardcontractsuite/",
       "members": {
+        "StateGuardContractSuite": "StateGuardContractSuite-constructor",
         "createBackend": "StateGuardContractSuite-method-createBackend",
         "startBackend": "StateGuardContractSuite-method-startBackend",
         "stopBackend": "StateGuardContractSuite-method-stopBackend",
@@ -35441,6 +35666,7 @@
         "givesTheHostItsStateBackAroundARasterNestedInItsDrawing": "StateGuardContractSuite-method-givesTheHostItsStateBackAroundARasterNestedInItsDrawing"
       },
       "overloads": [
+        "StateGuardContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35476,6 +35702,7 @@
       "ancestors": [],
       "url": "/reference/testing/stateguardcontractsuite/",
       "members": {
+        "StateGuardContractSuite": "StateGuardContractSuite-constructor",
         "createBackend": "StateGuardContractSuite-method-createBackend",
         "startBackend": "StateGuardContractSuite-method-startBackend",
         "stopBackend": "StateGuardContractSuite-method-stopBackend",
@@ -35501,6 +35728,7 @@
         "givesTheHostItsStateBackAroundARasterNestedInItsDrawing": "StateGuardContractSuite-method-givesTheHostItsStateBackAroundARasterNestedInItsDrawing"
       },
       "overloads": [
+        "StateGuardContractSuite()",
         "createBackend()",
         "startBackend()",
         "stopBackend()",
@@ -35750,6 +35978,7 @@
       ],
       "url": "/reference/testing/snapshotaudiosource/",
       "members": {
+        "SnapshotAudioSource": "SnapshotAudioSource-constructor",
         "delete": "SnapshotAudioSource-method-delete",
         "play": "SnapshotAudioSource-method-play",
         "stop": "SnapshotAudioSource-method-stop",
@@ -35761,6 +35990,7 @@
         "getBufferedSamples": "SnapshotAudioSource-method-getBufferedSamples"
       },
       "overloads": [
+        "SnapshotAudioSource()",
         "delete()",
         "play()",
         "stop()",
@@ -35784,6 +36014,7 @@
       ],
       "url": "/reference/testing/snapshotaudiosource/",
       "members": {
+        "SnapshotAudioSource": "SnapshotAudioSource-constructor",
         "delete": "SnapshotAudioSource-method-delete",
         "play": "SnapshotAudioSource-method-play",
         "stop": "SnapshotAudioSource-method-stop",
@@ -35795,6 +36026,7 @@
         "getBufferedSamples": "SnapshotAudioSource-method-getBufferedSamples"
       },
       "overloads": [
+        "SnapshotAudioSource()",
         "delete()",
         "play()",
         "stop()",
@@ -36256,6 +36488,7 @@
       "ancestors": [],
       "url": "/reference/testing/snapshotsuite/",
       "members": {
+        "SnapshotSuite": "SnapshotSuite-constructor",
         "createBackend": "SnapshotSuite-method-createBackend",
         "stopRunner": "SnapshotSuite-method-stopRunner",
         "matchesDevSnapshots": "SnapshotSuite-method-matchesDevSnapshots",
@@ -36267,6 +36500,7 @@
         "matchesInteractionSnapshots": "SnapshotSuite-method-matchesInteractionSnapshots"
       },
       "overloads": [
+        "SnapshotSuite()",
         "createBackend()",
         "stopRunner()",
         "matchesDevSnapshots()",
@@ -36288,6 +36522,7 @@
       "ancestors": [],
       "url": "/reference/testing/snapshotsuite/",
       "members": {
+        "SnapshotSuite": "SnapshotSuite-constructor",
         "createBackend": "SnapshotSuite-method-createBackend",
         "stopRunner": "SnapshotSuite-method-stopRunner",
         "matchesDevSnapshots": "SnapshotSuite-method-matchesDevSnapshots",
@@ -36299,6 +36534,7 @@
         "matchesInteractionSnapshots": "SnapshotSuite-method-matchesInteractionSnapshots"
       },
       "overloads": [
+        "SnapshotSuite()",
         "createBackend()",
         "stopRunner()",
         "matchesDevSnapshots()",
@@ -36326,14 +36562,14 @@
       ],
       "url": "/reference/testing/snapshotuibridge/",
       "members": {
+        "interfaceScale": "SnapshotUIBridge-property-interfaceScale",
         "create": "SnapshotUIBridge-factory-create",
-        "getInterfaceScale": "SnapshotUIBridge-method-getInterfaceScale",
-        "setInterfaceScale": "SnapshotUIBridge-method-setInterfaceScale"
+        "getInterfaceScale": "SnapshotUIBridge-method-getInterfaceScale"
       },
       "overloads": [
+        "interfaceScale(double)",
         "create()",
-        "getInterfaceScale(UI)",
-        "setInterfaceScale(double)"
+        "getInterfaceScale(UI)"
       ]
     },
     "SnapshotUIBridge": {
@@ -36352,14 +36588,14 @@
       ],
       "url": "/reference/testing/snapshotuibridge/",
       "members": {
+        "interfaceScale": "SnapshotUIBridge-property-interfaceScale",
         "create": "SnapshotUIBridge-factory-create",
-        "getInterfaceScale": "SnapshotUIBridge-method-getInterfaceScale",
-        "setInterfaceScale": "SnapshotUIBridge-method-setInterfaceScale"
+        "getInterfaceScale": "SnapshotUIBridge-method-getInterfaceScale"
       },
       "overloads": [
+        "interfaceScale(double)",
         "create()",
-        "getInterfaceScale(UI)",
-        "setInterfaceScale(double)"
+        "getInterfaceScale(UI)"
       ]
     },
     "dev.joid.test.snapshot.SnapshotUrlAssetLocator": {
@@ -36374,10 +36610,12 @@
       ],
       "url": "/reference/testing/snapshoturlassetlocator/",
       "members": {
+        "SnapshotUrlAssetLocator": "SnapshotUrlAssetLocator-constructor",
         "supports": "SnapshotUrlAssetLocator-method-supports",
         "locate": "SnapshotUrlAssetLocator-method-locate"
       },
       "overloads": [
+        "SnapshotUrlAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -36394,10 +36632,12 @@
       ],
       "url": "/reference/testing/snapshoturlassetlocator/",
       "members": {
+        "SnapshotUrlAssetLocator": "SnapshotUrlAssetLocator-constructor",
         "supports": "SnapshotUrlAssetLocator-method-supports",
         "locate": "SnapshotUrlAssetLocator-method-locate"
       },
       "overloads": [
+        "SnapshotUrlAssetLocator()",
         "supports(Object)",
         "locate(Object)"
       ]
@@ -36415,6 +36655,7 @@
       ],
       "url": "/reference/testing/snapshotwindowbridge/",
       "members": {
+        "SnapshotWindowBridge": "SnapshotWindowBridge-constructor",
         "isMouseGrabbed": "SnapshotWindowBridge-method-isMouseGrabbed",
         "isKeyDown": "SnapshotWindowBridge-method-isKeyDown",
         "getKeys": "SnapshotWindowBridge-method-getKeys",
@@ -36432,6 +36673,7 @@
         "setClipboard": "SnapshotWindowBridge-method-setClipboard"
       },
       "overloads": [
+        "SnapshotWindowBridge()",
         "isMouseGrabbed()",
         "isKeyDown(Key)",
         "getKeys()",
@@ -36462,6 +36704,7 @@
       ],
       "url": "/reference/testing/snapshotwindowbridge/",
       "members": {
+        "SnapshotWindowBridge": "SnapshotWindowBridge-constructor",
         "isMouseGrabbed": "SnapshotWindowBridge-method-isMouseGrabbed",
         "isKeyDown": "SnapshotWindowBridge-method-isKeyDown",
         "getKeys": "SnapshotWindowBridge-method-getKeys",
@@ -36479,6 +36722,7 @@
         "setClipboard": "SnapshotWindowBridge-method-setClipboard"
       },
       "overloads": [
+        "SnapshotWindowBridge()",
         "isMouseGrabbed()",
         "isKeyDown(Key)",
         "getKeys()",

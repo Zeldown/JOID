@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.ApngResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [ApngResourceFormat](#ApngResourceFormat-constructor)() |  |
+
 <a id="ApngResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#ApngResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#ApngResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="ApngResourceFormat-constructor"></a>
+
+### ApngResourceFormat
+
+`ApngResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## ApngResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.ApngResourceFormat.md</code>.</div>
 
 ## Method details
 

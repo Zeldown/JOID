@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.bridge.ui.StackUIBridge.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [StackUIBridge](#StackUIBridge-constructor)() |  |
+
 <a id="StackUIBridge-methods"></a>
 
 ## Methods
@@ -52,6 +58,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 [`getInterfaceScale`](/reference/backends/iuibridge/#IUIBridge-method-getInterfaceScale) · [`closeAll`](/reference/backends/iuibridge/#IUIBridge-method-closeAll)
 
 </details>
+
+## Creation details
+
+<a id="StackUIBridge-constructor"></a>
+
+### StackUIBridge
+
+`StackUIBridge()` 
+
+<div class="joid-missing">Missing description: add <code>## StackUIBridge()</code> to <code>documentation/reference/dev.joid.lib.bridge.ui.StackUIBridge.md</code>.</div>
 
 ## Method details
 

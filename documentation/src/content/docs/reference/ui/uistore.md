@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.ui.core.hook.store.UIStore.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [UIStore](#UIStore-constructor)() |  |
+
 <a id="UIStore-methods"></a>
 
 ## Methods
@@ -32,6 +38,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [init](#UIStore-method-init)() <span class="joid-qualifier">hook</span> |  |
 | `void` | [destroy](#UIStore-method-destroy)() <span class="joid-qualifier">hook</span> |  |
 | `void` | [fromJson](#UIStore-method-fromJson)(JsonObject json) <span class="joid-qualifier">hook</span> |  |
+
+## Creation details
+
+<a id="UIStore-constructor"></a>
+
+### UIStore
+
+`UIStore()` 
+
+<div class="joid-missing">Missing description: add <code>## UIStore()</code> to <code>documentation/reference/dev.joid.lib.ui.core.hook.store.UIStore.md</code>.</div>
 
 ## Method details
 

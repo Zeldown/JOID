@@ -30,6 +30,9 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `boolean` | [isEmpty](#FieldSelection-method-isEmpty)() |  |
 | `int` | [getStart](#FieldSelection-method-getStart)() |  |
 | `int` | [getEnd](#FieldSelection-method-getEnd)() |  |
+| `String` | [toString](#FieldSelection-method-toString)() |  |
+| `boolean` | [equals](#FieldSelection-method-equals)(Object other) |  |
+| `int` | [hashCode](#FieldSelection-method-hashCode)() |  |
 
 ## Creation details
 
@@ -66,6 +69,30 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `int getEnd()` 
 
 <div class="joid-missing">Missing description: add <code>## getEnd()</code> to <code>documentation/reference/dev.joid.lib.ui.node.impl.control.field.FieldSelection.md</code>.</div>
+
+<a id="FieldSelection-method-toString"></a>
+
+### toString
+
+`String toString()` 
+
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.node.impl.control.field.FieldSelection.md</code>.</div>
+
+<a id="FieldSelection-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+<div class="joid-missing">Missing description: add <code>## equals(Object)</code> to <code>documentation/reference/dev.joid.lib.ui.node.impl.control.field.FieldSelection.md</code>.</div>
+
+<a id="FieldSelection-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+<div class="joid-missing">Missing description: add <code>## hashCode()</code> to <code>documentation/reference/dev.joid.lib.ui.node.impl.control.field.FieldSelection.md</code>.</div>
 
 ---
 

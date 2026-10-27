@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.animation.tween.path.LinearTweenPath.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [LinearTweenPath](#LinearTweenPath-constructor)() |  |
+
 <a id="LinearTweenPath-methods"></a>
 
 ## Methods
@@ -23,6 +29,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `float` | [compute](#LinearTweenPath-method-compute)(float t, float[] points, int pointCount) |  |
+
+## Creation details
+
+<a id="LinearTweenPath-constructor"></a>
+
+### LinearTweenPath
+
+`LinearTweenPath()` 
+
+<div class="joid-missing">Missing description: add <code>## LinearTweenPath()</code> to <code>documentation/reference/dev.joid.lib.animation.tween.path.LinearTweenPath.md</code>.</div>
 
 ## Method details
 

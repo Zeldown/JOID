@@ -31,6 +31,7 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `float` | [getBottom](#MsdfBounds-method-getBottom)() |  |
 | `float` | [getRight](#MsdfBounds-method-getRight)() |  |
 | `float` | [getTop](#MsdfBounds-method-getTop)() |  |
+| `String` | [toString](#MsdfBounds-method-toString)() |  |
 
 ## Creation details
 
@@ -75,6 +76,14 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `float getTop()` 
 
 <div class="joid-missing">Missing description: add <code>## getTop()</code> to <code>documentation/reference/dev.joid.lib.font.impl.msdf.MsdfBounds.md</code>.</div>
+
+<a id="MsdfBounds-method-toString"></a>
+
+### toString
+
+`String toString()` 
+
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.font.impl.msdf.MsdfBounds.md</code>.</div>
 
 ---
 

@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.SvgResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [SvgResourceFormat](#SvgResourceFormat-constructor)() |  |
+
 <a id="SvgResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#SvgResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#SvgResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="SvgResourceFormat-constructor"></a>
+
+### SvgResourceFormat
+
+`SvgResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## SvgResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.SvgResourceFormat.md</code>.</div>
 
 ## Method details
 

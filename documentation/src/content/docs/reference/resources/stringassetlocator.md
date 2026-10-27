@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.StringAssetLocator.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [StringAssetLocator](#StringAssetLocator-constructor)() |  |
+
 <a id="StringAssetLocator-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#StringAssetLocator-method-supports)(Object handle) |  |
 | [`Asset`](/reference/resources/asset/) | [locate](#StringAssetLocator-method-locate)(Object handle) |  |
+
+## Creation details
+
+<a id="StringAssetLocator-constructor"></a>
+
+### StringAssetLocator
+
+`StringAssetLocator()` 
+
+<div class="joid-missing">Missing description: add <code>## StringAssetLocator()</code> to <code>documentation/reference/dev.joid.lib.asset.locator.impl.StringAssetLocator.md</code>.</div>
 
 ## Method details
 

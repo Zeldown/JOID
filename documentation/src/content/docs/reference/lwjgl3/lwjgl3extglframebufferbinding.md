@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.backend.lwjgl3.binding.Lwjgl3ExtGlFrameBufferBinding.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Lwjgl3ExtGlFrameBufferBinding](#Lwjgl3ExtGlFrameBufferBinding-constructor)() |  |
+
 <a id="Lwjgl3ExtGlFrameBufferBinding-methods"></a>
 
 ## Methods
@@ -33,6 +39,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [renderbufferStorage](#Lwjgl3ExtGlFrameBufferBinding-method-renderbufferStorage)(int target, int internalFormat, int width, int height) |  |
 | `void` | [framebufferRenderbuffer](#Lwjgl3ExtGlFrameBufferBinding-method-framebufferRenderbuffer)(int target, int attachment, int renderbufferTarget, int renderbuffer) |  |
 | `void` | [blitFramebuffer](#Lwjgl3ExtGlFrameBufferBinding-method-blitFramebuffer)(int sourceX0, int sourceY0, int sourceX1, int sourceY1, int targetX0, int targetY0, int targetX1, int targetY1, int mask, int filter) |  |
+
+## Creation details
+
+<a id="Lwjgl3ExtGlFrameBufferBinding-constructor"></a>
+
+### Lwjgl3ExtGlFrameBufferBinding
+
+`Lwjgl3ExtGlFrameBufferBinding()` 
+
+<div class="joid-missing">Missing description: add <code>## Lwjgl3ExtGlFrameBufferBinding()</code> to <code>documentation/reference/dev.joid.backend.lwjgl3.binding.Lwjgl3ExtGlFrameBufferBinding.md</code>.</div>
 
 ## Method details
 

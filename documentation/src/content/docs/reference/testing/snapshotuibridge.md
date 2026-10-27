@@ -26,6 +26,10 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 ## Properties
 
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [interfaceScale](#SnapshotUIBridge-property-interfaceScale) | `double` | `1D` |  |
+
 <details>
 <summary>Inherited from <a href="/reference/backends/windowuibridge/#WindowUIBridge-properties"><code>WindowUIBridge</code></a> (4)</summary>
 
@@ -46,7 +50,6 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `double` | [getInterfaceScale](#SnapshotUIBridge-method-getInterfaceScale)(UI ui) |  |
-| `void` | [setInterfaceScale](#SnapshotUIBridge-method-setInterfaceScale)(double interfaceScale) |  |
 
 <details>
 <summary>Inherited from <a href="/reference/backends/windowuibridge/#WindowUIBridge-methods"><code>WindowUIBridge</code></a> (1)</summary>
@@ -86,6 +89,18 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUIBridge.md</code>.</div>
 
+## Property details
+
+<a id="SnapshotUIBridge-property-interfaceScale"></a>
+
+### interfaceScale
+
+- `this interfaceScale(double interfaceScale)` <span class="joid-qualifier">fluent</span>
+
+**Default:** `1D`
+
+<div class="joid-missing">Missing description: add <code>## interfaceScale</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUIBridge.md</code>.</div>
+
 ## Method details
 
 <a id="SnapshotUIBridge-method-getInterfaceScale"></a>
@@ -95,14 +110,6 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 `double getInterfaceScale(UI ui)` 
 
 <div class="joid-missing">Missing description: add <code>## getInterfaceScale(UI)</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUIBridge.md</code>.</div>
-
-<a id="SnapshotUIBridge-method-setInterfaceScale"></a>
-
-### setInterfaceScale
-
-`void setInterfaceScale(double interfaceScale)` 
-
-<div class="joid-missing">Missing description: add <code>## setInterfaceScale(double)</code> to <code>documentation/reference/dev.joid.test.snapshot.SnapshotUIBridge.md</code>.</div>
 
 ---
 

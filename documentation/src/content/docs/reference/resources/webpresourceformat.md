@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.WebpResourceFormat.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [WebpResourceFormat](#WebpResourceFormat-constructor)() |  |
+
 <a id="WebpResourceFormat-methods"></a>
 
 ## Methods
@@ -24,6 +30,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | `boolean` | [supports](#WebpResourceFormat-method-supports)(byte[] header) |  |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | [decoder](#WebpResourceFormat-method-decoder)(Asset asset, byte[] header) |  |
+
+## Creation details
+
+<a id="WebpResourceFormat-constructor"></a>
+
+### WebpResourceFormat
+
+`WebpResourceFormat()` 
+
+<div class="joid-missing">Missing description: add <code>## WebpResourceFormat()</code> to <code>documentation/reference/dev.joid.lib.resource.format.impl.WebpResourceFormat.md</code>.</div>
 
 ## Method details
 

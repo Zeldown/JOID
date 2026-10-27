@@ -16,6 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.shader.impl.ShaderProgram.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [ShaderProgram](#ShaderProgram-constructor)() |  |
+
 <a id="ShaderProgram-methods"></a>
 
 ## Methods
@@ -38,6 +44,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [load](#ShaderProgram-method-load)(Object vertexShader, Object fragmentShader) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> |  |
+
+## Creation details
+
+<a id="ShaderProgram-constructor"></a>
+
+### ShaderProgram
+
+`ShaderProgram()` 
+
+<div class="joid-missing">Missing description: add <code>## ShaderProgram()</code> to <code>documentation/reference/dev.joid.lib.shader.impl.ShaderProgram.md</code>.</div>
 
 ## Method details
 

@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.binding.Lwjgl2CoreGlFrameBufferBinding.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [Lwjgl2CoreGlFrameBufferBinding](#Lwjgl2CoreGlFrameBufferBinding-constructor)() |  |
+
 <a id="Lwjgl2CoreGlFrameBufferBinding-methods"></a>
 
 ## Methods
@@ -33,6 +39,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | `void` | [renderbufferStorage](#Lwjgl2CoreGlFrameBufferBinding-method-renderbufferStorage)(int target, int internalFormat, int width, int height) |  |
 | `void` | [framebufferRenderbuffer](#Lwjgl2CoreGlFrameBufferBinding-method-framebufferRenderbuffer)(int target, int attachment, int renderbufferTarget, int renderbuffer) |  |
 | `void` | [blitFramebuffer](#Lwjgl2CoreGlFrameBufferBinding-method-blitFramebuffer)(int sourceX0, int sourceY0, int sourceX1, int sourceY1, int targetX0, int targetY0, int targetX1, int targetY1, int mask, int filter) |  |
+
+## Creation details
+
+<a id="Lwjgl2CoreGlFrameBufferBinding-constructor"></a>
+
+### Lwjgl2CoreGlFrameBufferBinding
+
+`Lwjgl2CoreGlFrameBufferBinding()` 
+
+<div class="joid-missing">Missing description: add <code>## Lwjgl2CoreGlFrameBufferBinding()</code> to <code>documentation/reference/dev.joid.backend.lwjgl2.binding.Lwjgl2CoreGlFrameBufferBinding.md</code>.</div>
 
 ## Method details
 

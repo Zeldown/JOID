@@ -21,16 +21,22 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 |---|---|---|
 | [`UIDataOverlayRenderObject`](/reference/annotations/uidataoverlayrenderobject/) | [create](#UIDataOverlayRenderObject-factory-create)() <span class="joid-qualifier">factory</span> |  |
 
+<a id="UIDataOverlayRenderObject-properties"></a>
+
+## Properties
+
+| Property | Type | Default | Summary |
+|---|---|---|---|
+| [always](#UIDataOverlayRenderObject-property-always) | `boolean` | `false` |  |
+| [aboveScreens](#UIDataOverlayRenderObject-property-aboveScreens) | `boolean` | `false` |  |
+
 <a id="UIDataOverlayRenderObject-methods"></a>
 
 ## Methods
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isAlways](#UIDataOverlayRenderObject-method-isAlways)() |  |
-| `void` | [setAlways](#UIDataOverlayRenderObject-method-setAlways)(boolean always) |  |
-| `boolean` | [isAboveScreens](#UIDataOverlayRenderObject-method-isAboveScreens)() |  |
-| `void` | [setAboveScreens](#UIDataOverlayRenderObject-method-setAboveScreens)(boolean aboveScreens) |  |
+| `String` | [toString](#UIDataOverlayRenderObject-method-toString)() |  |
 
 ## Creation details
 
@@ -42,39 +48,39 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## create()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
 
+## Property details
+
+<a id="UIDataOverlayRenderObject-property-always"></a>
+
+### always
+
+- `this always(boolean always)` <span class="joid-qualifier">fluent</span>
+- `boolean always()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## always</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
+
+<a id="UIDataOverlayRenderObject-property-aboveScreens"></a>
+
+### aboveScreens
+
+- `this aboveScreens(boolean aboveScreens)` <span class="joid-qualifier">fluent</span>
+- `boolean aboveScreens()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## aboveScreens</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
+
 ## Method details
 
-<a id="UIDataOverlayRenderObject-method-isAlways"></a>
+<a id="UIDataOverlayRenderObject-method-toString"></a>
 
-### isAlways
+### toString
 
-`boolean isAlways()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isAlways()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
-
-<a id="UIDataOverlayRenderObject-method-setAlways"></a>
-
-### setAlways
-
-`void setAlways(boolean always)` 
-
-<div class="joid-missing">Missing description: add <code>## setAlways(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
-
-<a id="UIDataOverlayRenderObject-method-isAboveScreens"></a>
-
-### isAboveScreens
-
-`boolean isAboveScreens()` 
-
-<div class="joid-missing">Missing description: add <code>## isAboveScreens()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
-
-<a id="UIDataOverlayRenderObject-method-setAboveScreens"></a>
-
-### setAboveScreens
-
-`void setAboveScreens(boolean aboveScreens)` 
-
-<div class="joid-missing">Missing description: add <code>## setAboveScreens(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataOverlayRenderObject.md</code>.</div>
 
 ---
 

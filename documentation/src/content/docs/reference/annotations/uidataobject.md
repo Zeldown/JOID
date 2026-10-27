@@ -28,53 +28,27 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | Property | Type | Default | Summary |
 |---|---|---|---|
 | [backgroundColor](#UIDataObject-property-backgroundColor) | `String` | `"#101010C0"` |  |
+| [zindex](#UIDataObject-property-zindex) | `int` | `0` |  |
+| [zlevel](#UIDataObject-property-zlevel) | `double` | `0D` |  |
+| [active](#UIDataObject-property-active) | `boolean` | `true` |  |
+| [visible](#UIDataObject-property-visible) | `boolean` | `true` |  |
+| [zoomable](#UIDataObject-property-zoomable) | `boolean` | `true` |  |
+| [closeable](#UIDataObject-property-closeable) | `boolean` | `true` |  |
+| [projection](#UIDataObject-property-projection) | `boolean` | `true` |  |
+| [background](#UIDataObject-property-background) | `boolean` | `false` |  |
+| [anchorX](#UIDataObject-property-anchorX) | [`Align`](/reference/layout/align/) | `Align.CENTER` |  |
+| [anchorY](#UIDataObject-property-anchorY) | [`Align`](/reference/layout/align/) | `Align.CENTER` |  |
 
 <a id="UIDataObject-methods"></a>
 
 ## Methods
 
-### Position and size
-
-| Returns | Signature | Summary |
-|---|---|---|
-| `int` | [getZindex](#UIDataObject-method-getZindex)() |  |
-| `void` | [setZindex](#UIDataObject-method-setZindex)(int zindex) |  |
-| `double` | [getZlevel](#UIDataObject-method-getZlevel)() |  |
-| `void` | [setZlevel](#UIDataObject-method-setZlevel)(double zlevel) |  |
-| [`Align`](/reference/layout/align/) | [getAnchorX](#UIDataObject-method-getAnchorX)() |  |
-| `void` | [setAnchorX](#UIDataObject-method-setAnchorX)(Align anchorX) |  |
-| [`Align`](/reference/layout/align/) | [getAnchorY](#UIDataObject-method-getAnchorY)() |  |
-| `void` | [setAnchorY](#UIDataObject-method-setAnchorY)(Align anchorY) |  |
-
-### Colors
-
-| Returns | Signature | Summary |
-|---|---|---|
-| `boolean` | [isBackground](#UIDataObject-method-isBackground)() |  |
-| `void` | [setBackground](#UIDataObject-method-setBackground)(boolean background) |  |
-| `void` | [setBackgroundColor](#UIDataObject-method-setBackgroundColor)(String backgroundColor) |  |
-
-### Queries
-
 | Returns | Signature | Summary |
 |---|---|---|
 | `double` | [getAnchorPositionX](#UIDataObject-method-getAnchorPositionX)() |  |
 | `double` | [getAnchorPositionY](#UIDataObject-method-getAnchorPositionY)() |  |
-| `boolean` | [isActive](#UIDataObject-method-isActive)() |  |
-| `boolean` | [isZoomable](#UIDataObject-method-isZoomable)() |  |
-| `boolean` | [isCloseable](#UIDataObject-method-isCloseable)() |  |
-| `boolean` | [isProjection](#UIDataObject-method-isProjection)() |  |
-| `boolean` | [isVisible](#UIDataObject-method-isVisible)() |  |
-
-### Actions
-
-| Returns | Signature | Summary |
-|---|---|---|
-| `void` | [setActive](#UIDataObject-method-setActive)(boolean active) |  |
-| `void` | [setVisible](#UIDataObject-method-setVisible)(boolean visible) |  |
-| `void` | [setZoomable](#UIDataObject-method-setZoomable)(boolean zoomable) |  |
-| `void` | [setCloseable](#UIDataObject-method-setCloseable)(boolean closeable) |  |
-| `void` | [setProjection](#UIDataObject-method-setProjection)(boolean projection) |  |
+| [`Color`](/reference/drawing/color/) | [getBackgroundColor](#UIDataObject-method-getBackgroundColor)() |  |
+| `String` | [toString](#UIDataObject-method-toString)() |  |
 
 ## Creation details
 
@@ -93,101 +67,123 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 ### backgroundColor
 
 - `this backgroundColor(String backgroundColor)` <span class="joid-qualifier">fluent</span>
-- `Color getBackgroundColor()` 
+- `String backgroundColor()` 
 
 **Default:** `"#101010C0"`
 
 <div class="joid-missing">Missing description: add <code>## backgroundColor</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
 
+<a id="UIDataObject-property-zindex"></a>
+
+### zindex
+
+- `this zindex(int zindex)` <span class="joid-qualifier">fluent</span>
+- `int zindex()` 
+
+**Default:** `0`
+
+<div class="joid-missing">Missing description: add <code>## zindex</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-zlevel"></a>
+
+### zlevel
+
+- `this zlevel(double zlevel)` <span class="joid-qualifier">fluent</span>
+- `double zlevel()` 
+
+**Default:** `0D`
+
+<div class="joid-missing">Missing description: add <code>## zlevel</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-active"></a>
+
+### active
+
+- `this active(boolean active)` <span class="joid-qualifier">fluent</span>
+- `boolean active()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## active</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-visible"></a>
+
+### visible
+
+- `this visible(boolean visible)` <span class="joid-qualifier">fluent</span>
+- `boolean visible()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## visible</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-zoomable"></a>
+
+### zoomable
+
+- `this zoomable(boolean zoomable)` <span class="joid-qualifier">fluent</span>
+- `boolean zoomable()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## zoomable</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-closeable"></a>
+
+### closeable
+
+- `this closeable(boolean closeable)` <span class="joid-qualifier">fluent</span>
+- `boolean closeable()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## closeable</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-projection"></a>
+
+### projection
+
+- `this projection(boolean projection)` <span class="joid-qualifier">fluent</span>
+- `boolean projection()` 
+
+**Default:** `true`
+
+<div class="joid-missing">Missing description: add <code>## projection</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-background"></a>
+
+### background
+
+- `this background(boolean background)` <span class="joid-qualifier">fluent</span>
+- `boolean background()` 
+
+**Default:** `false`
+
+<div class="joid-missing">Missing description: add <code>## background</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-anchorX"></a>
+
+### anchorX
+
+- `this anchorX(Align anchorX)` <span class="joid-qualifier">fluent</span>
+- `Align anchorX()` 
+
+**Default:** `Align.CENTER`
+
+<div class="joid-missing">Missing description: add <code>## anchorX</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
+<a id="UIDataObject-property-anchorY"></a>
+
+### anchorY
+
+- `this anchorY(Align anchorY)` <span class="joid-qualifier">fluent</span>
+- `Align anchorY()` 
+
+**Default:** `Align.CENTER`
+
+<div class="joid-missing">Missing description: add <code>## anchorY</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+
 ## Method details
-
-<a id="UIDataObject-method-getZindex"></a>
-
-### getZindex
-
-`int getZindex()` 
-
-<div class="joid-missing">Missing description: add <code>## getZindex()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setZindex"></a>
-
-### setZindex
-
-`void setZindex(int zindex)` 
-
-<div class="joid-missing">Missing description: add <code>## setZindex(int)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-getZlevel"></a>
-
-### getZlevel
-
-`double getZlevel()` 
-
-<div class="joid-missing">Missing description: add <code>## getZlevel()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setZlevel"></a>
-
-### setZlevel
-
-`void setZlevel(double zlevel)` 
-
-<div class="joid-missing">Missing description: add <code>## setZlevel(double)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-getAnchorX"></a>
-
-### getAnchorX
-
-`Align getAnchorX()` 
-
-<div class="joid-missing">Missing description: add <code>## getAnchorX()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setAnchorX"></a>
-
-### setAnchorX
-
-`void setAnchorX(Align anchorX)` 
-
-<div class="joid-missing">Missing description: add <code>## setAnchorX(Align)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-getAnchorY"></a>
-
-### getAnchorY
-
-`Align getAnchorY()` 
-
-<div class="joid-missing">Missing description: add <code>## getAnchorY()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setAnchorY"></a>
-
-### setAnchorY
-
-`void setAnchorY(Align anchorY)` 
-
-<div class="joid-missing">Missing description: add <code>## setAnchorY(Align)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-isBackground"></a>
-
-### isBackground
-
-`boolean isBackground()` 
-
-<div class="joid-missing">Missing description: add <code>## isBackground()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setBackground"></a>
-
-### setBackground
-
-`void setBackground(boolean background)` 
-
-<div class="joid-missing">Missing description: add <code>## setBackground(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setBackgroundColor"></a>
-
-### setBackgroundColor
-
-`void setBackgroundColor(String backgroundColor)` 
-
-<div class="joid-missing">Missing description: add <code>## setBackgroundColor(String)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
 
 <a id="UIDataObject-method-getAnchorPositionX"></a>
 
@@ -205,85 +201,21 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## getAnchorPositionY()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
 
-<a id="UIDataObject-method-isActive"></a>
+<a id="UIDataObject-method-getBackgroundColor"></a>
 
-### isActive
+### getBackgroundColor
 
-`boolean isActive()` 
+`Color getBackgroundColor()` 
 
-<div class="joid-missing">Missing description: add <code>## isActive()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## getBackgroundColor()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
 
-<a id="UIDataObject-method-isZoomable"></a>
+<a id="UIDataObject-method-toString"></a>
 
-### isZoomable
+### toString
 
-`boolean isZoomable()` 
+`String toString()` 
 
-<div class="joid-missing">Missing description: add <code>## isZoomable()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-isCloseable"></a>
-
-### isCloseable
-
-`boolean isCloseable()` 
-
-<div class="joid-missing">Missing description: add <code>## isCloseable()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-isProjection"></a>
-
-### isProjection
-
-`boolean isProjection()` 
-
-<div class="joid-missing">Missing description: add <code>## isProjection()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-isVisible"></a>
-
-### isVisible
-
-`boolean isVisible()` 
-
-<div class="joid-missing">Missing description: add <code>## isVisible()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setActive"></a>
-
-### setActive
-
-`void setActive(boolean active)` 
-
-<div class="joid-missing">Missing description: add <code>## setActive(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setVisible"></a>
-
-### setVisible
-
-`void setVisible(boolean visible)` 
-
-<div class="joid-missing">Missing description: add <code>## setVisible(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setZoomable"></a>
-
-### setZoomable
-
-`void setZoomable(boolean zoomable)` 
-
-<div class="joid-missing">Missing description: add <code>## setZoomable(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setCloseable"></a>
-
-### setCloseable
-
-`void setCloseable(boolean closeable)` 
-
-<div class="joid-missing">Missing description: add <code>## setCloseable(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
-
-<a id="UIDataObject-method-setProjection"></a>
-
-### setProjection
-
-`void setProjection(boolean projection)` 
-
-<div class="joid-missing">Missing description: add <code>## setProjection(boolean)</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
+<div class="joid-missing">Missing description: add <code>## toString()</code> to <code>documentation/reference/dev.joid.lib.ui.core.data.UIDataObject.md</code>.</div>
 
 ---
 

@@ -15,6 +15,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.lib.input.key.KeyState.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [KeyState](#KeyState-constructor)() |  |
+
 <a id="KeyState-methods"></a>
 
 ## Methods
@@ -25,6 +31,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | [`Key`](/reference/input/key/) | [release](#KeyState-method-release)(Key physicalKey) |  |
 | `boolean` | [isDown](#KeyState-method-isDown)(Key key) |  |
 | [`Key`](/reference/input/key/) | [getKey](#KeyState-method-getKey)(Key physicalKey) |  |
+
+## Creation details
+
+<a id="KeyState-constructor"></a>
+
+### KeyState
+
+`KeyState()` 
+
+<div class="joid-missing">Missing description: add <code>## KeyState()</code> to <code>documentation/reference/dev.joid.lib.input.key.KeyState.md</code>.</div>
 
 ## Method details
 

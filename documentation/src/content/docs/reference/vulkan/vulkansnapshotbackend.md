@@ -17,6 +17,12 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 
 <div class="joid-missing">Missing description: add <code>## summary</code> to <code>documentation/reference/dev.joid.backend.vulkan.snapshot.VulkanSnapshotBackend.md</code>.</div>
 
+## Creation
+
+| Returns | Signature | Summary |
+|---|---|---|
+|  | [VulkanSnapshotBackend](#VulkanSnapshotBackend-constructor)() |  |
+
 <a id="VulkanSnapshotBackend-methods"></a>
 
 ## Methods
@@ -31,6 +37,16 @@ editUrl: https://github.com/Zeldown/JOID/new/main/documentation/reference?filena
 | [`VulkanBackend`](/reference/vulkan/vulkanbackend/) | [getBackend](#VulkanSnapshotBackend-method-getBackend)() |  |
 | [`SnapshotVulkanHost`](/reference/vulkan/snapshotvulkanhost/) | [getHost](#VulkanSnapshotBackend-method-getHost)() |  |
 | [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | [getWindow](#VulkanSnapshotBackend-method-getWindow)() |  |
+
+## Creation details
+
+<a id="VulkanSnapshotBackend-constructor"></a>
+
+### VulkanSnapshotBackend
+
+`VulkanSnapshotBackend()` 
+
+<div class="joid-missing">Missing description: add <code>## VulkanSnapshotBackend()</code> to <code>documentation/reference/dev.joid.backend.vulkan.snapshot.VulkanSnapshotBackend.md</code>.</div>
 
 ## Method details
 
