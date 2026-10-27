@@ -71,27 +71,38 @@ The overload of a fluent setter that takes a `Supplier`, so that the property fo
 To the question "When does JOID compute this value again?", it answers: on every frame for a lambda, when one of its signals changes for an expression that reads signals.
 See: /use/learn/interactivity/signals/
 
-## callback
-A function that you give to an `onX(...)` method and that JOID calls when the event happens.
+## listener
+A function that you give to a `handleX`, `beforeX` or `onX` method of a node or a UI, and that JOID calls with an event object when the event happens.
+`handle` listeners receive the raw input, `before` listeners can refuse a change, `on` listeners hear what happened.
 See: /use/learn/interactivity/events/
 
-## phase
-The moment of a callback relative to the node's own handling: `PRE` before it, `POST` after it.
+## listener priority
+The order of the listeners of one event, set by [[EventPriority]]: from `HIGHEST` to `LOWEST`, then `MONITOR`, and in the order they were added within one priority.
+A `MONITOR` listener only reads: it still runs after a consume or a cancel.
 See: /use/learn/interactivity/events/
 
 ## consume
-To stop an input event: a consumed event reaches no other handler such as `onClick`, no UI below and not the host.
-Listeners such as `onMousePressed` still hear it.
+To stop an input with `consume()`: a consumed input reaches no other `handle` listener, no `onClick`, none of the handling of the node itself, no UI below and not the host.
+Only the `MONITOR` listeners still hear it.
 See: /use/learn/interactivity/events/
 
 ## cancel
-To call `cancel()` on the [[DispatchContext]] that a callback receives: for an input event, it consumes the event; for an action such as `onChange`, a `PRE` callback that cancels stops the action and the `POST` phase.
-Avoid: consume the context, consumes the context
+To refuse a change with `cancel()` in a `before` listener: the change does not apply, and no `on` listener hears it.
+The listeners after it do not run, except the `MONITOR` ones.
 See: /use/learn/interactivity/events/
 
 ## control
 A node that holds a value the user changes: checkbox, toggle, switch, selector, slider, text field.
 See: /use/learn/interactivity/controls/
+
+## pending value
+The last value that a control was asked for, by a setter, its signal or the user, when its bounds refuse it: the control shows a value within its bounds and asks for the pending value again when the bounds change.
+See: /use/learn/interactivity/controls/
+
+## shortcut
+A [[Shortcut]]: a key with its modifiers, attached to a UI or a node, that runs a listener when the key goes down.
+Avoid: keybind
+See: /use/learn/interactivity/keyboard/
 
 ## skin
 A subclass of an abstract control that draws it; a set of skins forms a UI kit.
@@ -108,6 +119,10 @@ See: /use/learn/style-and-motion/transitions/
 ## store
 A shared value container that lives as long as its scope: a UI, the application or the disk.
 See: /use/learn/state/stores-and-properties/
+
+## task
+A [[Task]]: code that runs after a delay, once or on a period, on the clock of JOID and on the render thread, while it stays attached to a UI or a node.
+See: /use/learn/state/tasks/
 
 ## backend
 The module that runs JOID on a graphics and window library: LWJGL 2, LWJGL 3 or Vulkan.
@@ -130,8 +145,8 @@ The application that runs JOID inside its own window and loop.
 See: /use/learn/running/embedding/
 
 ## render thread
-The thread that calls `frame()`: JOID draws there and calls the callbacks of your UIs there.
-With JOID's backends, the end of a load (`onLoad`, a font future, `Signal.of(future)`) runs on the thread that finished loading instead.
+The thread that calls `register()` on the backend, then `frame()`: JOID draws there and calls the listeners of your UIs there.
+The end of a load (`onLoad`, a font future) and a signal written from another thread reach it at the start of the next frame.
 See: /use/learn/running/threads/
 
 ## dev jar
