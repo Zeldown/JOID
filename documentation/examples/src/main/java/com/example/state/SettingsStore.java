@@ -1,6 +1,7 @@
 package com.example.state;
 
-import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -23,21 +24,21 @@ public class SettingsStore extends UIStore {
 	}
 
 	@Override
-	public JsonObject toJson() {
-		final JsonObject json = new JsonObject();
-		json.addProperty("volume", this.volume.peek());
-		json.addProperty("muted", this.muted.peek());
+	public Map<String, Object> toJson() {
+		final Map<String, Object> json = new LinkedHashMap<>();
+		json.put("volume", this.volume.peek());
+		json.put("muted", this.muted.peek());
 		return json;
 	}
 
 	@Override
-	public void fromJson(final JsonObject json) {
-		if (json.has("volume")) {
-			this.volume.set(json.get("volume").getAsInt());
+	public void fromJson(final Map<String, Object> json) {
+		if (json.containsKey("volume")) {
+			this.volume.set(((Number) json.get("volume")).intValue());
 		}
 
-		if (json.has("muted")) {
-			this.muted.set(json.get("muted").getAsBoolean());
+		if (json.containsKey("muted")) {
+			this.muted.set((Boolean) json.get("muted"));
 		}
 	}
 

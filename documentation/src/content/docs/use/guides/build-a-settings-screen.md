@@ -64,7 +64,7 @@ The control then shows the signal and writes the value the user picks into it:
 ## 3. Read and write the file
 
 JOID writes what `toJson()` returns, and gives the content of the file to `fromJson(...)` when the store is created again.
-Read each key only when the file has it:
+Read each key only when the file has it, and each number through `Number`, since the file gives it back as a `Long` or a `Double`:
 
 ```java file="com/example/guides/SettingsGuideStore.java" region="json"
 ```
@@ -85,7 +85,7 @@ A text of another UI that reads `getVolume()` follows the slider of this screen,
 
 1. `useStore` throws `IllegalStateException: The store … has no @UIStoreData annotation`: add the annotation to the store class.
 2. The settings come back to their defaults after a restart: the scope is not `PERMANENT`, or `fromJson` reads other keys than `toJson` writes.
-3. The error output prints `[JOID] The store … cannot be restored from …`: `fromJson` threw on the file; JOID keeps the file aside and starts the store from its defaults.
+3. The error output prints `[JOID] The store … cannot be restored from …`: `fromJson` threw on the file, such as a `ClassCastException` on a number cast to `Integer`; JOID keeps the file aside and starts the store from its defaults.
 4. The settings are lost when the application starts from another folder: the data folder is relative to the working directory by default; move it with `dataDir(...)` ([Where JOID stores files](/use/learn/running/files/)).
 5. A change of a control reaches neither the store nor the other UIs: the control received a value, such as `value(80)`, instead of the signal.
 

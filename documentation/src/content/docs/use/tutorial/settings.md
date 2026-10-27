@@ -36,7 +36,7 @@ Create `SettingsStore.java`:
   `peek()` reads a signal without following it.
 - The values are signals, so every node built from them follows them.
 
-`JsonObject` comes from Gson, which the JOID jar embeds under another package: import it from `dev.joid.shaded.gson`.
+The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int`.
 Nothing uses the store yet, so the menu looks the same.
 
 ## 2. Change the settings in the popup

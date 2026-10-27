@@ -1,6 +1,7 @@
 package com.example.guides;
 
-import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -18,21 +19,21 @@ public class SettingsGuideStore extends UIStore {
 
 	// #region json
 	@Override
-	public JsonObject toJson() {
-		final JsonObject json = new JsonObject();
-		json.addProperty("sound", this.sound.peek());
-		json.addProperty("volume", this.volume.peek());
+	public Map<String, Object> toJson() {
+		final Map<String, Object> json = new LinkedHashMap<>();
+		json.put("sound", this.sound.peek());
+		json.put("volume", this.volume.peek());
 		return json;
 	}
 
 	@Override
-	public void fromJson(final JsonObject json) {
-		if (json.has("sound")) {
-			this.sound.set(json.get("sound").getAsBoolean());
+	public void fromJson(final Map<String, Object> json) {
+		if (json.containsKey("sound")) {
+			this.sound.set((Boolean) json.get("sound"));
 		}
 
-		if (json.has("volume")) {
-			this.volume.set(json.get("volume").getAsInt());
+		if (json.containsKey("volume")) {
+			this.volume.set(((Number) json.get("volume")).intValue());
 		}
 	}
 	// #endregion

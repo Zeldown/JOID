@@ -47,8 +47,8 @@ Its values are signals, so the nodes that show them follow them:
 | `GLOBAL` | For the whole program | With the program |
 | `PERMANENT` | For the whole program | With the program, after its values reach the disk |
 
-`toJson()` and `fromJson(...)` matter only for a `PERMANENT` store: they turn its values into a Gson `JsonObject` and back.
-In the JOID jar, Gson is embedded under another package: import `JsonObject` from `dev.joid.shaded.gson`.
+`toJson()` and `fromJson(...)` matter only for a `PERMANENT` store: `toJson()` puts its values in a `Map<String, Object>`, and `fromJson(...)` receives that map back.
+JOID turns the map into JSON and back itself ([Keep a store on disk](#keep-a-store-on-disk)).
 
 A class without `@UIStoreData` is refused with an `IllegalStateException` at its first use.
 
@@ -88,6 +88,22 @@ A `PERMANENT` store is written to `store/<id>.store` in the [data folder](/use/l
 At its first use in a launch, JOID creates it with the factory, calls `init()`, then `fromJson(...)` with the content of the file when the file exists.
 `fromJson` receives only the keys that the file holds, so test each key: a store saved before a new value existed starts that value from its default.
 
+The map comes back with the types of JSON, whatever the type you put in it:
+
+| In the file | In the map of `fromJson` |
+|---|---|
+| A whole number | `Long` |
+| A decimal number, `NaN`, `Infinity` or `-Infinity` | `Double` |
+| `true` or `false` | `Boolean` |
+| A text | `String` |
+| An array | `List<Object>` |
+| An object | `Map<String, Object>` |
+
+Read a number through `Number`, as in `((Number) json.get("volume")).intValue()`, never with a cast to `Integer`.
+`toJson()` writes any other object field by field, and it comes back as a `Map`; a `null` value is not written.
+The texts `"NaN"`, `"Infinity"` and `"-Infinity"` come back as a `Double` too.
+JOID writes the file only when its text differs from the one it last read or wrote.
+
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.
 
 When the file cannot be read, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
@@ -108,7 +124,7 @@ A field marked [[UIProperty]] keeps its value from one launch to the next:
 ```
 
 JOID writes the remembered fields of a UI to `property/<class name>.property` in the data folder, as JSON, and reads them back into the fields before each `init()`.
-It writes them when the UI closes, before a reload, and when the program ends.
+It writes them when the UI closes, before a reload, and when the program ends, if their text changed.
 
 - The field is not `final` nor `static`; any type that Gson can convert works, from an `int` to a list of records.
 - The key is the name of the field; `@UIProperty("key")` gives another one, to rename the field without losing the value.
