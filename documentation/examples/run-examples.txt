@@ -32,11 +32,13 @@ expect com.example.describing.media.TrailerUI trailer.mp4 cannot be read
 expect com.example.further.FontsUI The font weight 700 is not loaded in the family of Pixel
 skip com.example.backend.EngineBackend part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineBorrowedTexture part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineClockBridge part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineFrameBuffer part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineInputForwarder part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineRenderBridge part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineRenderBridgeContractTest part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineShader part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineSignalReplayBridge part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineSnapshotBackend part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineSpriteResourceResolver part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineTexture part of the backend of an imaginary engine, it needs that engine to run
@@ -47,6 +49,7 @@ skip com.example.backend.HostLoop part of the backend of an imaginary engine, it
 skip com.example.backend.HostPreviewNode part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.IEngineTexture part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.OverlayUIBridge part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.SteppedFrames part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.engine.Engine the imaginary engine of the Build on JOID examples, it does not exist
 skip com.example.backend.engine.EngineDevice the imaginary engine of the Build on JOID examples, it does not exist
 skip com.example.backend.engine.EngineListener the imaginary engine of the Build on JOID examples, it does not exist
