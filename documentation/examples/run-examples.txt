@@ -3,3 +3,12 @@
 # call <class> <static method or field>: the runner calls the method (or reads the field) with no argument, then draws 10 frames.
 # expect <class> <message>: the class prints this message on purpose, for example on a line marked with a cross.
 # A class that no UI and no call loads, and that has no skip line, fails the check.
+call com.example.describing.uis.Navigation open
+skip com.example.describing.DiagramUI abstract base of the diagram scenes
+call com.example.describing.fonts.AppFonts MONTSERRAT
+skip com.example.describing.markup.TagTextMarkup markup used by MarkupUI
+skip com.example.describing.markup.UnderlineTextEffect effect used by TagTextMarkup in MarkupUI
+skip com.example.describing.markup.WaveTextEffect effect used by MarkupUI
+skip com.example.describing.markup.DurationTextConverter converter registered by MarkupUI
+skip com.example.describing.media.MediaSources reads a URL and a file of the disk that the runner does not have
+skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer
