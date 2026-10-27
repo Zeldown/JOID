@@ -94,6 +94,16 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 		return new RecordingShader();
 	}
 
+	@Override
+	public void suspend(final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		draw.run();
+	}
+
 	public @NonNull CapturingRenderBridge resize(final int width, final int height) {
 		super.getState().viewport(0, 0, width, height);
 		super.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);

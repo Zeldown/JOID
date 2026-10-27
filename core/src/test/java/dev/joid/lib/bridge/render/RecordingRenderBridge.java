@@ -102,6 +102,16 @@ public final class RecordingRenderBridge extends RenderBridge {
 	}
 
 	@Override
+	public void suspend(final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
 	public boolean canWrap(final @NonNull TextureWrap wrap) {
 		return !this.borderless || wrap != TextureWrap.CLAMP_TO_BORDER;
 	}

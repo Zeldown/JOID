@@ -46,4 +46,14 @@ public final class ExampleRenderBridge extends RenderBridge {
 		throw new UnsupportedOperationException("ExampleRenderBridge.createShader() is not implemented, implement it with the API of your engine");
 	}
 
+	@Override
+	public void suspend(final Runnable draw) {
+		throw new UnsupportedOperationException("ExampleRenderBridge.suspend() is not implemented, implement it with the API of your engine");
+	}
+
+	@Override
+	public void raster(final IFrameBuffer target, final int width, final int height, final Runnable draw) {
+		throw new UnsupportedOperationException("ExampleRenderBridge.raster() is not implemented, implement it with the API of your engine");
+	}
+
 }

@@ -412,6 +412,16 @@ public class ShaderTest {
 			return new TestShader(this, blend, vertex, fragment);
 		}
 
+		@Override
+		public void suspend(final @NonNull Runnable draw) {
+			draw.run();
+		}
+
+		@Override
+		public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+			draw.run();
+		}
+
 	}
 
 }

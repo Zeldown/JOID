@@ -36,6 +36,9 @@ public interface IRenderBridge extends IBridge {
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height);
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend);
 
+	public void suspend(final @NonNull Runnable draw);
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw);
+
 	public @NonNull RenderState getState();
 	public @NonNull PixelGrid getPixelGrid();
 	public @NonNull MatrixStack getModelView();
@@ -46,14 +49,6 @@ public interface IRenderBridge extends IBridge {
 
 	public default boolean isFrameActive() {
 		return true;
-	}
-
-	public default void suspend(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	public default void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
-		this.suspend(draw);
 	}
 
 	public default void withState(final @NonNull Consumer<IRenderBridge> body) {
