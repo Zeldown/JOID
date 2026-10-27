@@ -29,6 +29,15 @@ public class UIViewTest {
 	}
 
 	@Test
+	public void keepsTheZoomItIsGivenUntilItsBoundsAllowIt() {
+		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D).zoom(2D);
+		Assert.assertEquals(1D, view.getZoom(), 1E-9D);
+		Assert.assertEquals(2D, view.getRequestedZoom(), 1E-9D);
+		Assert.assertEquals(2D, view.interfaceScale(0.5D).getZoom(), 1E-9D);
+		Assert.assertEquals(1D, view.getScale(), 1E-9D);
+	}
+
+	@Test
 	public void fillsA16By9Window() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D);
 		Assert.assertEquals(1920D, view.getViewportWidth(), 1E-9D);

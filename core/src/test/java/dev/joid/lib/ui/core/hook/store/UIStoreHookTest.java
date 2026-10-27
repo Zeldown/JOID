@@ -184,6 +184,21 @@ public class UIStoreHookTest {
 	}
 
 	@Test
+	public void writesTheSpecialFloatingPointValuesOfAPermanentStore() throws IOException {
+		final MapStore store = UIStoreHook.useStore(MapStore.class, MapStore::new);
+		store.json = new LinkedHashMap<>();
+		store.json.put("nan", Double.NaN);
+		store.json.put("positive", Double.POSITIVE_INFINITY);
+		store.json.put("negative", Float.NEGATIVE_INFINITY);
+		UIStoreHook.saveStore(store);
+		UIStoreHook.destroyStore(store);
+
+		final File file = new File(new File(this.folder.getRoot(), "store"), "map.store");
+		Assert.assertEquals("{\"nan\":NaN,\"positive\":Infinity,\"negative\":-Infinity}", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+		Assert.assertEquals(3, UIStoreHook.useStore(MapStore.class, MapStore::new).json.size());
+	}
+
+	@Test
 	public void reloadsASignalFromItsValue() throws IOException {
 		final SignalStore store = UIStoreHook.useStore(SignalStore.class, SignalStore::new);
 		store.count.set(7);

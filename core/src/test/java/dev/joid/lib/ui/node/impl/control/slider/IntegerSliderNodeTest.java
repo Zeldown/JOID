@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.control.slider;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,6 +47,22 @@ public class IntegerSliderNodeTest {
 		Assert.assertEquals(8, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(7)).getValue().intValue());
 		Assert.assertEquals(0, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(-3)).getValue().intValue());
 		Assert.assertEquals(8, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(50)).getValue().intValue());
+	}
+
+	@Test
+	public void takesTheSmallestOfTwoNearestOptions() {
+		Assert.assertEquals(0, new Slider().<Slider>values(10, 0).value(new Signal<>(5)).getValue().intValue());
+		Assert.assertEquals(0, new Slider().<Slider>values(0, 10).value(new Signal<>(5)).getValue().intValue());
+		Assert.assertEquals(4, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(6)).getValue().intValue());
+	}
+
+	@Test(timeout = 1000L)
+	public void hashesAWholeRangeWithoutListingEachValue() {
+		final List<Integer> values = new Slider().range(1, Integer.MAX_VALUE).getValueList();
+		final List<Integer> same = new Slider().range(1, Integer.MAX_VALUE).getValueList();
+		Assert.assertEquals(values, same);
+		Assert.assertEquals(values.hashCode(), same.hashCode());
+		Assert.assertNotEquals(values.hashCode(), new Slider().range(1, Integer.MAX_VALUE, 2).getValueList().hashCode());
 	}
 
 	@Test

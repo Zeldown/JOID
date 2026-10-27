@@ -31,6 +31,7 @@ public final class InteractiveValue<V> {
 	private BiConsumer<V, V> then;
 	private UnaryOperator<V> clamp;
 
+	private V       held;
 	private V       pending;
 	private V       requested;
 	private boolean changed;
@@ -88,6 +89,7 @@ public final class InteractiveValue<V> {
 		final V next = this.clamp.apply(value);
 		final V previous = this.getter.get();
 		if (InteractiveValue.same(previous, next)) {
+			this.held = next;
 			this.requested = next;
 			this.bindings.see(this.property);
 			this.bindings.sync(this.property, next);
@@ -102,6 +104,7 @@ public final class InteractiveValue<V> {
 			}
 		}
 
+		this.held = next;
 		this.requested = next;
 		this.bindings.see(this.property);
 		this.bindings.batch(() -> {
@@ -115,6 +118,7 @@ public final class InteractiveValue<V> {
 		this.requested = value;
 		final V next = this.clamp.apply(value);
 		final V previous = this.getter.get();
+		this.held = next;
 		if (InteractiveValue.same(previous, next)) {
 			this.bindings.sync(this.property, next);
 		} else {
@@ -141,7 +145,8 @@ public final class InteractiveValue<V> {
 	}
 
 	public V getRequested() {
-		return this.requested != null ? this.requested : this.getter.get();
+		final V current = this.getter.get();
+		return this.requested != null && InteractiveValue.same(this.held, current) ? this.requested : current;
 	}
 
 	public void mark() {

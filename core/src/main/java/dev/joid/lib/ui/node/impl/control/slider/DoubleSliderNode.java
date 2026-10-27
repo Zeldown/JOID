@@ -3,6 +3,7 @@ package dev.joid.lib.ui.node.impl.control.slider;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 
 import dev.joid.internal.RangeList;
 import dev.joid.lib.signal.Signal;
@@ -12,7 +13,7 @@ import lombok.NonNull;
 
 public abstract class DoubleSliderNode extends SliderNode<Double> {
 
-	private DoubleRange range;
+	private DoubleRangeList range;
 
 	protected DoubleSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -35,14 +36,14 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 		}
 
 		int size = steps.intValue() + 1;
-		while (size < Integer.MAX_VALUE && DoubleRange.valueAt(start, by, size) <= max) {
+		while (size < Integer.MAX_VALUE && DoubleRangeList.valueAt(start, by, size) <= max) {
 			size++;
 		}
-		while (size > 1 && DoubleRange.valueAt(start, by, size - 1) > max) {
+		while (size > 1 && DoubleRangeList.valueAt(start, by, size - 1) > max) {
 			size--;
 		}
 
-		this.range = new DoubleRange(size, start, by);
+		this.range = new DoubleRangeList(size, start, by);
 		return super.values(Signal.<List<Double>>from(this.range));
 	}
 
@@ -59,7 +60,8 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 
 		Double nearest = null;
 		for (final Double option : values) {
-			if (nearest == null || Math.abs(option - value) < Math.abs(nearest - value)) {
+			final double distance = Math.abs(option - value);
+			if (nearest == null || distance < Math.abs(nearest - value) || distance == Math.abs(nearest - value) && option < nearest) {
 				nearest = option;
 			}
 		}
@@ -67,7 +69,7 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class DoubleRange extends RangeList<Double> {
+	private static final class DoubleRangeList extends RangeList<Double> {
 
 		private final int        size;
 		private final BigDecimal min;
@@ -84,7 +86,7 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 				throw new IndexOutOfBoundsException("The index " + index + " is out of the " + this.size + " values of the slider range");
 			}
 
-			return DoubleRange.valueAt(this.min, this.step, index);
+			return DoubleRangeList.valueAt(this.min, this.step, index);
 		}
 
 		@Override
@@ -121,12 +123,17 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 
 		@Override
 		public boolean equals(final Object object) {
-			if (!(object instanceof DoubleRange)) {
+			if (!(object instanceof DoubleRangeList)) {
 				return super.equals(object);
 			}
 
-			final DoubleRange range = (DoubleRange) object;
+			final DoubleRangeList range = (DoubleRangeList) object;
 			return this.min.equals(range.min) && this.size == range.size && (this.size == 1 || this.step.equals(range.step));
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.min, this.size, this.size == 1 ? BigDecimal.ZERO : this.step);
 		}
 
 	}

@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.control.slider;
 
 import java.util.List;
+import java.util.Objects;
 
 import dev.joid.internal.RangeList;
 import dev.joid.lib.signal.Signal;
@@ -10,7 +11,7 @@ import lombok.NonNull;
 
 public abstract class IntegerSliderNode extends SliderNode<Integer> {
 
-	private IntegerRange range;
+	private IntegerRangeList range;
 
 	protected IntegerSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -34,7 +35,7 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 			throw new IllegalArgumentException("The slider range from " + min + " to " + max + " by " + step + " holds more than " + Integer.MAX_VALUE + " values, pass a narrower range or a larger step");
 		}
 
-		this.range = new IntegerRange(min, step, (int) size);
+		this.range = new IntegerRangeList(min, step, (int) size);
 		return super.values(Signal.<List<Integer>>from(this.range));
 	}
 
@@ -51,7 +52,8 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 
 		Integer nearest = null;
 		for (final Integer option : values) {
-			if (nearest == null || Math.abs((long) option - value) < Math.abs((long) nearest - value)) {
+			final long distance = Math.abs((long) option - value);
+			if (nearest == null || distance < Math.abs((long) nearest - value) || distance == Math.abs((long) nearest - value) && option < nearest) {
 				nearest = option;
 			}
 		}
@@ -59,7 +61,7 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class IntegerRange extends RangeList<Integer> {
+	private static final class IntegerRangeList extends RangeList<Integer> {
 
 		private final int min;
 		private final int step;
@@ -97,12 +99,17 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 
 		@Override
 		public boolean equals(final Object object) {
-			if (!(object instanceof IntegerRange)) {
+			if (!(object instanceof IntegerRangeList)) {
 				return super.equals(object);
 			}
 
-			final IntegerRange range = (IntegerRange) object;
+			final IntegerRangeList range = (IntegerRangeList) object;
 			return this.min == range.min && this.size == range.size && (this.size == 1 || this.step == range.step);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.min, this.size, this.size == 1 ? 0 : this.step);
 		}
 
 	}

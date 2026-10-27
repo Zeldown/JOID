@@ -170,6 +170,14 @@ public class SwitchNodeTest {
 		Assert.assertNotSame(states, node.getValueList());
 	}
 
+	@Test
+	public void showsItsNewStatesInTheListItGaveBefore() {
+		final Switch node = this.open();
+		final List<String> states = node.getValueList();
+		node.values("off", "on", "eco");
+		Assert.assertEquals(Arrays.asList("off", "on", "eco"), states);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexOutOfItsStates() {
 		new Switch().values("off", "on").valueIndex(2);

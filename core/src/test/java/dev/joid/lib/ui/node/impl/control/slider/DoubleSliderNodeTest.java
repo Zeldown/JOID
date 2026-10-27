@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.control.slider;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,6 +35,22 @@ public class DoubleSliderNodeTest {
 		Assert.assertEquals(0.25D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(0.3D)).getValue(), 0D);
 		Assert.assertEquals(1D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(0.9D)).getValue(), 0D);
 		Assert.assertEquals(0D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(-4D)).getValue(), 0D);
+	}
+
+	@Test
+	public void takesTheSmallestOfTwoNearestOptions() {
+		Assert.assertEquals(0D, new Slider().<Slider>values(1D, 0D).value(new Signal<>(0.5D)).getValue(), 0D);
+		Assert.assertEquals(0D, new Slider().<Slider>values(0D, 1D).value(new Signal<>(0.5D)).getValue(), 0D);
+		Assert.assertEquals(0.5D, new Slider().<Slider>range(0D, 1D, 0.5D).value(new Signal<>(0.75D)).getValue(), 0D);
+	}
+
+	@Test(timeout = 1000L)
+	public void hashesAWideRangeWithoutListingEachValue() {
+		final List<Double> values = new Slider().range(0D, 1E9D, 1D).getValueList();
+		final List<Double> same = new Slider().range(0D, 1E9D, 1D).getValueList();
+		Assert.assertEquals(values, same);
+		Assert.assertEquals(values.hashCode(), same.hashCode());
+		Assert.assertNotEquals(values.hashCode(), new Slider().range(0D, 1E9D, 2D).getValueList().hashCode());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

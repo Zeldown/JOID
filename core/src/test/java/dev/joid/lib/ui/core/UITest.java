@@ -1220,6 +1220,35 @@ public class UITest {
 	}
 
 	@Test
+	public void closesOnceAtTheEndOfEachOutTransition() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		ui.onClose(event -> this.trace.add("closed"));
+		for (int i = 1; i <= 3; i++) {
+			this.bridges.open(ui).frames(20);
+			Assert.assertFalse(ui.fireClose());
+			this.bridges.frames(20);
+			Assert.assertFalse(this.bridges.getUi().isOpen(ui));
+			Assert.assertEquals(i, Collections.frequency(this.trace, "closed"));
+			Assert.assertEquals(i, Collections.frequency(this.trace, "detach node"));
+		}
+	}
+
+	@Test
+	public void leavesTheOtherUiOfASharedTransitionOpen() {
+		final Transition transition = PopTransition.create();
+		final PopupUI first = new PopupUI(this.trace).transition(transition);
+		final PopupUI second = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(first).frames(20);
+		Assert.assertFalse(first.fireClose());
+		this.bridges.frames(20);
+		this.bridges.open(first).open(second).frames(20);
+		Assert.assertFalse(second.fireClose());
+		this.bridges.frames(20);
+		Assert.assertTrue(this.bridges.getUi().isOpen(first));
+		Assert.assertFalse(this.bridges.getUi().isOpen(second));
+	}
+
+	@Test
 	public void leavesFromTheProgressItsInTransitionReached() {
 		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui).frames(2);
@@ -1694,6 +1723,29 @@ public class UITest {
 		this.bridges.frame();
 		Assert.assertEquals(2D, ui.getZoom(), 0D);
 		Assert.assertEquals(2D, zoom.peek(), 0D);
+	}
+
+	@Test
+	public void takesBackTheZoomOfItsViewWhenTheInterfaceScaleAllowsIt() {
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
+		this.bridges.open(ui).frame();
+		ui.getView().zoom(2D);
+		Assert.assertEquals(1D, ui.getZoom(), 0D);
+		this.bridges.getUi().interfaceScale(0.5D);
+		this.bridges.frame();
+		Assert.assertEquals(2D, ui.getZoom(), 0D);
+	}
+
+	@Test
+	public void keepsTheZoomOfItsViewWrittenAfterItsOwnZoom() {
+		this.bridges.getUi().interfaceScale(0.5D);
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
+		this.bridges.open(ui).frame();
+		ui.zoom(2D);
+		ui.getView().zoom(1.5D);
+		this.bridges.getUi().interfaceScale(0.4D);
+		this.bridges.frame();
+		Assert.assertEquals(1.5D, ui.getZoom(), 0D);
 	}
 
 	@Test

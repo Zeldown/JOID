@@ -1,10 +1,12 @@
 package dev.joid.lib.ui.node.impl.control.choice;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.RandomAccess;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
@@ -22,6 +24,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 
+	private final transient List<V>             valueView;
 	private final transient InteractiveValue<V> choiceValue;
 
 	private V       value;
@@ -32,6 +35,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 		super(x, y, width, height);
 
 		this.valueList    = Collections.emptyList();
+		this.valueView    = new ValueView();
 		this.pendingIndex = -1;
 		this.choiceValue  = InteractiveValue.create(super.getBindings(), "value", () -> this.value, (final V value) -> {
 			this.value = value;
@@ -56,7 +60,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 	}
 
 	public final @NonNull List<V> getValueList() {
-		return Collections.unmodifiableList(this.valueList);
+		return this.valueView;
 	}
 
 	@SafeVarargs
@@ -165,6 +169,54 @@ public abstract class BaseChoiceNode<V> extends Node {
 		}
 
 		return index;
+	}
+
+	private final class ValueView extends AbstractList<V> implements RandomAccess {
+
+		@Override
+		public int size() {
+			return BaseChoiceNode.this.valueList.size();
+		}
+
+		@Override
+		public V get(final int index) {
+			return BaseChoiceNode.this.valueList.get(index);
+		}
+
+		@Override
+		public int indexOf(final Object value) {
+			return BaseChoiceNode.this.valueList.indexOf(value);
+		}
+
+		@Override
+		public int lastIndexOf(final Object value) {
+			return BaseChoiceNode.this.valueList.lastIndexOf(value);
+		}
+
+		@Override
+		public boolean contains(final Object value) {
+			return BaseChoiceNode.this.valueList.contains(value);
+		}
+
+		private List<V> getList() {
+			return BaseChoiceNode.this.valueList;
+		}
+
+		@Override
+		public boolean equals(final Object object) {
+			return BaseChoiceNode.this.valueList.equals(object instanceof BaseChoiceNode<?>.ValueView ? ((BaseChoiceNode<?>.ValueView) object).getList() : object);
+		}
+
+		@Override
+		public int hashCode() {
+			return BaseChoiceNode.this.valueList.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return BaseChoiceNode.this.valueList.toString();
+		}
+
 	}
 
 }

@@ -42,7 +42,7 @@ public class UIDemoAnimation extends UIDemo {
 		final TweenAnimator color = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator size = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator rotation = TweenAnimator.create(0F).sequence(2000F, 1F).repeat(BaseTween.INFINITY, 0F).start();
-		final TweenAnimator once = TweenAnimator.create(0F);
+		final TweenAnimator once = TweenAnimator.create(0F).onComplete(tween -> plays.increment());
 
 		for (int i = 0; i < lines.length; i++) {
 			final int index = i;
@@ -108,7 +108,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(40, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_IN_OUT).onComplete(tween -> plays.increment()).start())
+			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_IN_OUT).start())
 			.label(Text.create("Play", label))
 			.attach(rect);
 			RectNode

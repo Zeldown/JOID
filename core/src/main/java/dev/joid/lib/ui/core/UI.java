@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import dev.joid.internal.HotReload;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.JOIDEnv;
+import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -122,6 +123,7 @@ public abstract class UI implements IIndexedElement {
 	@Getter
 	private Transition transition;
 
+	private Timeline                                     closeTimeline;
 	private PopupTransition                              popupTransition;
 	private Map<Class<? extends Annotation>, Annotation> annotationMap;
 
@@ -183,7 +185,7 @@ public abstract class UI implements IIndexedElement {
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();
 		this.keptShortcutList = new ArrayList<>();
-		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", this.view::getZoom, this.view::zoom).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
+		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", this.view::getRequestedZoom, this.view::zoom).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
 
 		this.drawnFrame = Long.MIN_VALUE;
 		this.lastHoveredFrame = -1L;
@@ -271,6 +273,7 @@ public abstract class UI implements IIndexedElement {
 		this.taskList.forEach(Task::detach);
 		this.shortcutList.forEach(Shortcut::detach);
 		this.bindings.unsubscribe();
+		this.closeTimeline = null;
 		this.closed = true;
 		this.initialized = false;
 
@@ -438,10 +441,7 @@ public abstract class UI implements IIndexedElement {
 			final float progress = in.isRunning() ? Math.min(1F, Math.max(0F, 1F - in.getAnimator().peek())) : 0F;
 			in.stop();
 			this.transition.getOut().start(progress);
-			this.transition.getOut().getAnimator().onComplete(tween -> {
-				this.dispose();
-				this.getBridge().close(this);
-			});
+			this.closeTimeline = this.transition.getOut().getAnimator().getTimeline();
 			return false;
 		}
 
@@ -729,7 +729,10 @@ public abstract class UI implements IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T transition(final Transition transition) {
-		this.transition = transition;
+		if (transition != this.transition) {
+			this.transition = transition;
+			this.listenTransition();
+		}
 		this.customTransition = true;
 		return (T) this;
 	}
@@ -798,6 +801,20 @@ public abstract class UI implements IIndexedElement {
 
 		this.popupTransition = popupTransition;
 		this.transition = UI.createPopupTransition(popupTransition);
+		this.listenTransition();
+	}
+
+	private void listenTransition() {
+		if (this.transition == null) {
+			return;
+		}
+
+		this.transition.getOut().getAnimator().onComplete(event -> {
+			if (event.getTween() == this.closeTimeline) {
+				this.dispose();
+				this.getBridge().close(this);
+			}
+		});
 	}
 
 	private void refreshWatch() {

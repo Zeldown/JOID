@@ -35,8 +35,16 @@ public final class UIView {
 		return new UIView(anchorX, anchorY);
 	}
 
+	public double getZoom() {
+		return this.clampZoom(this.zoom);
+	}
+
+	public double getRequestedZoom() {
+		return this.zoom;
+	}
+
 	public double getScale() {
-		return this.interfaceScale * this.zoom;
+		return this.interfaceScale * this.getZoom();
 	}
 
 	public double getOffsetX() {
@@ -94,7 +102,7 @@ public final class UIView {
 	}
 
 	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = this.clampZoom(zoom);
+		this.zoom = zoom;
 		return this;
 	}
 
