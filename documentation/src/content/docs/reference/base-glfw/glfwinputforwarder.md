@@ -1,6 +1,6 @@
 ---
 title: "GlfwInputForwarder"
-description: "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had."
+description: "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Package:** `dev.joid.base.glfw.input` · **Module:** `base-glfw` · **Source:** [GlfwInputForwarder.java](https://github.com/Zeldown/JOID/blob/main/base/glfw/src/main/java/dev/joid/base/glfw/input/GlfwInputForwarder.java)<br/>
 **Backends:** <span class="joid-badge">LWJGL 3</span> <span class="joid-badge">Vulkan</span>
 
-Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had.
+Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.
 
 ## Learn more
 
@@ -29,7 +29,7 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the inpu
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [attach](#GlfwInputForwarder-method-attach)(long window) <span class="joid-qualifier">static</span> | Installs the character, cursor, scroll, key and mouse button handlers of the window, and calls the handlers that the window had before for every event that JOID does not consume. |
+| `void` | [attach](#GlfwInputForwarder-method-attach)(long window) <span class="joid-qualifier">static</span> | Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume. |
 
 ## Method details
 
@@ -39,8 +39,8 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the inpu
 
 `void attach(long window)` <span class="joid-qualifier">static</span>
 
-Installs the character, cursor, scroll, key and mouse button handlers of the window, and calls the handlers that the window had before for every event that JOID does not consume.
-A key repeat never reaches JOID as a press: the previous handler receives it unless JOID consumed the press of that key.
+Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+A key repeat never reaches JOID as a press: the previous callback receives it unless JOID consumed the press of that key.
 The LWJGL 3 and Vulkan backends call it during `register()`.
 
 ---

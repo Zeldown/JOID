@@ -14,7 +14,7 @@ Learn: [base-glfw](/build/base-modules/glfw/).
 
 | Type | Kind | Summary |
 |---|---|---|
-| [`GlfwInputForwarder`](/reference/base-glfw/glfwinputforwarder/) | class | Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had. |
+| [`GlfwInputForwarder`](/reference/base-glfw/glfwinputforwarder/) | class | Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had. |
 | [`GlfwKeys`](/reference/base-glfw/glfwkeys/) | class | Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout. |
 | [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | class | A hidden, undecorated GLFW window of a fixed size, on which the snapshot backends render. |
 | [`GlfwWindowBridge`](/reference/base-glfw/glfwwindowbridge/) | class | The window bridge of a GLFW window, which reads its size, mouse, keys, clipboard and cursor in screen pixels. |

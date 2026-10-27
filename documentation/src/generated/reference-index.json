@@ -28458,7 +28458,7 @@
       "kind": "class",
       "abstract": false,
       "family": "base-glfw",
-      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had.",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
       "ancestors": [],
       "url": "/reference/base-glfw/glfwinputforwarder/",
       "members": {
@@ -28474,7 +28474,7 @@
       "kind": "class",
       "abstract": false,
       "family": "base-glfw",
-      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had.",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
       "ancestors": [],
       "url": "/reference/base-glfw/glfwinputforwarder/",
       "members": {
