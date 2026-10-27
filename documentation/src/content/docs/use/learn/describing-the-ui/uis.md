@@ -127,7 +127,7 @@ The options of `@UIData`:
 - `background = true` draws the UI backdrop over the whole window, behind the nodes of the UI, in the color of `backgroundColor` (a hexadecimal string, a dark veil by default).
 - `closeable = false` makes Escape leave the UI open.
   `JOID.close` still closes it.
-- `zoomable = false` turns off the zoom shortcuts (Ctrl or Alt with + and -, [The design canvas](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui)).
+- `zoomable = false` turns off the zoom shortcuts of dev mode ([The design canvas](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui)).
 - `active = false` keeps the UI drawn but sends it no input.
 - `visible = false` neither draws the UI nor sends it input.
 - `anchorX` and `anchorY` pin the canvas to a side or a corner of the window ([The design canvas](/use/learn/describing-the-ui/design-canvas/#pin-a-ui-to-a-side-or-a-corner)).

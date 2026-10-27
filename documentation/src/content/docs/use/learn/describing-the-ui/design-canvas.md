@@ -129,8 +129,9 @@ At a zoom of 0.8, the whole UI is drawn at 80 % of its size, around the center o
 [[UI#getZoom]] reads the zoom; 1 is the size of the fit.
 
 - [[UI#zoom(double)]] sets the zoom, like any setter; [[UI#zoom(Signal)]] ties it to a signal, both ways.
+  A zoom beyond the bounds below stays asked for, and applies once the interface scale allows it.
 - [[UI#zoomTo]] and [[UI#zoomBy]] change it the way the user does, between 0.1 and 1, or up to the size of the fit when the interface scale is below 1.
-- The user zooms with Ctrl or Alt and + or -, by steps of 0.1, unless `@UIData(zoomable = false)`; in dev mode, Alt and the mouse wheel zoom too.
+- In [dev mode](/use/get-started/dev-tools/), keys and the mouse wheel zoom the UI unless `@UIData(zoomable = false)`; an application that lets the user zoom gives its own controls, which call `zoomTo` or `zoomBy`.
 
 A change by the user, `zoomTo` or `zoomBy` asks the [[UI#beforeZoom]] listeners first, then tells the [[UI#onZoom]] listeners:
 
@@ -138,6 +139,7 @@ A change by the user, `zoomTo` or `zoomBy` asks the [[UI#beforeZoom]] listeners 
 ```
 
 Here the zoom never goes below 0.5: the listener cancels any change below it.
+The listeners see the zoom shown: a request that the bounds keep off the screen runs none of them.
 
 ## Recap
 

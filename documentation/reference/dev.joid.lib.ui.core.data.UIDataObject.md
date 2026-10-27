@@ -25,7 +25,7 @@ If `false`, Escape leaves the UI open.
 
 ## zoomable
 
-If `false`, the zoom keys leave the zoom of the UI unchanged.
+If `false`, the zoom keys of dev mode leave the zoom of the UI unchanged.
 
 ## projection
 

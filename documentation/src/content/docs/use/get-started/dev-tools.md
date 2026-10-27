@@ -65,7 +65,7 @@ The grid measures the canvas from the pointer: copy a position from a mockup and
 </figcaption>
 </figure>
 
-The dev mode adds one more shortcut to every zoomable UI: `Alt` and the wheel [zoom](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui) it by small steps, with `Shift` for larger ones.
+The dev mode adds zoom shortcuts to every zoomable UI: `Ctrl` or `Alt` with `+` and `-` [zoom](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui) it by steps of 0.1, and `Alt` with the wheel by small steps, with `Shift` for larger ones.
 
 ## Reload a UI while you work
 
@@ -80,12 +80,11 @@ A UI without a constructor without argument cannot be renewed: `[JOID] The UI â€
 
 **Hot reload** reloads a UI by itself.
 JOID watches the folder or the jar file that the classes of the UI come from, and reloads the UI about a second after a `.class` file of that folder, or the jar file, changes.
-The console tells you each step, the load time of the profiler included ([Find slow loads and slow frames](#find-slow-loads-and-slow-frames)):
+The console tells you each step, and every reload, by a shortcut or by hot reload, prints its time on one line:
 
 ```text
 [JOID] Hot reload is on for MenuUI, it reloads when its classes change
 [JOID] MenuUI.class changed, the UIs that use it reload
-[JOID] MenuUI loaded in 3.87ms
 [JOID] MenuUI reloaded in 4.12ms
 ```
 
@@ -96,7 +95,7 @@ When the classes of a UI come from neither a folder nor a jar file, JOID prints 
 
 ## Find slow loads and slow frames
 
-The profiler writes each load of a UI on the standard output, and each slow frame on the error output:
+The profiler writes each load of a UI on the standard output, except a reload, which prints its own line, and each slow frame on the error output:
 
 ```text
 [JOID] MenuUI loaded in 18.40ms

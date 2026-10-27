@@ -21,7 +21,7 @@ An overlay never closes with Escape.
 
 ## zoomable()
 
-If `false`, the zoom keys (Ctrl or Alt with + and -, and Alt with the wheel in dev mode) leave the zoom of the UI unchanged.
+If `false`, the zoom keys of dev mode (Ctrl or Alt with + and -, and Alt with the wheel) leave the zoom of the UI unchanged.
 
 ## projection()
 

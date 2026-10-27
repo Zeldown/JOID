@@ -69,6 +69,7 @@ The [catalog](/use/catalog/#easing-curves) draws the curves of every family.
 
 [[BackTweenEquation]] and [[ElasticTweenEquation]] take settings: `TweenEquations.BACK_OUT.overshoot(3F)` overshoots further, and `TweenEquations.ELASTIC_OUT.amplitude(...).period(...)` changes the spring.
 [[TweenEquations#of]] finds an easing by its name, such as `"Quad.OUT"` or `"Back.IN_OUT"`, to read it from a settings file; it returns `null` for an unknown name.
+The name of a curve is its `toString()`, settings included, such as `"Back.OUT(2.5)"`, so a curve written to a file comes back the same.
 For any other curve, extend [[TweenEquation]] and return the eased progress from `compute(t)`, where `t` goes from `0F` to `1F`.
 
 ## Chain, repeat and replay
@@ -107,7 +108,8 @@ To play an animation on demand, call `sequence(...)` again: it replaces the runn
 <figcaption>Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.</figcaption>
 </figure>
 
-`onStart`, `onIterationEnd`, `onComplete` and the other callbacks of [[TweenAnimator]] apply to the current steps, so give them after `sequence(...)`.
+`onStart`, `onIterationEnd`, `onComplete` and the other callbacks of [[TweenAnimator]] belong to the animator and run for every sequence that follows.
+Give them once, where you create the animator: given in the `onClick` that starts a sequence, a callback adds up, and the tenth play runs it ten times.
 Once its steps end, the animator forgets them: `start()` alone then throws an `IllegalStateException` until the next `sequence(...)`.
 
 Two values that move apart need two animators, each read by its own setter.

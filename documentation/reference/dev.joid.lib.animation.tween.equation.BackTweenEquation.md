@@ -3,7 +3,7 @@ summary: Easing curves that move back a little before they start or go past the 
 ---
 
 Each constant is also in [[TweenEquations]], as `BACK_IN`, `BACK_OUT` and `BACK_IN_OUT`.
-`overshoot(...)` gives the same curve with a larger or smaller swing.
+`overshoot(...)` gives the same curve with a larger or smaller swing, whose `toString()` carries it: `"Back.OUT(2.5)"`, which [[TweenEquations#of]] reads back.
 
 Learn: [Animation](/use/learn/style-and-motion/animation/).
 

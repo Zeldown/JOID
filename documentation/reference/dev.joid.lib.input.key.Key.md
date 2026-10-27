@@ -354,7 +354,7 @@ The punctuation key that types `,` in the layout of the user.
 
 ## MINUS
 
-The punctuation key that types `-` in the layout of the user. With Ctrl or Alt, it zooms out a zoomable UI.
+The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 ## PERIOD
 
@@ -370,7 +370,7 @@ The punctuation key that types `;` in the layout of the user.
 
 ## EQUAL
 
-The punctuation key that types `=` in the layout of the user. With Ctrl or Alt, it zooms in a zoomable UI.
+The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 ## LEFT_BRACKET
 
@@ -442,11 +442,11 @@ The multiply key of the numeric keypad.
 
 ## NUMPAD_SUBTRACT
 
-The minus key of the numeric keypad. With Ctrl or Alt, it zooms out a zoomable UI.
+The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 ## NUMPAD_ADD
 
-The plus key of the numeric keypad. With Ctrl or Alt, it zooms in a zoomable UI.
+The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 ## NUMPAD_ENTER
 

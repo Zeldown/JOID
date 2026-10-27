@@ -9,9 +9,9 @@ While nothing follows it, it computes on demand; once a listener or another deri
 
 Learn: [Derived values](/use/learn/state/derived-values/), [How signals work](/use/in-depth/how-signals-work/).
 
-## ComputedSignal(Supplier)
+## computed(Supplier)
 
-Creates a signal computed by `supplier`, for a subclass.
+Returns a signal computed by `supplier`, for the signals of JOID; create yours with [[Signal#from]].
 
 ## constant(T)
 

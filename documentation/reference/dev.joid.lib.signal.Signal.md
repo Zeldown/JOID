@@ -167,6 +167,10 @@ The operator reads the value when the write runs, so increments queued from anot
 
 If `true`, at least one `onChange` listener is registered.
 
+## copyListeners(Signal)
+
+Adds the listeners of this signal to `signal`, for a subclass that copies itself, as [[TweenAnimator#copy]] does.
+
 ## invalidate(SignalContext)
 
 Marks every derived signal that follows this signal as outdated.

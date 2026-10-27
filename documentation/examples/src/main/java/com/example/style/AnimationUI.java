@@ -58,8 +58,8 @@ public class AnimationUI extends UI {
 		// #endregion
 
 		// #region click
-		final TweenAnimator toggle = TweenAnimator.create(0F);
 		final IntegerSignal plays = new IntegerSignal(0);
+		final TweenAnimator toggle = TweenAnimator.create(0F).onComplete(tween -> plays.increment());
 
 		RectNode
 		.create(1100, 120, 320, 60)
@@ -74,7 +74,7 @@ public class AnimationUI extends UI {
 		.color(AnimationUI.INK)
 		.onClick(event -> {
 			final float target = toggle.peek() < 0.5F ? 1F : 0F;
-			toggle.sequence(400F, target, TweenEquations.QUART_OUT).onComplete(tween -> plays.increment()).start();
+			toggle.sequence(400F, target, TweenEquations.QUART_OUT).start();
 		})
 		.label(Text.create("Toggle", label))
 		.attach(this);

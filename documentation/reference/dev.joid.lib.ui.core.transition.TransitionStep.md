@@ -49,3 +49,8 @@ The animator that holds the progress of the step.
 ## isRunning()
 
 If `true`, the step is playing.
+
+## copy()
+
+Returns a copy of the step, of the same class, with its fields and a copy of its animator: value, speed and listeners.
+A UI plays copies of the steps of its transition; the fields of a subclass are copied as they are, without a copy of the objects they hold.

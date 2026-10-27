@@ -31,7 +31,12 @@ Vertical position, in design pixels, of the anchor that the canvas zooms around 
 ## zoom
 
 Zoom applied on top of the interface scale.
-The view does not bound it: [[UI#zoom(double)]] bounds the zoom of a UI with `clampZoom`.
+The view keeps the value asked for, even beyond the bounds, and `getZoom()` returns it kept within `clampZoom`; unlike [[UI#zoom(double)]], writing it here runs no listener.
+
+## getRequestedZoom()
+
+Returns the zoom asked for, before the bounds of `clampZoom`, by `UI.zoom(...)` or by `zoom(...)` of the view.
+A value written to the view that equals the zoom shown keeps a request of `UI.zoom(...)` for the next change of interface scale, while `getRequestedZoom()` returns the value written.
 
 ## interfaceScale
 

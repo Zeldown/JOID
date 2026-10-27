@@ -10,6 +10,7 @@ Learn: [Animation](/use/learn/style-and-motion/animation/), [Catalog](/use/catal
 ## of(String)
 
 Returns the curve named `name` (`"Linear.IN_OUT"`, `"Quad.IN"`, `"Elastic.IN_OUT"`…), or `null` for an unknown name.
+It also reads the names of tuned curves that `toString()` gives, such as `"Back.OUT(2.5)"` or `"Elastic.IN(0.3, 2.0)"` (period, then amplitude).
 
 ## LINEAR
 

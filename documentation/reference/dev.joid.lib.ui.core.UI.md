@@ -108,9 +108,9 @@ Adds a listener that hears a key release after the nodes of the UI, unless a nod
 Sends a mouse press at the current mouse position to the nodes, then to the listeners of the UI, and returns `true` when something consumed it.
 The UI bridge calls it; call it yourself only to simulate an input.
 
-## fireMouseReleased(MouseButton)
+## fireMouseReleased(MouseButton,long)
 
-Sends a mouse release to the nodes, then to the listeners of the UI, and returns `true` when something consumed it.
+Sends a mouse release of this button, pressed `deltaTime` ms before, to the nodes, then to the listeners of the UI, and returns `true` when something consumed it.
 
 ## fireMouseDragged(MouseButton,long)
 
@@ -209,7 +209,7 @@ The `zindex` of the UI, which orders it among the open UIs of its bridge.
 
 ## getZoom()
 
-The zoom of the UI, `1` when it is not zoomed.
+The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed.
 
 ## getWindowWidth()
 
@@ -273,6 +273,15 @@ The [[UIDataOverlayObject]] read from `@UIDataOverlay`.
 
 The animation played when the UI opens and closes.
 A popup gets a [[PopTransition]] from `@UIDataPopup`; a transition set here replaces it, and `null` removes it.
+The UI plays copies of its steps, made here: a transition changed later does not reach it.
+
+## getTransitionIn()
+
+The copy of the opening step that the UI plays, or `null` without transition.
+
+## getTransitionOut()
+
+The copy of the closing step that the UI plays, or `null` without transition.
 
 ## depthLevel
 
@@ -331,7 +340,7 @@ Adds a listener that runs before the zoom changes; cancelling the event refuses 
 
 ## onZoom(EventListener)
 
-Adds a listener that runs after the zoom has changed.
+Adds a listener that runs after the zoom shown has changed, also when a change of interface scale lets a zoom asked through the UI apply.
 
 ## add(Node[])
 

@@ -51,6 +51,12 @@ When the code that opens the UI decides how it enters, set the transition before
 A transition set this way replaces the one of `@UIDataPopup`, and `transition(null)` removes every transition, the popup one included.
 The opening transition starts once `init()` has run, so a transition set in `init()` plays as well.
 
+A transition is a configuration that several UIs can share, such as a constant.
+`transition(...)` copies its two steps into the UI, and each UI plays its own copies: a UI that closes never stops another one.
+The settings are read at that moment: an `enabled(...)`, a `draw(...)` or a listener given to the shared transition later reaches no UI that already has it.
+A listener given before, such as `getOut().getAnimator().onComplete(...)`, runs once for each UI that plays the step.
+The state of a playing transition is on the UI: [[UI#getTransitionIn]] and [[UI#getTransitionOut]] return the steps it plays, with `isRunning()` and `getAnimator()`.
+
 ## Write a transition of your own
 
 A transition is a class that extends [[Transition]] and passes two [[TransitionStep]] values to its constructor: one for the opening, one for the closing.
@@ -90,6 +96,7 @@ Its translations are in design pixels, like the positions of the nodes: `300D` m
 
 - A **popup** plays a `PopTransition` by default; `@UIDataPopup(transition = ...)` keeps the opening, the closing, both or none.
 - **`transition(...)`** gives a transition to any UI: in its constructor when the UI decides, before `JOID.open` when the caller decides.
+- A UI plays **copies** of the steps of its transition, so several UIs can share one transition.
 - A transition of your own extends **`Transition`** with two **`TransitionStep`** values: the opening, then the closing.
 - A step **draws** the UI through `body`, wrapped in the transformation of its progress, from `0F` to `1F` with its easing.
 - The UI closes when its closing transition ends; **`JOID.forceClose`** skips it.
