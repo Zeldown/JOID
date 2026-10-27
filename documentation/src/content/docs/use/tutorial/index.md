@@ -11,10 +11,10 @@ Each lesson starts from a program that runs, points at what it lacks, and closes
 
 <figure>
 
-![The profile panel of Starfall at the end of the tutorial: a white panel with rounded corners and a soft shadow rises into place, with three rounded statistic cards and a hint to press Play](/captures/tutorial-polish.webp)
+![The main menu of Starfall at the end of the tutorial: the title and its tagline, three grey buttons Play, Settings and Quit, the line of the settings, and a white profile panel with rounded corners and a soft shadow that shows three rounded statistic cards and the three rounds played](/captures/tutorial-overview.webp)
 
 <figcaption>
-The profile panel of Starfall at the end of the tutorial: every part of it is a node you write yourself.
+Starfall at the end of the tutorial: every part of it is a node you write yourself.
 </figcaption>
 </figure>
 

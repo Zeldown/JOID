@@ -65,6 +65,8 @@ Add a line under the buttons, built from both settings:
 ```java file="com/example/tutorial/settings/MenuUI.java" region="footer"
 ```
 
+The two signals go into local variables first: JOID follows `music.get()`, but not `settings.getMusic().get()` read through the local variable `settings` ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
+
 **Run it.**
 Open the settings and change the music and the volume: the line under the buttons changes at once, behind the popup.
 

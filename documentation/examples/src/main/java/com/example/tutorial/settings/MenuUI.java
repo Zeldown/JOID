@@ -11,6 +11,8 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
@@ -39,6 +41,7 @@ public class MenuUI extends UI {
 		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.INK);
 		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.INK);
 		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.INK);
+		final TextInfo status = TextInfo.create(Theme.FONT, 32F).weight(FontWeight.BOLD).color(Theme.DARK);
 		// #region store
 		final SettingsStore settings = super.useStore(SettingsStore.class, SettingsStore::new);
 		// #endregion
@@ -84,13 +87,11 @@ public class MenuUI extends UI {
 		// #endregion
 
 		// #region footer
+		final BooleanSignal music = settings.getMusic();
+		final IntegerSignal volume = settings.getVolume();
 		TextNode
 		.create(164, 760)
-		.text(Text.create(
-			(settings.getMusic().get() ? "Music on" : "Music off")
-			+ ", volume " + settings.getVolume().get() * 10 + " %",
-			caption
-		))
+		.text(Text.create((music.get() ? "Music on" : "Music off") + ", volume " + volume.get() * 10 + " %", status))
 		.attach(this);
 		// #endregion
 
