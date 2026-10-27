@@ -1,0 +1,52 @@
+# crop tutorial-setup 600 430 720 220
+# crop tutorial-menu 130 130 600 610
+# crop tutorial-layout 740 140 1040 800
+# crop tutorial-interaction-popup 600 250 720 580
+# crop tutorial-interaction-hover 740 140 1040 400
+# crop tutorial-state 740 140 1040 800
+# crop tutorial-settings 600 250 720 580
+# crop tutorial-polish 700 120 1120 950
+ui com.example.tutorial.setup.MenuUI
+wait 300
+shot tutorial-setup
+ui com.example.tutorial.menu.MenuUI
+wait 300
+shot tutorial-menu
+ui com.example.tutorial.layout.MenuUI
+wait 300
+shot tutorial-layout
+ui com.example.tutorial.interaction.MenuUI
+move 340 560
+press LEFT
+release LEFT
+move 1900 1070
+wait 500
+shot tutorial-interaction-popup
+ui com.example.tutorial.interaction.MenuUI
+move 900 350
+wait 1200
+shot tutorial-interaction-hover
+ui com.example.tutorial.state.MenuUI
+move 340 460
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+move 1900 1070
+wait 300
+shot tutorial-state
+ui com.example.tutorial.settings.MenuUI
+move 340 560
+press LEFT
+release LEFT
+move 1900 1070
+wait 500
+shot tutorial-settings
+ui com.example.tutorial.polish.MenuUI
+# film tutorial-polish
+wait 900
+cut
