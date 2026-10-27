@@ -1,9 +1,13 @@
 # crop state-tasks 540 320 840 440
+# still state-tasks 75
 ui com.example.state.TimerUI
-wait 3100
-move 750 530
+move 1260 720
+# film state-tasks
+wait 600
+moveto 780 540 500
+wait 200
 press LEFT
 release LEFT
-move 1700 950
-wait 100
-shot state-tasks
+wait 400
+moveto 1260 720 500
+wait 2700

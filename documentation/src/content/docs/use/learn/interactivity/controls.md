@@ -30,10 +30,10 @@ The controls of this page use the skins of the example kit (`KitCheckboxNode`, `
 
 <figure>
 
-![A card with a checked "Subtitles" box, a "Volume" slider and a number field at 9, and the texts "Subtitles: true" and "Volume: 9"](/captures/interactivity-settings.webp)
+![A card with a checked "Subtitles" box, a "Volume" slider and a number field at 7, and the texts "Subtitles: true" and "Volume: 7"; the pointer drags the slider to 9 and back to 7, and the field and the text follow](/captures/interactivity-settings.webp)
 
 <figcaption>
-The slider and the field share `volume`: the user dragged the slider from 7 to 9, and the field and the text followed.
+The slider and the field share `volume`: while the user drags the slider, the field and the text follow.
 </figcaption>
 </figure>
 
@@ -68,10 +68,10 @@ Keep `onChange` for an action, such as saving the settings or playing a sound.
 
 <figure>
 
-![A slider whose thumb sits at 8 of 10 after a drag to the end of the track, and the text "Volume: 8"](/captures/interactivity-refuse.webp)
+![A slider at 5 of 10, a "Set to 10" button and the text "Volume: 5"; the pointer drags the thumb to the end of the track, where it stops at 8, then clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
 
 <figcaption>
-The user dragged the thumb to the end of the track: at the release, the value is 8, the last one that `beforeChange` let through.
+A drag to the end of the track stops at 8, the last value that `beforeChange` lets through.
 </figcaption>
 </figure>
 
@@ -89,7 +89,7 @@ When the bounds change, it asks for that value again:
 
 <figure>
 
-![A card with a checked "Limit to 10" box, a number field that shows 10, and the text "Tickets: 10"](/captures/interactivity-pending.webp)
+![A card with a "Limit to 10" box, a number field that shows 50 and the text "Tickets: 50"; the pointer checks the box, and the field and the text show 10, then unchecks it, and both are back to 50](/captures/interactivity-pending.webp)
 
 <figcaption>
 With the limit, the field shows `10` and `tickets` holds `10`; once the box is unchecked, the field and the signal are back to `50`.
@@ -139,7 +139,7 @@ A [[ToggleNode]] slides its `knob` along its `track`: [[ToggleNode#speed]] is th
 
 <figure>
 
-![A row of three options, "Story", "Normal" and "Hard", with "Hard" selected in grey, and the text "Difficulty: Hard"](/captures/interactivity-switch.webp)
+![A row of three options, "Story", "Normal" and "Hard", with "Normal" selected in grey; the pointer selects "Hard", "Story", then "Normal", and the text "Difficulty" follows](/captures/interactivity-switch.webp)
 
 <figcaption>
 A switch shows every option side by side; a press on one selects it.
@@ -163,7 +163,7 @@ A [[SwitchNode]] builds one node per option with its `option((value, index) -> n
 
 <figure>
 
-![An open selector that lists "English", "French", "German" and "Japanese" under its field, with "French" under the pointer](/captures/interactivity-selector.webp)
+![A selector that reads "English"; the pointer opens it, and a list of "English", "French", "German" and "Japanese" covers it; the pointer picks "French", opens it again and picks "English", and the text "Language" follows](/captures/interactivity-selector.webp)
 
 <figcaption>
 A press opens the list; a press on an option selects it and closes the list.
@@ -185,7 +185,7 @@ The list closes when the selector is detached.
 
 <figure>
 
-![A slider whose thumb sits at the third of four steps, and the text "Quality: HIGH"](/captures/interactivity-slider.webp)
+![A slider whose thumb sits at the third of four steps, and the text "Quality: HIGH"; the pointer presses the second step, then the last one, then drags the thumb to the first step and back to the third, and the text follows](/captures/interactivity-slider.webp)
 
 <figcaption>
 A slider picks among ordered values; the thumb jumps to the step under a press.
@@ -213,10 +213,10 @@ A [[ProgressNode]] shows a value and takes no input:
 
 <figure>
 
-![Two bars under a slider set at 6 of 10: the first is filled from the left on 60 % of its width, the second from the right](/captures/interactivity-progress.webp)
+![Two bars under a slider set at 6 of 10: the first is filled from the left on 60 % of its width, the second from the right; the pointer drags the slider to 10, to 0, then back to 6, and both bars follow](/captures/interactivity-progress.webp)
 
 <figcaption>
-The bars follow the slider: `0.6F` fills 60 % of the track, from the side of the direction.
+The bars follow the slider: at 6, `0.6F` fills 60 % of the track, from the side of the direction.
 </figcaption>
 </figure>
 

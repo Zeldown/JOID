@@ -12,7 +12,7 @@ shot describing-flex-offset
 shot describing-flex-grow
 # crop describing-flex-scroll 520 460 400 300
 move 720 610
-# film describing-flex-scroll
+# film describing-flex-scroll 60
 scroll -4
 wait 1200
 cut

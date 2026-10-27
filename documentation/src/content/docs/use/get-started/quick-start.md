@@ -11,10 +11,10 @@ Then it tours what you use every day, one short section per topic, each with a l
 
 <figure>
 
-![A light grey window with a grey button at its center reading Clicks: 2](/captures/quick-start-counter.webp)
+![A light grey window with a grey button at its center; the button darkens under the pointer, which clicks it three times, and its label goes from Clicks: 0 to Clicks: 3](/captures/quick-start-counter.webp)
 
 <figcaption>
-The program of this page after two clicks: the label follows the counter by itself.
+The program of this page: at each click, the label follows the counter by itself.
 </figcaption>
 </figure>
 
@@ -169,10 +169,10 @@ A node set from an expression that reads a signal follows that signal.
 
 <figure>
 
-![A dark grey rectangle on a white card, after three clicks](/captures/quick-start-click.webp)
+![The pointer clicks a grey rectangle on a white card three times; at the third click, the rectangle turns dark grey](/captures/quick-start-click.webp)
 
 <figcaption>
-After the third click, the derived signal turns `true` and the color follows.
+At the third click, the derived signal turns `true` and the color follows.
 </figcaption>
 </figure>
 

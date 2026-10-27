@@ -6,6 +6,6 @@ shot describing-media-gallery
 # hold describing-media-animation 100
 ui com.example.describing.media.AnimationUI
 wait 500
-# film describing-media-animation 10
+# film describing-media-animation
 wait 700
 cut

@@ -1,11 +1,30 @@
-# crop guides-kit-plain 580 310 760 490
+# crop guides-kit 580 310 760 490
+# still guides-kit 150
 ui com.example.guides.KitGuideUI
-wait 100
-shot guides-kit-plain
-# crop guides-kit-round 580 310 760 490
-moveto 1150 745 200
+move 1290 780
+# film guides-kit 60
+wait 300
+moveto 1015 550 400
+wait 200
+press LEFT
+moveto 850 550 400
+release LEFT
+wait 400
+moveto 1150 750 400
+wait 200
 press LEFT
 release LEFT
-moveto 1500 1000 100
+wait 533
+moveto 850 550 400
+wait 200
+press LEFT
+moveto 1015 550 400
+release LEFT
+wait 400
+moveto 770 750 400
+wait 200
+press LEFT
+release LEFT
+wait 466
+moveto 1290 780 400
 wait 300
-shot guides-kit-round

@@ -13,7 +13,7 @@ shot style-priority
 shot style-clip
 move 560 380
 wait 100
-# film style-effect-hover
+# film style-effect-hover 60
 wait 200
 moveto 760 190 200
 wait 400

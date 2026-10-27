@@ -30,7 +30,7 @@ Open it like any UI, here from a button of the screen:
 
 <figure>
 
-![A light grey screen dimmed by a dark veil, with a light grey card in its middle that reads Quit the game? above two grey buttons, Cancel and Quit.](/captures/describing-overlays-popup.webp)
+![The pointer clicks a grey Quit button on a light grey screen: a dark veil dims the screen and a light grey card opens in its middle, reading Quit the game? above two grey buttons, Cancel and Quit; a click on Cancel closes it.](/captures/describing-overlays-popup.webp)
 
 <figcaption>
 The popup opens above `SettingsUI` without closing it, and its UI backdrop dims the screen.

@@ -24,11 +24,11 @@ A [[Task]] runs its [[Task#onRun]] callbacks once its delay has passed, and agai
 
 <figure>
 
-![A white card reading "Open for 3 s" above a grey button "Save" and the text "Saved"](/captures/state-tasks.webp)
+![A white card reading "Open for 0 s" above a grey button "Save"; the count grows by one each second, a click on Save shows "Saved" next to the button, and "Saved" disappears three seconds later](/captures/state-tasks.webp)
 
 <figcaption>
-Three seconds after opening: the periodic task counted the seconds.
-A click on "Save" showed "Saved", and a second task hides it three seconds later.
+The periodic task counts the seconds since the opening.
+A click on "Save" shows "Saved", and a second task hides it three seconds later.
 </figcaption>
 </figure>
 
@@ -73,7 +73,7 @@ A download or a long computation belongs on another thread, and its result comes
 
 <figure>
 
-![A white card with a grey button "Load" above the text "Loaded"](/captures/state-loader.webp)
+![A white card with a grey button "Load" above the text "Not loaded"; the pointer clicks Load, and the text reads "Loading...", then "Loaded"](/captures/state-loader.webp)
 
 <figcaption>The future completes on a worker thread, and the text shows its result at the next frame.</figcaption>
 </figure>

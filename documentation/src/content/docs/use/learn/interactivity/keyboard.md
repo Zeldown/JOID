@@ -25,10 +25,10 @@ The keyboard uses the `handle` events of [Events](/use/learn/interactivity/event
 
 <figure>
 
-![A grey card that reads "Key: O" and "Typed: hello"](/captures/interactivity-keys.webp)
+![A grey card that reads "Key: none" and "Typed: "; the user types hello: "Key" names each key as it goes down, and each letter joins "Typed"](/captures/interactivity-keys.webp)
 
 <figcaption>
-After the user typed `hello`: each key went down once, and each character arrived as a code point.
+The user types `hello`: each key goes down once, and each character arrives as a code point.
 </figcaption>
 </figure>
 
@@ -102,10 +102,10 @@ A [[Shortcut]] runs a listener when its key goes down with its modifiers:
 
 <figure>
 
-![A card with a white "Notes" field that holds the focus and the text "Ctrl + S: 1" and "F1: 2"](/captures/interactivity-shortcut.webp)
+![A card with a white "Notes" field and the texts "Ctrl + S: 0" and "F1: 0"; Ctrl + S and F1 count once each, then the pointer clicks the field, the user types, and of the same two shortcuts only F1 counts again](/captures/interactivity-shortcut.webp)
 
 <figcaption>
-Ctrl + S counted once before the field took the focus; F1 counted twice, the second time while the user typed in the field.
+Ctrl + S counts once before the field takes the focus; F1 counts twice, the second time while the user types in the field.
 </figcaption>
 </figure>
 

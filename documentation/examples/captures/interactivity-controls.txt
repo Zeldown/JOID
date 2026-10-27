@@ -1,45 +1,153 @@
 # crop interactivity-settings 560 340 800 400
+# still interactivity-settings 120
 # crop interactivity-refuse 660 390 600 300
+# still interactivity-refuse 120
 # crop interactivity-pending 660 390 600 300
+# still interactivity-pending 40
 # crop interactivity-switch 1000 140 820 380
+# still interactivity-switch 40
 # crop interactivity-selector 100 560 820 380
+# still interactivity-selector 45
 # crop interactivity-slider 1000 560 820 380
+# still interactivity-slider 60
 # crop interactivity-progress 660 390 600 300
+# still interactivity-progress 20
 ui com.example.interactivity.controls.SettingsUI
-move 1002 500
-press LEFT
-moveto 1062 500 300
-release LEFT
+move 1200 690
+# film interactivity-settings 60
 wait 300
-shot interactivity-settings
+moveto 1004 506 500
+wait 200
+press LEFT
+moveto 1064 506 600
+release LEFT
+wait 800
+press LEFT
+moveto 1004 506 600
+release LEFT
+wait 500
+moveto 1200 690 500
+wait 300
+cut
 ui com.example.interactivity.controls.RefuseUI
-move 960 470
-press LEFT
-moveto 1200 470 400
-release LEFT
+move 1120 650
+# film interactivity-refuse 60
 wait 300
-shot interactivity-refuse
+moveto 962 476 500
+wait 200
+press LEFT
+moveto 1200 476 800
+wait 300
+release LEFT
+wait 700
+moveto 840 576 500
+wait 200
+press LEFT
+release LEFT
+wait 800
+moveto 1120 650 400
+wait 300
+cut
 ui com.example.interactivity.controls.PendingUI
-move 945 455
+move 1120 650
+# film interactivity-pending
+wait 300
+moveto 932 442 500
+wait 200
 press LEFT
 release LEFT
+wait 1200
+press LEFT
+release LEFT
+wait 900
+moveto 1120 650 500
 wait 300
-shot interactivity-pending
+cut
 ui com.example.interactivity.controls.ChoicesUI
-move 1560 230
+move 1720 470
+# film interactivity-switch
+wait 300
+moveto 1565 238 500
+wait 200
 press LEFT
 release LEFT
-wait 300
-shot interactivity-switch
-move 300 630
+wait 800
+moveto 1165 238 600
+wait 200
 press LEFT
 release LEFT
-move 300 690
+wait 800
+moveto 1365 238 400
+wait 200
+press LEFT
+release LEFT
+wait 700
+moveto 1720 470 500
 wait 300
-shot interactivity-selector
-move 1700 900
-wait 100
-shot interactivity-slider
+cut
+ui com.example.interactivity.controls.ChoicesUI
+move 620 880
+# film interactivity-selector
+wait 300
+moveto 330 640 400
+wait 200
+press LEFT
+release LEFT
+wait 400
+moveto 330 700 400
+wait 300
+press LEFT
+release LEFT
+wait 600
+moveto 330 640 300
+wait 200
+press LEFT
+release LEFT
+wait 400
+moveto 330 700 300
+wait 300
+press LEFT
+release LEFT
+wait 466
+moveto 620 880 400
+wait 300
+cut
+ui com.example.interactivity.controls.ChoicesUI
+move 1720 880
+# film interactivity-slider 60
+wait 300
+moveto 1270 650 400
+wait 200
+press LEFT
+release LEFT
+wait 466
+moveto 1645 650 400
+wait 200
+press LEFT
+release LEFT
+wait 466
+press LEFT
+moveto 1080 650 720
+wait 300
+moveto 1456 650 480
+release LEFT
+wait 500
+moveto 1720 880 400
+wait 300
+cut
 ui com.example.interactivity.controls.ProgressUI
-wait 100
-shot interactivity-progress
+move 1120 650
+# film interactivity-progress 60
+wait 300
+moveto 1010 456 500
+wait 200
+press LEFT
+moveto 1200 456 600
+wait 300
+moveto 720 456 1100
+wait 300
+moveto 1010 456 600
+release LEFT
+wait 500
+moveto 1120 650 400
+wait 300

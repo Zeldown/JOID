@@ -10,7 +10,7 @@ In this lesson the menu reacts: buttons darken under the pointer, Settings opens
 
 <figure>
 
-![A settings popup over the darkened menu: a white card titled Settings with the lines Music: on and Volume: 80 %, and a Close button](/captures/tutorial-interaction-popup.webp)
+![The Starfall menu: the pointer moves onto the Settings button, which darkens, and clicks it; a settings popup opens over the darkened menu, a white card titled Settings with the lines Music: on and Volume: 80 % and a Close button, which the pointer clicks to close it](/captures/tutorial-interaction-popup.webp)
 
 <figcaption>
 The result of this lesson: a click on Settings opens a popup above the menu.
@@ -83,7 +83,7 @@ Rest the pointer on a card: its tooltip shows next to the pointer.
 
 <figure>
 
-![The profile panel, with the pointer over the Games card and a dark tooltip reading Rounds you played next to the pointer](/captures/tutorial-interaction-hover.webp)
+![The profile panel: the pointer rests on the Games card, and a dark tooltip reading Rounds you played follows it, then on the Best card, with the tooltip Your highest score](/captures/tutorial-interaction-hover.webp)
 
 <figcaption>
 A tooltip follows the pointer while it stays over the card.

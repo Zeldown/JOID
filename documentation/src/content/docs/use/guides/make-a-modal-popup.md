@@ -13,7 +13,7 @@ This guide builds a confirmation popup that dims the screen behind it, blocks it
 
 <figure>
 
-![A dimmed screen behind a light grey card that asks Delete the file?, with a Cancel and a Delete button](/captures/guides-popup-open.webp)
+![A white screen with a file name and a grey Delete button; the pointer clicks Delete, the screen dims behind a light grey card that asks Delete the file? with a Cancel and a Delete button, and a click on Cancel closes it](/captures/guides-popup-open.webp)
 
 <figcaption>
 The popup over the screen that opened it.

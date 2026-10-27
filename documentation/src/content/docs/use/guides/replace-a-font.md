@@ -13,7 +13,7 @@ This guide loads one family once, defines the text styles of the application fro
 
 <figure>
 
-![A white card with the title Settings in bold, a line of regular text, a grey Save button in white text, and a dark tooltip under the pointer that reads Saves the settings](/captures/guides-font-card.webp)
+![A white card with the title Settings in bold, a line of regular text and a grey Save button in white text; the pointer rests on the button, and a dark tooltip that reads Saves the settings appears under it](/captures/guides-font-card.webp)
 
 <figcaption>
 One family in two weights, for the title, the body text, the button and the tooltip.

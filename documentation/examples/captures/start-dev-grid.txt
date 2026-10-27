@@ -1,10 +1,18 @@
 # crop start-dev-grid 0 0 1920 1080
+# still start-dev-grid 80
 dev true
 ui com.example.start.CounterUI
 key F3
 wait 100
 key G
 move 600 300
+# film start-dev-grid 60
+wait 400
+moveto 1160 480 1200
+wait 400
+moveto 760 720 1000
 wait 300
-shot start-dev-grid
+moveto 600 300 900
+wait 300
+cut
 dev false

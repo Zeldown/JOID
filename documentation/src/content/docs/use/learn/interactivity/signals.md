@@ -38,10 +38,10 @@ To show the value, read it with `get()` inside the value that you give to a sett
 
 <figure>
 
-![A white "+1" button, the text "Clicks: 3", a wide dark grey bar and the text "At open: 0"](/captures/interactivity-counter.webp)
+![A white "+1" button, the text "Clicks: 0", a short grey bar and the text "At open: 0"; the pointer clicks the button three times: the count goes up to 3, the bar widens at each click and turns dark grey at the third, and "At open" stays at 0](/captures/interactivity-counter.webp)
 
 <figcaption>
-After three clicks, the text, the width and the color of the bar followed `clicks`, and nothing else ran again.
+At each click, the text, the width and the color of the bar follow `clicks`, and nothing else runs again.
 </figcaption>
 </figure>
 
@@ -179,10 +179,10 @@ The reads of a collection signal (`size()`, `get(index)`, `contains(...)`, `isEm
 
 <figure>
 
-![A card with three buttons, "Add Linus", "Remove Ada" and "Details", and the texts "Count: 2", "First: Grace" and "Has Linus: true"](/captures/interactivity-types.webp)
+![A card with three buttons, "Add Linus", "Remove Ada" and "Details", and the texts "Count: 2", "First: Ada" and "Has Linus: false"; the pointer clicks "Add Linus", then "Remove Ada" twice, and the texts change at the first two clicks only, ending at "Count: 2", "First: Grace" and "Has Linus: true"](/captures/interactivity-types.webp)
 
 <figcaption>
-After "Add Linus" then "Remove Ada" twice: the second removal changed nothing, so nothing was computed again.
+"Add Linus", then "Remove Ada" twice: the second removal changes nothing, so nothing is computed again.
 </figcaption>
 </figure>
 

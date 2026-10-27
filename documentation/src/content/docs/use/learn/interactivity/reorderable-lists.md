@@ -63,7 +63,7 @@ With `autoDrag(false)`, a handle starts the drag with [[ReorderableFlexNode#star
 
 <figure>
 
-![A column with a grey "To do" header and three white tasks, each with a grey handle on its right; the pointer drags "Ship" by its handle above "Review"](/captures/interactivity-reorder-handle.webp)
+![A column with a grey "To do" header and three white tasks, each with a grey handle on its right; a drag that starts on the "Write" task moves nothing, a drag on the handle of "Ship" moves it above "Review", and a second drag puts it back](/captures/interactivity-reorder-handle.webp)
 
 <figcaption>
 A press on a handle drags its task; a press anywhere else on the task does nothing, and the header never moves.

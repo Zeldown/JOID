@@ -16,10 +16,10 @@ Here is a complete screen: a card with a button that turns the notifications on 
 
 <figure>
 
-![A white card with rounded corners and a soft shadow on a light grey background, reading Notifications on its left, next to a dark grey rounded button reading On](/captures/start-intro.webp)
+![A white card with rounded corners and a soft shadow on a light grey background, reading Notifications next to a rounded button; the pointer clicks the button four times, and the button turns dark grey and reads On, then light grey and reads Off](/captures/start-intro.webp)
 
 <figcaption>
-The screen above after one click.
+The screen above, clicked four times.
 The button reads the signal `notifications`, so its color and its label follow each click by themselves.
 </figcaption>
 </figure>

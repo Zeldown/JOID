@@ -1,13 +1,25 @@
 # crop state-stores 540 20 1360 740
+# still state-stores 50
 ui com.example.state.SettingsUI
 open com.example.state.VolumeOverlay
-wait 100
-move 820 430
+move 1300 700
+# film state-stores
+wait 300
+moveto 850 440 600
+wait 200
 press LEFT
 release LEFT
-wait 50
+wait 600
 press LEFT
 release LEFT
-move 1700 950
-wait 100
-shot state-stores
+wait 800
+moveto 710 440 400
+wait 200
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 700
+moveto 1300 700 500
+wait 300

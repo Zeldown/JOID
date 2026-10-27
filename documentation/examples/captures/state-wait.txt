@@ -1,7 +1,4 @@
-# crop state-wait-loading 640 370 640 340
-# crop state-wait-loaded 640 370 640 340
+# crop state-wait 640 370 640 340
 ui com.example.state.WaitUI
-wait 500
-shot state-wait-loading
-wait 2000
-shot state-wait-loaded
+# film state-wait
+wait 3000

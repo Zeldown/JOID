@@ -1,11 +1,16 @@
 # crop further-charts-start 80 60 900 400
 # crop further-charts-next 80 60 900 400
+# still further-charts-next 50
 ui com.example.further.ChartsUI
 wait 100
 shot further-charts-start
-moveto 200 405 200
+move 360 445
+# film further-charts-next
+wait 300
+moveto 230 415 500
+wait 300
 press LEFT
 release LEFT
-moveto 1300 800 100
-wait 100
-shot further-charts-next
+wait 1200
+moveto 360 445 400
+wait 300

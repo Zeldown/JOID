@@ -26,10 +26,10 @@ A button is a node with a listener on [[Node#onClick]]:
 
 <figure>
 
-![A grey card with a white "Click me" button, the pointer on it, and the text "Clicks: 2" under it](/captures/interactivity-click.webp)
+![A grey card with a white "Click me" button and the text "Clicks: 0" under it; the pointer clicks the button three times, and the count goes up to 3](/captures/interactivity-click.webp)
 
 <figcaption>
-Two presses on the button: its listener ran twice.
+Each press on the button runs its listener once.
 </figcaption>
 </figure>
 
@@ -54,10 +54,10 @@ The badge on the left blocks the button; the badge on the right is set with [[No
 
 <figure>
 
-![Two white "Order" buttons with a grey badge on their top right corner; after one press on each badge, the left one reads "Clicks: 0" and the right one "Clicks: 1"](/captures/interactivity-through.webp)
+![Two white "Order" buttons with a grey badge on their top right corner; the pointer presses each badge twice: the count under the left button stays at "Clicks: 0", the one under the right button goes to "Clicks: 2"](/captures/interactivity-through.webp)
 
 <figcaption>
-A press on each badge: only the badge set with `interactive(false)` lets the press reach its button.
+Two presses on each badge: only the badge set with `interactive(false)` lets the press reach its button.
 </figcaption>
 </figure>
 
@@ -82,7 +82,7 @@ Every node of the UI receives every press, wherever the pointer is: a listener t
 
 <figure>
 
-![A grey card with a "Button" and four counts: "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
+![A grey card with a "Button" and four counts at 0; the pointer presses the button, the card, then outside the card, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
 
 <figcaption>
 Three presses: on the button, on the card, then outside the card.
@@ -103,10 +103,10 @@ This field never receives a digit:
 
 <figure>
 
-![A white text field that reads "RD" after the user typed "R2D2"](/captures/interactivity-consume.webp)
+![A white text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, and only "RD" appears](/captures/interactivity-consume.webp)
 
 <figcaption>
-The user typed `R2D2`: the listener consumed both digits before the field saw them.
+The user types `R2D2`: the listener consumes both digits before the field sees them.
 </figcaption>
 </figure>
 
@@ -146,10 +146,10 @@ This square refuses to move past `x = 400`:
 
 <figure>
 
-![A grey square at the middle of a card, a white "Move right" button and the text "Refused: 1"](/captures/interactivity-before.webp)
+![A grey square at the left of a card, a white "Move right" button and the text "Refused: 0"; the pointer presses the button four times: the square moves right three times, and the fourth press leaves it in place and shows "Refused: 1"](/captures/interactivity-before.webp)
 
 <figcaption>
-Four presses on the button: the fourth move, to `x = 440`, was refused.
+Four presses on the button: the fourth move, to `x = 440`, is refused.
 </figcaption>
 </figure>
 

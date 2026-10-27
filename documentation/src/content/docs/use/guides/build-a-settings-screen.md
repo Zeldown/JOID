@@ -13,7 +13,7 @@ This guide keeps two settings, a sound switch and a volume, in a store saved on 
 
 <figure>
 
-![A Sound label with a checked box on its right, and a Volume 80 label with a slider on its right](/captures/guides-settings-screen.webp)
+![A Sound label with a checked box on its right, and a Volume 80 label with a slider on its right; the pointer drags the slider and the label follows, unchecks Sound, which disables the slider, checks it again and drags the slider back to 80](/captures/guides-settings-screen.webp)
 
 <figcaption>
 Each control reads and writes a signal of the store.

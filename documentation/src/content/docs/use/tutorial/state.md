@@ -10,10 +10,10 @@ In this lesson Play starts a round, and the whole panel follows: the number of g
 
 <figure>
 
-![The profile panel after three rounds: the cards read Games 3 and the best and total scores of the three rounds, and the list shows Round 3, Round 2 and Round 1 with their points](/captures/tutorial-state.webp)
+![The menu and its profile panel, with no round yet; the pointer clicks Play three times, and at each click the cards Games, Best and Total and the list of recent rounds follow, up to Round 3, Round 2 and Round 1 with their points](/captures/tutorial-state.webp)
 
 <figcaption>
-The result of this lesson after three clicks on Play: no line of code updates the panel, it follows the rounds.
+The result of this lesson: no line of code updates the panel, it follows the rounds.
 </figcaption>
 </figure>
 

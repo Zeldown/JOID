@@ -13,19 +13,10 @@ This guide writes two kits for a checkbox and a slider, and switches the kit of 
 
 <figure>
 
-![A light grey card with a square checkbox and a flat square slider, above two white buttons Plain kit and Round kit](/captures/guides-kit-plain.webp)
+![A light grey card with a square checkbox and a flat square slider, above two white buttons Plain kit and Round kit; the pointer drags the slider, then clicks Round kit, and the card turns white with a rounded checkbox and a pill-shaped slider with a round knob, at the same value; it drags the slider back and clicks Plain kit](/captures/guides-kit.webp)
 
 <figcaption>
-The screen with the plain kit.
-</figcaption>
-</figure>
-
-<figure>
-
-![The same card, white, with a rounded checkbox and a pill-shaped slider with a round knob](/captures/guides-kit-round.webp)
-
-<figcaption>
-The same screen after a click on Round kit: the skins changed, the values stayed.
+A click on a kit changes the skins of the controls; their values stay.
 </figcaption>
 </figure>
 

@@ -1,13 +1,27 @@
 # crop describing-overlays-stack 410 190 1100 700
 # crop describing-overlays-popup 660 340 600 400
+# still describing-overlays-popup 90
 # crop describing-overlays-minimap 1540 20 360 360
 ui com.example.describing.overlays.StackDiagramUI
 wait 100
 shot describing-overlays-stack
 ui com.example.describing.overlays.SettingsUI
-open com.example.describing.overlays.ConfirmPopup
-wait 600
-shot describing-overlays-popup
+move 1180 700
+# film describing-overlays-popup 60
+wait 300
+moveto 985 550 500
+wait 300
+press LEFT
+release LEFT
+wait 1100
+moveto 875 625 400
+wait 300
+press LEFT
+release LEFT
+wait 900
+moveto 1180 700 400
+wait 300
+cut
 ui com.example.describing.overlays.SettingsUI
 open com.example.describing.overlays.MinimapOverlay
 wait 100

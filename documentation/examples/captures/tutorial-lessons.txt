@@ -1,10 +1,14 @@
 # crop tutorial-setup 600 430 720 220
 # crop tutorial-menu 130 130 600 610
 # crop tutorial-layout 740 140 1040 800
-# crop tutorial-interaction-popup 600 250 720 580
+# crop tutorial-interaction-popup 140 140 1180 700
+# still tutorial-interaction-popup 90
 # crop tutorial-interaction-hover 740 140 1040 400
-# crop tutorial-state 740 140 1040 800
-# crop tutorial-settings 600 250 720 580
+# still tutorial-interaction-hover 40
+# crop tutorial-state 140 140 1640 800
+# still tutorial-state 110
+# crop tutorial-settings 140 140 1180 700
+# still tutorial-settings 50
 # crop tutorial-polish 700 120 1120 950
 ui com.example.tutorial.setup.MenuUI
 wait 300
@@ -16,37 +20,86 @@ ui com.example.tutorial.layout.MenuUI
 wait 300
 shot tutorial-layout
 ui com.example.tutorial.interaction.MenuUI
-move 340 560
-press LEFT
-release LEFT
-move 1900 1070
-wait 500
-shot tutorial-interaction-popup
-ui com.example.tutorial.interaction.MenuUI
-move 900 350
-wait 1200
-shot tutorial-interaction-hover
-ui com.example.tutorial.state.MenuUI
-move 340 460
-press LEFT
-release LEFT
-wait 100
-press LEFT
-release LEFT
-wait 100
-press LEFT
-release LEFT
-move 1900 1070
+move 620 790
+# film tutorial-interaction-popup 60
 wait 300
-shot tutorial-state
+moveto 360 572 600
+wait 400
+press LEFT
+release LEFT
+wait 1000
+moveto 980 722 700
+wait 300
+press LEFT
+release LEFT
+wait 600
+moveto 620 790 500
+wait 300
+cut
+ui com.example.tutorial.interaction.MenuUI
+move 1000 520
+# film tutorial-interaction-hover
+wait 300
+moveto 900 350 500
+wait 1000
+moveto 960 390 400
+wait 400
+moveto 1230 350 500
+wait 1000
+moveto 1000 520 400
+wait 300
+cut
+ui com.example.tutorial.state.MenuUI
+move 620 860
+# film tutorial-state
+wait 300
+moveto 360 472 600
+wait 300
+press LEFT
+release LEFT
+wait 900
+press LEFT
+release LEFT
+wait 900
+press LEFT
+release LEFT
+wait 1000
+moveto 620 860 500
+wait 300
+cut
 ui com.example.tutorial.settings.MenuUI
 move 340 560
 press LEFT
 release LEFT
-move 1900 1070
-wait 500
-shot tutorial-settings
+wait 300
+move 1290 800
+wait 300
+# film tutorial-settings
+wait 300
+moveto 1150 466 480
+wait 200
+press LEFT
+release LEFT
+wait 533
+moveto 1190 576 400
+wait 200
+press LEFT
+release LEFT
+wait 533
+moveto 1020 576 400
+wait 200
+press LEFT
+release LEFT
+wait 533
+moveto 1150 466 400
+wait 200
+press LEFT
+release LEFT
+wait 533
+moveto 1290 800 400
+wait 300
+cut
 ui com.example.tutorial.polish.MenuUI
-# film tutorial-polish
+# film tutorial-polish 60
 wait 900
 cut

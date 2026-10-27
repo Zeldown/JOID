@@ -1,4 +1,28 @@
 # crop guides-settings-screen 660 340 600 220
+# still guides-settings-screen 100
 ui com.example.guides.SettingsGuideUI
-wait 100
-shot guides-settings-screen
+move 800 535
+# film guides-settings-screen 60
+wait 300
+moveto 1145 500 400
+wait 200
+press LEFT
+moveto 1040 500 400
+release LEFT
+wait 500
+moveto 1190 395 400
+wait 200
+press LEFT
+release LEFT
+wait 666
+press LEFT
+release LEFT
+wait 500
+moveto 1040 500 400
+wait 200
+press LEFT
+moveto 1145 500 400
+release LEFT
+wait 400
+moveto 800 535 400
+wait 300

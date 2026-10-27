@@ -5,6 +5,6 @@ move 280 110
 wait 100
 press LEFT
 release LEFT
-# film reference-animation-slide
+# film reference-animation-slide 60
 wait 1300
 cut

@@ -6,14 +6,14 @@
 # hold style-follow 600
 ui com.example.style.AnimationUI
 move 1700 950
-# film style-appear
+# film style-appear 60
 wait 800
 cut
-# film style-loop
+# film style-loop 60
 wait 1400
 cut
 move 1200 250
-# film style-click
+# film style-click 60
 wait 200
 press LEFT
 release LEFT
@@ -24,7 +24,7 @@ wait 600
 cut
 move 300 560
 wait 1500
-# film style-follow
+# film style-follow 60
 wait 200
 moveto 1500 560 400
 wait 1200

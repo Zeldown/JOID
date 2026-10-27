@@ -3,7 +3,7 @@
 # crop interactivity-copy 560 340 800 400
 ui com.example.interactivity.drag.DragUI
 move 740 420
-# film interactivity-drag
+# film interactivity-drag 60
 wait 200
 press LEFT
 moveto 1150 650 700
@@ -12,7 +12,7 @@ wait 600
 cut
 ui com.example.interactivity.drag.SnapUI
 move 960 430
-# film interactivity-snap
+# film interactivity-snap 60
 wait 200
 press LEFT
 moveto 1130 580 700
@@ -21,7 +21,7 @@ wait 700
 cut
 ui com.example.interactivity.drag.CopyUI
 move 720 540
-# film interactivity-copy
+# film interactivity-copy 60
 wait 200
 press LEFT
 moveto 1160 540 700

@@ -10,7 +10,7 @@ shot describing-grid-align
 shot describing-grid-rows
 # crop describing-grid-scroll 60 460 400 300
 move 260 610
-# film describing-grid-scroll
+# film describing-grid-scroll 60
 scroll -4
 wait 1200
 cut

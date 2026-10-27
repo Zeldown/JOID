@@ -11,6 +11,21 @@ ui com.example.describing.text.ModesUI
 wait 100
 shot describing-text-modes
 # crop describing-text-runs 610 340 700 400
+# still describing-text-runs 70
 ui com.example.describing.text.RunsUI
-wait 100
-shot describing-text-runs
+move 1200 700
+# film describing-text-runs
+wait 300
+moveto 1000 535 500
+wait 200
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 800
+moveto 1200 700 500
+wait 300

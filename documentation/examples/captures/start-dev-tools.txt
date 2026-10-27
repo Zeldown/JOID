@@ -1,9 +1,17 @@
 # crop start-dev-inspect 700 400 1220 680
+# still start-dev-inspect 40
 dev true
 ui com.example.start.CounterUI
 key F3
-move 960 540
+move 1500 800
 wait 600
-mask 845 445 80 30
-shot start-dev-inspect
+# film start-dev-inspect
+wait 300
+moveto 960 545 600
+wait 600
+moveto 1100 580 600
+wait 600
+moveto 1500 800 600
+wait 400
+cut
 dev false

@@ -91,7 +91,7 @@ A tooltip appears next to the pointer while the node is hovered.
 
 <figure>
 
-![The pointer on a white "Wallet" button, with a dark tooltip "Coins: 130" next to it](/captures/interactivity-tooltip-text.webp)
+![The pointer rests on a white "Wallet" button, and a dark tooltip "Coins: 120" shows next to it; two clicks bring the tooltip to "Coins: 140"; then the pointer moves to the "Shop" button, whose tooltip has two lines](/captures/interactivity-tooltip-text.webp)
 
 <figcaption>
 The supplier of a tooltip runs on every frame the tooltip shows, so the line is always up to date.
@@ -115,7 +115,7 @@ A tooltip can also be made of nodes, or of your own drawing.
 
 <figure>
 
-![The pointer on a white "Profile" button, with a grey "Up" label right above the button](/captures/interactivity-tooltip-node.webp)
+![The pointer moves along a white "Profile" button, and a grey "Up" label stays right above the button](/captures/interactivity-tooltip-node.webp)
 
 <figcaption>
 A relative tooltip stays at the same place over the node, wherever the pointer is on it.
@@ -129,7 +129,7 @@ A relative tooltip stays at the same place over the node, wherever the pointer i
 
 <figure>
 
-![The pointer on a white "Target" button, circled by a grey ring](/captures/interactivity-tooltip-custom.webp)
+![The pointer moves along a white "Target" button, circled by a grey ring that follows it](/captures/interactivity-tooltip-custom.webp)
 
 <figcaption>
 A custom tooltip draws with the [drawing API](/use/learn/going-further/drawing/), centered on the pointer.

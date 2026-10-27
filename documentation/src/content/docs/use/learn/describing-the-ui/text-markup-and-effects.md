@@ -34,7 +34,7 @@ Give the markup to a style with [[TextInfo#markups]] or [[TextInfo#withMarkups]]
 
 <figure>
 
-![A light grey card with four grey lines: Read the terms, then accept them, with terms in bold and accept in dark grey and underlined; A wave moves every glyph, its letters going up and down; LOUD AND CLEAR in capitals with LOUD in bold; 1 min 35 s](/captures/describing-markup-lines.webp)
+![A light grey card with four grey lines: Read the terms, then accept them, with terms in bold and accept in dark grey and underlined; A wave moves every glyph, its letters rising and falling along a wave; LOUD AND CLEAR in capitals with LOUD in bold; 1 min 35 s](/captures/describing-markup-lines.webp)
 
 <figcaption>
 A markup, an effect, a modifier and a converter, one per line.

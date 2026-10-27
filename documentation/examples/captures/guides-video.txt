@@ -1,4 +1,16 @@
-# crop guides-video 540 180 840 620
+# crop guides-video 550 190 820 600
+# still guides-video 0
 ui com.example.guides.VideoGuideUI
 wait 2000
-shot guides-video
+move 1250 760
+# film guides-video
+wait 300
+moveto 990 752 400
+wait 100
+press LEFT
+release LEFT
+wait 500
+press LEFT
+release LEFT
+wait 300
+moveto 1250 760 300

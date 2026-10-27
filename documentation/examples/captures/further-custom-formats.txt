@@ -1,7 +1,7 @@
 # crop further-custom-formats 80 80 492 232
-# still further-custom-formats 3
+# still further-custom-formats 4
 ui com.example.further.FormatsUI
 wait 200
-# film further-custom-formats 25
+# film further-custom-formats
 wait 640
 cut

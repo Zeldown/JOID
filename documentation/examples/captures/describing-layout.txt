@@ -10,7 +10,7 @@ shot describing-layout-overflow
 ui com.example.describing.layout.FeedUI
 wait 100
 move 960 480
-# film describing-layout-scroll
+# film describing-layout-scroll 60
 scroll -3
 wait 800
 scroll -12

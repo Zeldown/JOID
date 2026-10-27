@@ -1,8 +1,12 @@
 # crop guides-mockup-card 620 250 680 580
+# crop guides-mockup-overlay 620 250 680 580
+# still guides-mockup-overlay 30
 ui com.example.guides.MockupGuideUI
 wait 100
 shot guides-mockup-card
-# crop guides-mockup-overlay 620 250 680 580
+# film guides-mockup-overlay
+wait 600
 key F2
-wait 100
-shot guides-mockup-overlay
+wait 1600
+key F2
+wait 1000

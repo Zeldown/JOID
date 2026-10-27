@@ -1,43 +1,118 @@
 # crop interactivity-field 660 390 600 300
+# still interactivity-field 80
 # crop interactivity-focus 660 390 600 300
+# still interactivity-focus 50
 # crop interactivity-field-rules 660 390 600 300
+# still interactivity-field-rules 100
 # crop interactivity-field-number 660 390 600 300
+# still interactivity-field-number 60
 # crop interactivity-field-color 660 390 600 300
+# still interactivity-field-color 80
 ui com.example.interactivity.fields.NameFieldUI
-move 960 480
-press LEFT
-release LEFT
-type Ada
-key ENTER
-wait 100
-shot interactivity-field
-ui com.example.interactivity.fields.FocusFieldUI
-move 820 590
-press LEFT
-release LEFT
+move 1120 650
+# film interactivity-field
 wait 300
-shot interactivity-focus
-ui com.example.interactivity.fields.RulesFieldUI
-move 960 480
+moveto 1130 488 500
+wait 200
 press LEFT
 release LEFT
-type  ab1
+wait 500
+type A
+wait 250
+type d
+wait 250
+type a
+wait 600
 key ENTER
-wait 100
-shot interactivity-field-rules
+wait 1000
+moveto 1120 650 400
+wait 300
+cut
+ui com.example.interactivity.fields.FocusFieldUI
+move 1120 650
+# film interactivity-focus
+wait 300
+moveto 830 598 500
+wait 200
+press LEFT
+release LEFT
+wait 900
+moveto 1100 540 500
+wait 200
+press LEFT
+release LEFT
+wait 900
+moveto 1120 650 300
+wait 300
+cut
+ui com.example.interactivity.fields.RulesFieldUI
+move 1120 650
+# film interactivity-field-rules
+wait 300
+moveto 1130 488 500
+wait 200
+press LEFT
+release LEFT
+wait 500
+type  a
+wait 300
+type b
+wait 300
+type 1
+wait 700
+key ENTER
+wait 1200
+moveto 1120 650 400
+wait 300
+cut
 ui com.example.interactivity.fields.NumberFieldUI
-move 840 480
+move 1120 650
+# film interactivity-field-number
+wait 300
+moveto 920 488 500
+wait 200
 press LEFT
 release LEFT
+wait 500
 key UP
+wait 600
 key UP
-wait 100
-shot interactivity-field-number
+wait 1000
+key DOWN
+wait 600
+key DOWN
+wait 700
+moveto 1120 650 400
+wait 300
+cut
 ui com.example.interactivity.fields.ColorFieldUI
-move 870 480
+move 1120 650
+# film interactivity-field-color
+wait 300
+moveto 990 488 500
+wait 200
 press LEFT
 release LEFT
+wait 400
 key LEFT_CONTROL+A
-type #7C5CFF
-wait 100
-shot interactivity-field-color
+wait 300
+type #
+wait 150
+type 7
+wait 150
+type C
+wait 150
+type 5
+wait 150
+type C
+wait 150
+type F
+wait 150
+type F
+wait 1200
+key LEFT_CONTROL+A
+wait 300
+type #555555
+wait 800
+moveto 1120 650 400
+wait 300

@@ -1,16 +1,21 @@
 # crop state-derived 540 270 840 540
+# still state-derived 110
 ui com.example.state.DerivedUI
-wait 100
-move 960 380
+move 1260 760
+# film state-derived
+wait 300
+moveto 990 392 500
+wait 200
 press LEFT
 release LEFT
-wait 50
+wait 700
 press LEFT
 release LEFT
-wait 50
-move 1200 380
+wait 700
+moveto 1230 392 400
+wait 200
 press LEFT
 release LEFT
-move 1700 950
-wait 100
-shot state-derived
+wait 1000
+moveto 1260 760 500
+wait 300
