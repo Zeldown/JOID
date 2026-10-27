@@ -14,17 +14,11 @@ skip com.example.tutorial.state.Main program that opens its own GLFW window
 skip com.example.tutorial.settings.Main program that opens its own GLFW window
 skip com.example.tutorial.polish.Main program that opens its own GLFW window
 call com.example.describing.uis.Navigation open
-skip com.example.describing.DiagramUI abstract base of the diagram scenes
 call com.example.describing.fonts.AppFonts MONTSERRAT
-skip com.example.describing.markup.TagTextMarkup markup used by MarkupUI
-skip com.example.describing.markup.UnderlineTextEffect effect used by TagTextMarkup in MarkupUI
-skip com.example.describing.markup.WaveTextEffect effect used by MarkupUI
-skip com.example.describing.markup.DurationTextConverter converter registered by MarkupUI
 skip com.example.describing.media.MediaSources reads a URL and a file of the disk that the runner does not have
 skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer
 call com.example.further.FontsSources LIGHT
 skip com.example.running.RunningApp creates its own GLFW window and loop
-skip com.example.running.HostApp creates its own GLFW window and loop
 skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapshot backend
 skip com.example.running.RunningFolders registers a backend on a window of its own
 skip com.example.running.RunningLibrary registers JOID.onReady for a program that starts later
@@ -32,3 +26,30 @@ skip com.example.running.PanelPlugin registers a UI bridge into the global regis
 skip com.example.running.SceneUIBridge UI bridge registered by HostApp
 skip com.example.running.GameUIBridge UI bridge of a host loop
 skip com.example.running.PanelUIBridge UI bridge registered by PanelPlugin
+expect com.example.describing.media.LoadingUI beach.png cannot be read
+expect com.example.describing.media.MenuBackgroundUI background.mp4 cannot be read
+expect com.example.describing.media.TrailerUI trailer.mp4 cannot be read
+expect com.example.further.FontsUI The font weight 700 is not loaded in the family of Pixel
+skip com.example.backend.EngineBackend part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineBorrowedTexture part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineFrameBuffer part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineInputForwarder part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineRenderBridge part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineRenderBridgeContractTest part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineShader part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineSnapshotBackend part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineSpriteResourceResolver part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineTexture part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineThreadBridge part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.EngineWindowBridge part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.GlHostBackend part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.HostLoop part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.HostPreviewNode part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.IEngineTexture part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.OverlayUIBridge part of the backend of an imaginary engine, it needs that engine to run
+skip com.example.backend.engine.Engine the imaginary engine of the Build on JOID examples, it does not exist
+skip com.example.backend.engine.EngineDevice the imaginary engine of the Build on JOID examples, it does not exist
+skip com.example.backend.engine.EngineListener the imaginary engine of the Build on JOID examples, it does not exist
+skip com.example.backend.engine.EngineSprite the imaginary engine of the Build on JOID examples, it does not exist
+skip com.example.reference.backends.BackendLoop program that runs its own loop on a backend
+skip com.example.reference.backends.ScaledOverlayUIBridge UI bridge of a host, registered by the host

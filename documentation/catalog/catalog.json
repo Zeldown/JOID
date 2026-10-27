@@ -161,7 +161,7 @@
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode",
-					"learn": "use/learn/describing-the-ui/layout#scroll-a-long-content",
+					"learn": "use/learn/describing-the-ui/layout#add-a-scrollbar",
 					"alt": "A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge"
 				}
 			]
