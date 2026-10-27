@@ -28,7 +28,7 @@ It ships in the dev and demo jars of the backends, not in the prod jar of base-g
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | [create](#GlfwSnapshotWindow-factory-create)(int width, int height, Runnable hints) <span class="joid-qualifier">factory</span> | Initializes GLFW, runs the callback to set the window hints of the backend, then creates a hidden window of that size in screen pixels. |
+| [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | [create](#GlfwSnapshotWindow-factory-create)(int width, int height, Runnable hints) <span class="joid-qualifier">factory</span> | Initializes GLFW, runs `hints` to set the window hints of the backend, then creates a hidden window of that size in screen pixels. |
 
 <a id="GlfwSnapshotWindow-methods"></a>
 
@@ -52,7 +52,7 @@ It ships in the dev and demo jars of the backends, not in the prod jar of base-g
 - `IllegalStateException`: GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)
 - `IllegalStateException`: GLFW cannot create the …x… snapshot window, check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)
 
-Initializes GLFW, runs the callback to set the window hints of the backend, then creates a hidden window of that size in screen pixels.
+Initializes GLFW, runs `hints` to set the window hints of the backend, then creates a hidden window of that size in screen pixels.
 Throws an `IllegalStateException` when GLFW cannot start, often for lack of a display, or when the driver refuses the window.
 
 ## Method details

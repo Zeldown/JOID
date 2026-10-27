@@ -170,32 +170,32 @@ Applies the values of the end of a play.
 
 ## onStart(EventListener)
 
-Fires when the first play starts, after the delay.
+Adds a listener that runs when the first play starts, after the delay.
 
 ## onIterationStart(EventListener)
 
-Fires at the start of each play.
+Adds a listener that runs at the start of each play.
 
 ## onIterationEnd(EventListener)
 
-Fires at the end of each play.
+Adds a listener that runs at the end of each play.
 
 ## onComplete(EventListener)
 
-Fires when the last play ends; it never fires for a repetition forever.
+Adds a listener that runs when the last play ends; it never runs for a repetition forever.
 
 ## onReverseStart(EventListener)
 
-Fires when the tween starts playing backward from its end.
+Adds a listener that runs when the tween starts playing backward from its end.
 
 ## onReverseIterationStart(EventListener)
 
-Fires at the start of each play backward.
+Adds a listener that runs at the start of each play backward.
 
 ## onReverseIterationEnd(EventListener)
 
-Fires at the end of each play backward.
+Adds a listener that runs at the end of each play backward.
 
 ## onReverseComplete(EventListener)
 
-Fires when the tween played backward reaches its beginning.
+Adds a listener that runs when the tween played backward reaches its beginning.

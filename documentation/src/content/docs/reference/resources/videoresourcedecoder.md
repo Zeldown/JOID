@@ -45,7 +45,7 @@ Get it from [`Resource.getPlayback`](/reference/resources/resource/#Resource-met
 | [volume](#VideoResourceDecoder-property-volume) | `float` | `1F` | The volume of the sound, on 1; `0F` mutes it. |
 | [audioGroup](#VideoResourceDecoder-property-audioGroup) | `Object` |  | The group of the audio source, which the audio bridge can use to set the volume of every sound of a group at once; `null` for none. |
 | [referenceDistance](#VideoResourceDecoder-property-referenceDistance) | `float` | `5F` | With a `location`, the distance from the listener under which the sound plays at full volume. |
-| [maxDistance](#VideoResourceDecoder-property-maxDistance) | `float` | `50F` | With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls with the square of the distance. |
+| [maxDistance](#VideoResourceDecoder-property-maxDistance) | `float` | `50F` | With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances. |
 
 <a id="VideoResourceDecoder-methods"></a>
 
@@ -179,7 +179,7 @@ With a `location`, the distance from the listener under which the sound plays at
 
 **Default:** `50F`
 
-With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls with the square of the distance.
+With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances.
 
 ## Method details
 

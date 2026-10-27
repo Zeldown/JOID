@@ -109,9 +109,9 @@ Listeners always run on the render thread.
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#Signal-event-onChange) | SignalListener<? super T> listener | Calls `listener` with the value after each change, on the render thread, then returns this signal. |
+| [onChange](#Signal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Calls `listener` with the value after each change, on the render thread, then returns this signal. |
 
 ## Creation details
 

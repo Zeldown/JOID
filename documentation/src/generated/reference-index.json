@@ -28016,7 +28016,7 @@
       "kind": "class",
       "abstract": false,
       "family": "utilities",
-      "summary": "Future that completes on the render thread once the work it wraps is done, so its callbacks can touch the interface.",
+      "summary": "Future that completes on the render thread once the work it wraps is done, so the stages chained on it can touch the interface.",
       "ancestors": [],
       "url": "/reference/utilities/renderthreadfuture/",
       "members": {
@@ -28037,7 +28037,7 @@
       "kind": "class",
       "abstract": false,
       "family": "utilities",
-      "summary": "Future that completes on the render thread once the work it wraps is done, so its callbacks can touch the interface.",
+      "summary": "Future that completes on the render thread once the work it wraps is done, so the stages chained on it can touch the interface.",
       "ancestors": [],
       "url": "/reference/utilities/renderthreadfuture/",
       "members": {
@@ -28458,7 +28458,7 @@
       "kind": "class",
       "abstract": false,
       "family": "base-glfw",
-      "summary": "Forwards the input callbacks of a GLFW window to the UI bridges of JOID, ahead of the callbacks the window already had.",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had.",
       "ancestors": [],
       "url": "/reference/base-glfw/glfwinputforwarder/",
       "members": {
@@ -28474,7 +28474,7 @@
       "kind": "class",
       "abstract": false,
       "family": "base-glfw",
-      "summary": "Forwards the input callbacks of a GLFW window to the UI bridges of JOID, ahead of the callbacks the window already had.",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the input handlers the window already had.",
       "ancestors": [],
       "url": "/reference/base-glfw/glfwinputforwarder/",
       "members": {

@@ -29,7 +29,7 @@ Every effect of this family runs on the three backends: LWJGL 2, LWJGL 3 and Vul
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

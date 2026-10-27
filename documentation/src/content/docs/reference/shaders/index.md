@@ -34,7 +34,7 @@ Learn: [Shaders](/use/learn/going-further/shaders/).
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

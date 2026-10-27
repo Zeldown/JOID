@@ -43,17 +43,17 @@ A bridge registered in `BridgeHandler.UI` extends [`UIBridge`](/reference/backen
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [forceOpen](#IUIBridge-method-forceOpen)(UI ui) <span class="joid-qualifier">default</span> | Closes every UI of the bridge with `closeAll()`, then opens the UI. |
-| `void` | [replace](#IUIBridge-method-replace)(UI ui, UI replacement) <span class="joid-qualifier">default</span> | Disposes and removes the first UI and adds the second, without transition or closing callback. |
-| `void` | [closeAll](#IUIBridge-method-closeAll)() <span class="joid-qualifier">default</span> | Disposes and removes every UI of the bridge: their close listeners and the `onDetach` callbacks of their nodes run, and their stores and remembered fields are saved. |
+| `void` | [replace](#IUIBridge-method-replace)(UI ui, UI replacement) <span class="joid-qualifier">default</span> | Disposes and removes the first UI and adds the second, without transition or close listener. |
+| `void` | [closeAll](#IUIBridge-method-closeAll)() <span class="joid-qualifier">default</span> | Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved. |
 
 ### For subclasses
 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [open](#IUIBridge-method-open)(UI ui) <span class="joid-qualifier">abstract</span> | JOID calls it on the render thread from `JOID.open(ui)`, on the bridge chosen for the UI. |
-| `void` | [close](#IUIBridge-method-close)(UI ui) <span class="joid-qualifier">abstract</span> | JOID calls it on the render thread from `JOID.close(ui)` once the closing callbacks accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI. |
+| `void` | [close](#IUIBridge-method-close)(UI ui) <span class="joid-qualifier">abstract</span> | JOID calls it on the render thread from `JOID.close(ui)` once the close listeners accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI. |
 | `void` | [add](#IUIBridge-method-add)(UI ui) <span class="joid-qualifier">abstract</span> | Adds the UI to the bridge without closing anything. |
-| `void` | [remove](#IUIBridge-method-remove)(UI ui) <span class="joid-qualifier">abstract</span> | Removes the UI from the bridge, without any closing callback. |
+| `void` | [remove](#IUIBridge-method-remove)(UI ui) <span class="joid-qualifier">abstract</span> | Removes the UI from the bridge, without any close listener. |
 | `boolean` | [isOpen](#IUIBridge-method-isOpen)(UI ui) <span class="joid-qualifier">abstract</span> | If `true`, the bridge holds the UI. |
 | `boolean` | [isOnTop](#IUIBridge-method-isOnTop)(UI ui) <span class="joid-qualifier">abstract</span> | If `true`, the UI is the first of its kind to receive the input: screens and popups on one side, overlays on the other. |
 | `boolean` | [canHandle](#IUIBridge-method-canHandle)(Class<? extends UI> clazz) <span class="joid-qualifier">abstract</span> | If `true`, the bridge accepts the UIs of that class; it answers from the class alone, so that lookups without an instance give the same answer. |
@@ -97,7 +97,7 @@ Closes every UI of the bridge with `closeAll()`, then opens the UI.
 
 `void replace(UI ui, UI replacement)` <span class="joid-qualifier">default</span>
 
-Disposes and removes the first UI and adds the second, without transition or closing callback.
+Disposes and removes the first UI and adds the second, without transition or close listener.
 
 <a id="IUIBridge-method-closeAll"></a>
 
@@ -105,7 +105,7 @@ Disposes and removes the first UI and adds the second, without transition or clo
 
 `void closeAll()` <span class="joid-qualifier">default</span>
 
-Disposes and removes every UI of the bridge: their close listeners and the `onDetach` callbacks of their nodes run, and their stores and remembered fields are saved.
+Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
 Call it after your loop: [Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
 
 <a id="IUIBridge-method-open"></a>
@@ -123,7 +123,7 @@ It decides what the UI replaces, then adds it.
 
 `void close(UI ui)` <span class="joid-qualifier">abstract</span>
 
-JOID calls it on the render thread from `JOID.close(ui)` once the closing callbacks accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI.
+JOID calls it on the render thread from `JOID.close(ui)` once the close listeners accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI.
 It removes the UI from the bridge.
 
 <a id="IUIBridge-method-add"></a>
@@ -140,7 +140,7 @@ Adds the UI to the bridge without closing anything.
 
 `void remove(UI ui)` <span class="joid-qualifier">abstract</span>
 
-Removes the UI from the bridge, without any closing callback.
+Removes the UI from the bridge, without any close listener.
 
 <a id="IUIBridge-method-isOpen"></a>
 

@@ -184,13 +184,13 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#FieldNode-event-onChange) | EventListener<NodeFieldChangeEvent.Post<T,V>> listener | Adds a listener that runs after each real change of the text, whatever its source. |
-| [onFocus](#FieldNode-event-onFocus) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs each time the field takes the focus, whatever its source. |
-| [onBlur](#FieldNode-event-onBlur) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs each time the field loses the focus, after it rewrote its text from its value. |
-| [onCursorMove](#FieldNode-event-onCursorMove) | EventListener<NodeChangeEvent.Post<T,Integer>> listener | Adds a listener that runs after each move of the cursor, whatever its source. |
-| [onSelect](#FieldNode-event-onSelect) | EventListener<NodeChangeEvent.Post<T,FieldSelection>> listener | Adds a listener that runs after each change of the selection, whatever its source. |
+| [onChange](#FieldNode-event-onChange) | [`EventListener<NodeFieldChangeEvent.Post<T,V>>`](/reference/events/nodefieldchangeevent-post/) | Adds a listener that runs after each real change of the text, whatever its source. |
+| [onFocus](#FieldNode-event-onFocus) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the field takes the focus, whatever its source. |
+| [onBlur](#FieldNode-event-onBlur) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the field loses the focus, after it rewrote its text from its value. |
+| [onCursorMove](#FieldNode-event-onCursorMove) | [`EventListener<NodeChangeEvent.Post<T,Integer>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each move of the cursor, whatever its source. |
+| [onSelect](#FieldNode-event-onSelect) | [`EventListener<NodeChangeEvent.Post<T,FieldSelection>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each change of the selection, whatever its source. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

@@ -79,9 +79,9 @@ Attaching a choice without options throws an `IllegalStateException`.
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#BaseChoiceNode-event-onChange) | EventListener<NodeChangeEvent.Post<T,V>> listener | Adds a listener that runs after each real change of the selected value, whatever its source. |
+| [onChange](#BaseChoiceNode-event-onChange) | [`EventListener<NodeChangeEvent.Post<T,V>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each real change of the selected value, whatever its source. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

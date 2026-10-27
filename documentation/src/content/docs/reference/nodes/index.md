@@ -49,7 +49,7 @@ The interfaces, enums and helper classes of this family that the main types use.
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

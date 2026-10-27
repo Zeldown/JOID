@@ -25,6 +25,6 @@ Learn: [Threads](/use/learn/running/threads/), [Where JOID stores files](/use/le
 | [`Platform`](/reference/utilities/platform/) | enum | Operating system that JOID runs on, and where it keeps its cache there. |
 | [`Point`](/reference/utilities/point/) | class | Immutable point of two or three `double` coordinates, compared by value. |
 | [`Registry`](/reference/utilities/registry/) | class | Ordered list of registered values in which the most recent registration wins. |
-| [`RenderThreadFuture`](/reference/utilities/renderthreadfuture/) | class | Future that completes on the render thread once the work it wraps is done, so its callbacks can touch the interface. |
+| [`RenderThreadFuture`](/reference/utilities/renderthreadfuture/) | class | Future that completes on the render thread once the work it wraps is done, so the stages chained on it can touch the interface. |
 | [`ThreadUtils`](/reference/utilities/threadutils/) | class | Creates daemon threads and runs a task on the render thread. |
 

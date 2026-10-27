@@ -75,9 +75,9 @@ A task attached in the constructor of a UI comes back at every opening; one atta
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onRun](#Task-event-onRun) | EventListener<TaskEvent> listener | Adds a listener that runs each time the task runs. |
+| [onRun](#Task-event-onRun) | [`EventListener<TaskEvent>`](/reference/ui/taskevent/) | Adds a listener that runs each time the task runs. |
 
 ## Creation details
 

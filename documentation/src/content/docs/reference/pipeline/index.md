@@ -49,7 +49,7 @@ Learn: [Render pipeline](/build/pipeline/), [Shader translation](/build/shader-t
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

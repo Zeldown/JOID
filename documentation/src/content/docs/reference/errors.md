@@ -66,9 +66,9 @@ Read the message and look it up on this page.
 
 Emitted by [`JOID.load`](/reference/ui/joid/#JOID-method-load).
 
-A callback given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) threw a `RuntimeException`; JOID runs the next callbacks anyway.
+A listener given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) threw a `RuntimeException`; JOID runs the next listeners anyway.
 
-Catch the exception inside the callback, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
+Catch the exception inside the listener, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
 
 ### The property … of … cannot be read into its field … (…), the field keeps … {#property-cannot-read-into}
 
@@ -306,7 +306,7 @@ Catch the exception inside `update()`, or fix the code it names: [Node lifecycle
 
 Emitted by [`Node.fireDetach`](/reference/nodes/node/#Node-method-fireDetach).
 
-The `detach()` of a node, or one of its detach callbacks, threw; JOID detaches the node anyway.
+The `detach()` of a node, or one of its detach listeners, threw; JOID detaches the node anyway.
 
 Catch the exception inside `detach()`, or fix the code it names: [Release what a node started](/use/learn/describing-the-ui/node-lifecycle/#release-what-a-node-started).
 
@@ -754,7 +754,7 @@ Catch the exception in the listener, the getter or the setter, or fix the code i
 
 Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnimator-method-start), [`TweenAnimator.delay`](/reference/animation/tweenanimator/#TweenAnimator-method-delay), [`TweenAnimator.repeat`](/reference/animation/tweenanimator/#TweenAnimator-method-repeat), [`TweenAnimator.repeatYoyo`](/reference/animation/tweenanimator/#TweenAnimator-method-repeatYoyo), [`TweenAnimator.push`](/reference/animation/tweenanimator/#TweenAnimator-method-push).
 
-A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` callback, was called before the animator received a timeline.
+A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` listener method, was called before the animator received a timeline.
 
 Call `sequence(...)` first: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
@@ -1061,7 +1061,7 @@ Check that the file can still be read, and that it is not damaged.
 Emitted by [`ResourceData.fail`](/reference/resources/resourcedata/#ResourceData-method-fail).
 
 With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
-The cause follows the colon; the [`Resource.onError`](/reference/resources/resource/#Resource-event-onError) callbacks receive it.
+The cause follows the colon; the [`Resource.onError`](/reference/resources/resource/#Resource-event-onError) listeners receive it.
 
 Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [My image shows a checkerboard or nothing](/use/troubleshooting/#my-image-shows-a-checkerboard-or-nothing).
 
@@ -1071,10 +1071,11 @@ Check the path or the URL for a read error, convert the file to a supported form
 
 Emitted by [`VideoAudioPlayer.play`](/reference/resources/videoaudioplayer/#VideoAudioPlayer-method-play).
 
-A video with a sound track could not create its audio source: no audio bridge is registered, as with `audio(false)`, or the audio device refused.
+The audio bridge could not create the source of a video with a sound track: the audio device refused, or the bridge failed.
 The picture plays without sound.
+Without any audio bridge, as with `audio(false)`, a video plays without sound and without this warning.
 
-Register the backend with audio and check the audio device of the machine: [Control the sound of a video](/use/learn/describing-the-ui/media/#control-the-sound-of-a-video).
+Check the audio device of the machine, or the `createSource` of your audio bridge: [Control the sound of a video](/use/learn/describing-the-ui/media/#control-the-sound-of-a-video).
 
 ### The start of … cannot be read {#start-cannot-read}
 
@@ -1742,7 +1743,7 @@ Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and clos
 
 Emitted by [`RenderBridge.requireFrame`](/reference/bridges/renderbridge/#RenderBridge-method-requireFrame).
 
-Something drew or cleared outside a frame of the render bridge, such as a draw from a callback of input, from a worker thread, or before the loop.
+Something drew or cleared outside a frame of the render bridge, such as a draw from an input handler, from a worker thread, or before the loop.
 
 Draw from the draw of a node or of a UI, which runs inside the frame: [Frame lifecycle](/use/in-depth/frame-lifecycle/).
 

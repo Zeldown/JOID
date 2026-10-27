@@ -39,7 +39,7 @@ JOID reads it into a [`UIDataObject`](/reference/annotations/uidataobject/), ret
 | `boolean` | [projection](#UIData-element-projection) | `true` | If `true`, the UI sets its own projection over the window; if `false`, it draws inside the projection that the host has set. |
 | `boolean` | [background](#UIData-element-background) | `false` | If `true`, the UI draws the UI backdrop over the whole window, behind its nodes, in `backgroundColor`; the backdrop fades with the transition of the UI. |
 | `String` | [backgroundColor](#UIData-element-backgroundColor) | `"#101010C0"` | Color of the UI backdrop, as a hexadecimal string `#RRGGBB` or `#RRGGBBAA`. |
-| `int` | [zindex](#UIData-element-zindex) | `0` | Order of the UI among the open UIs of its bridge: a higher value is drawn above and receives the input first. |
+| `int` | [zindex](#UIData-element-zindex) | `0` | Order of the UI inside its group of the stack of its bridge (overlays below the screens, screens and popups, overlays above them): a higher value is drawn above and receives the input first. |
 | `double` | [zlevel](#UIData-element-zlevel) | `0D` | Depth, along the Z axis, added before the UI is drawn, in the units of the projection of the host. |
 | [`Align`](/reference/layout/align/) | [anchorX](#UIData-element-anchorX) | `Align.CENTER` | Side of the window that the canvas is pinned to when the window is wider than 16:9, and that the zoom keeps in place. |
 | [`Align`](/reference/layout/align/) | [anchorY](#UIData-element-anchorY) | `Align.CENTER` | Side of the window that the canvas is pinned to when the window is taller than 16:9, and that the zoom keeps in place. |
@@ -109,7 +109,7 @@ Color of the UI backdrop, as a hexadecimal string `#RRGGBB` or `#RRGGBBAA`.
 
 `int zindex() default 0` 
 
-Order of the UI among the open UIs of its bridge: a higher value is drawn above and receives the input first.
+Order of the UI inside its group of the stack of its bridge (overlays below the screens, screens and popups, overlays above them): a higher value is drawn above and receives the input first.
 
 <a id="UIData-element-zlevel"></a>
 

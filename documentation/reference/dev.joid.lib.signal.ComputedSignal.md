@@ -36,7 +36,7 @@ A node keeps a constant value as a plain value and does not follow it.
 
 ## onChange(SignalListener)
 
-Calls `listener` with the result after each change of the result, on the render thread, then returns this signal.
+Adds a listener that runs with the result after each change of the result, on the render thread, then returns this signal.
 From the first listener on, the signal follows the signals it reads instead of computing on demand.
 
 ## removeOnChange(SignalListener)

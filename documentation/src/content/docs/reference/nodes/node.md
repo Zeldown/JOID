@@ -347,49 +347,49 @@ JOID calls every hook and every listener of a node on the render thread.
 
 ### Lifecycle
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onUpdate](#Node-event-onUpdate) | EventListener<NodeEvent<T>> listener | Adds a listener that runs on every frame, after the children and the `update` hook. |
-| [onDetach](#Node-event-onDetach) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the node leaves its UI, after its children and its own `detach`. |
-| [onInit](#Node-event-onInit) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the node is loaded into a UI, after `init`. |
-| [onRender](#Node-event-onRender) | EventListener<NodeDrawEvent<T>> listener | Adds a listener that runs at the end of the drawing of the node, after its children and its layers. |
-| [onDraw](#Node-event-onDraw) | EventListener<NodeDrawEvent<T>> listener | Adds a listener that runs after the node has drawn itself, before its label and its children in front. |
-| [onMount](#Node-event-onMount) | EventListener<NodeEvent<T>> listener | Adds a listener that runs on the first frame where the node is drawn mounted, again after each detach. |
+| [onUpdate](#Node-event-onUpdate) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs on every frame, after the children and the `update` hook. |
+| [onDetach](#Node-event-onDetach) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the node leaves its UI, after its children and its own `detach`. |
+| [onInit](#Node-event-onInit) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the node is loaded into a UI, after `init`. |
+| [onRender](#Node-event-onRender) | [`EventListener<NodeDrawEvent<T>>`](/reference/events/nodedrawevent/) | Adds a listener that runs at the end of the drawing of the node, after its children and its layers. |
+| [onDraw](#Node-event-onDraw) | [`EventListener<NodeDrawEvent<T>>`](/reference/events/nodedrawevent/) | Adds a listener that runs after the node has drawn itself, before its label and its children in front. |
+| [onMount](#Node-event-onMount) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs on the first frame where the node is drawn mounted, again after each detach. |
 
 ### Hover and tooltips
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onHoverStart](#Node-event-onHoverStart) | EventListener<NodeHoverEvent<T>> listener | Adds a listener that runs when the mouse enters the node. |
-| [onHover](#Node-event-onHover) | EventListener<NodeHoverEvent<T>> listener | Adds a listener that runs on every frame while the node is hovered. |
-| [onHoverEnd](#Node-event-onHoverEnd) | EventListener<NodeHoverEvent<T>> listener | Adds a listener that runs when the mouse leaves the node, or when the node is hidden or detached while hovered. |
+| [onHoverStart](#Node-event-onHoverStart) | [`EventListener<NodeHoverEvent<T>>`](/reference/events/nodehoverevent/) | Adds a listener that runs when the mouse enters the node. |
+| [onHover](#Node-event-onHover) | [`EventListener<NodeHoverEvent<T>>`](/reference/events/nodehoverevent/) | Adds a listener that runs on every frame while the node is hovered. |
+| [onHoverEnd](#Node-event-onHoverEnd) | [`EventListener<NodeHoverEvent<T>>`](/reference/events/nodehoverevent/) | Adds a listener that runs when the mouse leaves the node, or when the node is hidden or detached while hovered. |
 
 ### Scrolling
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onScroll](#Node-event-onScroll) | EventListener<NodeScrollEvent.Post<T>> listener | Adds a listener that runs after the scroll has changed. |
-| [onScrollToEnd](#Node-event-onScrollToEnd) | EventListener<NodeScrollEvent.Post<T>> listener | Adds a listener that runs when a scroll heads for the end of the content, before the content gets there: the moment to load more. |
-| [onScrollEndReached](#Node-event-onScrollEndReached) | EventListener<NodeScrollEvent.Post<T>> listener | Adds a listener that runs when the shown content has reached the end after a scroll toward it. |
+| [onScroll](#Node-event-onScroll) | [`EventListener<NodeScrollEvent.Post<T>>`](/reference/events/nodescrollevent-post/) | Adds a listener that runs after the scroll has changed. |
+| [onScrollToEnd](#Node-event-onScrollToEnd) | [`EventListener<NodeScrollEvent.Post<T>>`](/reference/events/nodescrollevent-post/) | Adds a listener that runs when a scroll heads for the end of the content, before the content gets there: the moment to load more. |
+| [onScrollEndReached](#Node-event-onScrollEndReached) | [`EventListener<NodeScrollEvent.Post<T>>`](/reference/events/nodescrollevent-post/) | Adds a listener that runs when the shown content has reached the end after a scroll toward it. |
 
 ### Drag and drop
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onDragStart](#Node-event-onDragStart) | EventListener<NodeDragEvent.Post<T>> listener | Adds a listener that runs once a drag has started. |
-| [onDrag](#Node-event-onDrag) | EventListener<NodeDragEvent.Post<T>> listener | Adds a listener that runs at every mouse move of the drag. |
-| [onDragDrop](#Node-event-onDragDrop) | EventListener<NodeDragEvent.Post<T>> listener | Adds a listener that runs once the node has been dropped; the event holds the snap target, or `null`. |
-| [onDragSnap](#Node-event-onDragSnap) | EventListener<NodeDragEvent.Post<T>> listener | Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`. |
+| [onDragStart](#Node-event-onDragStart) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once a drag has started. |
+| [onDrag](#Node-event-onDrag) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs at every mouse move of the drag. |
+| [onDragDrop](#Node-event-onDragDrop) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once the node has been dropped; the event holds the snap target, or `null`. |
+| [onDragSnap](#Node-event-onDragSnap) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`. |
 
 ### Other events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onMove](#Node-event-onMove) | EventListener<NodeChangeEvent.Post<T,Point>> listener | Adds a listener that runs after the node has moved. |
-| [onChildAppend](#Node-event-onChildAppend) | EventListener<NodeChildEvent<T>> listener | Adds a listener that runs when a child is added to the node; moving an existing child to the front does not fire it. |
-| [onClick](#Node-event-onClick) | EventListener<NodeMouseEvent<T>> listener | Adds a listener that runs when the left button is pressed on the hovered node, unless a node in front consumed the press; the press is then consumed. |
-| [onAnimate](#Node-event-onAnimate) | EventListener<NodeAnimateEvent<T>> listener | Adds a listener that runs when the value of a followed animator changes, during the update of the node. |
-| [onWatch](#Node-event-onWatch) | EventListener<NodeWatchEvent<T>> listener | Adds a listener that runs after a `watch` of the node has applied its properties. |
+| [onMove](#Node-event-onMove) | [`EventListener<NodeChangeEvent.Post<T,Point>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after the node has moved. |
+| [onChildAppend](#Node-event-onChildAppend) | [`EventListener<NodeChildEvent<T>>`](/reference/events/nodechildevent/) | Adds a listener that runs when a child is added to the node; moving an existing child to the front does not fire it. |
+| [onClick](#Node-event-onClick) | [`EventListener<NodeMouseEvent<T>>`](/reference/events/nodemouseevent/) | Adds a listener that runs when the left button is pressed on the hovered node, unless a node in front consumed the press; the press is then consumed. |
+| [onAnimate](#Node-event-onAnimate) | [`EventListener<NodeAnimateEvent<T>>`](/reference/events/nodeanimateevent/) | Adds a listener that runs when the value of a followed animator changes, during the update of the node. |
+| [onWatch](#Node-event-onWatch) | [`EventListener<NodeWatchEvent<T>>`](/reference/events/nodewatchevent/) | Adds a listener that runs after a `watch` of the node has applied its properties. |
 
 ## Creation details
 

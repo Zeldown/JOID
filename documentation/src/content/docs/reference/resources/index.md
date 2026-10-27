@@ -63,7 +63,7 @@ Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats]
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

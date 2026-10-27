@@ -107,7 +107,7 @@ public final class FamilyPage {
 				this.table(related, page);
 			}
 			if (!supporting.isEmpty()) {
-				page.append("## Supporting types\n\nNested types, callbacks and listeners that the main types use.\n\n");
+				page.append("## Supporting types\n\nNested types and listeners that the main types use.\n\n");
 				this.table(supporting, page);
 			}
 			FamilyPage.write(new File(docs, "reference/" + key + "/index.md"), page.toString());

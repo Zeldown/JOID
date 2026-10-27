@@ -55,7 +55,7 @@ A backend author extends it and implements the `create...` hooks, which `registe
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [register](#Backend-method-register)() <span class="joid-qualifier">fluent</span> | Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) callbacks: [What register() does](/use/learn/running/backends/#what-register-does) lists every step. |
+| `this` | [register](#Backend-method-register)() <span class="joid-qualifier">fluent</span> | Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step. |
 | `this` | [frame](#Backend-method-frame)() <span class="joid-qualifier">fluent</span> | Runs one frame of every UI bridge through [`UIBridgeRegistry.frame`](/reference/backends/uibridgeregistry/#UIBridgeRegistry-method-frame): resize when the window changed, update, clear and draw. |
 | `String` | [getVersion](#Backend-method-getVersion)() | Returns the version of JOID that the backend was built for, read from `backend.properties`. |
 | `boolean` | [isRegistered](#Backend-method-isRegistered)() | If `true`, `register()` has run. |
@@ -128,7 +128,7 @@ Sets the folder where JOID writes the caches it can rebuild; it wins over the `j
 
 - `IllegalStateException`: … is already registered, call register() only once
 
-Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) callbacks: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
+Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
 Call it once, on the thread of your loop, with the graphics context current; a second call throws an `IllegalStateException`.
 
 <a id="Backend-method-frame"></a>

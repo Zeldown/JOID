@@ -107,17 +107,17 @@ The event listeners belong to the animator: give them once, before or after the 
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#TweenAnimator-event-onChange) | SignalListener<? super Float> listener | Calls `listener` with the value after each change, on the render thread, then returns this animator. |
-| [onStart](#TweenAnimator-event-onStart) | EventListener<TweenEvent> listener | Fires when the timeline starts playing, after its delay. |
-| [onIterationStart](#TweenAnimator-event-onIterationStart) | EventListener<TweenEvent> listener | Fires at the start of each play of the timeline. |
-| [onIterationEnd](#TweenAnimator-event-onIterationEnd) | EventListener<TweenEvent> listener | Fires at the end of each play of the timeline. |
-| [onComplete](#TweenAnimator-event-onComplete) | EventListener<TweenEvent> listener | Fires when the last play of the timeline ends; it never fires for a repetition forever. |
-| [onReverseStart](#TweenAnimator-event-onReverseStart) | EventListener<TweenEvent> listener | Fires when the timeline starts playing backward from its end, after an update with a negative time. |
-| [onReverseIterationStart](#TweenAnimator-event-onReverseIterationStart) | EventListener<TweenEvent> listener | Fires at the start of each play backward. |
-| [onReverseIterationEnd](#TweenAnimator-event-onReverseIterationEnd) | EventListener<TweenEvent> listener | Fires at the end of each play backward. |
-| [onReverseComplete](#TweenAnimator-event-onReverseComplete) | EventListener<TweenEvent> listener | Fires when the timeline played backward reaches its beginning. |
+| [onChange](#TweenAnimator-event-onChange) | [`SignalListener<? super Float>`](/reference/signals/signallistener/) | Calls `listener` with the value after each change, on the render thread, then returns this animator. |
+| [onStart](#TweenAnimator-event-onStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the timeline starts playing, after its delay. |
+| [onIterationStart](#TweenAnimator-event-onIterationStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the start of each play of the timeline. |
+| [onIterationEnd](#TweenAnimator-event-onIterationEnd) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the end of each play of the timeline. |
+| [onComplete](#TweenAnimator-event-onComplete) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the last play of the timeline ends; it never runs for a repetition forever. |
+| [onReverseStart](#TweenAnimator-event-onReverseStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the timeline starts playing backward from its end, after an update with a negative time. |
+| [onReverseIterationStart](#TweenAnimator-event-onReverseIterationStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the start of each play backward. |
+| [onReverseIterationEnd](#TweenAnimator-event-onReverseIterationEnd) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the end of each play backward. |
+| [onReverseComplete](#TweenAnimator-event-onReverseComplete) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the timeline played backward reaches its beginning. |
 
 ## Creation details
 
@@ -303,7 +303,7 @@ Calls `listener` with the value after each change, on the render thread, then re
 
 `this onStart(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires when the timeline starts playing, after its delay.
+Adds a listener that runs when the timeline starts playing, after its delay.
 
 <a id="TweenAnimator-event-onIterationStart"></a>
 
@@ -311,7 +311,7 @@ Fires when the timeline starts playing, after its delay.
 
 `this onIterationStart(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires at the start of each play of the timeline.
+Adds a listener that runs at the start of each play of the timeline.
 
 <a id="TweenAnimator-event-onIterationEnd"></a>
 
@@ -319,7 +319,7 @@ Fires at the start of each play of the timeline.
 
 `this onIterationEnd(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires at the end of each play of the timeline.
+Adds a listener that runs at the end of each play of the timeline.
 
 <a id="TweenAnimator-event-onComplete"></a>
 
@@ -327,7 +327,7 @@ Fires at the end of each play of the timeline.
 
 `this onComplete(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires when the last play of the timeline ends; it never fires for a repetition forever.
+Adds a listener that runs when the last play of the timeline ends; it never runs for a repetition forever.
 
 <a id="TweenAnimator-event-onReverseStart"></a>
 
@@ -335,7 +335,7 @@ Fires when the last play of the timeline ends; it never fires for a repetition f
 
 `this onReverseStart(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires when the timeline starts playing backward from its end, after an update with a negative time.
+Adds a listener that runs when the timeline starts playing backward from its end, after an update with a negative time.
 
 <a id="TweenAnimator-event-onReverseIterationStart"></a>
 
@@ -343,7 +343,7 @@ Fires when the timeline starts playing backward from its end, after an update wi
 
 `this onReverseIterationStart(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires at the start of each play backward.
+Adds a listener that runs at the start of each play backward.
 
 <a id="TweenAnimator-event-onReverseIterationEnd"></a>
 
@@ -351,7 +351,7 @@ Fires at the start of each play backward.
 
 `this onReverseIterationEnd(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires at the end of each play backward.
+Adds a listener that runs at the end of each play backward.
 
 <a id="TweenAnimator-event-onReverseComplete"></a>
 
@@ -359,7 +359,7 @@ Fires at the end of each play backward.
 
 `this onReverseComplete(EventListener<TweenEvent> listener)` <span class="joid-qualifier">fluent</span>
 
-Fires when the timeline played backward reaches its beginning.
+Adds a listener that runs when the timeline played backward reaches its beginning.
 
 ---
 

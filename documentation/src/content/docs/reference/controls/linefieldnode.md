@@ -101,9 +101,9 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onSubmit](#LineFieldNode-event-onSubmit) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the user presses Enter or the Enter of the keypad, after the field lost the focus. |
+| [onSubmit](#LineFieldNode-event-onSubmit) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the user presses Enter or the Enter of the keypad, after the field lost the focus. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/fieldnode/#FieldNode-events"><code>FieldNode</code></a> (5)</summary>

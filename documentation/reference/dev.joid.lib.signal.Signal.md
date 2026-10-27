@@ -94,7 +94,7 @@ Throws an `IllegalStateException` when the signal is read-only.
 
 ## onChange(SignalListener)
 
-Calls `listener` with the value after each change, on the render thread, then returns this signal.
+Adds a listener that runs with the value after each change, on the render thread, then returns this signal.
 Inside a batch, the listener runs once when the batch ends; inside `silent(...)`, it does not run.
 Adding the same listener twice keeps one; when a listener throws, the others still run and the first exception is thrown afterwards.
 

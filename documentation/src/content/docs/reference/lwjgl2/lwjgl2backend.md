@@ -19,7 +19,7 @@ The backend for LWJGL 2, which draws with OpenGL into the `Display` and plays so
 
 ## Description
 
-Call [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) before the `Display` exists, register the backend once it exists, and call [`Lwjgl2InputForwarder.poll`](/reference/lwjgl2/lwjgl2inputforwarder/#Lwjgl2InputForwarder-method-poll) at the start of every frame: LWJGL 2 has no input callbacks.
+Call [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) before the `Display` exists, register the backend once it exists, and call [`Lwjgl2InputForwarder.poll`](/reference/lwjgl2/lwjgl2inputforwarder/#Lwjgl2InputForwarder-method-poll) at the start of every frame: LWJGL 2 pushes no input events.
 
 ## Learn more
 

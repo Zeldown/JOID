@@ -78,9 +78,9 @@ While nothing follows it, it computes on demand; once a listener or another deri
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#ComputedSignal-event-onChange) | SignalListener<? super T> listener | Calls `listener` with the result after each change of the result, on the render thread, then returns this signal. |
+| [onChange](#ComputedSignal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Calls `listener` with the result after each change of the result, on the render thread, then returns this signal. |
 
 ## Creation details
 

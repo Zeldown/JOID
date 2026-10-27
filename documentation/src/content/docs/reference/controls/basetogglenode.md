@@ -76,9 +76,9 @@ Extend [`ToggleNode`](/reference/controls/togglenode/) for a look made of a trac
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#BaseToggleNode-event-onChange) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs after each real change of the state, whatever its source. |
+| [onChange](#BaseToggleNode-event-onChange) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each real change of the state, whatever its source. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

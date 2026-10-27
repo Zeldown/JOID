@@ -18,6 +18,7 @@ import dev.joid.tool.docgen.model.ApiMember;
 import dev.joid.tool.docgen.model.ApiMessage;
 import dev.joid.tool.docgen.model.ApiType;
 import dev.joid.tool.docgen.model.MemberKind;
+import dev.joid.tool.docgen.model.TypeNames;
 import dev.joid.tool.docgen.page.Backlinks.Backlink;
 import dev.joid.tool.docgen.report.Coverage;
 
@@ -298,9 +299,9 @@ public final class PageWriter {
 					out.append("### ").append(group.getKey()).append("\n\n");
 				}
 
-				out.append("| Event | Callback | Fires when |\n|---|---|---|\n");
+				out.append("| Event | Listener | Summary |\n|---|---|---|\n");
 				for (final ApiMember member : group.getValue()) {
-					out.append("| [").append(member.getName()).append("](#").append(page.anchorOf(member)).append(") | ").append(PageWriter.escape(member.getParameterList())).append(" | ").append(this.summary(page, description, path, member.getKey())).append(" |\n");
+					out.append("| [").append(member.getName()).append("](#").append(page.anchorOf(member)).append(") | ").append(this.listener(page, member)).append(" | ").append(this.summary(page, description, path, member.getKey())).append(" |\n");
 				}
 				out.append('\n');
 			}
@@ -511,6 +512,19 @@ public final class PageWriter {
 
 	private ApiType declaring(final ApiMember member) {
 		return this.registry.getTypes().get(member.getDeclaringType());
+	}
+
+	private String listener(final TypePage page, final ApiMember member) {
+		if (member.getParameters().size() != 1) {
+			return PageWriter.escape(member.getParameterList());
+		}
+
+		final String type = member.getParameters().get(0).getDisplayType();
+		final ApiType context = this.declaring(member);
+		final int open = type.indexOf('<');
+		final String received = open < 0 || context == null ? null : context.resolve(TypeNames.split(type.substring(open + 1, type.lastIndexOf('>'))).get(0).replaceFirst("^\\?\\s+(super|extends)\\s+", ""));
+		final TypePage target = received == null ? null : this.registry.get(received);
+		return target == null ? this.typeLink(page, context, type) : "[`" + PageWriter.escape(type) + "`](" + target.getUrl() + ")";
 	}
 
 	private String typeLink(final TypePage page, final ApiType context, final String type) {

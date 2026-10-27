@@ -49,7 +49,7 @@ Throws an `IllegalStateException` without timeline, or when the timeline is inva
 
 ## onChange(SignalListener)
 
-Calls `listener` with the value after each change, on the render thread, then returns this animator.
+Adds a listener that runs with the value after each change, on the render thread, then returns this animator.
 
 ## removeOnChange(SignalListener)
 
@@ -114,35 +114,35 @@ Advances the timeline by `delta` ms, multiplied by the speed, and stops the adva
 
 ## onStart(EventListener)
 
-Fires when the timeline starts playing, after its delay.
+Adds a listener that runs when the timeline starts playing, after its delay.
 
 ## onIterationStart(EventListener)
 
-Fires at the start of each play of the timeline.
+Adds a listener that runs at the start of each play of the timeline.
 
 ## onIterationEnd(EventListener)
 
-Fires at the end of each play of the timeline.
+Adds a listener that runs at the end of each play of the timeline.
 
 ## onComplete(EventListener)
 
-Fires when the last play of the timeline ends; it never fires for a repetition forever.
+Adds a listener that runs when the last play of the timeline ends; it never runs for a repetition forever.
 
 ## onReverseStart(EventListener)
 
-Fires when the timeline starts playing backward from its end, after an update with a negative time.
+Adds a listener that runs when the timeline starts playing backward from its end, after an update with a negative time.
 
 ## onReverseIterationStart(EventListener)
 
-Fires at the start of each play backward.
+Adds a listener that runs at the start of each play backward.
 
 ## onReverseIterationEnd(EventListener)
 
-Fires at the end of each play backward.
+Adds a listener that runs at the end of each play backward.
 
 ## onReverseComplete(EventListener)
 
-Fires when the timeline played backward reaches its beginning.
+Adds a listener that runs when the timeline played backward reaches its beginning.
 
 ## copy()
 

@@ -1,6 +1,6 @@
 ---
 title: "RenderThreadFuture"
-description: "Future that completes on the render thread once the work it wraps is done, so its callbacks can touch the interface."
+description: "Future that completes on the render thread once the work it wraps is done, so the stages chained on it can touch the interface."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,12 +14,12 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** `CompletableFuture<T>`<br/>
 **Package:** `dev.joid.lib.utils.thread` · **Module:** `core` · **Source:** [RenderThreadFuture.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/utils/thread/RenderThreadFuture.java)
 
-Future that completes on the render thread once the work it wraps is done, so its callbacks can touch the interface.
+Future that completes on the render thread once the work it wraps is done, so the stages chained on it can touch the interface.
 
 ## Description
 
 Methods of JOID that load in the background, such as `MsdfFontLoader.load(...)`, return one.
-Its callbacks run at the frame after the work ends; `join()` and `get()` called on the render thread wait for the work and complete it at once, without waiting for a frame.
+The stages chained on it run at the frame after the work ends; `join()` and `get()` called on the render thread wait for the work and complete it at once, without waiting for a frame.
 
 ## Learn more
 

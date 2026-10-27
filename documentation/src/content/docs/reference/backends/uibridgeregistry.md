@@ -84,9 +84,9 @@ Each input method returns `true` when JOID consumed the event, which should then
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onFrame](#UIBridgeRegistry-event-onFrame) | Runnable task | Adds a task that runs at the start of every frame, after the tasks of other threads and before the UIs update. |
+| [onFrame](#UIBridgeRegistry-event-onFrame) | `Runnable` | Adds a task that runs at the start of every frame, after the tasks of other threads and before the UIs update. |
 
 ## Creation details
 

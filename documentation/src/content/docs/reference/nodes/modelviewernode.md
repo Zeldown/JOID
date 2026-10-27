@@ -122,10 +122,10 @@ A requested value outside its range is kept and applied again when the range cha
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onZoom](#ModelViewerNode-event-onZoom) | EventListener<NodeChangeEvent.Post<T,Double>> listener | Adds a listener that runs after the zoom has changed. |
-| [onRotate](#ModelViewerNode-event-onRotate) | EventListener<NodeChangeEvent.Post<T,Point>> listener | Adds a listener that runs after the rotation has changed. |
+| [onZoom](#ModelViewerNode-event-onZoom) | [`EventListener<NodeChangeEvent.Post<T,Double>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after the zoom has changed. |
+| [onRotate](#ModelViewerNode-event-onRotate) | [`EventListener<NodeChangeEvent.Post<T,Point>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after the rotation has changed. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

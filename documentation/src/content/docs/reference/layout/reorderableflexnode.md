@@ -120,11 +120,11 @@ Pinned children keep their place.
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onReorderStart](#ReorderableFlexNode-event-onReorderStart) | EventListener<NodeReorderEvent.Post<T>> listener | Adds a listener that runs when a drag starts. |
-| [onReorder](#ReorderableFlexNode-event-onReorder) | EventListener<NodeReorderEvent.Post<T>> listener | Adds a listener that runs each time the dragged child takes another place. |
-| [onReorderEnd](#ReorderableFlexNode-event-onReorderEnd) | EventListener<NodeReorderEvent.Post<T>> listener | Adds a listener that runs when the dragged child has settled, with its first and its last place. |
+| [onReorderStart](#ReorderableFlexNode-event-onReorderStart) | [`EventListener<NodeReorderEvent.Post<T>>`](/reference/events/nodereorderevent-post/) | Adds a listener that runs when a drag starts. |
+| [onReorder](#ReorderableFlexNode-event-onReorder) | [`EventListener<NodeReorderEvent.Post<T>>`](/reference/events/nodereorderevent-post/) | Adds a listener that runs each time the dragged child takes another place. |
+| [onReorderEnd](#ReorderableFlexNode-event-onReorderEnd) | [`EventListener<NodeReorderEvent.Post<T>>`](/reference/events/nodereorderevent-post/) | Adds a listener that runs when the dragged child has settled, with its first and its last place. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

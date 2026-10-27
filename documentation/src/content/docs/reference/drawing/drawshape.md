@@ -53,13 +53,13 @@ A rectangle without width or height draws nothing.
 | `void` | [drawBorder](#DrawShape-method-drawBorder)(double x, double y, double width, double height, Color color) | Strokes a border 1 design pixel wide inside the rectangle at `x`, `y` of `width` × `height`. |
 | `void` | [drawBorder](#DrawShape-method-drawBorder)(double x, double y, double width, double height, Color color, double stroke) | Strokes a border `stroke` design pixels wide inside the rectangle. |
 | `void` | [drawPolygon](#DrawShape-method-drawPolygon)(Color color, Point... points) | Fills the polygon through `points`, in order; a convex polygon gets smoothed edges. |
-| `void` | [drawLine](#DrawShape-method-drawLine)(Color color, Point... points) | Draws a smoothed line through `points`, in order, with the line width of the render state. |
-| `void` | [drawLine](#DrawShape-method-drawLine)(Color color, float stroke, Point... points) | Draws a smoothed line through `points`, `stroke` wide. |
-| `void` | [drawDashedLine](#DrawShape-method-drawDashedLine)(Color color, int pattern, float stroke, Point... points) | Draws a dashed line through `points`, `stroke` wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point. |
+| `void` | [drawLine](#DrawShape-method-drawLine)(Color color, Point... points) | Draws a smoothed line through `points`, in order, with the line width of the render state, in design pixels. |
+| `void` | [drawLine](#DrawShape-method-drawLine)(Color color, float stroke, Point... points) | Draws a smoothed line through `points`, `stroke` design pixels wide. |
+| `void` | [drawDashedLine](#DrawShape-method-drawDashedLine)(Color color, int pattern, float stroke, Point... points) | Draws a dashed line through `points`, `stroke` design pixels wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point. |
 | `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, Point start, Point control, Point end) | Draws a quadratic Bézier curve from `start` to `end`, pulled toward `control`, in about one segment per design pixel of its length. |
-| `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, float stroke, Point start, Point control, Point end) | Draws the quadratic Bézier curve `stroke` wide. |
+| `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, float stroke, Point start, Point control, Point end) | Draws the quadratic Bézier curve `stroke` design pixels wide. |
 | `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, Point start, Point startControl, Point endControl, Point end) | Draws a cubic Bézier curve from `start` to `end`, shaped by `startControl` and `endControl`. |
-| `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, float stroke, Point start, Point startControl, Point endControl, Point end) | Draws the cubic Bézier curve `stroke` wide. |
+| `void` | [drawCurvedLine](#DrawShape-method-drawCurvedLine)(Color color, float stroke, Point start, Point startControl, Point endControl, Point end) | Draws the cubic Bézier curve `stroke` design pixels wide. |
 | `void` | [drawShape](#DrawShape-method-drawShape)(DrawMode mode, Color color, Point... points) | Draws `points` as the primitive that `mode` names, such as [`DrawMode.LINES`](/reference/drawing/drawmode/#DrawMode-value-LINES) or [`DrawMode.POLYGON`](/reference/drawing/drawmode/#DrawMode-value-POLYGON). |
 | `void` | [drawRawRect](#DrawShape-method-drawRawRect)(double x, double y, double width, double height) | Fills the rectangle with the current color of the render state, without a texture and without edge smoothing. |
 
@@ -159,11 +159,11 @@ Fills the polygon through `points`, in order; a convex polygon gets smoothed edg
 
 `void drawLine(Color color, Point... points)` 
 
-Draws a smoothed line through `points`, in order, with the line width of the render state.
+Draws a smoothed line through `points`, in order, with the line width of the render state, in design pixels.
 
 `void drawLine(Color color, float stroke, Point... points)` 
 
-Draws a smoothed line through `points`, `stroke` wide.
+Draws a smoothed line through `points`, `stroke` design pixels wide.
 
 <a id="DrawShape-method-drawDashedLine"></a>
 
@@ -175,7 +175,7 @@ Draws a smoothed line through `points`, `stroke` wide.
 
 - `IllegalArgumentException`: The dash pattern … is not positive, pass a length above 0
 
-Draws a dashed line through `points`, `stroke` wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point.
+Draws a dashed line through `points`, `stroke` design pixels wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point.
 Throws `IllegalArgumentException` when `pattern` is 0 or less.
 
 <a id="DrawShape-method-drawCurvedLine"></a>
@@ -188,7 +188,7 @@ Draws a quadratic Bézier curve from `start` to `end`, pulled toward `control`, 
 
 `void drawCurvedLine(Color color, float stroke, Point start, Point control, Point end)` 
 
-Draws the quadratic Bézier curve `stroke` wide.
+Draws the quadratic Bézier curve `stroke` design pixels wide.
 
 `void drawCurvedLine(Color color, Point start, Point startControl, Point endControl, Point end)` 
 
@@ -196,7 +196,7 @@ Draws a cubic Bézier curve from `start` to `end`, shaped by `startControl` and 
 
 `void drawCurvedLine(Color color, float stroke, Point start, Point startControl, Point endControl, Point end)` 
 
-Draws the cubic Bézier curve `stroke` wide.
+Draws the cubic Bézier curve `stroke` design pixels wide.
 
 <a id="DrawShape-method-drawShape"></a>
 

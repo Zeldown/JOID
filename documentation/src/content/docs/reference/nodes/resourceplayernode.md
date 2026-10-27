@@ -49,9 +49,9 @@ The node waits for its resource like a [`ResourceNode`](/reference/nodes/resourc
 | [loop](#ResourcePlayerNode-property-loop) <span class="joid-qualifier">signal</span> | `boolean` | `false` | If `true`, the playback starts again at the end instead of ending. |
 | [volume](#ResourcePlayerNode-property-volume) <span class="joid-qualifier">signal</span> | `float` | `1F` | Volume of the sound of a video, from `0` for silence to `1` for the full volume. |
 | [audioGroup](#ResourcePlayerNode-property-audioGroup) <span class="joid-qualifier">signal</span> | `Object` | `null` | Group of the sound of a video, for the audio bridge to set the volume of several players at once. |
-| [location](#ResourcePlayerNode-property-location) <span class="joid-qualifier">signal</span> | [`Point`](/reference/utilities/point/) | none, the sound plays without position | Position of the sound of a video in the scene of the audio bridge; `null` plays it without position. |
-| [referenceDistance](#ResourcePlayerNode-property-referenceDistance) <span class="joid-qualifier">signal</span> | `float` | the value of the audio bridge | Distance from `location` within which the sound plays at full volume; `null` keeps the value of the audio bridge. |
-| [maxDistance](#ResourcePlayerNode-property-maxDistance) <span class="joid-qualifier">signal</span> | `float` | the value of the audio bridge | Distance from `location` beyond which the sound stops getting quieter; `null` keeps the value of the audio bridge. |
+| [location](#ResourcePlayerNode-property-location) <span class="joid-qualifier">signal</span> | [`Point`](/reference/utilities/point/) | none, the sound plays without position | Position of the sound of a video, whose volume falls with its distance to the position of [`VideoAudioPlayer.audioListenerPosition`](/reference/resources/videoaudioplayer/#VideoAudioPlayer-method-audioListenerPosition); `null` plays it without position. |
+| [referenceDistance](#ResourcePlayerNode-property-referenceDistance) <span class="joid-qualifier">signal</span> | `float` | 5, the distance of the video decoder | Distance from `location` within which the sound plays at full volume; `null` keeps 5. |
+| [maxDistance](#ResourcePlayerNode-property-maxDistance) <span class="joid-qualifier">signal</span> | `float` | 50, the distance of the video decoder | Distance from `location` from which the sound is silent; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances; `null` keeps 50. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -105,13 +105,13 @@ The node waits for its resource like a [`ResourceNode`](/reference/nodes/resourc
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onPlay](#ResourcePlayerNode-event-onPlay) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the playback starts or resumes. |
-| [onPause](#ResourcePlayerNode-event-onPause) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the playback pauses. |
-| [onStop](#ResourcePlayerNode-event-onStop) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when the playback stops, by `stop()` or at the end of a resource that does not loop. |
-| [onEnd](#ResourcePlayerNode-event-onEnd) | EventListener<NodeEvent<T>> listener | Adds a listener that runs when a resource that does not loop reaches its end, before `onStop`. |
-| [onProgress](#ResourcePlayerNode-event-onProgress) | EventListener<NodeProgressEvent<T>> listener | Adds a listener that runs on every frame where the progress changes, with the progress and the current time. |
+| [onPlay](#ResourcePlayerNode-event-onPlay) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the playback starts or resumes. |
+| [onPause](#ResourcePlayerNode-event-onPause) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the playback pauses. |
+| [onStop](#ResourcePlayerNode-event-onStop) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the playback stops, by `stop()` or at the end of a resource that does not loop. |
+| [onEnd](#ResourcePlayerNode-event-onEnd) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when a resource that does not loop reaches its end, before `onStop`. |
+| [onProgress](#ResourcePlayerNode-event-onProgress) | [`EventListener<NodeProgressEvent<T>>`](/reference/events/nodeprogressevent/) | Adds a listener that runs on every frame where the progress changes, with the progress and the current time. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>
@@ -228,7 +228,7 @@ Group of the sound of a video, for the audio bridge to set the volume of several
 
 **Default:** none, the sound plays without position
 
-Position of the sound of a video in the scene of the audio bridge; `null` plays it without position.
+Position of the sound of a video, whose volume falls with its distance to the position of [`VideoAudioPlayer.audioListenerPosition`](/reference/resources/videoaudioplayer/#VideoAudioPlayer-method-audioListenerPosition); `null` plays it without position.
 
 <a id="ResourcePlayerNode-property-referenceDistance"></a>
 
@@ -238,9 +238,9 @@ Position of the sound of a video in the scene of the audio bridge; `null` plays 
 - `this referenceDistance(Supplier<Float> referenceDistance)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Float getReferenceDistance()` 
 
-**Default:** the value of the audio bridge
+**Default:** 5, the distance of the video decoder
 
-Distance from `location` within which the sound plays at full volume; `null` keeps the value of the audio bridge.
+Distance from `location` within which the sound plays at full volume; `null` keeps 5.
 
 <a id="ResourcePlayerNode-property-maxDistance"></a>
 
@@ -250,9 +250,9 @@ Distance from `location` within which the sound plays at full volume; `null` kee
 - `this maxDistance(Supplier<Float> maxDistance)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Float getMaxDistance()` 
 
-**Default:** the value of the audio bridge
+**Default:** 50, the distance of the video decoder
 
-Distance from `location` beyond which the sound stops getting quieter; `null` keeps the value of the audio bridge.
+Distance from `location` from which the sound is silent; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances; `null` keeps 50.
 
 ## Method details
 

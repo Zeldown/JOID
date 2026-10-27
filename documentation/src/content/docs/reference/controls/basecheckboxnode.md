@@ -73,9 +73,9 @@ The value follows the pattern of every control: a start value, a signal bound bo
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onChange](#BaseCheckboxNode-event-onChange) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs after each real change of the value, whatever its source. |
+| [onChange](#BaseCheckboxNode-event-onChange) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each real change of the value, whatever its source. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-events"><code>Node</code></a> (21)</summary>

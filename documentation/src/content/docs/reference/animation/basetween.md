@@ -90,16 +90,16 @@ A negative delta plays backward.
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onStart](#BaseTween-event-onStart) | EventListener<TweenEvent> listener | Fires when the first play starts, after the delay. |
-| [onIterationStart](#BaseTween-event-onIterationStart) | EventListener<TweenEvent> listener | Fires at the start of each play. |
-| [onIterationEnd](#BaseTween-event-onIterationEnd) | EventListener<TweenEvent> listener | Fires at the end of each play. |
-| [onComplete](#BaseTween-event-onComplete) | EventListener<TweenEvent> listener | Fires when the last play ends; it never fires for a repetition forever. |
-| [onReverseStart](#BaseTween-event-onReverseStart) | EventListener<TweenEvent> listener | Fires when the tween starts playing backward from its end. |
-| [onReverseIterationStart](#BaseTween-event-onReverseIterationStart) | EventListener<TweenEvent> listener | Fires at the start of each play backward. |
-| [onReverseIterationEnd](#BaseTween-event-onReverseIterationEnd) | EventListener<TweenEvent> listener | Fires at the end of each play backward. |
-| [onReverseComplete](#BaseTween-event-onReverseComplete) | EventListener<TweenEvent> listener | Fires when the tween played backward reaches its beginning. |
+| [onStart](#BaseTween-event-onStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the first play starts, after the delay. |
+| [onIterationStart](#BaseTween-event-onIterationStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the start of each play. |
+| [onIterationEnd](#BaseTween-event-onIterationEnd) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the end of each play. |
+| [onComplete](#BaseTween-event-onComplete) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the last play ends; it never runs for a repetition forever. |
+| [onReverseStart](#BaseTween-event-onReverseStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the tween starts playing backward from its end. |
+| [onReverseIterationStart](#BaseTween-event-onReverseIterationStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the start of each play backward. |
+| [onReverseIterationEnd](#BaseTween-event-onReverseIterationEnd) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the end of each play backward. |
+| [onReverseComplete](#BaseTween-event-onReverseComplete) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the tween played backward reaches its beginning. |
 
 ## Constants and fields
 
@@ -413,7 +413,7 @@ Applies the values of the end of a play.
 
 `T onStart(EventListener<TweenEvent> listener)` 
 
-Fires when the first play starts, after the delay.
+Adds a listener that runs when the first play starts, after the delay.
 
 <a id="BaseTween-event-onIterationStart"></a>
 
@@ -421,7 +421,7 @@ Fires when the first play starts, after the delay.
 
 `T onIterationStart(EventListener<TweenEvent> listener)` 
 
-Fires at the start of each play.
+Adds a listener that runs at the start of each play.
 
 <a id="BaseTween-event-onIterationEnd"></a>
 
@@ -429,7 +429,7 @@ Fires at the start of each play.
 
 `T onIterationEnd(EventListener<TweenEvent> listener)` 
 
-Fires at the end of each play.
+Adds a listener that runs at the end of each play.
 
 <a id="BaseTween-event-onComplete"></a>
 
@@ -437,7 +437,7 @@ Fires at the end of each play.
 
 `T onComplete(EventListener<TweenEvent> listener)` 
 
-Fires when the last play ends; it never fires for a repetition forever.
+Adds a listener that runs when the last play ends; it never runs for a repetition forever.
 
 <a id="BaseTween-event-onReverseStart"></a>
 
@@ -445,7 +445,7 @@ Fires when the last play ends; it never fires for a repetition forever.
 
 `T onReverseStart(EventListener<TweenEvent> listener)` 
 
-Fires when the tween starts playing backward from its end.
+Adds a listener that runs when the tween starts playing backward from its end.
 
 <a id="BaseTween-event-onReverseIterationStart"></a>
 
@@ -453,7 +453,7 @@ Fires when the tween starts playing backward from its end.
 
 `T onReverseIterationStart(EventListener<TweenEvent> listener)` 
 
-Fires at the start of each play backward.
+Adds a listener that runs at the start of each play backward.
 
 <a id="BaseTween-event-onReverseIterationEnd"></a>
 
@@ -461,7 +461,7 @@ Fires at the start of each play backward.
 
 `T onReverseIterationEnd(EventListener<TweenEvent> listener)` 
 
-Fires at the end of each play backward.
+Adds a listener that runs at the end of each play backward.
 
 <a id="BaseTween-event-onReverseComplete"></a>
 
@@ -469,7 +469,7 @@ Fires at the end of each play backward.
 
 `T onReverseComplete(EventListener<TweenEvent> listener)` 
 
-Fires when the tween played backward reaches its beginning.
+Adds a listener that runs when the tween played backward reaches its beginning.
 
 ## Constant and field details
 

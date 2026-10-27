@@ -87,7 +87,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `T` | [handleMouseDragged](#UI-method-handleMouseDragged)(EventListener<UIMouseEvent<T>> listener) | Adds a listener that hears a mouse move while a button is held, after the nodes of the UI, unless a node consumed it. |
 | `T` | [handleMouseScroll](#UI-method-handleMouseScroll)(EventListener<UIMouseScrollEvent<T>> listener) | Adds a listener that hears a mouse wheel turn after the nodes of the UI, unless a node consumed it. |
 | `T` | [handleCharTyped](#UI-method-handleCharTyped)(EventListener<UICharEvent<T>> listener) | Adds a listener that hears a typed character after the nodes of the UI, unless a node consumed it. |
-| `T` | [handleKeyPressed](#UI-method-handleKeyPressed)(EventListener<UIKeyEvent<T>> listener) | Adds a listener that hears a key press after the shortcuts and the nodes of the UI, unless one of them consumed it, and before the zoom and dev-mode keys. |
+| `T` | [handleKeyPressed](#UI-method-handleKeyPressed)(EventListener<UIKeyEvent<T>> listener) | Adds a listener that runs on a key press after the shortcuts set with `overrideFocus(true)` and the nodes of the UI, unless one of them consumed it, and before the other shortcuts, the zoom keys and the dev-mode keys. |
 | `T` | [handleKeyReleased](#UI-method-handleKeyReleased)(EventListener<UIKeyEvent<T>> listener) | Adds a listener that hears a key release after the nodes of the UI, unless a node consumed it. |
 | `double` | [getMouseX](#UI-method-getMouseX)() | Horizontal position of the mouse on the design canvas. |
 | `double` | [getMouseY](#UI-method-getMouseY)() | Vertical position of the mouse on the design canvas. |
@@ -187,10 +187,10 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onClose](#UI-event-onClose) | EventListener<UICloseEvent.Post<T>> listener | Adds a listener that runs once the UI has closed, after its nodes are detached and its stores and properties are saved. |
-| [onZoom](#UI-event-onZoom) | EventListener<UIChangeEvent.Post<T,Double>> listener | Adds a listener that runs after the zoom shown has changed, also when a change of interface scale lets a zoom asked through the UI apply. |
+| [onClose](#UI-event-onClose) | [`EventListener<UICloseEvent.Post<T>>`](/reference/events/uicloseevent-post/) | Adds a listener that runs once the UI has closed, after its nodes are detached and its stores and properties are saved. |
+| [onZoom](#UI-event-onZoom) | [`EventListener<UIChangeEvent.Post<T,Double>>`](/reference/events/uichangeevent-post/) | Adds a listener that runs after the zoom shown has changed, also when a change of interface scale lets a zoom asked through the UI apply. |
 
 ## Creation details
 
@@ -349,7 +349,7 @@ Adds a listener that hears a typed character after the nodes of the UI, unless a
 
 `<T extends UI> T handleKeyPressed(EventListener<UIKeyEvent<T>> listener)` 
 
-Adds a listener that hears a key press after the shortcuts and the nodes of the UI, unless one of them consumed it, and before the zoom and dev-mode keys.
+Adds a listener that runs on a key press after the shortcuts set with `overrideFocus(true)` and the nodes of the UI, unless one of them consumed it, and before the other shortcuts, the zoom keys and the dev-mode keys.
 
 <a id="UI-method-handleKeyReleased"></a>
 

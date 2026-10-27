@@ -88,7 +88,7 @@ The file is decoded on a background thread the first time the resource is drawn,
 | `boolean` | [isLoaded](#Resource-method-isLoaded)() | If `true`, the data is decoded. |
 | `boolean` | [isUploaded](#Resource-method-isUploaded)() | If `true`, the decoded pixels are on the GPU. |
 | `boolean` | [isGenerated](#Resource-method-isGenerated)() | If `true`, the decode has started. |
-| `boolean` | [isFailed](#Resource-method-isFailed)() | If `true`, the resource could not be read; the error went to the `onError` callbacks. |
+| `boolean` | [isFailed](#Resource-method-isFailed)() | If `true`, the resource could not be read; the error went to the `onError` listeners. |
 | [`ResourceBuilder`](/reference/resources/resourcebuilder/) | [getBuilder](#Resource-method-getBuilder)() | Returns the builder that made this handle. |
 | `boolean` | [isBlocking](#Resource-method-isBlocking)() | If `true`, this handle decodes on the thread that draws it. |
 
@@ -105,7 +105,7 @@ The file is decoded on a background thread the first time the resource is drawn,
 | `this` | [reset](#Resource-method-reset)() <span class="joid-qualifier">fluent</span> | Sets the settings of this handle back to those of its builder. |
 | `this` | [copy](#Resource-method-copy)() <span class="joid-qualifier">fluent</span> | Returns another handle on the same data, with the same settings. |
 | `this` | [fork](#Resource-method-fork)() <span class="joid-qualifier">fluent</span> | Returns a handle on a separate playback of the same file, for an animated image or a video shown twice with its own position; a still image returns this handle. |
-| `void` | [generate](#Resource-method-generate)() | Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you. |
+| `void` | [generate](#Resource-method-generate)() | Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you, and calling it earlier has a large image ready for its first draw ([Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded)). |
 | `void` | [upload](#Resource-method-upload)() | Sends the decoded pixels to the GPU, on the render thread; drawing the resource does it for you. |
 | `void` | [request](#Resource-method-request)(int width, int height) | Tells the decoder the size the resource is drawn at, in screen pixels, so that a vector image renders at that size; while the size keeps changing, the decoder waits 200 ms before it renders again. |
 | `void` | [prepareBind](#Resource-method-prepareBind)() | Starts the decode, applies the mipmap setting and uploads the pixels when they are ready; `bind` calls it. |
@@ -116,17 +116,17 @@ The file is decoded on a background thread the first time the resource is drawn,
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [fireLoad](#Resource-method-fireLoad)() | Calls the `onLoad` callbacks of this handle on the render thread; the data calls it once the decode ends. |
-| `void` | [fireError](#Resource-method-fireError)(Throwable error) | Calls the `onError` callbacks of this handle on the render thread with `error`; the data calls it when the resource fails. |
+| `void` | [fireLoad](#Resource-method-fireLoad)() | Calls the `onLoad` listeners of this handle on the render thread; the data calls it once the decode ends. |
+| `void` | [fireError](#Resource-method-fireError)(Throwable error) | Calls the `onError` listeners of this handle on the render thread with `error`; the data calls it when the resource fails. |
 
 <a id="Resource-events"></a>
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onLoad](#Resource-event-onLoad) | Consumer<Resource> callback | Calls `callback` with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded. |
-| [onError](#Resource-event-onError) | BiConsumer<Resource,Throwable> callback | Calls `callback` with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed. |
+| [onLoad](#Resource-event-onLoad) | [`Consumer<Resource>`](/reference/resources/resource/) | Adds a listener that runs with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded. |
+| [onError](#Resource-event-onError) | [`BiConsumer<Resource,Throwable>`](/reference/resources/resource/) | Adds a listener that runs with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed. |
 
 ## Creation details
 
@@ -324,7 +324,7 @@ If `true`, the decode has started.
 
 `boolean isFailed()` 
 
-If `true`, the resource could not be read; the error went to the `onError` callbacks.
+If `true`, the resource could not be read; the error went to the `onError` listeners.
 
 <a id="Resource-method-getBuilder"></a>
 
@@ -423,7 +423,7 @@ It waits for the format to be detected.
 
 `void generate()` 
 
-Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you.
+Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you, and calling it earlier has a large image ready for its first draw ([Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded)).
 
 <a id="Resource-method-upload"></a>
 
@@ -474,7 +474,7 @@ Frees the textures and the pixels of the data, for every handle on it, so that t
 
 **Thread:** runs on the render thread.
 
-Calls the `onLoad` callbacks of this handle on the render thread; the data calls it once the decode ends.
+Calls the `onLoad` listeners of this handle on the render thread; the data calls it once the decode ends.
 
 <a id="Resource-method-fireError"></a>
 
@@ -484,7 +484,7 @@ Calls the `onLoad` callbacks of this handle on the render thread; the data calls
 
 **Thread:** runs on the render thread.
 
-Calls the `onError` callbacks of this handle on the render thread with `error`; the data calls it when the resource fails.
+Calls the `onError` listeners of this handle on the render thread with `error`; the data calls it when the resource fails.
 
 ## Event details
 
@@ -496,9 +496,9 @@ Calls the `onError` callbacks of this handle on the render thread with `error`; 
 
 **Thread:** runs on the render thread.
 
-Calls `callback` with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded.
+Adds a listener that runs with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded.
 The data keeps the handle alive until the load or the failure is notified, so a handle thrown away right after `onLoad` still receives it.
-[`Resource.copy`](/reference/resources/resource/#Resource-method-copy) does not copy the callbacks.
+[`Resource.copy`](/reference/resources/resource/#Resource-method-copy) does not copy the listeners.
 
 <a id="Resource-event-onError"></a>
 
@@ -508,7 +508,7 @@ The data keeps the handle alive until the load or the failure is notified, so a 
 
 **Thread:** runs on the render thread.
 
-Calls `callback` with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed.
+Adds a listener that runs with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed.
 
 ---
 

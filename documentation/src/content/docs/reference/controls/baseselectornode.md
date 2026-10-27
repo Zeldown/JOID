@@ -92,10 +92,10 @@ While the list is open, a left press anywhere closes it; the list closes too whe
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onOpen](#BaseSelectorNode-event-onOpen) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs each time the list opens, whatever its source. |
-| [onClose](#BaseSelectorNode-event-onClose) | EventListener<NodeChangeEvent.Post<T,Boolean>> listener | Adds a listener that runs each time the list closes, whatever its source. |
+| [onOpen](#BaseSelectorNode-event-onOpen) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the list opens, whatever its source. |
+| [onClose](#BaseSelectorNode-event-onClose) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the list closes, whatever its source. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/basechoicenode/#BaseChoiceNode-events"><code>BaseChoiceNode</code></a> (1)</summary>

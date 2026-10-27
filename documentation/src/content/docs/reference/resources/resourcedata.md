@@ -18,7 +18,7 @@ The shared state of one resource, its decoder, pixels, textures, size and errors
 ## Description
 
 You meet it when you write a decoder or a resolver: the [`IResourceDecoder`](/reference/resources/iresourcedecoder/) fills it, the [`Resource`](/reference/resources/resource/) handles draw it.
-Decoding runs on a pool of 16 background threads; the upload and the callbacks run on the render thread.
+Decoding runs on a pool of 16 background threads; the upload and the listeners run on the render thread.
 When no handle uses it any more, its textures are freed at the next frame.
 
 ## Learn more
@@ -81,7 +81,7 @@ When no handle uses it any more, its textures are freed at the next frame.
 | `void` | [generate](#ResourceData-method-generate)(boolean async) | Starts the decode, on the background pool when `async` is `true`; a decode already running is not started again. |
 | `void` | [upload](#ResourceData-method-upload)() | Sends the decoded pixels to the GPU, through the decoder when it has one, then drops them from memory; JOID calls it on the render thread. |
 | `void` | [uploadTextures](#ResourceData-method-uploadTextures)() | Allocates each texture at the size of the data and uploads its pixels; a decoder calls it from its own `upload`. |
-| `void` | [fail](#ResourceData-method-fail)(Throwable error) | Makes the data fail with `error` and notifies the `onError` callbacks of every handle; only the first error counts. |
+| `void` | [fail](#ResourceData-method-fail)(Throwable error) | Makes the data fail with `error` and notifies the `onError` listeners of every handle; only the first error counts. |
 | `void` | [listen](#ResourceData-method-listen)(Resource resource) | Registers a handle to notify when the data loads or fails; the data keeps it alive until then. |
 | `void` | [clear](#ResourceData-method-clear)() | Frees the textures and the pixels, through the decoder, and resets the state so that the next draw decodes again; textures still read by a running decode are freed when it ends. |
 | [`ITexture`](/reference/bridges/itexture/) | [placeholder](#ResourceData-method-placeholder)() <span class="joid-qualifier">static</span> | Returns a new 1 × 1 transparent texture, for a decoder that has nothing to show yet. |
@@ -378,7 +378,7 @@ Allocates each texture at the size of the data and uploads its pixels; a decoder
 
 `void fail(Throwable error)` 
 
-Makes the data fail with `error` and notifies the `onError` callbacks of every handle; only the first error counts.
+Makes the data fail with `error` and notifies the `onError` listeners of every handle; only the first error counts.
 In dev mode, it warns with the cause.
 
 <a id="ResourceData-method-listen"></a>

@@ -66,9 +66,9 @@ The shortcuts of the visible and enabled nodes come first, from the front-most, 
 
 ## Events
 
-| Event | Callback | Fires when |
+| Event | Listener | Summary |
 |---|---|---|
-| [onTrigger](#Shortcut-event-onTrigger) | EventListener<ShortcutEvent> listener | Adds a listener that runs on the render thread when the shortcut fires. |
+| [onTrigger](#Shortcut-event-onTrigger) | [`EventListener<ShortcutEvent>`](/reference/ui/shortcutevent/) | Adds a listener that runs on the render thread when the shortcut fires. |
 
 ## Creation details
 

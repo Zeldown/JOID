@@ -34,7 +34,7 @@ Learn: [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui), [Overlays and po
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|

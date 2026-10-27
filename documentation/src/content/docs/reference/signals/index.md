@@ -48,7 +48,7 @@ Learn: [Signals](/use/learn/interactivity/signals/), [Derived values](/use/learn
 
 ## Supporting types
 
-Nested types, callbacks and listeners that the main types use.
+Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|
