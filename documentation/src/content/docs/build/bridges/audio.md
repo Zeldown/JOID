@@ -8,7 +8,7 @@ sidebar:
 
 The audio bridge plays the sound of videos.
 JOID decodes the audio itself and streams interleaved signed 16-bit samples into sources that the bridge creates.
-The core reads it through [[IAudioBridge]], from `BridgeHandler.AUDIO`.
+The core reads it through [[IAudioBridge]], from [[BridgeHandler#AUDIO]].
 
 The bridge is optional: a backend whose `createAudioBridge()` returns `null`, or an application that calls `audio(false)` on the backend, registers none, and each video plays without sound, with one warning.
 

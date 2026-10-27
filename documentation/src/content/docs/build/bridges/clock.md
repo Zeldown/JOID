@@ -7,7 +7,7 @@ sidebar:
 ---
 
 Every time measure of JOID reads the clock bridge: animations and tweens, videos and animated images, the press time of a drag.
-The core reads it through [[IClockBridge]], from `BridgeHandler.CLOCK`.
+The core reads it through [[IClockBridge]], from [[BridgeHandler#CLOCK]].
 By default, a [[SystemClockBridge]] returns the time of the JVM.
 
 A backend rarely registers a clock.

@@ -48,7 +48,7 @@ The forwarder returns nothing to the loop: LWJGL 2 has no handler to chain to.
 
 [[Lwjgl2Keys]] maps the key codes of LWJGL 2 to [[Key]] values.
 LWJGL 2 cannot name a key by layout, so `getKey(code, character)` reads the printed key from the character that the press types, and remembers it for that position.
-While Shift, Ctrl or Alt is held, the character no longer names the key, and the remembered key serves; before the first press of a key without a modifier, its position serves.
+While Shift, Ctrl or Alt is held, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
 
 ### Window
 

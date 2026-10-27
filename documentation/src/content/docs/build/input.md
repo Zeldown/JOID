@@ -7,7 +7,7 @@ sidebar:
 ---
 
 JOID reads no input device.
-The window, or the host, receives the events and forwards each one to `BridgeHandler.UI`, the [[UIBridgeRegistry]], which answers whether JOID consumed it.
+The window, or the host, receives the events and forwards each one to [[BridgeHandler#UI]], the [[UIBridgeRegistry]], which answers whether JOID consumed it.
 An event JOID consumed must not reach the host: a click on a button must not also fire the weapon of a game behind it.
 
 ## Forward every event

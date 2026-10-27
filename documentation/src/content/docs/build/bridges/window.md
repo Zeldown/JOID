@@ -7,7 +7,7 @@ sidebar:
 ---
 
 The window bridge tells the core how large the drawable surface is, where the mouse is and which keys are held.
-The core reads it through [[IWindowBridge]], from `BridgeHandler.WINDOW`.
+The core reads it through [[IWindowBridge]], from [[BridgeHandler#WINDOW]].
 It never creates a window: the application or the host owns it.
 
 This bridge reads the window of an imaginary engine, whose key codes are those of GLFW, so the key table of [base-glfw](/build/base-modules/glfw/) serves it:

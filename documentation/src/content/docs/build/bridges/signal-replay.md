@@ -11,7 +11,7 @@ The replay resolves classes, fields and methods by the names written in the byte
 When a host renames classes or members at run time (an obfuscated or remapped environment), these names do not exist at run time and the replay cannot find them.
 
 The replay bridge translates each name before the replay looks it up.
-The core reads it through [[ISignalReplayBridge]], from `BridgeHandler.SIGNAL_REPLAY`.
+The core reads it through [[ISignalReplayBridge]], from [[BridgeHandler#SIGNAL_REPLAY]].
 By default, an identity bridge returns every name unchanged.
 
 ## Provided

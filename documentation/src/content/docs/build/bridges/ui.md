@@ -13,7 +13,7 @@ How JOID orders several bridges and routes the UIs, the input and the cursor acr
 
 ## Pick the class to extend
 
-`BridgeHandler.UI` holds [[UIBridge]]s: a bridge that implements only [[IUIBridge]] cannot be registered.
+[[BridgeHandler#UI]] holds [[UIBridge]]s: a bridge that implements only [[IUIBridge]] cannot be registered.
 
 | Class | Gives | Extend it when |
 |---|---|---|

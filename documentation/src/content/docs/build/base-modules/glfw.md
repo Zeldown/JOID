@@ -26,7 +26,7 @@ The LWJGL 3 and Vulkan backends use it as it is.
 
 ## Input forwarder
 
-[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button callbacks of a window and forwards each event to `BridgeHandler.UI`:
+[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button callbacks of a window and forwards each event to [[BridgeHandler#UI]]:
 
 - a key press becomes `keyPressed(position, printed key)`, a release `keyReleased(position)`;
 - a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the callback of the application may see it;

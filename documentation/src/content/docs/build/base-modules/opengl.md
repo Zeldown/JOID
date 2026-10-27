@@ -11,7 +11,7 @@ It calls OpenGL only through an [[IGlBinding]], so the LWJGL 2 and LWJGL 3 backe
 
 ## Create the bridge
 
-`new GlRenderBridge(binding)` reads the current context, so the context must be current on the calling thread; without one, [[GlRenderBridge]] throws an `IllegalStateException`.
+[[GlRenderBridge]] reads the current context in its constructor, `new GlRenderBridge(binding)`, so the context must be current on the calling thread; without one, it throws an `IllegalStateException`.
 
 | Binding | Library |
 |---|---|

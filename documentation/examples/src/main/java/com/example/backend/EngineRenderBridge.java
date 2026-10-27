@@ -48,7 +48,8 @@ public final class EngineRenderBridge extends RenderBridge {
 		final EngineShader program = (EngineShader) shader;
 		for (final UniformSampler sampler : program.getSamplerMap().values()) {
 			final SamplerBinding binding = super.resolveSampler(sampler);
-			this.device.texture(sampler.getUnit(), ((IEngineTexture) binding.getTexture()).getId(), binding.getSampling());
+			final IEngineTexture texture = (IEngineTexture) binding.getTexture();
+			this.device.texture(sampler.getUnit(), texture.getId(), binding.getSampling());
 		}
 
 		program.upload(state, buffer);
@@ -103,7 +104,9 @@ public final class EngineRenderBridge extends RenderBridge {
 	private void applyTarget(final RenderState state) {
 		final IFrameBuffer target = state.getFrameBuffer();
 		this.device.target(target == null ? 0 : ((EngineFrameBuffer) target).getTarget());
-		this.device.viewport(state.getViewportX(), state.getViewportY(), state.getViewportWidth(), state.getViewportHeight());
+		final int width = state.getViewportWidth();
+		final int height = state.getViewportHeight();
+		this.device.viewport(state.getViewportX(), state.getViewportY(), width, height);
 	}
 
 	private ByteBuffer getVertices(final VertexBuffer buffer) {

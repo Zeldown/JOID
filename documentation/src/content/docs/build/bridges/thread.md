@@ -8,7 +8,7 @@ sidebar:
 
 JOID is not thread-safe: it opens UIs, runs callbacks and touches GPU objects on one thread, the render thread.
 The thread bridge tells the core which thread that is, and how to post work to it.
-The core reads it through [[IThreadBridge]], from `BridgeHandler.THREAD`.
+The core reads it through [[IThreadBridge]], from [[BridgeHandler#THREAD]].
 
 ## The default fits a loop on the thread that registers
 

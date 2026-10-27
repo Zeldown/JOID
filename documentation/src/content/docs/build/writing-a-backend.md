@@ -126,12 +126,12 @@ Without audio, delete the `createAudioBridge()` override of the template: the de
 ## Register the defaults
 
 `registerDefaults()` fills the registries that several parties share.
-The example registers a resource resolver, so that `Resource.of` accepts the sprites of the engine ([Resource resolvers](/build/resource-resolvers/)).
+The example registers a resource resolver, so that [[Resource#of]] accepts the sprites of the engine ([Resource resolvers](/build/resource-resolvers/)).
 Nothing else belongs to the backend: an application or a plugin adds its markups, locators or other bridges itself, before or after `register()`.
 
 ## Forward the input
 
-`attachInput()` connects the events of your window to `BridgeHandler.UI`.
+`attachInput()` connects the events of your window to [[BridgeHandler#UI]].
 [Input forwarding](/build/input/) gives the contract and the forwarder of this engine.
 When the events belong to the loop of the application (a queue drained each frame), leave `attachInput()` empty and give the application a forwarder to call, as the LWJGL 2 backend does.
 

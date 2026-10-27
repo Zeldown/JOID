@@ -7,7 +7,7 @@ sidebar:
 ---
 
 The render bridge draws every pixel of JOID: it clears targets, draws triangles and lines, and creates textures, framebuffers and shaders.
-The core calls it through [[IRenderBridge]], read from `BridgeHandler.RENDER`.
+The core calls it through [[IRenderBridge]], read from [[BridgeHandler#RENDER]].
 
 Extend [[RenderBridge]] rather than implementing the interface: it keeps the matrices, the render state and the frame in Java, and leaves you seven methods to write.
 [Writing a backend](/build/writing-a-backend/#implement-the-render-bridge) builds a complete one; [Render pipeline](/build/pipeline/) explains what reaches it.

@@ -37,7 +37,7 @@ public final class EngineTexture extends Texture implements IEngineTexture {
 	@Override
 	protected void uploadPixels(final int[] pixels, final MipmapChain chain) {
 		this.device.uploadTexture(this.id, chain.getWidth(), chain.getHeight(), pixels);
-		chain.forEachStep(this::copyLevel);
+		chain.forEachStep(this::copy);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public final class EngineTexture extends Texture implements IEngineTexture {
 			this.device.allocateLevels(this.id, chain.getWidth(), chain.getHeight(), 1, chain.getLevels());
 		}
 
-		chain.forEachStep(this::copyLevel);
+		chain.forEachStep(this::copy);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public final class EngineTexture extends Texture implements IEngineTexture {
 		this.device.deleteTexture(this.id);
 	}
 
-	private void copyLevel(final int level, final int sourceWidth, final int sourceHeight, final int width, final int height) {
-		this.device.copyLevel(this.id, level, sourceWidth, sourceHeight, width, height);
+	private void copy(final int level, final int fromWidth, final int fromHeight, final int width, final int height) {
+		this.device.copyLevel(this.id, level, fromWidth, fromHeight, width, height);
 	}
 
 }
