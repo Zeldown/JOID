@@ -92,7 +92,7 @@ The white cell sets the height of the first row; the cells of a row are aligned 
 ## Let the grid take its height
 
 A grid created with a height of 0 takes the height of its rows, gaps included, and keeps the width you gave it.
-A height that you give is a minimum, and a fixed height with an overflow, which lets the rows scroll ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
+A height that you give follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node), here a fixed height with an overflow, which lets the rows scroll.
 
 ```java file="com/example/describing/grid/GridCasesUI.java" region="scroll"
 ```
@@ -114,7 +114,7 @@ A hidden, removed or `ABSOLUTE` child gets no cell ([Know who places a child](/u
 - **`margin`** spaces the cells on both axes; **`marginHorizontal`** and **`marginVertical`** on one axis.
 - **`alignX`** places each row on the width of the grid.
 - A row is as high as its **tallest cell**.
-- A height of **0** follows the rows; a declared height is a **minimum**; a declared height with an **overflow** is fixed.
+- A height of **0** follows the rows; a declared height follows the **rule of the layout nodes**.
 
 ## Try it
 

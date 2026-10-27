@@ -109,7 +109,7 @@ The calls compose like in OpenGL: the last call applies first to what you draw.
 Here the rectangle is drawn around the origin, scaled, rotated, then moved to the center of the node.
 X goes right and Y goes down, in design pixels; `rotate(angle, x, y, z)` turns by `angle` degrees around the axis `(x, y, z)`.
 
-:::danger
+:::caution
 `push()` and `pop()` save and restore the matrix by hand: call `pop()` in a `finally` block.
 An exception between them leaves the matrix shifted, and every following frame draws in the wrong place.
 :::

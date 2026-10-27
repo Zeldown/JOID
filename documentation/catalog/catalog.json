@@ -735,7 +735,7 @@
 			"id": "cursors",
 			"title": "Cursors",
 			"scene": null,
-			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.\n[Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/) shows how a node asks for one.",
+			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.\n[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.",
 			"complete": "dev.joid.lib.input.cursor.Cursor",
 			"cards": [
 				{

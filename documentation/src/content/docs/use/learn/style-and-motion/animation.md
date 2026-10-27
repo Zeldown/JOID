@@ -67,7 +67,22 @@ The [catalog](/use/catalog/#easing-curves) draws the curves of every family.
 | Overshoots the target, then settles | `BACK_OUT` |
 | Springs or bounces around the target | `ELASTIC_OUT`, `BOUNCE_OUT` |
 
-[[BackTweenEquation]] and [[ElasticTweenEquation]] take settings: `TweenEquations.BACK_OUT.overshoot(3F)` overshoots further, and `TweenEquations.ELASTIC_OUT.amplitude(...).period(...)` changes the spring.
+[[BackTweenEquation]] and [[ElasticTweenEquation]] take settings.
+This square overshoots its target on each trip, further than the default `BACK_OUT`:
+
+```java file="com/example/style/AnimationUI.java" region="easing"
+```
+
+<figure>
+
+![A grey square on a white track goes right, passes its target and settles back on it, then returns left, passes its start and settles there, and starts again](/captures/style-easing.webp)
+
+<figcaption>
+`BACK_OUT.overshoot(3F)` carries the square a quarter of the trip beyond each end before it settles.
+</figcaption>
+</figure>
+
+`overshoot(...)` returns a changed copy and leaves `TweenEquations.BACK_OUT` as it is, and `TweenEquations.ELASTIC_OUT.amplitude(...).period(...)` changes the spring.
 [[TweenEquations#of]] finds an easing by its name, such as `"Quad.OUT"` or `"Back.IN_OUT"`, to read it from a settings file; it returns `null` for an unknown name.
 The name of a curve is its `toString()`, settings included, such as `"Back.OUT(2.5)"`, so a curve written to a file comes back the same.
 For any other curve, extend [[TweenEquation]] and return the eased progress from `compute(t)`, where `t` goes from `0F` to `1F`.

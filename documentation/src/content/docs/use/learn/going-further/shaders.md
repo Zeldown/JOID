@@ -36,29 +36,12 @@ These ones draw moving stripes over the color of the vertices.
 
 `shaders/wave/wave.vsh`, in the resources of the application:
 
-```glsl fragment
-out vec2 vTexCoord;
-out vec4 vColor;
-
-void main() {
-	vTexCoord = aTexCoord;
-	vColor = aColor;
-	gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);
-}
+```glsl file="../resources/shaders/wave/wave.vsh"
 ```
 
 `shaders/wave/wave.fsh`:
 
-```glsl fragment
-in vec2 vTexCoord;
-in vec4 vColor;
-
-uniform float u_Time;
-
-void main() {
-	float wave = 0.5 + 0.5 * sin(vTexCoord.x * 24.0 + u_Time * 3.0);
-	fragColor = vec4(vColor.rgb * (0.6 + 0.4 * wave), vColor.a);
-}
+```glsl file="../resources/shaders/wave/wave.fsh"
 ```
 
 A [[ShaderProgram]] subclass loads the pair and sets its uniforms when it binds:
@@ -179,17 +162,7 @@ A pass implements [[IShaderPass]]: it binds a shader in `bind` and releases it i
 Between the two, the pipeline draws one quad over the region, with the previous result as the texture of the draw call and texture coordinates from 0 to 1.
 This fragment shader, `shaders/invert/invert.fsh`, inverts the result; its vertex shader is a copy of `wave.vsh`:
 
-```glsl fragment
-in vec2 vTexCoord;
-in vec4 vColor;
-
-uniform sampler2D tex;
-uniform float u_Amount;
-
-void main() {
-	vec4 color = texture(tex, vTexCoord) * vColor;
-	fragColor = vec4(mix(color.rgb, color.aaa - color.rgb, u_Amount), color.a);
-}
+```glsl file="../resources/shaders/invert/invert.fsh"
 ```
 
 The program and the pass:
@@ -237,7 +210,7 @@ For code built while the application runs, or for another blending, create the s
 ![A grey rectangle on a light grey background](/captures/further-shaders-tint.webp)
 
 <figcaption>
-The shader built at run time multiplies the white of the rectangle by the tint of 0.6, which gives grey.
+The shader built at run time multiplies the white of the rectangle by the tint of `0.6F`, which gives grey.
 </figcaption>
 </figure>
 

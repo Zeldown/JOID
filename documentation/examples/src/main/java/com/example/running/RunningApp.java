@@ -7,7 +7,6 @@ import com.example.ExampleFont;
 
 import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
-import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
@@ -47,7 +46,6 @@ public final class RunningApp {
 		}
 
 		BridgeHandler.UI.getBridge(WindowUIBridge.class).closeAll();
-		BridgeHandler.WINDOW.getBridge(GlfwWindowBridge.class).destroy();
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
 		// #endregion

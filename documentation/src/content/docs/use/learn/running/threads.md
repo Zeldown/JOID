@@ -13,7 +13,6 @@ Slow work belongs on other threads, and its results must come back to the one th
 - Which thread JOID runs on, and what other threads may call
 - How to bring a result back from a worker thread
 - How to wait for a future on the render thread
-- Where to run code later or periodically
 
 ## Know which thread JOID runs on
 
@@ -31,6 +30,8 @@ A few calls are safe from any thread, because they hand their work to the render
 | [[JOID#onReady]] | runs the code at the start of the next frame, once JOID is ready |
 | `set(...)` and the other writes of a [[Signal]] | apply the write at the start of the next frame ([Tasks and background updates](/use/learn/state/tasks/#set-a-signal-from-another-thread) explains what that means for your state) |
 | [[ThreadUtils#runOnRenderThread]] | runs your task at the start of the next frame |
+
+Code that runs later or on a period needs no thread of its own: a [[Task]] runs it on the render thread ([Tasks and background updates](/use/learn/state/tasks/#run-code-on-a-period)).
 
 ## Bring a result back from a worker thread
 
@@ -76,11 +77,6 @@ The render thread runs the queue only when your loop calls `frame()`.
 A program that registers the backend, then waits with `join()` on another thread before its loop starts, never sees the future complete.
 :::
 
-## Know the thread of a task
-
-A [[Task]] runs code after a delay, once or periodically, on the clock of JOID and on the render thread, while it stays attached to a UI or a node.
-[Tasks and background updates](/use/learn/state/tasks/#run-code-on-a-period) shows how to create and attach one.
-
 ## Recap
 
 - The **render thread** registers the backend and calls `frame()`; JOID calls your listeners there.
@@ -88,7 +84,6 @@ A [[Task]] runs code after a delay, once or periodically, on the clock of JOID a
 - `JOID.open`, `JOID.close`, `JOID.onReady` and **signal writes** are safe from any thread: they apply at the start of the next frame.
 - From a worker thread, hand a node change to **`runOnRenderThread(task)`**.
 - **`RenderThreadFuture.from(future)`** completes a future, and the stages after it, on the render thread.
-- A `Task` runs code **later or periodically**, on the clock of JOID ([Tasks and background updates](/use/learn/state/tasks/)).
 
 ## Try it
 

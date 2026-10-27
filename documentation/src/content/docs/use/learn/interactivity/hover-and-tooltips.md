@@ -142,19 +142,16 @@ A node tooltip stays inside the window.
 
 ## Change the cursor over a node
 
-[[Node#cursor]] sets the [[Cursor]] of the window over the node, as `HoverUI` does with `Cursor.POINTER`.
+The Shop button of `HoverUI` shows the hand of the system while the pointer is over it:
+
+```java fragment
+RectNode.create(60, 100, 220, 60).cursor(Cursor.POINTER).label(Text.create("Shop", info)).attach(card);
+```
+
+[[Node#cursor]] sets the [[Cursor]] of the window over the node.
 A node without a cursor shows the cursor of its parent, and the cursor of the node under a press stays until the release.
 Text fields show `Cursor.TEXT`.
-
-| Cursor | Use |
-|---|---|
-| `DEFAULT` | The arrow |
-| `POINTER` | Something to click |
-| `TEXT` | Text to type or select |
-| `CROSSHAIR` | A precise point |
-| `MOVE` | Something to drag |
-| `NOT_ALLOWED` | An action refused |
-| `RESIZE_EW`, `RESIZE_NS`, `RESIZE_NWSE`, `RESIZE_NESW` | An edge or a corner to drag |
+`POINTER` suits what reacts to a click, `TEXT` a text to type or select and `MOVE` what you drag; the [catalog](/use/catalog/#cursors) gives every cursor and its use.
 
 ## Recap
 

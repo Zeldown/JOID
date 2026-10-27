@@ -73,7 +73,7 @@ Positions add up along the tree: move the card and everything in it follows.
 
 ## Build, move and remove parts of the tree
 
-You can also build a branch first and attach its root last.
+When a method builds a branch, or attaches it later, build the branch first and attach its root last.
 [[Node#append]] attaches several children at once:
 
 ```java file="com/example/describing/nodes/ToolbarUI.java" region="append"

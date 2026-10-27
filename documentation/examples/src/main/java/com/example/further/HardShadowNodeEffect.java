@@ -11,11 +11,13 @@ public class HardShadowNodeEffect extends NodeEffect<Node> {
 	private final Color  color;
 	private final double offset;
 
+	// #region priority
 	protected HardShadowNodeEffect(final Color color, final double offset) {
 		super(-60);
 		this.color = color;
 		this.offset = offset;
 	}
+	// #endregion
 
 	public static HardShadowNodeEffect create(final Color color, final double offset) {
 		return new HardShadowNodeEffect(color, offset);

@@ -80,7 +80,12 @@ A node reaches the store of its UI with [[Node#useStore]].
 
 ## Keep a store on disk
 
-A `PERMANENT` store is written to `store/<id>.store` in the [data folder](/use/learn/running/files/), as the JSON of `toJson()`:
+The store of [Write a store](#write-a-store) is `PERMANENT`:
+
+```java file="com/example/state/SettingsStore.java" region="permanent"
+```
+
+A `PERMANENT` store is written to `store/<id>.store` in the [data folder](/use/learn/running/files/), here `store/sound.store`, as the JSON of `toJson()`:
 - when any UI closes;
 - when the program ends normally;
 - when you call `save()` on it.
@@ -93,7 +98,7 @@ The map comes back with the types of JSON, whatever the type you put in it:
 | In the file | In the map of `fromJson` |
 |---|---|
 | A whole number | `Long` |
-| A decimal number, `NaN`, `Infinity` or `-Infinity` | `Double` |
+| A decimal number | `Double` |
 | `true` or `false` | `Boolean` |
 | A text | `String` |
 | An array | `List<Object>` |
@@ -108,8 +113,7 @@ Without an `id`, the file takes the full name of the class: give an `id` to a st
 When the file cannot be read, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
 
 :::caution
-A program that ends without closing its UIs saves its stores from a shutdown hook, which a killed process never runs.
-Close the UIs before the program ends ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+Close the UIs before the program ends: a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 :::
 
 ## Remember a field of a UI

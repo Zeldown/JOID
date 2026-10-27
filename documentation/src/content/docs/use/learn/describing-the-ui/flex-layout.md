@@ -108,11 +108,11 @@ The column measures 170 design pixels, three bars and two gaps, and the panel fo
 </figcaption>
 </figure>
 
-A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, is a minimum ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
+A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node).
 
 ## Scroll a long list
 
-Give the column a length and an [[OverflowProperty]] other than `NONE`: the length is then fixed, and the content scrolls or is clipped ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
+Give the column a length and an [[OverflowProperty]] other than `NONE`: the content scrolls or is clipped.
 
 ```java file="com/example/describing/flex/FlexCasesUI.java" region="scroll"
 ```
@@ -155,7 +155,7 @@ A row that the user can drag into another order is a [[ReorderableFlexNode]] ([R
 - **`margin`** is the gap between two children.
 - **`align`** places every child across the line; without it, each child keeps its own cross position.
 - The own **offset** of a child adds to its place; along the line, it moves that child only.
-- A length of **0** follows the content; a declared length is a **minimum**; a declared length with an **overflow** is fixed.
+- A length of **0** follows the content; a declared length follows the **rule of the layout nodes**.
 - Hidden, removed and `ABSOLUTE` children **leave no gap**.
 
 ## Try it

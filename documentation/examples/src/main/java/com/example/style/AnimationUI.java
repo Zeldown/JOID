@@ -57,6 +57,24 @@ public class AnimationUI extends UI {
 		.attach(this);
 		// #endregion
 
+		// #region easing
+		final TweenAnimator pop = TweenAnimator
+		.create(0F)
+		.sequence(800F, 1F, TweenEquations.BACK_OUT.overshoot(3F))
+		.push(800F, 0F, TweenEquations.BACK_OUT.overshoot(3F))
+		.repeat(BaseTween.INFINITY, 400F)
+		.start();
+
+		RectNode
+		.create(160, 760, 520, 60)
+		.color(Color.WHITE)
+		.body(track -> {
+			RectNode.create(0, 0, 60, 60).color(AnimationUI.INK).x(() -> 100D + 260D * pop.get()).attach(track);
+		})
+		.onDetach(event -> pop.clear())
+		.attach(this);
+		// #endregion
+
 		// #region click
 		final IntegerSignal plays = new IntegerSignal(0);
 		final TweenAnimator toggle = TweenAnimator.create(0F).onComplete(tween -> plays.increment());

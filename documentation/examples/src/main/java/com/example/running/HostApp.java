@@ -8,7 +8,6 @@ import com.example.ExampleFont;
 
 import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
-import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
@@ -54,7 +53,6 @@ public final class HostApp {
 
 		bridge.closeAll();
 		// #endregion
-		BridgeHandler.WINDOW.getBridge(GlfwWindowBridge.class).destroy();
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
 	}

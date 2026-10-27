@@ -17,8 +17,8 @@ public class HandleListUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(HandleListUI.INK);
-		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 24).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(HandleListUI.INK);
+		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 24F).color(Color.WHITE);
 
 		RectNode
 		.create(660, 290, 600, 500)
@@ -52,7 +52,9 @@ public class HandleListUI extends UI {
 				})
 				.attach(list);
 			}
+			// #region pin
 			list.pin(header);
+			// #endregion
 			// #endregion
 		})
 		.attach(this);

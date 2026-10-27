@@ -36,19 +36,15 @@ Give the chart its axes, then its series:
 <figcaption>The line chart draws one line per series, in the order they were added; the radar chart draws one axis per data.</figcaption>
 </figure>
 
-[[ChartNode.ChartAxis]] creates the axes. `ChartAxis.x(name, labels...)` creates the X axis: its labels are the columns of the chart, in this order.
+[[ChartNode.ChartAxis]] creates the axes.
+`ChartAxis.x(name, labels...)` creates the X axis: its labels are the columns of the chart, in this order.
 `ChartAxis.y(name)` creates the Y axis; `prefix(...)` and `suffix(...)` decorate the values that `format(value)` returns, here `8 k`.
 `data(name, data)` adds a series, or replaces the series of that name in place; call it after `xAxis(...)`, which holds the series.
 A [[ChartNode.ChartData]] maps each label to a number, and a label it does not hold has no value there: the skin decides what to draw.
 
-A skin reads the chart with these methods:
-
-| Method | Returns |
-|---|---|
-| `getLabels()` | The labels of the X axis, in order. |
-| `getDataMap()`, `getData(name)` | The series by name, in the order they were added, or one of them. |
-| `getMin()`, `getMax()`, `getAverage()` | The smallest, largest and average value over every series; each one takes the name of a series too. When every value is the same, the scale stretches to `0`, so that the chart keeps a height. |
-| `getXAxis()`, `getYAxis()` | The axes, for their names and for `format(value)`. |
+A skin reads the chart through its getters, which [[ChartNode]] lists: `getLabels()` in order, `getDataMap()` by series, `getMin()`, `getMax()` and `getAverage()` over every series or for one, and the axes for `format(value)`.
+`getAverage()` over every series is the average of the averages of the series.
+When every value is the same, the scale stretches to `0`, so that the chart keeps a height.
 
 A chart throws when it is attached without its two axes.
 
