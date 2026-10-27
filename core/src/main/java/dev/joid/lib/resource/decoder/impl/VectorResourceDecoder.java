@@ -39,8 +39,8 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	private static final ExecutorService RASTER = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
 
 	@Getter private final Asset           asset;
-	private final AtomicReference<Raster> pending  = new AtomicReference<>();
 	private final Map<Long, ITexture>     textures = new LinkedHashMap<>(8, 0.75F, true);
+	private final AtomicReference<Raster> pending  = new AtomicReference<>();
 
 	private ITexture    texture;
 	private SVGDocument document;
