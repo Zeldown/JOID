@@ -1,0 +1,61 @@
+# crop interactivity-click 760 390 400 300
+# crop interactivity-through 520 390 880 300
+# crop interactivity-press 760 340 400 400
+# crop interactivity-consume 760 440 400 200
+# crop interactivity-dispatch 360 170 1200 740
+# crop interactivity-before 660 390 600 300
+ui com.example.interactivity.events.ClickUI
+move 960 500
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+shot interactivity-click
+ui com.example.interactivity.events.ThroughUI
+move 810 470
+press LEFT
+release LEFT
+move 1290 470
+press LEFT
+release LEFT
+wait 300
+shot interactivity-through
+ui com.example.interactivity.events.PressUI
+move 960 430
+press LEFT
+release LEFT
+move 1110 710
+press LEFT
+release LEFT
+move 500 500
+press LEFT
+release LEFT
+wait 100
+shot interactivity-press
+ui com.example.interactivity.events.NoDigitsUI
+move 960 540
+press LEFT
+release LEFT
+type R2D2
+wait 100
+shot interactivity-consume
+ui com.example.interactivity.events.DispatchDiagramUI
+wait 100
+shot interactivity-dispatch
+ui com.example.interactivity.events.LimitUI
+move 800 620
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 300
+shot interactivity-before

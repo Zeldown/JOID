@@ -1,0 +1,38 @@
+# crop interactivity-counter 660 340 600 400
+# crop interactivity-reread 560 340 800 400
+# crop interactivity-types 560 340 800 400
+ui com.example.interactivity.signals.CounterUI
+move 800 430
+press LEFT
+release LEFT
+wait 200
+press LEFT
+release LEFT
+wait 200
+press LEFT
+release LEFT
+wait 300
+shot interactivity-counter
+ui com.example.interactivity.signals.RereadUI
+move 700 410
+# film interactivity-reread
+wait 700
+press LEFT
+release LEFT
+wait 700
+press LEFT
+release LEFT
+wait 700
+cut
+ui com.example.interactivity.signals.TypesUI
+move 720 410
+press LEFT
+release LEFT
+move 960 410
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+shot interactivity-types

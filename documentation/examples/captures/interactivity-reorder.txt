@@ -1,0 +1,18 @@
+# crop interactivity-reorder 660 240 600 600
+# crop interactivity-reorder-handle 660 290 600 500
+ui com.example.interactivity.reorder.PlaylistUI
+move 960 395
+# film interactivity-reorder
+wait 200
+press LEFT
+moveto 960 570 800
+release LEFT
+wait 700
+cut
+ui com.example.interactivity.reorder.HandleListUI
+move 1160 605
+press LEFT
+moveto 1160 520 400
+wait 400
+shot interactivity-reorder-handle
+release LEFT

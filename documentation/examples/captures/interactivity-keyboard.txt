@@ -1,0 +1,26 @@
+# crop interactivity-keys 660 440 600 200
+# crop interactivity-walk 660 390 600 300
+# crop interactivity-shortcut 660 390 600 300
+ui com.example.interactivity.keyboard.KeysUI
+type hello
+wait 100
+shot interactivity-keys
+ui com.example.interactivity.keyboard.WalkUI
+# film interactivity-walk
+wait 200
+down D
+wait 800
+up D
+wait 400
+cut
+ui com.example.interactivity.keyboard.ShortcutUI
+key LEFT_CONTROL+S
+key F1
+move 960 460
+press LEFT
+release LEFT
+type ab
+key LEFT_CONTROL+S
+key F1
+wait 100
+shot interactivity-shortcut
