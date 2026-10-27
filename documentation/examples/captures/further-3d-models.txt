@@ -1,0 +1,4 @@
+# crop further-3d-models-cubes 80 80 540 330
+ui com.example.further.ModelsUI
+wait 200
+shot further-3d-models-cubes

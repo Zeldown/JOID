@@ -1,0 +1,8 @@
+# crop running-backends-start 680 390 560 300
+ui com.example.running.RunningStartUI
+wait 100
+shot running-backends-start
+# crop running-backends-tooltip 680 390 560 300
+move 960 540
+wait 300
+shot running-backends-tooltip

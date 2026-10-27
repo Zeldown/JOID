@@ -22,3 +22,13 @@ skip com.example.describing.markup.WaveTextEffect effect used by MarkupUI
 skip com.example.describing.markup.DurationTextConverter converter registered by MarkupUI
 skip com.example.describing.media.MediaSources reads a URL and a file of the disk that the runner does not have
 skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer
+call com.example.further.FontsSources LIGHT
+skip com.example.running.RunningApp creates its own GLFW window and loop
+skip com.example.running.HostApp creates its own GLFW window and loop
+skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapshot backend
+skip com.example.running.RunningFolders registers a backend on a window of its own
+skip com.example.running.RunningLibrary registers JOID.onReady for a program that starts later
+skip com.example.running.PanelPlugin registers a UI bridge into the global registry
+skip com.example.running.SceneUIBridge UI bridge registered by HostApp
+skip com.example.running.GameUIBridge UI bridge of a host loop
+skip com.example.running.PanelUIBridge UI bridge registered by PanelPlugin
