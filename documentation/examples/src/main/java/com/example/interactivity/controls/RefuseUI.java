@@ -1,7 +1,7 @@
 package com.example.interactivity.controls;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainIntegerSliderNode;
+import com.example.kit.KitIntegerSliderNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -27,7 +27,7 @@ public class RefuseUI extends UI {
 		.color(RefuseUI.PLACEHOLDER)
 		.body(card -> {
 			// #region refuse
-			PlainIntegerSliderNode
+			KitIntegerSliderNode
 			.create(60, 60, 480, 40)
 			.range(0, 10)
 			.value(this.volume)

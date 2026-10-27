@@ -1,9 +1,9 @@
 package com.example.interactivity.controls;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainCheckboxNode;
-import com.example.interactivity.kit.PlainIntegerFieldNode;
-import com.example.interactivity.kit.PlainIntegerSliderNode;
+import com.example.kit.KitCheckboxNode;
+import com.example.kit.KitIntegerFieldNode;
+import com.example.kit.KitIntegerSliderNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -35,9 +35,9 @@ public class SettingsUI extends UI {
 			TextNode.create(60, 55).text(Text.create("Subtitles", info)).attach(card);
 			TextNode.create(60, 145).text(Text.create("Volume", info)).attach(card);
 			// #region bind
-			PlainCheckboxNode.create(240, 40, 50, 50).checked(this.subtitles).attach(card);
-			PlainIntegerSliderNode.create(240, 140, 300, 40).range(0, 10).value(this.volume).attach(card);
-			PlainIntegerFieldNode.create(580, 130, 160, 60).min(0).max(10).value(this.volume).info(info).attach(card);
+			KitCheckboxNode.create(240, 40, 50).checked(this.subtitles).attach(card);
+			KitIntegerSliderNode.create(240, 140, 300, 40).range(0, 10).value(this.volume).attach(card);
+			KitIntegerFieldNode.create(580, 130, 160, 60).min(0).max(10).value(this.volume).info(info).attach(card);
 			// #endregion
 			TextNode.create(60, 260).text(Text.create("Subtitles: " + this.subtitles.get(), info)).attach(card);
 			TextNode.create(60, 310).text(Text.create("Volume: " + this.volume.get(), info)).attach(card);

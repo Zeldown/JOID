@@ -1,7 +1,7 @@
 package com.example.interactivity.events;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainTextFieldNode;
+import com.example.kit.KitTextFieldNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
@@ -22,7 +22,7 @@ public class NoDigitsUI extends UI {
 		.color(NoDigitsUI.PLACEHOLDER)
 		.body(card -> {
 			// #region consume
-			PlainTextFieldNode
+			KitTextFieldNode
 			.create(50, 70, 300, 60)
 			.info(info)
 			.placeholder("No digits")

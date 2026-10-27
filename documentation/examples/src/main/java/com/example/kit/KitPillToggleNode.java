@@ -1,4 +1,4 @@
-package com.example.further;
+package com.example.kit;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;

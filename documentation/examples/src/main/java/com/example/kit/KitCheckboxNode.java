@@ -1,4 +1,4 @@
-package com.example.further;
+package com.example.kit;
 
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;

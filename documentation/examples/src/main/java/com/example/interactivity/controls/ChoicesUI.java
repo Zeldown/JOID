@@ -1,10 +1,10 @@
 package com.example.interactivity.controls;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainSelectorNode;
-import com.example.interactivity.kit.PlainStringSliderNode;
-import com.example.interactivity.kit.PlainSwitchNode;
-import com.example.interactivity.kit.PlainToggleNode;
+import com.example.kit.KitSelectorNode;
+import com.example.kit.KitStringSliderNode;
+import com.example.kit.KitSwitchNode;
+import com.example.kit.KitToggleNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -34,7 +34,7 @@ public class ChoicesUI extends UI {
 		.color(ChoicesUI.PLACEHOLDER)
 		.body(card -> {
 			// #region toggle
-			PlainToggleNode
+			KitToggleNode
 			.<String, String>create(60, 60, 160, 60)
 			.state("Night", "Day")
 			.toggle(this.night)
@@ -49,7 +49,7 @@ public class ChoicesUI extends UI {
 		.color(ChoicesUI.PLACEHOLDER)
 		.body(card -> {
 			// #region switch
-			PlainSwitchNode
+			KitSwitchNode
 			.<String>create(60, 60, 600, 60)
 			.values("Story", "Normal", "Hard")
 			.value(this.difficulty)
@@ -65,7 +65,7 @@ public class ChoicesUI extends UI {
 		.body(card -> {
 			TextNode.create(400, 60).text(Text.create("Language: " + this.language.get(), info)).attach(card);
 			// #region selector
-			PlainSelectorNode
+			KitSelectorNode
 			.<String>create(60, 40, 280, 60)
 			.values("English", "French", "German", "Japanese")
 			.value(this.language)
@@ -79,7 +79,7 @@ public class ChoicesUI extends UI {
 		.color(ChoicesUI.PLACEHOLDER)
 		.body(card -> {
 			// #region slider
-			PlainStringSliderNode
+			KitStringSliderNode
 			.create(60, 60, 600, 40)
 			.values(Quality.values())
 			.value(this.quality)

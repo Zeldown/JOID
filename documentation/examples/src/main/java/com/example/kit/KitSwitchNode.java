@@ -1,4 +1,4 @@
-package com.example.further;
+package com.example.kit;
 
 import com.example.ExampleFont;
 

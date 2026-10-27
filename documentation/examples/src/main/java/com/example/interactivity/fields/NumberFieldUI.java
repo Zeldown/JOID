@@ -1,7 +1,7 @@
 package com.example.interactivity.fields;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainIntegerFieldNode;
+import com.example.kit.KitIntegerFieldNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -27,7 +27,7 @@ public class NumberFieldUI extends UI {
 		.color(NumberFieldUI.PLACEHOLDER)
 		.body(card -> {
 			// #region number
-			PlainIntegerFieldNode
+			KitIntegerFieldNode
 			.create(60, 60, 240, 60)
 			.min(1)
 			.max(16)

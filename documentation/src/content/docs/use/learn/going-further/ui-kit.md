@@ -38,7 +38,7 @@ The first three give parts to their control; the pill toggle draws itself from i
 
 A skin passes its parts in its constructor:
 
-```java file="com/example/further/KitCheckboxNode.java" region="checkbox"
+```java file="com/example/kit/KitCheckboxNode.java" region="checkbox"
 ```
 
 ```java file="com/example/further/KitUI.java" region="use"
@@ -52,7 +52,7 @@ The control places its parts on every frame, so a part is created at `0, 0`:
 
 A part follows the state of its control through a reactive setter, as the thumb of the slider does while it slides:
 
-```java file="com/example/further/KitIntegerSliderNode.java" region="slider"
+```java file="com/example/kit/KitIntegerSliderNode.java" region="slider"
 ```
 
 A control without one of its required parts throws when it is attached, for example `The KitCheckboxNode has no mark, give it one with mark(...)`.
@@ -77,7 +77,7 @@ The switch and the selector call your `option` function again each time their va
 When the parts do not fit, extend the base class and build the look yourself.
 This pill toggle slides a circle in a rounded track whose color follows the circle:
 
-```java file="com/example/further/KitPillToggleNode.java" region="pill"
+```java file="com/example/kit/KitPillToggleNode.java" region="pill"
 ```
 
 - Create the children each time the control joins a [[UI]], in `init(UI)`, and call `clearChildren()` first so that a second opening does not add them twice.
@@ -92,7 +92,7 @@ A listener added in the constructor lasts as long as the node; [Node lifecycle](
 A UI kit is your set of skins and the colors and sizes they share.
 Keep these values in one class, and read them from every skin:
 
-```java file="com/example/further/KitColors.java" region="colors"
+```java file="com/example/kit/KitColors.java" region="colors"
 ```
 
 Changing a color there changes it in every control of every UI.

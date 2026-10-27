@@ -1,7 +1,7 @@
 package com.example.interactivity.keyboard;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainTextFieldNode;
+import com.example.kit.KitTextFieldNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -34,7 +34,7 @@ public class ShortcutUI extends UI {
 		.create(660, 390, 600, 300)
 		.color(ShortcutUI.PLACEHOLDER)
 		.body(card -> {
-			PlainTextFieldNode.create(60, 40, 480, 60).info(info).placeholder("Notes").attach(card);
+			KitTextFieldNode.create(60, 40, 480, 60).info(info).placeholder("Notes").attach(card);
 			TextNode.create(60, 150).text(Text.create("Ctrl + S: " + this.saves.get(), info)).attach(card);
 			TextNode.create(60, 200).text(Text.create("F1: " + this.helps.get(), info)).attach(card);
 		})

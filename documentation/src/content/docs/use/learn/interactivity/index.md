@@ -66,7 +66,7 @@ Read [Keyboard and shortcuts](/use/learn/interactivity/keyboard/) to learn who r
 Every control follows the same pattern: options, a value bound to a signal, `beforeChange` and `onChange`.
 
 ```java fragment
-PlainIntegerSliderNode.create(240, 140, 300, 40).range(0, 10).value(this.volume).attach(card);
+KitIntegerSliderNode.create(240, 140, 300, 40).range(0, 10).value(this.volume).attach(card);
 ```
 
 Read [Controls](/use/learn/interactivity/controls/) to learn the pattern, the order of a change and the options of each control.
@@ -76,7 +76,7 @@ Read [Controls](/use/learn/interactivity/controls/) to learn the pattern, the or
 A text field turns what the user types into a value: a text, a number, or a type of your own.
 
 ```java fragment
-PlainIntegerFieldNode.create(60, 60, 240, 60).min(1).max(16).value(this.players).info(info).attach(card);
+KitIntegerFieldNode.create(60, 60, 240, 60).min(1).max(16).value(this.players).info(info).attach(card);
 ```
 
 Read [Text fields](/use/learn/interactivity/text-fields/) to learn the focus, the rules on the text and your own fields.

@@ -1,6 +1,6 @@
 package com.example.interactivity.controls;
 
-import com.example.interactivity.kit.PlainIntegerSliderNode;
+import com.example.kit.KitIntegerSliderNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -22,7 +22,7 @@ public class ProgressUI extends UI {
 		.create(660, 390, 600, 300)
 		.color(ProgressUI.PLACEHOLDER)
 		.body(card -> {
-			PlainIntegerSliderNode.create(60, 40, 480, 40).range(0, 10).value(this.loaded).attach(card);
+			KitIntegerSliderNode.create(60, 40, 480, 40).range(0, 10).value(this.loaded).attach(card);
 			// #region progress
 			ProgressNode
 			.create(60, 130, 480, 30)

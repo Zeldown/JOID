@@ -1,5 +1,10 @@
 package com.example.further;
 
+import com.example.kit.KitCheckboxNode;
+import com.example.kit.KitIntegerSliderNode;
+import com.example.kit.KitPillToggleNode;
+import com.example.kit.KitSwitchNode;
+
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 

@@ -1,8 +1,8 @@
 package com.example.interactivity.controls;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainCheckboxNode;
-import com.example.interactivity.kit.PlainIntegerFieldNode;
+import com.example.kit.KitCheckboxNode;
+import com.example.kit.KitIntegerFieldNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -31,8 +31,8 @@ public class PendingUI extends UI {
 		.body(card -> {
 			TextNode.create(60, 55).text(Text.create("Limit to 10", info)).attach(card);
 			// #region pending
-			PlainCheckboxNode.create(260, 40, 50, 50).checked(this.limited).attach(card);
-			PlainIntegerFieldNode
+			KitCheckboxNode.create(260, 40, 50).checked(this.limited).attach(card);
+			KitIntegerFieldNode
 			.create(60, 130, 200, 60)
 			.max(this.limited.get() ? 10 : 100)
 			.value(this.tickets)

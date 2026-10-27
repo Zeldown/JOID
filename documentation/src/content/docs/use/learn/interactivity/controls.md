@@ -20,7 +20,7 @@ Learn the pattern once on this page, then the options of each control.
 ## Bind a control to a signal
 
 A control is abstract: its look comes from a skin, a small subclass that gives it its parts.
-The controls of this page use the plain skins of the examples (`PlainCheckboxNode`, `PlainIntegerSliderNode`…); [UI kit](/use/learn/going-further/ui-kit/) shows how to write your own.
+The controls of this page use the skins of the example kit (`KitCheckboxNode`, `KitIntegerSliderNode`…), which [UI kit](/use/learn/going-further/ui-kit/) writes.
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
 ```
@@ -53,7 +53,7 @@ It never runs for a value equal to the current one, and not for the start value.
 Its event holds the old value (`getPrevious()`) and the new one (`getValue()`):
 
 ```java fragment
-PlainCheckboxNode.create(240, 40, 50, 50).onChange(event -> this.save(event.getValue())).attach(card);
+KitCheckboxNode.create(240, 40, 50).onChange(event -> this.save(event.getValue())).attach(card);
 ```
 
 Most of the time, a signal makes `onChange` useless: the nodes that show the value read the signal.
@@ -246,7 +246,7 @@ In `SettingsUI`, uncheck "Subtitles" when the volume reaches `0`.
 An action on a change goes in `onChange`:
 
 ```java fragment
-PlainIntegerSliderNode
+KitIntegerSliderNode
 .create(240, 140, 300, 40)
 .range(0, 10)
 .value(this.volume)
@@ -264,7 +264,7 @@ In `ChoicesUI`, keep the difficulty as an `IntegerSignal` from `0` to `2` instea
 `valueIndex(...)` binds the index both ways:
 
 ```java fragment
-PlainSwitchNode.<String>create(60, 60, 600, 60).values("Story", "Normal", "Hard").valueIndex(this.level).attach(card);
+KitSwitchNode.<String>create(60, 60, 600, 60).values("Story", "Normal", "Hard").valueIndex(this.level).attach(card);
 ```
 
 </details>

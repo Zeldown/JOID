@@ -1,7 +1,7 @@
 package com.example.interactivity.fields;
 
 import com.example.ExampleFont;
-import com.example.interactivity.kit.PlainTextFieldNode;
+import com.example.kit.KitTextFieldNode;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -27,7 +27,7 @@ public class RulesFieldUI extends UI {
 		.color(RulesFieldUI.PLACEHOLDER)
 		.body(card -> {
 			// #region rules
-			PlainTextFieldNode
+			KitTextFieldNode
 			.create(60, 60, 480, 60)
 			.info(info)
 			.placeholder("Code")
