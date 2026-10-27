@@ -1,19 +1,18 @@
 ---
 summary: Base of every effect, an object added to a node that changes how the node is drawn, never its layout nor the area that receives the mouse.
-capture: reference-effects-badge
-alt: A white card with rounded corners on a light grey background, with a dark grey dot that overlaps its top right corner.
+capture: reference-effects-underline
+alt: A white card on a light grey background, with a dark grey bar under it, as wide as the card.
 ---
 
 A `NodeEffect` changes how its node is drawn: it draws around the node, changes the matrix or the render state for it, or processes its pixels with shader passes.
 [[Node#effect]] adds one to any node, and a node holds one effect per class.
 Use the built-in effects first: [[RoundedNodeEffect]], [[CircleNodeEffect]], [[BorderNodeEffect]], [[ShadowNodeEffect]], [[BlurNodeEffect]], [[MaskNodeEffect]] and [[TransformNodeEffect]].
-Extend `NodeEffect` for a treatment that none of them gives, such as a badge on the corner of a node:
+Extend `NodeEffect` for a treatment that none of them gives, such as a bar under a node:
 
-```java file="com/example/reference/effects/BadgeUI.java" region="badge"
+```java file="com/example/reference/effects/UnderlineUI.java" region="underline"
 ```
 
-`draw` runs `body`, which draws the node with its children, then draws the dot over it.
-The dot is drawn outside the pixel passes of the node, so the rounded corners do not cut it.
+`draw` runs `body`, which draws the node with its children, then draws the bar under it.
 
 Every frame, JOID keeps the effects whose `shouldApply` returns `true` and orders them by priority: the lowest priority wraps the others, and its passes run first.
 The type parameter limits the nodes that take the effect: a `NodeEffect<RectNode>` goes on a [[RectNode]] and its subclasses only.
