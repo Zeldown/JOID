@@ -21,8 +21,10 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.selector.SelectorNode.SelectorDirection;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.property.OverflowProperty;
 import lombok.AllArgsConstructor;
 
 public class SelectorNodeTest {
@@ -154,6 +156,14 @@ public class SelectorNodeTest {
 		this.click(1000D, 1000D);
 		Assert.assertFalse(this.selector.isActive());
 		Assert.assertTrue(this.changes.isEmpty());
+	}
+
+	@Test
+	public void closesOnAClickBesideItWhileOutsideItsOverflowArea() {
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 50D, 50D).overflow(OverflowProperty.HIDDEN).append(this.selector.active(true)))).frames(2);
+		Assert.assertFalse(this.selector.isVisible());
+		this.click(1000D, 1000D);
+		Assert.assertFalse(this.selector.isActive());
 	}
 
 	@Test

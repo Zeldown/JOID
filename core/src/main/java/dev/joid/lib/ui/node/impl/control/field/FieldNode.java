@@ -221,6 +221,11 @@ public abstract class FieldNode<V> extends Node {
 		this.focusedValue.update(false);
 	}
 
+	@Override
+	protected boolean holdsInput() {
+		return this.focused || this.selecting;
+	}
+
 	public final V getValue() {
 		return this.valueOf(this.text);
 	}

@@ -631,6 +631,18 @@ public class NodeTest {
 	}
 
 	@Test
+	public void ignoresTheInputsOfAChildOutsideItsOverflowArea() {
+		final List<String> events = new ArrayList<>();
+		final RectNode child = RectNode.create(10D, 150D, 20D, 20D).handleMousePressed(event -> events.add("pressed")).handleMouseScroll(event -> events.add("scroll")).handleKeyPressed(event -> events.add("key")).handleCharTyped(event -> events.add("char"));
+		this.press(ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child), 120D, 120D);
+		this.bridges.scroll(1D);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
+		this.bridges.getUi().charTyped('a');
+		Assert.assertFalse(child.isVisible());
+		Assert.assertEquals(Collections.emptyList(), events);
+	}
+
+	@Test
 	public void givesTheSharedEdgeOfTwoNodesToTheNodeThatStartsThere() {
 		final RectNode left = RectNode.create(100D, 100D, 100D, 100D);
 		final RectNode right = RectNode.create(200D, 100D, 100D, 100D);

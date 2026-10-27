@@ -752,6 +752,20 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void extendsItsSelectionDraggedWhileScrolledOutOfView() {
+		final TextFieldNode field = TextFieldNode.create(10D, 10D, 100D).info(this.info()).text("abcdef");
+		final ContainerNode box = ContainerNode.create(100D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).append(field, RectNode.create(10D, 600D, 100D, 40D));
+		this.bridges.open(new NodeUI(box));
+		this.click(112D, 120D);
+		box.scrollTo(0D, -550D);
+		this.bridges.frames(60);
+		Assert.assertFalse(field.isVisible());
+		this.bridges.drag(300D, 120D);
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
+		Assert.assertEquals(6, field.getCursorPosition());
+	}
+
+	@Test
 	public void insertsWhatIsTypedAtTheCursor() {
 		final TextFieldNode field = this.field("hllo").cursorPosition(1);
 		this.type(field, "e");

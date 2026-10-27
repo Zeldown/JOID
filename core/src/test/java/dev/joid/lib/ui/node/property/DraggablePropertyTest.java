@@ -168,6 +168,32 @@ public class DraggablePropertyTest {
 	}
 
 	@Test
+	public void finishesADragWhoseEnabledPredicateTurnsFalse() {
+		final boolean[] locked = {false};
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().enabled(target -> !locked[0]));
+		this.drag(node, 210D, 160D);
+		locked[0] = true;
+		this.bridges.frames(100);
+		Assert.assertEquals(200D, node.getX(), 0D);
+		Assert.assertEquals(150D, node.getY(), 0D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertFalse(node.isDragging());
+	}
+
+	@Test
+	public void dropsANodeOnItsSnapOnceItsEnabledPredicateTurnsFalse() {
+		final boolean[] locked = {false};
+		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().enabled(dragged -> !locked[0]).snap(target));
+		this.drag(node, 310D, 310D);
+		locked[0] = true;
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(400D, node.getX(), 0D);
+		Assert.assertEquals(400D, node.getY(), 0D);
+	}
+
+	@Test
 	public void bringsADroppedNodeBackInsideItsArea() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.custom(0D, 0D, 300D, 300D));
 		this.drag(node, 410D, 160D);
