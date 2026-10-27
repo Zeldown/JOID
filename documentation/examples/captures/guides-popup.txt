@@ -1,0 +1,9 @@
+# crop guides-popup-open 540 270 840 540
+ui com.example.guides.PopupGuideUI
+moveto 960 705 200
+press LEFT
+release LEFT
+wait 600
+moveto 1500 950 100
+wait 100
+shot guides-popup-open

@@ -1,0 +1,20 @@
+# crop depth-frame-lifecycle 370 190 1180 700
+ui com.example.depth.FrameLifecycleUI
+wait 100
+shot depth-frame-lifecycle
+# crop depth-signal-tracking 350 240 1220 600
+ui com.example.depth.SignalTrackingUI
+wait 100
+shot depth-signal-tracking
+# crop depth-msdf-text 310 260 1300 560
+ui com.example.depth.MsdfTextUI
+wait 100
+shot depth-msdf-text
+# crop depth-performance 360 200 1200 680
+ui com.example.depth.PerformanceUI
+wait 100
+shot depth-performance
+# crop depth-pixel-alignment 300 320 1320 440
+ui com.example.depth.PixelAlignmentUI
+wait 100
+shot depth-pixel-alignment

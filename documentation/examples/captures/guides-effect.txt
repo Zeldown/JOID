@@ -1,0 +1,11 @@
+# crop guides-effect-badge 790 470 340 130
+ui com.example.guides.EffectGuideUI
+wait 100
+shot guides-effect-badge
+# crop guides-effect-read 790 470 340 130
+moveto 960 540 200
+press LEFT
+release LEFT
+moveto 1500 900 100
+wait 100
+shot guides-effect-read

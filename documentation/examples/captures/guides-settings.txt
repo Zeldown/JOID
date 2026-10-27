@@ -1,0 +1,4 @@
+# crop guides-settings-screen 660 340 600 220
+ui com.example.guides.SettingsGuideUI
+wait 100
+shot guides-settings-screen
