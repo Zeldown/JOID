@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Base class of a chart that shows named series of values over the labels of an X axis.
 
-![A line chart of visits from Monday to Friday](/captures/catalog-nodes-chartnode.webp)
+![A line chart of one series from Mon to Fri](/captures/catalog-nodes-chartnode.webp)
 
 ## Description
 

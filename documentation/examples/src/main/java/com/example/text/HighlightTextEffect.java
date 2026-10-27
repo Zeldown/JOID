@@ -7,7 +7,7 @@ import dev.joid.lib.font.effect.ITextGlyph;
 
 public final class HighlightTextEffect implements ITextEffect {
 
-	private static final Color BAND = new Color(255, 214, 0, 110).lock();
+	private static final Color BAND = new Color(85, 85, 85).lock();
 
 	@Override
 	public void background(final ITextGlyph glyph) {

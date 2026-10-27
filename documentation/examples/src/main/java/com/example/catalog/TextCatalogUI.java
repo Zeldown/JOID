@@ -19,8 +19,6 @@ import dev.joid.lib.utils.align.Align;
 
 public class TextCatalogUI extends CatalogUI {
 
-	private static final Color DARK = new Color(85, 85, 85).lock();
-
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 30F).color(CatalogUI.INK);
@@ -28,7 +26,7 @@ public class TextCatalogUI extends CatalogUI {
 		final TextModifier[] modifiers = {TextModifier.UPPER_CASE, TextModifier.LOWER_CASE, TextModifier.CAPITALIZE, TextModifier.WORD_CAPITALIZE, TextModifier.CAMEL_CASE, TextModifier.UPPER_CAMEL_CASE, TextModifier.SNAKE_CASE};
 
 		for (int i = 0; i < effects.length; i++) {
-			final TextInfo style = (effects[i] instanceof HighlightTextEffect ? info.copy().color(TextCatalogUI.DARK) : info).withEffects(effects[i]);
+			final TextInfo style = (effects[i] instanceof HighlightTextEffect ? info.copy().color(Color.WHITE) : info).withEffects(effects[i]);
 			super.card(i).body(card -> TextNode.create(30, 115, 280, 0).text(Text.create("Text effects move every glyph", style).alignX(Align.CENTER)).mode(TextMode.SPLIT).attach(card)).attach(this);
 		}
 

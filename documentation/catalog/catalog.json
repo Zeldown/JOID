@@ -53,7 +53,7 @@
 					"type": "dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode",
 					"learn": "use/learn/describing-the-ui/media",
 					"alt": "An animated image: a grey square slides from left to right",
-					"film": 767,
+					"film": 2367,
 					"still": 12
 				},
 				{
@@ -134,7 +134,7 @@
 				{
 					"type": "dev.joid.lib.ui.node.impl.chart.ChartNode",
 					"learn": "use/learn/going-further/charts",
-					"alt": "A line chart of visits from Monday to Friday"
+					"alt": "A line chart of one series from Mon to Fri"
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.chart.RadarChartNode",
@@ -545,7 +545,7 @@
 					"type": "dev.joid.lib.ui.core.transition.PopTransition",
 					"learn": "use/learn/style-and-motion/transitions",
 					"alt": "A white popup grows into view on a light card, then stays open",
-					"hold": 1000
+					"hold": 1600
 				}
 			]
 		},
@@ -669,17 +669,16 @@
 					"example": "com/example/text/HighlightTextEffect.java",
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
-					"alt": "A sentence on a highlight band"
+					"alt": "A sentence in white on a dark grey highlight band"
 				},
 				{
 					"name": "Scramble effect",
 					"example": "com/example/text/ScrambleTextEffect.java",
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
-					"alt": "A sentence whose characters are scrambled while keeping their width",
-					"film": 600,
-					"fps": 30,
-					"hold": 40
+					"alt": "A sentence whose characters are scrambled while keeping their width, then settle one by one into Text effects move every glyph",
+					"film": 1967,
+					"fps": 30
 				},
 				{
 					"name": "Markup",

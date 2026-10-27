@@ -10,7 +10,8 @@ public final class ScrambleTextEffect implements ITextEffect {
 
 	@Override
 	public void apply(final ITextGlyph glyph) {
-		if (Character.isWhitespace(glyph.getCodepoint())) {
+		final long time = BridgeHandler.CLOCK.get().currentTimeMillis();
+		if (Character.isWhitespace(glyph.getCodepoint()) || time % 2000L >= 300L + glyph.getIndex() * 45L) {
 			return;
 		}
 
@@ -25,7 +26,7 @@ public final class ScrambleTextEffect implements ITextEffect {
 			return;
 		}
 
-		final long step = BridgeHandler.CLOCK.get().currentTimeMillis() / 80L;
+		final long step = time / 80L;
 		final long seed = (step * 0x9E3779B97F4A7C15L + glyph.getIndex()) * 0xBF58476D1CE4E5B9L;
 		int remaining = (int) ((seed >>> 33) % candidates);
 		for (int i = 0; i < ScrambleTextEffect.POOL.length(); i++) {

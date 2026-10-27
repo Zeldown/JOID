@@ -26,7 +26,7 @@ public class EffectsCatalogUI extends CatalogUI {
 
 		super.card(3).body(card -> RectNode.create(70, 70, 200, 140).color(Color.WHITE).effect(ShadowNodeEffect.create(CatalogUI.INK, 24F).offsetY(12D)).attach(card)).attach(this);
 
-		super.card(4).body(card -> ResourceNode.create(10, 60, 320, 180).resource(Resource.of("images/placeholder.png")).effect(BlurNodeEffect.create(6F)).attach(card)).attach(this);
+		super.card(4).body(card -> ResourceNode.create(30, 71, 280, 158).resource(Resource.of("images/placeholder.png")).effect(BlurNodeEffect.create(6F)).attach(card)).attach(this);
 
 		super.card(5).body(card -> {
 			RectNode.create(70, 80, 200, 140).color(Color.WHITE).effect(BorderNodeEffect.create(CatalogUI.INK, 2F)).attach(card);

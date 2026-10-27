@@ -14,7 +14,7 @@ shot catalog-nodes-resourcenode
 ui com.example.catalog.NodesCatalogUI
 wait 100
 # film catalog-nodes-resourceplayernode
-wait 767
+wait 2367
 cut
 # crop catalog-nodes-progressnode 40 380 340 300
 shot catalog-nodes-progressnode

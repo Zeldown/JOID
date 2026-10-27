@@ -40,9 +40,9 @@ public class NodesCatalogUI extends CatalogUI {
 
 		super.card(2).body(card -> TextNode.create(0, 0, 340, 300).text(Text.create("Text", info).align(Align.CENTER)).attach(card)).attach(this);
 
-		super.card(3).body(card -> ResourceNode.create(10, 60, 320, 180).resource(Resource.of("images/placeholder.png")).attach(card)).attach(this);
+		super.card(3).body(card -> ResourceNode.create(30, 71, 280, 158).resource(Resource.of("images/placeholder.png")).attach(card)).attach(this);
 
-		super.card(4).body(card -> ResourcePlayerNode.create(10, 60, 320, 180).resource(Resource.of("images/animation.gif")).loop(true).attach(card)).attach(this);
+		super.card(4).body(card -> ResourcePlayerNode.create(30, 71, 280, 158).resource(Resource.of("images/animation.gif")).loop(true).attach(card)).attach(this);
 
 		super.card(5).body(card -> {
 			ProgressNode

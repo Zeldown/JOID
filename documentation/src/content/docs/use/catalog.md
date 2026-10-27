@@ -66,7 +66,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 <figcaption><a href="/reference/layout/reorderableflexnode/"><code>ReorderableFlexNode</code></a><span>A flex column or row whose children the user reorders by dragging them.</span><small><a href="/use/learn/interactivity/reorderable-lists/">Learn</a> · <a href="/reference/layout/reorderableflexnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-chartnode.webp" alt="A line chart of visits from Monday to Friday" loading="lazy" width="340" height="300" />
+<img src="/captures/catalog-nodes-chartnode.webp" alt="A line chart of one series from Mon to Fri" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/nodes/chartnode/"><code>ChartNode</code></a> <a class="joid-badge" href="/use/learn/going-further/ui-kit/">needs a skin</a><span>Base class of a chart that shows named series of values over the labels of an X axis.</span><small><a href="/use/learn/going-further/charts/">Learn</a> · <a href="/reference/nodes/chartnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
@@ -243,11 +243,11 @@ Text modifiers change the characters before layout.
 <figcaption><a href="/reference/text/itexteffect/"><code>Underline effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/describing/markup/UnderlineTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-text-highlight-effect.webp" alt="A sentence on a highlight band" loading="lazy" width="340" height="300" />
+<img src="/captures/catalog-text-highlight-effect.webp" alt="A sentence in white on a dark grey highlight band" loading="lazy" width="340" height="300" />
 <figcaption><a href="/reference/text/itexteffect/"><code>Highlight effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/HighlightTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-text-scramble-effect.webp" data-still="/captures/catalog-text-scramble-effect.still.webp"><picture><source srcset="/captures/catalog-text-scramble-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-scramble-effect.webp" alt="A sentence whose characters are scrambled while keeping their width" loading="lazy" width="340" height="300" /></picture><span class="joid-film-state">Pause the animation</span></button>
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-text-scramble-effect.webp" data-still="/captures/catalog-text-scramble-effect.still.webp"><picture><source srcset="/captures/catalog-text-scramble-effect.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-text-scramble-effect.webp" alt="A sentence whose characters are scrambled while keeping their width, then settle one by one into Text effects move every glyph" loading="lazy" width="340" height="300" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/text/itexteffect/"><code>Scramble effect</code></a><small><a href="/use/learn/describing-the-ui/text-markup-and-effects/">Learn</a> · <a href="/reference/text/itexteffect/">Reference</a> · <a href="https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/com/example/text/ScrambleTextEffect.java">Example source</a></small></figcaption>
 </figure>
 <figure class="joid-card">
