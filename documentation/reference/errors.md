@@ -639,10 +639,11 @@ Check the path or the URL for a read error, convert the file to a supported form
 
 ## warning [JOID] The video … plays without sound (…), register an audio bridge and check the audio device
 
-A video with a sound track could not create its audio source: no audio bridge is registered, as with `audio(false)`, or the audio device refused.
+The audio bridge could not create the source of a video with a sound track: the audio device refused, or the bridge failed.
 The picture plays without sound.
+Without any audio bridge, as with `audio(false)`, a video plays without sound and without this warning.
 
-Register the backend with audio and check the audio device of the machine: [Control the sound of a video](/use/learn/describing-the-ui/media/#control-the-sound-of-a-video).
+Check the audio device of the machine, or the `createSource` of your audio bridge: [Control the sound of a video](/use/learn/describing-the-ui/media/#control-the-sound-of-a-video).
 
 ## UncheckedIOException The start of … cannot be read
 

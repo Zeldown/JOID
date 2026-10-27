@@ -21,6 +21,7 @@ It calls OpenGL only through an [[IGlBinding]], so the LWJGL 2 and LWJGL 3 backe
 
 An [[IGlBinding]] gives the queries and the calls of OpenGL, one method for one function, and an [[IGlFrameBufferBinding]] for each family of framebuffer objects, the core one and the EXT one.
 `canPointClientMemory()` returns `false` for a binding that cannot hand OpenGL a pointer into client memory: the state guard then leaves the client arrays of the host alone.
+Return `null` from `getString(GlConstants.VERSION)` when no context is current, as the official bindings do: the bridge then throws its `IllegalStateException`.
 
 ## Capabilities and paths
 

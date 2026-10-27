@@ -55,7 +55,7 @@ The GLFW launchers share `GlfwDemoWindow` of base-glfw, whose subclass names the
 In the demos:
 
 - the menu shows one card per demo, and a click opens it; Escape always comes back to the menu, which itself never closes;
-- Ctrl+K opens a popup from anywhere;
+- Ctrl+K opens a popup from the menu, and from that popup again;
 - the shortcuts of the dev mode work as in any application ([Dev tools](/use/get-started/dev-tools/)).
 
 ## Index

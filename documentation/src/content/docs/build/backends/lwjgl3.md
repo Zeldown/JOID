@@ -52,10 +52,10 @@ The render bridge adapts to the context: dialect, framebuffer family, vertex arr
 | `GL_21_EXT_NO_BLIT` | The same without framebuffer blits: mipmaps are drawn. |
 | `GL_30` | OpenGL 3.0. |
 | `GL_32_FORWARD_COMPATIBLE` | OpenGL 3.2 core, forward-compatible. |
-| `GL_33` | OpenGL 3.3 core, with the version and the profile obtained checked. |
+| `GL_33` | OpenGL 3.3 core. |
 | `GL_45_COMPATIBILITY` | OpenGL 4.5 compatibility. |
 
-A driver that cannot give the version of a profile fails the test with a message that suggests `MESA_GL_VERSION_OVERRIDE` and `MESA_GLSL_VERSION_OVERRIDE`.
+Every profile but `DEFAULT` checks the version and the profile that the driver gives; a driver that cannot give them fails the test with a message that suggests `MESA_GL_VERSION_OVERRIDE` and `MESA_GLSL_VERSION_OVERRIDE`.
 
 ## Tests
 

@@ -13,7 +13,7 @@ The user side, calling `frame()` from your own loop, is on [Embedding JOID](/use
 
 ## Register once the context is current
 
-The OpenGL render bridge reads the capabilities of the context when it is created, and throws an `IllegalStateException` when no context is current.
+The OpenGL render bridge reads the capabilities of the context when it is created, and throws an `IllegalStateException` when no context is current, once your binding returns `null` for the version ([base-opengl](/build/base-modules/opengl/#create-the-bridge)).
 Register the backend on the thread of the context of the host, after the host made it current (on LWJGL 3, after `GL.createCapabilities()`).
 Ask the host for a 24-bit depth buffer and an 8-bit stencil buffer: JOID clips its masks and scroll areas with the stencil.
 

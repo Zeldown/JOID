@@ -80,7 +80,7 @@ When the two `renderer.txt` name different GPUs, the comparison warns that the d
 
 | Command in the template | Does |
 |---|---|
-| `./gradlew test` | Runs every suite; references in `.snapshots/references`, renders in `build/snapshots/<archivesBaseName>`. |
+| `./gradlew test` | Runs the test classes of the template (the render and bitmap font contract suites and the snapshot suite) and the ones you add, such as the borrowed texture and state guard suites; references in `.snapshots/references`, renders in `build/snapshots/<archivesBaseName>`. |
 | `./gradlew updateSnapshots` | Runs the tests and replaces the references, the first time and after an intended change of your rendering. |
 | `./gradlew test -PrecordSnapshots` | Runs the tests and records only the missing references. |
 | `./gradlew renderBaseline` | Renders the scenarios with the LWJGL 3 backend into `build/snapshots/lwjgl3`. |
