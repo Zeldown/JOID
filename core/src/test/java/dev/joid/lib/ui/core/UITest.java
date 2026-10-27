@@ -44,8 +44,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
-
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.HotReload;
 import dev.joid.internal.JOID;
@@ -2843,7 +2841,7 @@ public class UITest {
 	public static final class UnsavableStore extends UIStore {
 
 		@Override
-		public @NonNull JsonObject toJson() {
+		public @NonNull Map<String, Object> toJson() {
 			throw new IllegalStateException("broken toJson");
 		}
 

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -11,8 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
 import lombok.NonNull;
@@ -62,11 +63,9 @@ public class UIStoreTest {
 	public void writesAnEmptyJsonByDefault() {
 		final SharedStore store = new SharedStore();
 		store.init();
-		final JsonObject ignored = new JsonObject();
-		ignored.addProperty("ignored", true);
-		store.fromJson(ignored);
+		store.fromJson(Collections.singletonMap("ignored", true));
 		store.destroy();
-		Assert.assertEquals(new JsonObject(), store.toJson());
+		Assert.assertEquals(Collections.emptyMap(), store.toJson());
 	}
 
 	@Test
@@ -89,9 +88,9 @@ public class UIStoreTest {
 	public static class SavedStore extends UIStore {
 
 		@Override
-		public @NonNull JsonObject toJson() {
-			final JsonObject json = new JsonObject();
-			json.addProperty("saved", true);
+		public @NonNull Map<String, Object> toJson() {
+			final Map<String, Object> json = new LinkedHashMap<>();
+			json.put("saved", true);
 			return json;
 		}
 

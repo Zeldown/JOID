@@ -14,8 +14,8 @@ import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.internal.JsonFiles;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.json.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

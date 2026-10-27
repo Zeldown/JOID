@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.core.hook.store;
 
-import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import lombok.NonNull;
 
@@ -14,11 +15,11 @@ public abstract class UIStore {
 		UIStoreHook.saveStore(this);
 	}
 
-	public @NonNull JsonObject toJson() {
-		return new JsonObject();
+	public @NonNull Map<String, Object> toJson() {
+		return new LinkedHashMap<>();
 	}
 
-	public void fromJson(final @NonNull JsonObject json) {}
+	public void fromJson(final @NonNull Map<String, Object> json) {}
 
 	public UIStoreData getData() {
 		return UIStoreHook.getData(this.getClass());

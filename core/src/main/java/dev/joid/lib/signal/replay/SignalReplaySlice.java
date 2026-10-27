@@ -22,7 +22,7 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 import lombok.Getter;
 
 @Getter
-public final class SignalReplaySlice {
+final class SignalReplaySlice {
 
 	private final int                start;
 	private final int                end;

@@ -1,6 +1,7 @@
 package dev.joid.demo.ui.core.hook.store;
 
-import com.google.gson.JsonObject;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -18,15 +19,16 @@ public class DemoPermanentStore extends UIStore {
 	private long time;
 
 	@Override
-	public @NonNull JsonObject toJson() {
-		final JsonObject json = new JsonObject();
-		json.addProperty("time", this.time);
+	public @NonNull Map<String, Object> toJson() {
+		final Map<String, Object> json = new LinkedHashMap<>();
+		json.put("time", this.time);
 		return json;
 	}
 
 	@Override
-	public void fromJson(final @NonNull JsonObject json) {
-		this.time = json.has("time") ? json.get("time").getAsLong() : BridgeHandler.CLOCK.get().currentTimeMillis();
+	public void fromJson(final @NonNull Map<String, Object> json) {
+		final Object time = json.get("time");
+		this.time = time instanceof Number ? ((Number) time).longValue() : BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 }

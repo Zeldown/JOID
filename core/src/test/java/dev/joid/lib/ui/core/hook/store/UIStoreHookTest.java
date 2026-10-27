@@ -7,7 +7,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -16,15 +19,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
-import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -47,7 +44,7 @@ public class UIStoreHookTest {
 		UIStoreHook.destroyStore(new GlobalStore());
 		UIStoreHook.destroyStore(new PermanentStore());
 		UIStoreHook.destroyStore(new SignalStore());
-		UIStoreHook.destroyStore(new ListStore());
+		UIStoreHook.destroyStore(new MapStore());
 		UIStoreHook.destroyStore(new UnsavableStore());
 		JOIDEnv.dataDir(this.previous);
 		JOIDWarnings.forget();
@@ -153,34 +150,34 @@ public class UIStoreHookTest {
 	}
 
 	@Test
-	public void reloadsASignalWithoutItsStartingValue() throws IOException {
+	public void restoresTheJsonTypesOfAPermanentStore() throws IOException {
+		final String json = "{\"text\":\"a\",\"count\":7,\"ratio\":0.5,\"on\":true,\"list\":[1,\"b\"],\"object\":{\"key\":\"c\"}}";
+		final File file = new File(new File(this.folder.getRoot(), "store"), "map.store");
+		Assert.assertTrue(file.getParentFile().mkdirs());
+		Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
+
+		final MapStore store = UIStoreHook.useStore(MapStore.class, MapStore::new);
+		Assert.assertEquals("a", store.json.get("text"));
+		Assert.assertEquals(7L, store.json.get("count"));
+		Assert.assertEquals(0.5D, store.json.get("ratio"));
+		Assert.assertEquals(true, store.json.get("on"));
+		Assert.assertEquals(Arrays.asList(1L, "b"), store.json.get("list"));
+		Assert.assertEquals(Collections.singletonMap("key", "c"), store.json.get("object"));
+
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals(json, new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+	}
+
+	@Test
+	public void reloadsASignalFromItsValue() throws IOException {
 		final SignalStore store = UIStoreHook.useStore(SignalStore.class, SignalStore::new);
 		store.count.set(7);
 		UIStoreHook.saveStore(store);
 		UIStoreHook.destroyStore(store);
 
 		final File file = new File(new File(this.folder.getRoot(), "store"), "signal.store");
-		Assert.assertEquals("{\"count\":{\"value\":7}}", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+		Assert.assertEquals("{\"count\":7}", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals(7, UIStoreHook.useStore(SignalStore.class, SignalStore::new).count.get().intValue());
-	}
-
-	@Test
-	public void reloadsAReadOnlyCollectionSignal() throws IOException {
-		final ListStore store = UIStoreHook.useStore(ListStore.class, ListStore::new);
-		store.names.add("b");
-		UIStoreHook.saveStore(store);
-		UIStoreHook.destroyStore(store);
-
-		final ListStore loaded = UIStoreHook.useStore(ListStore.class, ListStore::new);
-		Assert.assertEquals(Arrays.asList("a", "b"), loaded.names.get());
-		try {
-			loaded.names.get().add("x");
-			Assert.fail("The list of a reloaded ListSignal is read-only");
-		} catch (final UnsupportedOperationException expected) {
-			Assert.assertEquals(Arrays.asList("a", "b"), loaded.names.peek());
-		}
-		Assert.assertEquals(Arrays.asList("a", "b", "c"), loaded.names.add("c").get());
-		Assert.assertEquals(Collections.emptyList(), loaded.names.reset().get());
 	}
 
 	@Test
@@ -404,17 +401,17 @@ public class UIStoreHookTest {
 		}
 
 		@Override
-		public @NonNull JsonObject toJson() {
-			final JsonObject json = new JsonObject();
-			json.addProperty("value", this.value);
+		public @NonNull Map<String, Object> toJson() {
+			final Map<String, Object> json = new LinkedHashMap<>();
+			json.put("value", this.value);
 			return json;
 		}
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
+		public void fromJson(final @NonNull Map<String, Object> json) {
 			this.loaded = true;
 			this.order = (this.order + " fromJson").trim();
-			this.value = json.get("value").getAsString();
+			this.value = (String) Objects.requireNonNull(json.get("value"));
 		}
 
 	}
@@ -422,41 +419,35 @@ public class UIStoreHookTest {
 	@UIStoreData(id = "signal", scope = UIStoreScope.PERMANENT)
 	public static class SignalStore extends UIStore {
 
-		private static final Gson GSON = new GsonBuilder().create();
-
-		private IntegerSignal count = new IntegerSignal(3);
+		private final IntegerSignal count = new IntegerSignal(3);
 
 		@Override
-		public @NonNull JsonObject toJson() {
-			final JsonObject json = new JsonObject();
-			json.add("count", SignalStore.GSON.toJsonTree(this.count));
+		public @NonNull Map<String, Object> toJson() {
+			final Map<String, Object> json = new LinkedHashMap<>();
+			json.put("count", this.count.get());
 			return json;
 		}
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
-			this.count = SignalStore.GSON.fromJson(json.get("count"), IntegerSignal.class);
+		public void fromJson(final @NonNull Map<String, Object> json) {
+			this.count.set(((Number) json.get("count")).intValue());
 		}
 
 	}
 
-	@UIStoreData(id = "list", scope = UIStoreScope.PERMANENT)
-	public static class ListStore extends UIStore {
+	@UIStoreData(id = "map", scope = UIStoreScope.PERMANENT)
+	public static class MapStore extends UIStore {
 
-		private static final Gson GSON = new GsonBuilder().create();
-
-		private ListSignal<String> names = new ListSignal<>(Collections.singletonList("a"));
+		private Map<String, Object> json;
 
 		@Override
-		public @NonNull JsonObject toJson() {
-			final JsonObject json = new JsonObject();
-			json.add("names", ListStore.GSON.toJsonTree(this.names));
-			return json;
+		public @NonNull Map<String, Object> toJson() {
+			return this.json;
 		}
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
-			this.names = ListStore.GSON.fromJson(json.get("names"), new TypeToken<ListSignal<String>>() {}.getType());
+		public void fromJson(final @NonNull Map<String, Object> json) {
+			this.json = json;
 		}
 
 	}
@@ -494,7 +485,7 @@ public class UIStoreHookTest {
 	public static class UnsavableStore extends UIStore {
 
 		@Override
-		public @NonNull JsonObject toJson() {
+		public @NonNull Map<String, Object> toJson() {
 			throw new IllegalStateException("broken toJson");
 		}
 

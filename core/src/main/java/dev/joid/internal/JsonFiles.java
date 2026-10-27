@@ -1,4 +1,4 @@
-package dev.joid.lib.utils.json;
+package dev.joid.internal;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import dev.joid.internal.JOIDLog;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

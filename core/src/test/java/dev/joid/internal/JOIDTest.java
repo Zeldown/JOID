@@ -12,7 +12,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,8 +23,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import com.google.gson.JsonObject;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.impl.bitmap.DemoPixelFont;
@@ -757,10 +757,10 @@ public class JOIDTest {
 		}
 
 		@Override
-		public @NonNull JsonObject toJson() {
+		public @NonNull Map<String, Object> toJson() {
 			this.savers.add(Thread.currentThread());
-			final JsonObject json = new JsonObject();
-			json.addProperty("value", this.value);
+			final Map<String, Object> json = new LinkedHashMap<>();
+			json.put("value", this.value);
 			return json;
 		}
 

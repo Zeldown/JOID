@@ -38,7 +38,7 @@ import dev.joid.lib.bridge.signal.ISignalReplayBridge;
 import dev.joid.lib.signal.Signal;
 import lombok.Getter;
 
-public final class SignalReplayMethod {
+final class SignalReplayMethod {
 
 	@Getter private final boolean              isStatic;
 	@Getter private final MethodNode           method;

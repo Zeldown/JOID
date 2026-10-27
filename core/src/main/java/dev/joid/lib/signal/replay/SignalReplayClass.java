@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SignalReplayClass {
+final class SignalReplayClass {
 
 	private final File        file;
 	private final long        modified;

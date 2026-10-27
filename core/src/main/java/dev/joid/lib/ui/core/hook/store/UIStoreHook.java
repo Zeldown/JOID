@@ -5,17 +5,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.ToNumberPolicy;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
-import dev.joid.lib.utils.json.JsonFiles;
+import dev.joid.internal.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIStoreHook {
+
+	private static final Gson GSON = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).disableHtmlEscaping().create();
 
 	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new ConcurrentHashMap<>();
 
@@ -33,7 +38,7 @@ public final class UIStoreHook {
 			final JsonObject json = JsonFiles.read(file, "the store starts from init()");
 			if (json != null) {
 				try {
-					store.fromJson(json);
+					store.fromJson(UIStoreHook.GSON.fromJson(json, Map.class));
 				} catch (final RuntimeException exception) {
 					JOIDLog.warnOnce("UIStore.fromJson." + clazz.getName() + "." + exception.getClass().getName(), "The store " + clazz.getName() + " cannot be restored from " + file.getAbsolutePath() + " (" + exception + "), it starts from init(): catch the exception inside fromJson() to handle it", exception);
 					JsonFiles.keep(file, exception.toString(), "the store starts from init()");
@@ -69,7 +74,7 @@ public final class UIStoreHook {
 			return;
 		}
 
-		JsonFiles.write(UIStoreHook.getFile(store), store.toJson().toString());
+		JsonFiles.write(UIStoreHook.getFile(store), UIStoreHook.GSON.toJson(store.toJson()));
 	}
 
 	public static void saveAll() {
