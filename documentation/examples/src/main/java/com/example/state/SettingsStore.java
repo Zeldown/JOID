@@ -8,7 +8,7 @@ import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 
-@UIStoreData(id = "settings", scope = UIStoreScope.PERMANENT)
+@UIStoreData(id = "sound", scope = UIStoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
 	private final IntegerSignal volume = new IntegerSignal(5);
