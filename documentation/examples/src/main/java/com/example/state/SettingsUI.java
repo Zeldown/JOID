@@ -42,7 +42,12 @@ public class SettingsUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(SettingsUI.ELEMENT, 1.5F))
 		.body(card -> {
-			RectNode.create(60, 60, 120, 60).color(SettingsUI.ACCENT).onClick(event -> settings.getVolume().decrement()).label(Text.create("-", label)).attach(card);
+			RectNode
+			.create(60, 60, 120, 60)
+			.color(SettingsUI.ACCENT)
+			.onClick(event -> settings.getVolume().decrement())
+			.label(Text.create("-", label))
+			.attach(card);
 			// #region bind
 			RectNode
 			.create(200, 60, 120, 60)
@@ -55,8 +60,16 @@ public class SettingsUI extends UI {
 			.text(Text.create(settings.getVolume().map(volume -> "Volume: " + volume), info))
 			.attach(card);
 			// #endregion
-			RectNode.create(60, 160, 260, 60).color(SettingsUI.ACCENT).onClick(event -> settings.getMuted().toggle()).label(Text.create("Mute", label)).attach(card);
-			TextNode.create(360, 172).text(Text.create(settings.getMuted().map(muted -> muted ? "Muted" : "Sound on"), info)).attach(card);
+			RectNode
+			.create(60, 160, 260, 60)
+			.color(SettingsUI.ACCENT)
+			.onClick(event -> settings.getMuted().toggle())
+			.label(Text.create("Mute", label))
+			.attach(card);
+			TextNode
+			.create(360, 172)
+			.text(Text.create(settings.getMuted().map(muted -> muted ? "Muted" : "Sound on"), info))
+			.attach(card);
 			TextNode.create(60, 290).text(Text.create(() -> "Openings: " + this.opened, info)).attach(card);
 		})
 		.attach(this);

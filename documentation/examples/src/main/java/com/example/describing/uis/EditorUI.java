@@ -37,11 +37,11 @@ public class EditorUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(EditorUI.ELEMENT, 1.5F))
 		.body(card -> RectNode
-			.create(100, 300, 200, 60)
-			.color(EditorUI.ACCENT)
-			.label(Text.create("Save", info))
-			.onClick(event -> this.saved = true)
-			.attach(card))
+		.create(100, 300, 200, 60)
+		.color(EditorUI.ACCENT)
+		.label(Text.create("Save", info))
+		.onClick(event -> this.saved = true)
+		.attach(card))
 		.attach(this);
 	}
 	// #endregion
