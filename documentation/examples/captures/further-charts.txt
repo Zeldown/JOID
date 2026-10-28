@@ -1,9 +1,11 @@
-# crop further-charts-start 80 60 900 400
+# crop further-charts-start 80 80 440 280
+# crop further-charts-radar 560 56 360 300
 # crop further-charts-next 80 60 900 400
 # still further-charts-next 50
 ui com.example.further.ChartsUI
 wait 100
 shot further-charts-start
+shot further-charts-radar
 move 360 420
 # film further-charts-next
 wait 300
