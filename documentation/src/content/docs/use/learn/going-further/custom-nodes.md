@@ -34,7 +34,7 @@ It attaches, nests and positions like any built-in node:
 ![Three dark grey discs side by side, each with a smaller blue disc at its center](/captures/further-custom-nodes-dots.webp)
 
 <figcaption>
-Each `DotNode` draws two circles in its own bounds.
+A custom node draws in its own bounds, so the same class sits anywhere in the tree.
 </figcaption>
 </figure>
 

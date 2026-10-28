@@ -56,8 +56,7 @@ A [[SnapshotImage]] holds the pixels as ARGB `int` values, row after row, from t
 ![A dark grey Play button on a dark background](/captures/running-testing-menu.webp)
 
 <figcaption>
-The middle of `menu.png`.
-The test writes the whole 1920×1080 window.
+The shot is the window as the user sees it, so a reference compares every pixel of the screen.
 </figcaption>
 </figure>
 

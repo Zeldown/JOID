@@ -69,7 +69,7 @@ The step moves the UI with the model-view matrix stack of the render bridge, `ge
 
 ![The pointer clicks Slide in a row of three blue buttons: under the buttons, dimmed by the popup backdrop, a dark card slides up from below with a small bounce, stays, then drops down and disappears while the buttons light up again when Escape, shown in a key badge, closes it](/captures/style-transition.webp)
 
-<figcaption>`SlideTransition`: 500 ms in with `BACK_OUT`, 300 ms out with `QUART_IN`.</figcaption>
+<figcaption>Each step has its own duration and easing: the slide overshoots on the way in and falls away on the way out.</figcaption>
 </figure>
 
 `TransitionStep.create(duration, easing)` gives the duration in milliseconds and the [easing](/use/learn/style-and-motion/animation/#shape-the-motion-with-easing) of the step.
