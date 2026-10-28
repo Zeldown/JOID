@@ -26,6 +26,8 @@ public final class FrameBufferPool {
 		final boolean owned = pooled != null;
 		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {
 			pooled.lastUse = now;
+			pooled.peakWidth = Math.max(pooled.peakWidth, width);
+			pooled.peakHeight = Math.max(pooled.peakHeight, height);
 			return pooled.frameBuffers;
 		}
 
@@ -42,7 +44,7 @@ public final class FrameBufferPool {
 			frameBuffers[i] = render.createFrameBuffer(targetWidth, targetHeight);
 		}
 
-		FrameBufferPool.POOL.put(key, new PooledFrameBuffers(frameBuffers, now));
+		FrameBufferPool.POOL.put(key, new PooledFrameBuffers(frameBuffers, now, now, width, height));
 		return frameBuffers;
 	}
 
@@ -58,9 +60,14 @@ public final class FrameBufferPool {
 		final Iterator<PooledFrameBuffers> iterator = FrameBufferPool.POOL.values().iterator();
 		while (iterator.hasNext()) {
 			final PooledFrameBuffers pooled = iterator.next();
-			if (now - pooled.lastUse >= 5_000_000_000L) {
+			final boolean elapsed = now - pooled.peakStart >= 5_000_000_000L;
+			if (now - pooled.lastUse >= 5_000_000_000L || elapsed && (FrameBufferPool.capacity(0, pooled.peakWidth) < pooled.frameBuffers[0].getWidth() || FrameBufferPool.capacity(0, pooled.peakHeight) < pooled.frameBuffers[0].getHeight())) {
 				pooled.delete();
 				iterator.remove();
+			} else if (elapsed) {
+				pooled.peakStart = now;
+				pooled.peakWidth = 0;
+				pooled.peakHeight = 0;
 			}
 		}
 	}
@@ -75,6 +82,10 @@ public final class FrameBufferPool {
 		private final IFrameBuffer[] frameBuffers;
 
 		private long lastUse;
+		private long peakStart;
+
+		private int peakWidth;
+		private int peakHeight;
 
 		private void delete() {
 			for (final IFrameBuffer frameBuffer : this.frameBuffers) {
