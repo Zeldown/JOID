@@ -10,7 +10,7 @@ ui com.example.start.CounterUI
 move 1290 640
 # film quick-start-counter 60
 wait 300
-moveto 1020 560 500
+moveto 815 560 500
 wait 300
 press LEFT
 release LEFT

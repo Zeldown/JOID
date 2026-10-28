@@ -26,7 +26,7 @@ JOID blends the two colors over [[Node#hoverDuration]] milliseconds, along the c
 
 <figure>
 
-![The pointer moves onto a dark grey "Shop" button, which turns a lighter grey while its label stays readable, then leaves it, and the button turns dark grey again](/captures/interactivity-hover.webp)
+![A dark card with a dark grey "Shop" button on the left and a blue "Settings" button on the right; the pointer moves onto Shop, which turns a lighter grey while its label stays readable, then leaves it, and the button turns dark grey again](/captures/interactivity-hover.webp)
 
 <figcaption>
 The color follows the hover progress, both when the pointer enters and when it leaves.
@@ -43,7 +43,7 @@ On a node held in a local variable, as here, give the setter a lambda ([What JOI
 
 <figure>
 
-![A blue "Settings" button with a blue line under it that grows from the left while the pointer stays on the button, and shrinks back once the pointer leaves](/captures/interactivity-underline.webp)
+![The same card, with Shop on the left; the pointer moves onto the blue "Settings" button on the right, and a blue line under it grows from the left while the pointer stays on the button, then shrinks back once the pointer leaves](/captures/interactivity-underline.webp)
 
 <figcaption>
 The underline is `0` px wide at rest and `220` px wide once the button is hovered.
