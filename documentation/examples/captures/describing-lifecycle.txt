@@ -1,4 +1,4 @@
-# crop describing-lifecycle-flow 300 300 1320 400
+# crop describing-lifecycle-flow 515 320 890 440
 ui com.example.describing.lifecycle.LifecycleDiagramUI
 wait 100
 shot describing-lifecycle-flow

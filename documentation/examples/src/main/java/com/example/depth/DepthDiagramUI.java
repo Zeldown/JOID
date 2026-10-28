@@ -6,6 +6,7 @@ import com.example.capture.CaptureStyle;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
+import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -58,8 +59,8 @@ public abstract class DepthDiagramUI extends UI {
 	}
 
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color, final Color note) {
-		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 20F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 17F).color(note);
+		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 24F).weight(FontWeight.BOLD).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 20F).color(note);
 		return RectNode
 		.create(x, y, width, height)
 		.color(fill)
@@ -70,7 +71,7 @@ public abstract class DepthDiagramUI extends UI {
 				TextNode.create(0, 0, width, height).text(Text.create(title, bold).align(Align.CENTER)).attach(rect);
 			} else {
 				TextNode.create(0, 0, width, height / 2D + 2D).text(Text.create(title, bold).alignX(Align.CENTER).alignY(Align.END)).attach(rect);
-				TextNode.create(0, height / 2D + 8D, width, height / 2D - 8D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).attach(rect);
+				TextNode.create(10, height / 2D + 8D, width - 20D, height / 2D - 8D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).mode(TextMode.SPLIT).attach(rect);
 			}
 		});
 	}

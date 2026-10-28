@@ -22,12 +22,12 @@ ui com.example.describing.canvas.ZoomUI
 move 700 470
 # film describing-canvas-zoom 60
 wait 300
-moveto 514 310 500
+moveto 532 320 500
 wait 200
 press LEFT
 release LEFT
 wait 1000
-moveto 442 315 400
+moveto 422 326 400
 wait 200
 press LEFT
 release LEFT

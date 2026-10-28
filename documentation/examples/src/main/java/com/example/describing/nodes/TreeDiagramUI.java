@@ -11,11 +11,11 @@ public class TreeDiagramUI extends DiagramUI {
 		super.backdrop(360, 190, 1200, 560).body(backdrop -> {
 			super.box(40, 40, 320, 70, "MenuUI", "").attach(backdrop);
 			super.box(40, 160, 320, 90, "RectNode card", "at (760, 340)").attach(backdrop);
-			super.subject(110, 300, 250, 90, "RectNode bar", "at (50, 130)").attach(backdrop);
-			super.box(110, 420, 250, 70, "TextNode", "").attach(backdrop);
+			super.box(110, 300, 250, 70, "TextNode", "").attach(backdrop);
+			super.subject(110, 410, 250, 90, "RectNode bar", "at (50, 130)").attach(backdrop);
 			super.arrow(backdrop, 200, 110, 200, 160);
 			super.line(backdrop, 60, 250, 60, 455);
-			super.arrow(backdrop, 60, 345, 110, 345);
+			super.arrow(backdrop, 60, 335, 110, 335);
 			super.arrow(backdrop, 60, 455, 110, 455);
 
 			RectNode
@@ -25,8 +25,8 @@ public class TreeDiagramUI extends DiagramUI {
 				.create(266, 119, 140, 140)
 				.color(DiagramUI.ELEMENT)
 				.body(card -> {
+					super.label(17.5, 10.5, 105, 28, "Text", 18F, DiagramUI.LABEL).attach(card);
 					RectNode.create(17.5, 45.5, 105, 24.5).color(DiagramUI.ACCENT).attach(card);
-					super.label(17.5, 80, 105, 28, "Text", 18F, DiagramUI.LABEL).attach(card);
 				})
 				.attach(canvas))
 			.attach(backdrop);

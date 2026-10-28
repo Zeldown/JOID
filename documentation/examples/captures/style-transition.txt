@@ -1,12 +1,15 @@
 # crop style-transition 540 140 840 920
-# hold style-transition 600
-# still style-transition 56
+# still style-transition 90
 ui com.example.style.MenuUI
-move 960 190
+move 1250 300
+# film style-transition 60
+wait 300
+moveto 960 190 400
+wait 100
 press LEFT
 release LEFT
-move 1700 1050
-# film style-transition 60
-wait 1000
+wait 1300
 key ESCAPE
-wait 500
+wait 600
+moveto 1250 300 400
+wait 300

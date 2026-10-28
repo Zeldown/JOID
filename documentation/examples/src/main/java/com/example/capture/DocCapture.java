@@ -166,6 +166,7 @@ public final class DocCapture {
 		final Map<String, Pointer> pointers = new HashMap<>();
 		final boolean bare = DocCapture.isBare(commands);
 		double time = 0D;
+		final double[] press = {-5000D, -5000D};
 		double pressed = Double.NEGATIVE_INFINITY;
 		boolean held = false;
 		for (final String line : commands) {
@@ -190,6 +191,8 @@ public final class DocCapture {
 				time += Double.parseDouble(arguments[3]);
 				break;
 			case "press":
+				press[0] = mouse[0];
+				press[1] = mouse[1];
 				pressed = time;
 				held = true;
 				break;
@@ -197,7 +200,7 @@ public final class DocCapture {
 				held = false;
 				break;
 			case "shot":
-				pointers.put(arguments[1], bare ? null : new Pointer(mouse[0], mouse[1], time - pressed, held));
+				pointers.put(arguments[1], bare ? null : new Pointer(mouse[0], mouse[1], press[0], press[1], time - pressed, held));
 				break;
 			default:
 				break;
@@ -301,8 +304,8 @@ public final class DocCapture {
 		final double progress = pointer.pressAge / 450D;
 		final double radius = 14D + 12D * (1D - Math.pow(1D - progress, 3D));
 		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_RING, 0.3D * (1D - progress)));
-		graphics.fill(new Ellipse2D.Double(pointer.x - 14D, pointer.y - 14D, 28D, 28D));
-		DocCapture.drawRing(graphics, pointer.x, pointer.y, radius, 1D - progress);
+		graphics.fill(new Ellipse2D.Double(pointer.pressX - 14D, pointer.pressY - 14D, 28D, 28D));
+		DocCapture.drawRing(graphics, pointer.pressX, pointer.pressY, radius, 1D - progress);
 	}
 
 	private static void drawRing(final Graphics2D graphics, final double x, final double y, final double radius, final double alpha) {
@@ -323,12 +326,16 @@ public final class DocCapture {
 
 		private final double x;
 		private final double y;
+		private final double pressX;
+		private final double pressY;
 		private final double pressAge;
 		private final boolean held;
 
-		private Pointer(final double x, final double y, final double pressAge, final boolean held) {
+		private Pointer(final double x, final double y, final double pressX, final double pressY, final double pressAge, final boolean held) {
 			this.x = x;
 			this.y = y;
+			this.pressX = pressX;
+			this.pressY = pressY;
 			this.pressAge = pressAge;
 			this.held = held;
 		}

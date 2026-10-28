@@ -33,16 +33,16 @@ public class HoverUI extends UI {
 		.effect(BorderNodeEffect.create(HoverUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region color
-			RectNode
+			final RectNode shop = RectNode
 			.create(60, 100, 220, 60)
 			.color(HoverUI.ELEMENT)
 			.hoveredColor(HoverUI.HOVER)
 			.hoverDuration(300L)
 			.hoverEquation(TweenEquations.QUAD_OUT)
-			.cursor(Cursor.POINTER)
 			.label(Text.create("Shop", info))
 			.attach(card);
 			// #endregion
+			shop.cursor(Cursor.POINTER);
 			// #region value
 			final RectNode link = RectNode
 			.create(320, 100, 220, 60)

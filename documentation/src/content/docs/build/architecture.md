@@ -11,7 +11,7 @@ A module depends only on the layers above it, never on a sibling of its own laye
 
 <figure>
 
-![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, three base modules, each with an arrow up to the core: base-glfw (window, input, OpenAL binding), with an arrow to base-openal (audio bridge over IAlBinding), and base-opengl (render bridge over IGlBinding). Between the middle and the bottom, a note reads: each backend uses the base modules named in its box. At the bottom, four backends: backend-lwjgl2 (openal, opengl), backend-lwjgl3 (glfw, openal, opengl), backend-vulkan (glfw, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
+![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, three base modules, each with an arrow up to the core: base-glfw (window, input, OpenAL binding), with an arrow to base-openal (audio bridge over IAlBinding), and base-opengl (render bridge over IGlBinding). Between the middle and the bottom, a note reads: each backend uses the base modules named in its box. At the bottom, four backends on two rows: backend-lwjgl2 (openal, opengl), backend-lwjgl3 (glfw, openal, opengl), backend-vulkan (glfw, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
 
 <figcaption>
 A backend picks the base modules it needs and adds only what is specific to its library.

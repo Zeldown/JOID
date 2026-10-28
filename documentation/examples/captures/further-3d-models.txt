@@ -4,7 +4,15 @@ ui com.example.further.ModelsUI
 wait 200
 move 380 390
 # film further-3d-models-cubes 60
+wait 250
+moveto 420 200 400
+wait 150
+press LEFT
+moveto 660 200 700
 wait 300
+moveto 420 200 700
+release LEFT
+wait 150
 moveto 230 372 400
 wait 200
 press LEFT
@@ -31,13 +39,5 @@ wait 200
 press LEFT
 release LEFT
 wait 200
-moveto 420 200 400
-wait 150
-press LEFT
-moveto 660 200 700
-wait 300
-moveto 420 200 700
-release LEFT
-wait 250
-moveto 380 390 400
-wait 300
+moveto 380 390 300
+wait 850

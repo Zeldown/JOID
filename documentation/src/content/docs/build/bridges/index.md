@@ -12,7 +12,7 @@ A backend fills the registries; the core reads them.
 
 <figure>
 
-![Two rows of boxes, one per registry of BridgeHandler with the bridge it holds. The first row, labelled registered by Backend.register(): UI with a WindowUIBridge by default, WINDOW and RENDER highlighted with your window and render bridges, AUDIO marked optional, THREAD with a FrameThreadBridge. The second row, labelled registered by JOID before any backend: CLOCK with SystemClockBridge, THREAD with DirectThreadBridge, SIGNAL_REPLAY with the identity. A line below reads: get() returns the bridge of the highest priority, only UI uses all of its bridges.](/captures/build-registries.webp)
+![Two groups of boxes, one per registry of BridgeHandler with the bridge it holds. The first group, on two rows, labelled registered by Backend.register(): UI with a WindowUIBridge by default, WINDOW and RENDER highlighted with your window and render bridges, AUDIO marked optional, THREAD with a FrameThreadBridge. The second group, labelled registered by JOID before any backend: CLOCK with SystemClockBridge, THREAD with DirectThreadBridge, SIGNAL_REPLAY with the identity. A line below reads: get() returns the bridge of the highest priority, only UI uses all of its bridges.](/captures/build-registries.webp)
 
 <figcaption>
 Who fills each registry: your backend fills five through its hooks, JOID fills three with its defaults.

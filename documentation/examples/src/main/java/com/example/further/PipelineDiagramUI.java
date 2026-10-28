@@ -24,23 +24,23 @@ public class PipelineDiagramUI extends UI {
 		final String[] arrows = {"draws into", "pass 1", "pass 2", "last pass"};
 
 		ContainerNode
-		.create(80, 80, 1340, 160)
+		.create(770, 100, 380, 630)
 		.body(container -> {
 			for (int i = 0; i < boxes.length; i++) {
-				RectNode.create(i * 284, 60, 204, 80).color(CaptureStyle.SURFACE).effect(RoundedNodeEffect.create(12F)).effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F)).label(Text.create(boxes[i], info)).attach(container);
+				RectNode.create(40, 40 + i * 120, 260, 70).color(CaptureStyle.SURFACE).effect(RoundedNodeEffect.create(12F)).effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F)).label(Text.create(boxes[i], info)).attach(container);
 			}
 
 			for (int i = 0; i < arrows.length; i++) {
-				TextNode.create(i * 284 + 244, 20).text(Text.create(arrows[i], info)).anchorX(Align.CENTER).attach(container);
+				TextNode.create(200, i * 120 + 135).text(Text.create(arrows[i], info)).anchorY(Align.CENTER).attach(container);
 			}
 		})
 		.layer((node, mouseX, mouseY) -> {
 			for (int i = 0; i < arrows.length; i++) {
-				final double start = i * 284D + 208D;
-				final double end = i * 284D + 278D;
-				DrawUtils.SHAPE.drawLine(CaptureStyle.ACCENT, 3F, Point.of(start, 100D), Point.of(end, 100D));
-				final Point tip = Point.of(end, 100D);
-				DrawUtils.SHAPE.drawPolygon(CaptureStyle.ACCENT, tip, Point.of(end - 12D, 92D), Point.of(end - 12D, 108D));
+				final double start = i * 120D + 114D;
+				final double end = i * 120D + 156D;
+				DrawUtils.SHAPE.drawLine(CaptureStyle.ACCENT, 3F, Point.of(170D, start), Point.of(170D, end));
+				final Point tip = Point.of(170D, end);
+				DrawUtils.SHAPE.drawPolygon(CaptureStyle.ACCENT, tip, Point.of(162D, end - 12D), Point.of(178D, end - 12D));
 			}
 		})
 		.attach(this);

@@ -81,10 +81,10 @@ The own position of a child adds to the place that the flex node gives it:
 
 <figure>
 
-![Three bars in a column on a dark card: the dark grey middle bar sits 40 design pixels right of the blue ones and 30 lower than its place, and overlaps the blue bar below it, which keeps its place](/captures/describing-flex-offset.webp)
+![Three bars in a column on a dark card: the blue middle bar sits 40 design pixels right of the dark grey ones and 30 lower than its place, and the dark grey bar below it, which keeps its place, overlaps it](/captures/describing-flex-offset.webp)
 
 <figcaption>
-The dark grey bar, created at (40, 30), moves 40 design pixels right and 30 down, and the bar after it does not move.
+The blue bar, created at (40, 30), moves 40 design pixels right and 30 down, and the bar after it does not move.
 </figcaption>
 </figure>
 

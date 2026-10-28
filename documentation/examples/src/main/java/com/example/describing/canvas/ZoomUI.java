@@ -21,8 +21,8 @@ public class ZoomUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 56F).color(ZoomUI.TEXT);
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 56F).color(ZoomUI.ON_ACCENT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 96F).color(ZoomUI.TEXT);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 120F).color(ZoomUI.ON_ACCENT);
 
 		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.SURFACE).attach(this);
 
@@ -30,23 +30,23 @@ public class ZoomUI extends UI {
 		super.zoom(0.8D);
 
 		RectNode
-		.create(760, 340, 400, 400)
+		.create(660, 290, 600, 500)
 		.color(ZoomUI.ELEMENT)
 		.effect(RoundedNodeEffect.create(12F))
 		.body(card -> {
 			TextNode
-			.create(200, 120)
+			.create(300, 150)
 			.text(Text.create(() -> Math.round(super.getZoom() * 100D) + " %", info))
 			.anchor(Align.CENTER)
 			.attach(card);
 			RectNode
-			.create(50, 250, 130, 100)
+			.create(60, 300, 220, 150)
 			.color(ZoomUI.ACCENT)
 			.label(Text.create("-", label))
 			.onClick(event -> super.zoomBy(-0.1D))
 			.attach(card);
 			RectNode
-			.create(220, 250, 130, 100)
+			.create(320, 300, 220, 150)
 			.color(ZoomUI.ACCENT)
 			.label(Text.create("+", label))
 			.onClick(event -> super.zoomBy(0.1D))

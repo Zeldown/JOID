@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.example.ExampleFont;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
@@ -54,8 +55,11 @@ public class LoaderUI extends UI {
 
 	// #region fetch
 	private String fetch() {
+		final long end = BridgeHandler.CLOCK.get().currentTimeMillis() + 1000L;
 		try {
-			TimeUnit.SECONDS.sleep(1L);
+			while (BridgeHandler.CLOCK.get().currentTimeMillis() < end) {
+				TimeUnit.MILLISECONDS.sleep(10L);
+			}
 		} catch (final InterruptedException exception) {
 			Thread.currentThread().interrupt();
 		}

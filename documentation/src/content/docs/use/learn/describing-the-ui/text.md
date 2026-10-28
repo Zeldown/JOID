@@ -136,10 +136,10 @@ JOID calls it each time it measures or draws the text, so the text follows your 
 
 <figure>
 
-![A dark card with Welcome back, Ada on its first line, Ada in bold and blue, a dark grey button that the pointer clicks three times, its text going from Clicks: 0 to Clicks: 3, and a dark grey box that fits the word Settings](/captures/describing-text-runs.webp)
+![A dark card with Welcome back, Ada on its first line, Ada in bold and blue, and a dark grey button that the pointer clicks three times, its text going from Clicks: 0 to Clicks: 3](/captures/describing-text-runs.webp)
 
 <figcaption>
-Two runs on one line, a text that counts the clicks of its button, and a box sized from its label.
+Two runs on one line, and a text that counts the clicks of its button.
 </figcaption>
 </figure>
 
@@ -153,6 +153,15 @@ A `TextInfo` measures a string in its style: [[TextInfo#getWidth]] gives its wid
 
 ```java file="com/example/describing/text/RunsUI.java" region="measure"
 ```
+
+<figure>
+
+![The bottom of a dark card with a dark grey box sized to the word Settings, with the same space on its left and on its right](/captures/describing-text-measure.webp)
+
+<figcaption>
+Measured from its label, the box fits the word in any font and at any size.
+</figcaption>
+</figure>
 
 The box is the width of "Settings" plus 48 and the line height plus 24, so the label sits 24 design pixels from each side and 12 from the top.
 A `Text` measures itself too, with [[Text#getWidth]] and [[Text#getHeight]].

@@ -1,4 +1,4 @@
-# crop running-embedding-bridges 360 240 1200 600
+# crop running-embedding-bridges 540 240 840 600
 ui com.example.running.BridgeStackDiagramUI
 wait 100
 shot running-embedding-bridges

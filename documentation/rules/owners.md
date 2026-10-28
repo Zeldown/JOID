@@ -91,7 +91,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Shipping your application (prod jar, fonts, files) | use/guides/ship-your-application |
 | Building a UI kit end to end | use/guides/build-a-ui-kit |
 | Copying a mockup pixel for pixel (no tool named) | use/guides/copy-a-mockup |
-| Troubleshooting by symptom ("My node does not appear", "Text is blurry"…) | use/troubleshooting |
+| Troubleshooting by symptom ("A node does not appear", "Text or edges look blurry"…) | use/troubleshooting |
 | Best practices (DO / DON'T / PREFER / AVOID) | use/best-practices |
 | Performance and GPU resource lifetime | use/in-depth/performance |
 | The cause and the fix of every message | documentation/reference/errors.md, one `## <key>` entry per message, shown on reference/errors |

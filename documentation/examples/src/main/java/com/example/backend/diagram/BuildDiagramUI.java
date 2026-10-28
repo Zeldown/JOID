@@ -27,12 +27,12 @@ public abstract class BuildDiagramUI extends UI {
 
 	protected final TextNode label(final double x, final double y, final double width, final double height, final String text) {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 22F).color(CaptureStyle.MUTED);
-		return TextNode.create(x, y, width, height).text(Text.create(text, info).align(Align.CENTER));
+		return TextNode.create(x, y, width, height).text(Text.create(text, info).align(Align.CENTER)).mode(TextMode.SPLIT);
 	}
 
 	protected final TextNode note(final double x, final double y, final double width, final double height, final String text) {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(CaptureStyle.MUTED);
-		return TextNode.create(x, y, width, height).text(Text.create(text, info).align(Align.CENTER));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 20F).color(CaptureStyle.MUTED);
+		return TextNode.create(x, y, width, height).text(Text.create(text, info).align(Align.CENTER)).mode(TextMode.SPLIT);
 	}
 
 	protected final RectNode box(final double x, final double y, final double width, final double height, final String title, final String detail) {
@@ -61,8 +61,8 @@ public abstract class BuildDiagramUI extends UI {
 	}
 
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color, final Color note) {
-		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 22F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 17F).color(note);
+		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 24F).weight(FontWeight.BOLD).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 20F).color(note);
 		final double middle = detail.isEmpty() ? height : height / 2D + 4D;
 		return RectNode
 		.create(x, y, width, height)

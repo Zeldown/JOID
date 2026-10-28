@@ -114,7 +114,6 @@
 	border: 1px solid var(--sl-color-gray-5);
 }
 
-:root[data-theme='dark'] .sl-markdown-content img[src^='/captures/'],
 :root[data-theme='dark'] .joid-card-empty {
 	filter: brightness(0.82);
 }

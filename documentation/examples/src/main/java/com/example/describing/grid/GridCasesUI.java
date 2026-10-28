@@ -89,11 +89,11 @@ public class GridCasesUI extends UI {
 			.create(20, 20, 360, 0)
 			.margin(10D)
 			.body(grid -> {
-				RectNode.create(0, 0, 110, 60).color(GridCasesUI.ACCENT).attach(grid);
-				RectNode.create(0, 0, 110, 120).color(GridCasesUI.ELEMENT).attach(grid);
-				RectNode.create(0, 0, 110, 80).color(GridCasesUI.ACCENT).attach(grid);
-				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ACCENT).attach(grid);
-				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ACCENT).attach(grid);
+				RectNode.create(0, 0, 110, 60).color(GridCasesUI.ELEMENT).attach(grid);
+				RectNode.create(0, 0, 110, 120).color(GridCasesUI.ACCENT).attach(grid);
+				RectNode.create(0, 0, 110, 80).color(GridCasesUI.ELEMENT).attach(grid);
+				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ELEMENT).attach(grid);
+				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ELEMENT).attach(grid);
 			})
 			.attach(card);
 			// #endregion
