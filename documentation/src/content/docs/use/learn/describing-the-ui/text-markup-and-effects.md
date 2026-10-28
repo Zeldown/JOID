@@ -76,8 +76,25 @@ A markup adds an effect to part of a string with `style.effect(...)`, as `<em>` 
 `decorate` draws the line with [[DrawUtils]], the drawing API that [Drawing shapes and text](/use/learn/going-further/drawing/) teaches.
 
 An effect never changes the layout: the text keeps its width and its line breaks, wherever `apply` moves the glyphs.
-An effect that reads the time in `apply` animates, because JOID draws the text again on every frame.
 A style with a shadow draws the glyphs twice: `apply` moves the shadow with its glyph, and `decorate` runs for the shadow too, where [[ITextGlyph#isShadow]] is `true`.
+
+An effect that reads the time in `apply` animates, because JOID draws the text again on every frame.
+This one paints three glyphs blue, one glyph further every 80 ms of the [time of JOID](/use/learn/running/testing/#keep-every-run-identical):
+
+```java file="com/example/describing/markup/SweepTextEffect.java" region="class"
+```
+
+```java file="com/example/describing/markup/SweepUI.java" region="sweep"
+```
+
+<figure>
+
+![On a dark card, the light text Loading the next level; three letters at a time turn blue, from the first letter to the last, and after a short pause the blue letters start again from the left](/captures/describing-markup-sweep.webp)
+
+<figcaption>
+The effect reads the clock on every frame: no signal and no rebuild move the blue letters.
+</figcaption>
+</figure>
 
 ## Transform a text with a modifier
 
@@ -119,7 +136,7 @@ A string never goes through a converter.
 
 - An **`ITextMarkup`** reads tags in the string and changes the **`TextStyle`** of what follows; its tags are neither drawn nor measured.
 - A style uses its own markups (`markups(...)`) or the markups **registered** for the application; `markups()` turns them off.
-- An **`ITextEffect`** changes glyphs in three hooks, **`background`**, **`apply`** and **`decorate`**, without changing the layout.
+- An **`ITextEffect`** changes glyphs in three hooks, **`background`**, **`apply`** and **`decorate`**, without changing the layout; one that reads the clock animates.
 - A **`TextModifier`** rewrites the whole text, tags kept; a run can have its own.
 - An **`ITextConverter`**, registered once, turns your own objects into strings.
 
