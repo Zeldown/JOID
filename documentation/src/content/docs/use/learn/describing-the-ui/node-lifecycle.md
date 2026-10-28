@@ -59,8 +59,7 @@ The time starts again at 0 each time the card joins the UI, here when the same U
 [[BridgeHandler#CLOCK]] gives the time of JOID in milliseconds, the clock that drives animations: the card shows the seconds since it joined the UI.
 [[UI#getFrameTime]] gives the time since the previous frame, for a value that moves at a speed; the first frame after the same instance opens again counts the time that it stayed closed.
 
-JOID first updates every node of every open UI, then draws them all.
-Inside a UI, the children are updated before their parent, and the `update()` of the UI runs after its nodes.
+Children run `onUpdate` before their parent, and every node of every UI updates before anything draws ([The frame lifecycle](/use/in-depth/frame-lifecycle/#one-frame-step-by-step)).
 
 A child attached to a node that is not in a UI yet waits: its `onInit` runs when its root joins the UI, before the `onInit` of its parent.
 A child appended to a node already in a UI joins at once.
@@ -129,12 +128,12 @@ JOID stops by itself what it owns: the signals that a node follows, its hover an
 ## Try it
 
 **Count the visits.**
-Show how many times the frame card of `LifecycleUI` joined the UI.
+Show how many times the timer card of `LifecycleUI` joined the UI.
 
 <details>
 <summary>Solution</summary>
 
-`onInit` runs at every attach: increment a field there instead of resetting it.
+`onInit` runs at every attach: increment an `int` field of the UI there.
 
 ```java fragment
 .onInit(event -> this.visits++)

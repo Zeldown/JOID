@@ -45,7 +45,7 @@ Every file of the game goes in the package `com.example.starfall`, and each less
 
 The last column of the table links the complete code at the end of each lesson, a program that runs on its own.
 To start a lesson from there, or to compare your code, copy the folder of the lesson before it; `polish` is the finished game.
-In the repository, each folder keeps a package of its own, `com.example.tutorial.<folder>`, so that the seven programs live side by side.
+In the repository, each folder keeps a package of its own, `com.example.tutorial.<folder>`, so that the seven programs live side by side: when you copy one into your project, change its package to `com.example.starfall`.
 
 Each lesson ends with a challenge and its solution, and with links to the Learn pages that explain what you used.
 The tutorial never explains a notion in depth: follow the links when you want the full picture.

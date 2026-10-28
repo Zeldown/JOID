@@ -218,7 +218,7 @@ final Scale scale = Scale.create(() -> (double) pulse.get(), () -> (double) puls
 CircleNode.create(0, 0, 100).effect(TransformNodeEffect.create(Transformation.create().scale(scale))).attach(this);
 ```
 
-[[Scale]] scales around the center of the node ([Effects](/use/learn/style-and-motion/effects/)); add `onDetach(event -> pulse.clear())` to stop it with the UI.
+[[Scale]] gives the factor of each axis ([Rotate and scale a drawing](/use/learn/going-further/drawing-resources-and-transforms/#rotate-and-scale-a-drawing)), and the transform effect scales around the center of the node; add `onDetach(event -> pulse.clear())` to stop it with the UI.
 
 </details>
 

@@ -51,7 +51,7 @@ JOID never creates a window: your program creates it with GLFW, hands it to the 
 The console prints `[JOID] 8.0.0 loaded in dev mode, …` ([Installation](/use/get-started/installation/#choose-the-dev-or-the-prod-jar)), and the window shows the button: each click increments the counter, and Escape closes the UI.
 
 This program runs on LWJGL 3.
-With Vulkan or LWJGL 2, take the complete program of your backend from [Start the other backends](/use/learn/running/backends/#start-the-other-backends) and open `CounterUI` in it; the rest of this page and the tutorial do not change.
+With Vulkan or LWJGL 2, take the complete program of your backend from [Start the other backends](/use/learn/running/backends/#start-the-other-backends) and open `CounterUI` in it; the rest of this page does not change, and the tutorial changes only `Main`: apply its highlighted lines to your program.
 
 ### If it does not work
 
@@ -188,6 +188,8 @@ JOID saves it when the UI closes, which `closeAll()` does after the loop of `Mai
 
 ```java file="com/example/start/TourUI.java" region="property"
 ```
+
+Increment it in `init()`, which runs at each opening, and show it in a text, `"Visit " + this.visits`:
 
 ```java file="com/example/start/TourUI.java" region="visits"
 ```
