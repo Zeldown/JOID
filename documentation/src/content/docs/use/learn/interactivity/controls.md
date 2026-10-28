@@ -19,8 +19,8 @@ Learn the pattern once on this page, then the options of each control.
 
 ## Bind a control to a signal
 
-A control is abstract: its look comes from a skin, a small subclass that gives it its parts.
-The controls of this page use the skins of the [example kit](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/java/com/example/kit) (`KitCheckboxNode`, `KitIntegerSliderNode`…), which [Give your controls a look](/use/learn/going-further/ui-kit/) writes; [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts that each skin gives.
+A control is abstract: its look comes from its parts, the nodes that draw its box, its track or its thumb.
+The controls of this page get their parts where they are created, in an empty subclass of the control, such as a [[CheckboxNode]] created with `new CheckboxNode(...) {}`, followed by the setters of the parts; [Give your controls a look](/use/learn/going-further/ui-kit/) gathers them in reusable skins, and [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts of each control.
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
 ```
@@ -30,7 +30,7 @@ The controls of this page use the skins of the [example kit](https://github.com/
 
 <figure>
 
-![A card with a checked "Subtitles" box, a "Volume" slider and a number field at 7, and the texts "Subtitles: true" and "Volume: 7"; the pointer drags the slider to 9 and back to 7, and the field and the text follow](/captures/interactivity-settings.webp)
+![A dark card with a checked "Subtitles" box, its mark blue, a "Volume" slider and a number field at 7, and the texts "Subtitles: true" and "Volume: 7"; the pointer drags the slider to 9 and back to 7, and the field and the text follow](/captures/interactivity-settings.webp)
 
 <figcaption>
 The slider and the field share `volume`: while the user drags the slider, the field and the text follow.
@@ -53,7 +53,7 @@ It never runs for a value equal to the current one, and not for the start value.
 Its event holds the old value (`getPrevious()`) and the new one (`getValue()`):
 
 ```java fragment
-KitCheckboxNode.create(240, 40, 50).onChange(event -> this.save(event.getValue())).attach(card);
+checkbox.onChange(event -> this.save(event.getValue()));
 ```
 
 Most of the time, a signal makes `onChange` useless: the nodes that show the value read the signal.
@@ -68,7 +68,7 @@ Keep `onChange` for an action, such as saving the settings or playing a sound.
 
 <figure>
 
-![A slider at 5 of 10, a "Set to 10" button and the text "Volume: 5"; the pointer drags the thumb to the end of the track, where it stops at 8, then clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
+![A slider at 5 of 10 with a blue thumb, a dark grey "Set to 10" button and the text "Volume: 5"; the pointer drags the thumb to the end of the track, where it stops at 8, then clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
 
 <figcaption>
 A drag to the end of the track stops at 8, the last value that `beforeChange` lets through.
@@ -143,7 +143,7 @@ Inside your own [[Signal#batch]], `onChange` runs at once, and the nodes bound t
 
 <figure>
 
-![A row of three options, "Story", "Normal" and "Hard", with "Normal" selected in grey; the pointer selects "Hard", "Story", then "Normal", and the text "Difficulty" follows](/captures/interactivity-switch.webp)
+![A row of three options, "Story", "Normal" and "Hard", with "Normal" selected in blue; the pointer selects "Hard", "Story", then "Normal", and the text "Difficulty" follows](/captures/interactivity-switch.webp)
 
 <figcaption>
 A switch shows every option side by side; a press on one selects it.
@@ -168,7 +168,7 @@ A [[SwitchNode]] builds one node per option with its `option((value, index) -> n
 
 <figure>
 
-![A selector that reads "English"; the pointer opens it, and a list of "English", "French", "German" and "Japanese" covers it; the pointer picks "French", opens it again and picks "English", and the text "Language" follows](/captures/interactivity-selector.webp)
+![A dark grey selector that reads "English"; the pointer opens it, and a list of "English", "French", "German" and "Japanese" covers it; the pointer picks "French", opens it again and picks "English", and the text "Language" follows](/captures/interactivity-selector.webp)
 
 <figcaption>
 A press opens the list; a press on an option selects it and closes the list.
@@ -190,7 +190,7 @@ The list closes when the selector is detached.
 
 <figure>
 
-![A slider whose thumb sits at the third of four steps, and the text "Quality: HIGH"; the pointer presses the second step, then the last one, then drags the thumb to the first step and back to the third, and the text follows](/captures/interactivity-slider.webp)
+![A slider whose blue thumb sits at the third of four steps, and the text "Quality: HIGH"; the pointer presses the second step, then the last one, then drags the thumb to the first step and back to the third, and the text follows](/captures/interactivity-slider.webp)
 
 <figcaption>
 A slider picks among ordered values; the thumb jumps to the step under a press.
@@ -218,7 +218,7 @@ A [[ProgressNode]] shows a value and takes no input:
 
 <figure>
 
-![Two bars under a slider set at 6 of 10: the first is filled from the left on 60 % of its width, the second from the right; the pointer drags the slider to 10, to 0, then back to 6, and both bars follow](/captures/interactivity-progress.webp)
+![Two dark grey bars under a slider set at 6 of 10: the first is filled in blue from the left on 60 % of its width, the second from the right; the pointer drags the slider to 10, to 0, then back to 6, and both bars follow](/captures/interactivity-progress.webp)
 
 <figcaption>
 The bars follow the slider: at 6, `0.6F` fills 60 % of the track, from the side of the direction.
@@ -249,7 +249,7 @@ In `SettingsUI`, uncheck "Subtitles" when the volume reaches `0`.
 
 An action on a change goes in `onChange`:
 
-```java file="com/example/interactivity/controls/MuteUI.java" region="mute" ins={5}
+```java file="com/example/interactivity/controls/MuteUI.java" region="mute" ins={6}
 ```
 
 </details>
@@ -263,7 +263,11 @@ In `ChoicesUI`, keep the difficulty as an `IntegerSignal` from `0` to `2` instea
 `valueIndex(...)` binds the index both ways:
 
 ```java fragment
-KitSwitchNode.<String>create(60, 60, 600, 60).values("Story", "Normal", "Hard").valueIndex(this.level).attach(card);
+new SwitchNode<String>(60, 60, 600, 60) {}
+.option(...)
+.values("Story", "Normal", "Hard")
+.valueIndex(this.level)
+.attach(card);
 ```
 
 </details>

@@ -1,12 +1,12 @@
-# crop interactivity-field 660 390 600 300
+# crop interactivity-field 640 370 640 340
 # still interactivity-field 80
-# crop interactivity-focus 660 390 600 300
+# crop interactivity-focus 640 370 640 340
 # still interactivity-focus 50
-# crop interactivity-field-rules 660 390 600 300
+# crop interactivity-field-rules 640 370 640 340
 # still interactivity-field-rules 100
-# crop interactivity-field-number 660 390 600 300
+# crop interactivity-field-number 640 370 640 340
 # still interactivity-field-number 60
-# crop interactivity-field-color 660 390 600 300
+# crop interactivity-field-color 640 370 640 340
 # still interactivity-field-color 80
 ui com.example.interactivity.fields.NameFieldUI
 move 1120 650
@@ -98,21 +98,21 @@ key LEFT_CONTROL+A
 wait 300
 type #
 wait 150
-type 7
+type F
 wait 150
-type C
+type 2
+wait 150
+type A
 wait 150
 type 5
 wait 150
-type C
+type 4
 wait 150
-type F
-wait 150
-type F
+type 1
 wait 1200
 key LEFT_CONTROL+A
 wait 300
-type #555555
+type #5B8CFF
 wait 800
 moveto 1120 650 400
 wait 300

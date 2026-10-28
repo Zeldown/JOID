@@ -7,14 +7,17 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class CounterUI extends UI {
 
-	private static final Color DARK        = new Color(85, 85, 85).lock();
-	private static final Color INK         = new Color(153, 153, 153).lock();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	// #region signal
 	private final IntegerSignal clicks = new IntegerSignal(0);
@@ -22,16 +25,18 @@ public class CounterUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CounterUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CounterUI.TEXT);
 
 		RectNode
 		.create(660, 340, 600, 400)
-		.color(CounterUI.PLACEHOLDER)
+		.color(CounterUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(CounterUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region update
 			RectNode
 			.create(60, 60, 160, 60)
-			.color(Color.WHITE)
+			.color(CounterUI.ELEMENT)
 			.onClick(event -> this.clicks.increment())
 			.label(Text.create("+1", info))
 			.attach(card);
@@ -43,7 +48,7 @@ public class CounterUI extends UI {
 			.attach(card);
 			RectNode
 			.create(60, 220, 0, 40)
-			.color(this.clicks.get() >= 3 ? CounterUI.DARK : CounterUI.INK)
+			.color(this.clicks.get() >= 3 ? CounterUI.ACCENT : CounterUI.ELEMENT)
 			.width(40D + this.clicks.get() * 80D)
 			.attach(card);
 			// #endregion

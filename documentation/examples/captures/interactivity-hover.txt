@@ -1,12 +1,12 @@
-# crop interactivity-hover 660 390 600 300
+# crop interactivity-hover 640 370 640 340
 # still interactivity-hover 60
-# crop interactivity-underline 660 390 600 300
-# crop interactivity-enter 660 340 600 400
-# crop interactivity-tooltip-text 60 340 560 400
+# crop interactivity-underline 640 370 640 340
+# crop interactivity-enter 640 320 640 440
+# crop interactivity-tooltip-text 40 320 600 440
 # still interactivity-tooltip-text 70
-# crop interactivity-tooltip-node 680 340 560 400
+# crop interactivity-tooltip-node 660 320 600 440
 # still interactivity-tooltip-node 60
-# crop interactivity-tooltip-custom 1300 340 560 400
+# crop interactivity-tooltip-custom 1280 320 600 440
 # still interactivity-tooltip-custom 60
 ui com.example.interactivity.hover.HoverUI
 move 760 640

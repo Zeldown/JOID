@@ -1,16 +1,16 @@
-# crop interactivity-settings 560 340 800 400
+# crop interactivity-settings 540 320 840 440
 # still interactivity-settings 120
-# crop interactivity-refuse 660 390 600 300
+# crop interactivity-refuse 640 370 640 340
 # still interactivity-refuse 120
-# crop interactivity-pending 660 390 600 300
+# crop interactivity-pending 640 370 640 340
 # still interactivity-pending 50
-# crop interactivity-switch 1000 140 820 380
+# crop interactivity-switch 980 120 860 420
 # still interactivity-switch 40
-# crop interactivity-selector 100 560 820 380
+# crop interactivity-selector 80 540 860 420
 # still interactivity-selector 45
-# crop interactivity-slider 1000 560 820 380
+# crop interactivity-slider 980 540 860 420
 # still interactivity-slider 60
-# crop interactivity-progress 660 390 600 300
+# crop interactivity-progress 640 370 640 340
 # still interactivity-progress 20
 ui com.example.interactivity.controls.SettingsUI
 move 1200 690

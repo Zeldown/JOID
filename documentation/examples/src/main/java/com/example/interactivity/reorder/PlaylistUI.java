@@ -7,24 +7,30 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class PlaylistUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153).lock();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
+	private static final Color HOVER   = new Color(54, 61, 77).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	private final StringSignal moved = new StringSignal("none");
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(PlaylistUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(PlaylistUI.TEXT);
 
 		RectNode
 		.create(660, 240, 600, 600)
-		.color(PlaylistUI.PLACEHOLDER)
+		.color(PlaylistUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(PlaylistUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region list
 			ReorderableFlexNode
@@ -38,7 +44,12 @@ public class PlaylistUI extends UI {
 			.margin(10D)
 			.body(list -> {
 				for (final String song : new String[] {"Intro", "Ocean", "Night drive", "Echoes", "Outro"}) {
-					RectNode.create(0, 0, 480, 70).color(Color.WHITE).label(Text.create(song, info)).attach(list);
+					RectNode
+					.create(0, 0, 480, 70)
+					.color(PlaylistUI.ELEMENT)
+					.hoveredColor(PlaylistUI.HOVER)
+					.label(Text.create(song, info))
+					.attach(list);
 				}
 			})
 			.attach(card);

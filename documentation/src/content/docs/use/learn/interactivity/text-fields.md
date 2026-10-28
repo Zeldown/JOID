@@ -29,7 +29,7 @@ A field takes its font with `info(...)`, and binds its text to a [[StringSignal]
 
 <figure>
 
-![A white text field with the placeholder "Your name", and the texts "Hello, " and "Submits: 0"; the pointer clicks the field, the user types "Ada" and the greeting follows each key, then Enter makes "Submits: 1"](/captures/interactivity-field.webp)
+![A dark grey text field with the placeholder "Your name", and the texts "Hello, " and "Submits: 0"; the pointer clicks the field, the user types "Ada" and the greeting follows each key, then Enter makes "Submits: 1"](/captures/interactivity-field.webp)
 
 <figcaption>
 The signal follows each key, so "Hello, Ada" changes while the user types; Enter submits once.
@@ -38,7 +38,7 @@ The signal follows each key, so "Hello, Ada" changes while the user types; Enter
 
 [[TextFieldNode]] needs a [[TextInfo]] before it is attached; without one, the attach throws an `IllegalStateException`.
 With the factory without a height, the field takes the height of its font plus its margins, set by [[FieldNode#margin]], or one side at a time with `marginTop(...)`, `marginBottom(...)`, `marginLeft(...)` and `marginRight(...)`.
-`KitTextFieldNode` is a [[TextFieldNode]] with a white `background(...)` and a border while it has the focus; any node can be the background.
+The fields of this page take a dark grey `background(...)`; any node can be the background.
 
 - [[FieldNode#onChange]] runs on each edit with a [[NodeFieldChangeEvent.Post]]: `getText()` is the text, `getValue()` the value, `isValid()` whether the text is a valid value.
 - [[LineFieldNode#onSubmit]] runs when the user presses Enter, after the field lost the focus.
@@ -62,7 +62,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 
 <figure>
 
-![A white "Search" field, a white "Search" button and the text "Not focused"; the pointer clicks the button, the field gets its focus border and the cursor, and the text reads "Focused"; a press elsewhere on the card leaves the focus in the empty field](/captures/interactivity-focus.webp)
+![A dark grey "Search" field, a dark grey "Search" button and the text "Not focused"; the pointer clicks the button, the field gets its blue focus border and the cursor, and the text reads "Focused"; a press elsewhere on the card leaves the focus in the empty field](/captures/interactivity-focus.webp)
 
 <figcaption>
 The button gives the focus to the field, and the signal follows it.
@@ -93,7 +93,7 @@ Losing the focus clears the selection.
 
 <figure>
 
-![A white field with the placeholder "Code" and the text "Signal: "; the user types a space, a, b and 1: the digit never appears, and Enter turns the text into "AB" in the field and in the signal](/captures/interactivity-field-rules.webp)
+![A dark grey field with the placeholder "Code" and the text "Signal: "; the user types a space, a, b and 1, each key showing in a badge at the bottom right: the digit never appears, and Enter turns the text into "AB" in the field and in the signal](/captures/interactivity-field-rules.webp)
 
 <figcaption>
 The user types ` ab1` then Enter: the digit is refused, and the field rewrites ` ab` as `AB` when it loses the focus.
@@ -116,7 +116,7 @@ A rule that changes keeps the text asked for, as a control keeps its value ([Kee
 
 <figure>
 
-![A white number field that reads 4, and the text "Players: 4"; the pointer clicks the field, two presses of the Up arrow bring both to 6, and two presses of the Down arrow bring them back to 4](/captures/interactivity-field-number.webp)
+![A dark grey number field that reads 4, and the text "Players: 4"; the pointer clicks the field, two presses of the Up arrow bring both to 6, and two presses of the Down arrow bring them back to 4](/captures/interactivity-field-number.webp)
 
 <figcaption>
 Two presses of the Up arrow, then two of the Down arrow: the value goes from 4 to 6 and back, and the signal follows.
@@ -163,7 +163,7 @@ A field for another type extends [[LineFieldNode]] and says how a text becomes a
 
 <figure>
 
-![A white field that reads "#555555" next to a dark grey rectangle; the user selects the text and types "#7C5CFF", and the rectangle turns violet once the color is complete, then the user types "#555555" back](/captures/interactivity-field-color.webp)
+![A dark grey field that reads "#5B8CFF" next to a blue rectangle; the user selects the text and types "#F2A541", and the rectangle turns orange once the color is complete, then the user types "#5B8CFF" back](/captures/interactivity-field-color.webp)
 
 <figcaption>
 The rectangle reads the same signal as the field: a valid color shows at once.
