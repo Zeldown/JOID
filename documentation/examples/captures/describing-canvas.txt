@@ -1,9 +1,13 @@
 # crop describing-canvas-diagram 360 290 1200 500
 # crop describing-canvas-scale 0 0 960 540
 # crop describing-canvas-zoom 0 0 960 540
+# crop describing-canvas-convert-diagram 300 290 1320 500
 ui com.example.describing.canvas.CanvasDiagramUI
 wait 100
 shot describing-canvas-diagram
+ui com.example.describing.canvas.ConvertDiagramUI
+wait 100
+shot describing-canvas-convert-diagram
 resize 960 540
 ui com.example.describing.canvas.EdgesUI
 # film describing-canvas-resize 60
@@ -48,4 +52,28 @@ release LEFT
 wait 1000
 moveto 700 470 500
 wait 300
+cut
+ui com.example.describing.canvas.ConvertSceneUI
+move 600 360
+# film describing-canvas-convert 60
+wait 300
+resizeto 1200 400 700
+wait 150
+moveto 744 324 400
+wait 100
+press LEFT
+release LEFT
+wait 400
+zoomto 0.5 600
+wait 300
+zoomto 1 600
+wait 100
+moveto 844 324 400
+wait 100
+press LEFT
+release LEFT
+wait 300
+moveto 600 360 400
+resizeto 960 540 700
+wait 200
 cut

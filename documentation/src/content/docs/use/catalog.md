@@ -18,11 +18,11 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-rectnode.webp" alt="A blue square on a dark card; while the pointer rests on it, the square fades to a lighter blue, then back when the pointer leaves" loading="lazy" width="364" height="324" />
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-nodes-rectnode.webp" data-still="/captures/catalog-nodes-rectnode.still.webp"><picture><source srcset="/captures/catalog-nodes-rectnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-rectnode.webp" alt="A blue square on a dark card; while the pointer rests on it, the square fades to a lighter blue, then back when the pointer leaves" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/nodes/rectnode/"><code>RectNode</code></a><span>Draws a filled rectangle on its bounds, with an optional border, and colors that fade on hover.</span><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/rectnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-circlenode.webp" alt="A blue disc on a dark card; while the pointer rests on it, the disc fades to a lighter blue, then back when the pointer leaves" loading="lazy" width="364" height="324" />
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-nodes-circlenode.webp" data-still="/captures/catalog-nodes-circlenode.still.webp"><picture><source srcset="/captures/catalog-nodes-circlenode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-circlenode.webp" alt="A blue disc on a dark card; while the pointer rests on it, the disc fades to a lighter blue, then back when the pointer leaves" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/nodes/circlenode/"><code>CircleNode</code></a><span>Draws a filled disc in its bounds, with a color that fades on hover.</span><small><a href="/use/learn/describing-the-ui/nodes/">Learn</a> · <a href="/reference/nodes/circlenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
@@ -30,7 +30,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 <figcaption><a href="/reference/nodes/textnode/"><code>TextNode</code></a><span>Draws a <code>Text</code> in its bounds, and takes the size of the text when no size is declared.</span><small><a href="/use/learn/describing-the-ui/text/">Learn</a> · <a href="/reference/nodes/textnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-resourcenode.webp" alt="A light grey placeholder image crossed by two diagonals, on a dark card; while the pointer rests on it, a grey and white texture fades in over it, then fades out when the pointer leaves" loading="lazy" width="364" height="324" />
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-nodes-resourcenode.webp" data-still="/captures/catalog-nodes-resourcenode.still.webp"><picture><source srcset="/captures/catalog-nodes-resourcenode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-resourcenode.webp" alt="A light grey placeholder image crossed by two diagonals, on a dark card; while the pointer rests on it, a grey and white texture fades in over it, then fades out when the pointer leaves" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/nodes/resourcenode/"><code>ResourceNode</code></a><span>Draws an image resource in its bounds, tinted by a color, with an optional image that fades in on hover.</span><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourcenode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
@@ -38,7 +38,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 <figcaption><a href="/reference/nodes/resourceplayernode/"><code>ResourcePlayerNode</code></a><span>Plays a video or an animated image in its bounds, with its sound, and controls the playback.</span><small><a href="/use/learn/describing-the-ui/media/">Learn</a> · <a href="/reference/nodes/resourceplayernode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
-<img src="/captures/catalog-nodes-progressnode.webp" alt="A blue progress bar on its dark grey track, which fills from 60 % to the end and back" loading="lazy" width="364" height="324" />
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-nodes-progressnode.webp" data-still="/captures/catalog-nodes-progressnode.still.webp"><picture><source srcset="/captures/catalog-nodes-progressnode.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-nodes-progressnode.webp" alt="A blue progress bar on its dark grey track, which fills from 60 % to the end and back" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/nodes/progressnode/"><code>ProgressNode</code></a><span>Shows a progress from 0 to 1 by sizing its fill part over an optional track part.</span><small><a href="/use/learn/interactivity/controls/">Learn</a> · <a href="/reference/nodes/progressnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
