@@ -54,6 +54,7 @@ While Shift or Alt is held, or Ctrl on another key, the character does not name 
 ### Window
 
 [[Lwjgl2WindowBridge]] multiplies the size and the mouse of `Display` by its pixel scale factor, to report screen pixels on high-density screens, and flips the mouse to a top-left origin.
+Its constructor turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside the window and a drag goes on past its edge, as with GLFW.
 The clipboard goes through AWT; a clipboard that the system refuses reads as `""`, with one warning in dev mode.
 
 ### Cursors

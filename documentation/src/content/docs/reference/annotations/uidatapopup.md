@@ -33,7 +33,7 @@ A UI cannot be both a popup and an overlay.
 
 | Type | Element | Default | Summary |
 |---|---|---|---|
-| `boolean` | [active](#UIDataPopup-element-active) | `false` | If `true`, the UI is a popup. |
+| `boolean` | [active](#UIDataPopup-element-active) | `false` | If `true`, the UI is a popup; the annotation without `active = true` changes nothing, and dev mode warns. |
 | [`PopupTransition`](/reference/annotations/uidatapopup-popuptransition/) | [transition](#UIDataPopup-element-transition) | `PopupTransition.IN_OUT` | Which steps of the [`PopTransition`](/reference/ui/poptransition/) the popup plays: on opening, on closing, both or none. |
 
 ## Element details
@@ -44,7 +44,7 @@ A UI cannot be both a popup and an overlay.
 
 `boolean active() default false` 
 
-If `true`, the UI is a popup.
+If `true`, the UI is a popup; the annotation without `active = true` changes nothing, and dev mode warns.
 
 <a id="UIDataPopup-element-transition"></a>
 

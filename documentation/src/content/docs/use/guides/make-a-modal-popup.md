@@ -66,7 +66,7 @@ The color of the backdrop is `backgroundColor` of the same annotation, and the o
 
 ## If it does not work
 
-1. The popup replaces the screen instead of opening over it: the class misses `@UIDataPopup(active = true)`.
+1. The popup replaces the screen instead of opening over it: the class misses `@UIDataPopup(active = true)`; with `@UIDataPopup` alone, dev mode prints `@UIDataPopup on … leaves active = false and changes nothing`.
 2. The screen behind is not dimmed: the class misses `@UIData(background = true)`.
 3. `JOID.open` throws `IllegalStateException: No IUIBridge can open …`: no backend is registered yet.
    Open the popup from a listener, or see [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).

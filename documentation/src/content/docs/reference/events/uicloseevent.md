@@ -19,7 +19,7 @@ The closing of a UI, in a cancellable `Pre` before it starts and a `Post` once t
 
 ## Description
 
-The `Pre` fires for `JOID.close(...)`, Escape on a closeable UI and a screen that a new screen replaces; the `Post` fires on every closing, `forceClose`, `closeAll()` and `renew()` included.
+The `Pre` fires for `JOID.close(...)`, Escape on a closeable UI and a screen that a new screen replaces; the `Post` fires on every closing, `forceClose`, `closeAll()`, `renew()` and the end of the program included.
 [`UI.beforeClose`](/reference/ui/ui/#UI-method-beforeClose) receives a [`UICloseEvent.Pre`](/reference/events/uicloseevent-pre/) and can keep the UI open; [`UI.onClose`](/reference/ui/ui/#UI-event-onClose) receives a [`UICloseEvent.Post`](/reference/events/uicloseevent-post/) after the closing transition, once the UI saved its stores and its remembered fields.
 
 ## Learn more

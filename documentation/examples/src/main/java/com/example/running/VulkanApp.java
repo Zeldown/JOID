@@ -28,7 +28,9 @@ public final class VulkanApp {
 			GLFW.glfwPollEvents();
 			backend.frame();
 			host.endFrame();
-			host.beginFrame();
+			if (!GLFW.glfwWindowShouldClose(window)) {
+				host.beginFrame();
+			}
 		}
 
 		BridgeHandler.UI.getBridge(WindowUIBridge.class).closeAll();

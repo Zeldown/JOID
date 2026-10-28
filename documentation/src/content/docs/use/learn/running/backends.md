@@ -83,11 +83,11 @@ It follows the size of the window by itself, so you need no resize callback.
 
 ### Close the UIs before the program ends
 
-`closeAll()` of the window bridge, after the loop, closes every UI that the bridge holds: their close listeners and the `onDetach` listeners of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
+`closeAll()` of the window bridge, after the loop, closes every UI that the bridge holds, without asking their `beforeClose` listeners: their `onClose` listeners and the `onDetach` listeners of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
 Call it on each UI bridge of your own as well, once the loop is over.
 
-A program that ends with UIs still open closes none of them.
-When the JVM exits normally, a shutdown hook of JOID still saves the stores and the remembered fields, but no close listener runs; a process that is killed or crashes saves nothing.
+When the JVM exits normally with UIs still open, a shutdown hook of JOID calls `closeAll()` on every UI bridge, then saves the stores; a process that is killed or crashes saves nothing.
+The hook waits 200 ms at most for the render thread, then closes the UIs from its own thread: call `closeAll()` yourself, on the render thread, before the program ends.
 
 ### Start the other backends
 
@@ -99,8 +99,8 @@ The program stays the same; only the window, the backend and the way you show a 
 ```
 
 - Each frame of the loop draws between `beginFrame()` and `endFrame()` of the host, so the first frame begins right after `register()`.
-- `endFrame()` shows the image on the window, and `beginFrame()` starts the next one at once.
-- After the loop, `destroy()` releases the backend, then the host.
+- `endFrame()` shows the image on the window, and `beginFrame()` starts the next one at once, unless the window is closing.
+- After the loop, no frame is open: `closeAll()` closes the UIs, then `destroy()` releases the backend, then the host.
 
 **LWJGL 2.** Call [[Lwjgl2Natives#install]] before the `Display` exists: it extracts the LWJGL 2 natives into the [cache folder](/use/learn/running/files/), unless `org.lwjgl.librarypath` or `java.library.path` already provides them.
 Register the backend once the `Display` exists:
@@ -121,7 +121,7 @@ LWJGL 2 has no input callbacks, so [[Lwjgl2InputForwarder#poll]] reads the input
 5. It registers a thread bridge tied to the calling thread, which becomes the render thread: work sent from other threads [runs there at the start of the next frame](/use/learn/running/threads/#bring-a-result-back-to-the-render-thread).
 6. It adds the window bridge, unless you registered a UI bridge of your own before ([Embedding JOID](/use/learn/running/embedding/#draw-joid-over-your-own-scene)).
 7. It attaches the input to the window (LWJGL 3 and Vulkan).
-8. It loads JOID: it prints a banner with the version, the dev mode and the two folders (`[JOID] … loaded in dev mode, data in …, cache in …`), cleans the [cache folder](/use/learn/running/files/#keep-files-of-your-own-in-the-cache) on a background thread, and installs the shutdown hook that saves the stores.
+8. It loads JOID: it prints a banner with the version, the dev mode and the two folders (`[JOID] … loaded in dev mode, data in …, cache in …`), cleans the [cache folder](/use/learn/running/files/#keep-files-of-your-own-in-the-cache) on a background thread, and installs the shutdown hook that closes the open UIs and saves the stores.
 9. It runs the code given to [[JOID#onReady]].
 
 The settings of a backend come between `create(...)` and `register()`, all optional:
@@ -192,7 +192,7 @@ To run JOID on another library or engine, implement its bridges: [Writing a back
 - Start with **LWJGL 3**; pick Vulkan or LWJGL 2 to match the library your application already uses.
 - Create the window and its context, then `create(...)`, the optional settings, and **`register()`** once, on the thread of your loop.
 - Call **`frame()`** once per frame of your loop; it follows the window size by itself.
-- After the loop, **`closeAll()`** closes the open UIs, so that their close listeners run and their stores reach the disk.
+- After the loop, **`closeAll()`** closes the open UIs, so that their `onClose` listeners run and their stores reach the disk.
 - **`JOID.onReady`** runs setup code once the backend is registered, whatever the startup order.
 - The **window bridge** clears the window with `background`, and draws tooltips once you set **`hoverInfo`**.
 

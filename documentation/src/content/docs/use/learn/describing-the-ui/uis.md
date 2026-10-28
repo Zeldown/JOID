@@ -90,6 +90,9 @@ The editor stays open until the user clicks the save button.
 [[JOID#forceClose]] closes a UI without asking the `beforeClose` listeners and without its closing transition.
 Use it when the UI must go, for example when the application quits.
 
+`beforeClose` runs only where a listener can refuse, and `onClose` runs on every closing.
+`JOID.forceClose`, `JOID.forceOpen`, the `closeAll()` of a UI bridge and the end of the program close without `beforeClose`, and fire `onClose` ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+
 ## Replace the current screen
 
 A UI that is neither an overlay nor a popup is a screen.

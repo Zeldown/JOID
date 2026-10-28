@@ -33,7 +33,7 @@ Checks that a drawing of the host inside `DrawUtils.RASTER` lands upright at the
 
 ## givesTheHostItsStateBackAroundARasterNestedInItsDrawing()
 
-Checks that a raster nested in a drawing of the host gives the host its state back.
+Checks that a raster nested in the drawing of another raster gives that drawing its state back, and that the outer raster gives the host its state back.
 
 ## startBackend()
 

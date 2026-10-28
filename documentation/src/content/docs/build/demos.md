@@ -42,10 +42,11 @@ Each official backend has a launcher in its demo jar: run its main class with th
 | LWJGL 2 | `dev.joid.backend.lwjgl2.demo.DemoWindow` | `Display`, 24-bit depth, 8-bit stencil, key repeats on |
 | Your backend | `./gradlew runDemo` in the template | the `DemoWindow` of `src/demo/java` |
 
-Each official launcher opens a 1920×1080 resizable window titled `JOID - Demo (<backend>)`, registers itself as the UI bridge from [[JOID#onReady]], registers the backend, opens the menu and runs the loop.
+Each official launcher opens a 1920×1080 resizable window titled `JOID - Demo (<backend>)`, registers itself as the UI bridge, then registers the backend, opens the menu and runs the loop.
+Registered first, the launcher is the only UI bridge: the backend adds no window bridge of its own, and the window shows the dark grey background of the demos.
 The `DemoWindow` of the template opens no window: it registers itself the same way, then calls `frame()` until you give it the loop of your engine ([Run it](/build/writing-a-backend/#run-it)).
 
-The launchers are UI bridges: `DemoUIBridge`, a [[WindowUIBridge]] with the dev font for its tooltips, opens the menu in `start()` through its `openMenu()` hook.
+The launchers are UI bridges: `DemoUIBridge`, a [[WindowUIBridge]] with a dark grey background and the dev font for its tooltips, opens the menu in `start()` through its `openMenu()` hook.
 The GLFW launchers share `GlfwDemoWindow` of base-glfw, whose subclass names the backend, sets the window hints, registers the backend and presents each frame.
 
 In the demos:
