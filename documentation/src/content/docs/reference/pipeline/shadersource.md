@@ -23,6 +23,7 @@ A [`ShaderProgram`](/reference/shaders/shaderprogram/) reads both of its stages 
 
 ## Learn more
 
+- [Shaders](/use/learn/going-further/shaders/)
 - [Shader translation](/build/shader-translation/#from-source-to-program)
 
 ## Creation

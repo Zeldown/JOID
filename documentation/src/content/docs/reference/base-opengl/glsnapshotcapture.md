@@ -18,7 +18,7 @@ Reads the back buffer of an OpenGL context into a snapshot image.
 
 ## Description
 
-It ships in the dev and demo jars of the backends, not in the prod jar of base-opengl.
+It ships in the dev and demo jars of the backends; the published `joid-base-opengl` jar does not hold it.
 
 ## Learn more
 

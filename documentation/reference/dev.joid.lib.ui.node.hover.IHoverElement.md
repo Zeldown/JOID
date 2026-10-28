@@ -2,7 +2,7 @@
 summary: A tooltip element that draws itself while its node is hovered.
 ---
 Add one with [[Node#hover]]; [[NodeHoverElement]] and [[CustomHoverElement]] place an element at the mouse, on the node or at a fixed point.
-A lambda draws at the mouse, in the coordinates of the canvas.
+A lambda gives `render` only: it gets the pointer position and draws where it chooses, in the coordinates of the canvas.
 
 Learn: [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/#show-a-tooltip).
 

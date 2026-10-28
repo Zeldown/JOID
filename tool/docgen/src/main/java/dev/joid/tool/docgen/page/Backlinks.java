@@ -35,12 +35,14 @@ public final class Backlinks {
 	private final Map<String, String>         titles;
 	private final Map<String, String>         owners;
 	private final Set<String>                 hidden;
+	private final Set<String>                 ownerPages;
 
 	private Backlinks() {
-		this.links  = new LinkedHashMap<>();
-		this.titles = new LinkedHashMap<>();
-		this.owners = new LinkedHashMap<>();
-		this.hidden = new LinkedHashSet<>();
+		this.links      = new LinkedHashMap<>();
+		this.titles     = new LinkedHashMap<>();
+		this.owners     = new LinkedHashMap<>();
+		this.hidden     = new LinkedHashSet<>();
+		this.ownerPages = new LinkedHashSet<>();
 	}
 
 	public static Backlinks scan(final File docs, final PageRegistry registry, final Map<String, List<String>> names) throws IOException {
@@ -106,7 +108,8 @@ public final class Backlinks {
 	}
 
 	public boolean isHidden(final String url) {
-		return this.hidden.contains(url.replaceFirst("#.*$", ""));
+		final String page = url.replaceFirst("#.*$", "");
+		return this.hidden.contains(page) && !this.ownerPages.contains(page);
 	}
 
 	private void add(final String fqcn, final Backlink backlink) {
@@ -133,6 +136,8 @@ public final class Backlinks {
 			if (Backlinks.START.matcher(url).matches()) {
 				continue;
 			}
+
+			this.ownerPages.add(url);
 
 			final String section = owner.group(1).substring(0, owner.group(1).indexOf('/'));
 			final Matcher notion = Backlinks.NOTION.matcher(cells[0]);

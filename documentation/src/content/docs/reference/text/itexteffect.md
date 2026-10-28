@@ -19,7 +19,7 @@ An effect on the glyphs of a text, which can move, recolor or replace each glyph
 
 Give effects to a [`TextInfo`](/reference/text/textinfo/) with `effects(...)`, or add them from a markup tag with [`TextStyle.effect`](/reference/text/textstyle/#TextStyle-method-effect).
 JOID calls the three hooks for every glyph, on the render thread, in this order: `apply` for each glyph, then `background`, then the glyphs are drawn, then `decorate`.
-A shadow glyph goes through the same hooks: test [`ITextGlyph.isShadow`](/reference/text/itextglyph/#ITextGlyph-method-isShadow) to skip it.
+A shadow glyph goes through `decorate` only: test [`ITextGlyph.isShadow`](/reference/text/itextglyph/#ITextGlyph-method-isShadow) there to skip it.
 
 ## Learn more
 

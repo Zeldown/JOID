@@ -63,6 +63,6 @@ Generated pages take signatures, defaults, inheritance and qualifiers from the c
 - A diagram is a JOID scene in `documentation/examples` (compiled), rendered by `npm run captures` to WebP (animated WebP for motion). JOID draws its own diagrams.
 - One diagram per notion, on its owner page only (see `owners.md`); other pages link to it.
 - On technical pages (in depth, build), the diagram comes before the code.
-- Readable in both site themes (light and dark): the opaque `#DDDDDD` backdrop of the common palette (voice.md, Images) serves both.
+- Readable in both site themes (light and dark): diagrams use the Night minimal palette of `CaptureStyle` on its opaque `#0E1014` stage (voice.md, Images), which serves both.
 - Alt text describes the diagram completely; the caption says why it matters.
 - Every captioned image, capture or diagram, has one form: `<figure>`, a blank line, the image, a blank line, then `<figcaption>`, the caption (one sentence per line), `</figcaption>` and `</figure>`. The caption may hold inline Markdown (`code`, links, `[[Type]]`): the documentation plugin renders it. An italic line under an image is never a caption.

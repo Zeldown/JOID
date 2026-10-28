@@ -47,8 +47,8 @@ This bridge takes the panels of the application only, so `JOID.open` sends every
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [forceOpen](#IUIBridge-method-forceOpen)(UI ui) <span class="joid-qualifier">default</span> | Closes every UI of the bridge with `closeAll()`, then opens the UI. |
-| `void` | [replace](#IUIBridge-method-replace)(UI ui, UI replacement) <span class="joid-qualifier">default</span> | Disposes and removes the first UI and adds the second, without transition or close listener. |
-| `void` | [closeAll](#IUIBridge-method-closeAll)() <span class="joid-qualifier">default</span> | Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved. |
+| `void` | [replace](#IUIBridge-method-replace)(UI ui, UI replacement) <span class="joid-qualifier">default</span> | Disposes the first UI (its `onClose` listeners and the `onDetach` listeners of its nodes run, its stores and remembered fields are saved), removes it and adds the second, without transition and without `beforeClose`. |
+| `void` | [closeAll](#IUIBridge-method-closeAll)() <span class="joid-qualifier">default</span> | Disposes and removes every UI of the bridge: their `onClose` listeners (never `beforeClose`) and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved. |
 
 ### For subclasses
 
@@ -101,7 +101,7 @@ Closes every UI of the bridge with `closeAll()`, then opens the UI.
 
 `void replace(UI ui, UI replacement)` <span class="joid-qualifier">default</span>
 
-Disposes and removes the first UI and adds the second, without transition or close listener.
+Disposes the first UI (its `onClose` listeners and the `onDetach` listeners of its nodes run, its stores and remembered fields are saved), removes it and adds the second, without transition and without `beforeClose`.
 
 <a id="IUIBridge-method-closeAll"></a>
 
@@ -109,7 +109,7 @@ Disposes and removes the first UI and adds the second, without transition or clo
 
 `void closeAll()` <span class="joid-qualifier">default</span>
 
-Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
+Disposes and removes every UI of the bridge: their `onClose` listeners (never `beforeClose`) and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
 Call it after your loop: [Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
 
 <a id="IUIBridge-method-open"></a>

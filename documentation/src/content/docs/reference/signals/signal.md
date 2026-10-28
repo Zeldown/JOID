@@ -203,7 +203,8 @@ Returns the simple name of the class and the value, as in `IntegerSignal{3}`.
 
 Wraps the value of an expression in a read-only [`ComputedSignal`](/reference/signals/computedsignal/) that follows the signals the expression read.
 When the expression read signals with `get()` right before this call, JOID reads the bytecode of the calling line and computes the expression again after each change of those signals.
-When it read none, or when JOID cannot follow it, the result is a constant signal, and dev mode prints a warning that names the line and the fix.
+When it read none, the result is a constant signal.
+When JOID cannot follow it, the result is constant too, and dev mode prints a warning that names the line and the fix.
 [Signals](/use/learn/interactivity/signals/#what-joid-follows) lists the expressions that JOID follows.
 
 `<T> ComputedSignal<T> from(Supplier<? extends T> supplier)` <span class="joid-qualifier">static</span>

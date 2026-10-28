@@ -20,7 +20,7 @@ Entry point of the immediate drawing API, with one helper each for shapes, text,
 Nodes draw through these five helpers, and so does your code in the `draw` of a custom node or in a node layer:
 
 ```java fragment
-DrawUtils.SHAPE.drawRoundedRect(x, y, 120D, 40D, Color.decode("#DDDDDD"), 8F);
+DrawUtils.SHAPE.drawRoundedRect(x, y, 120D, 40D, Color.decode("#262B35"), 8F);
 DrawUtils.TEXT.drawText(x + 12D, y + 12D, "Play", info, Align.START, Align.START);
 ```
 

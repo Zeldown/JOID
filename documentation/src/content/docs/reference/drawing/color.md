@@ -22,9 +22,9 @@ Every color setter of JOID takes a `Color`.
 Create one from a hex string, from channels, or take a named constant:
 
 ```java fragment
-final Color ink = Color.decode("#999999");
-final Color veil = new Color(0F, 0F, 0F, 0.5F);
-final Color fade = Color.decode("#DDDDDD").toGradient(Color.WHITE);
+final Color text = Color.decode("#E7E9EE");
+final Color shadow = new Color(0F, 0F, 0F, 0.6F);
+final Color glow = Color.decode("#5B8CFF").toGradient(Color.decode("#7DA4FF"));
 ```
 
 The `withX`, `darker`, `brighter`, `multiply`, `add`, `scale`, `to` and `toGradient` methods return a new color and leave this one unchanged.

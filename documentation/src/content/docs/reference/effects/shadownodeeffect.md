@@ -26,6 +26,7 @@ Its priority is `-50` ([Control the order of effects](/use/learn/style-and-motio
 
 ## Learn more
 
+- [Effects](/use/learn/style-and-motion/effects/)
 - [Copy a mockup](/use/guides/copy-a-mockup/)
 - [Polish with effects and motion](/use/tutorial/polish/)
 

@@ -25,6 +25,11 @@ Masks nest: a masked node inside another mask shows only what both keep.
 Its priority is `0` ([Control the order of effects](/use/learn/style-and-motion/effects/#control-the-order-of-effects)).
 The mask clips the drawing only: the hidden part of the node still receives the mouse.
 
+## Learn more
+
+- [Effects](/use/learn/style-and-motion/effects/)
+- [Clip your own drawing](/use/learn/style-and-motion/effects/#clip-your-own-drawing)
+
 ## Creation
 
 | Returns | Signature | Summary |

@@ -54,6 +54,26 @@ task runExamples(type: JavaExec) {
     }
 }
 
+task exampleTests(type: Test) {
+    group = 'JOID'
+    description = 'Runs the JUnit tests of the examples on the hidden surface of the snapshot backend, as the captures do.'
+    testClassesDir = sourceSets.main.output.classesDir
+    classpath = sourceSets.main.runtimeClasspath
+    include '**/*Test.class'
+    exclude 'com/example/backend/EngineRenderBridgeContractTest.class'
+    systemProperty 'joid.data', file("$buildDir/example-tests/data").absolutePath
+    systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
+    systemProperty 'java.awt.headless', 'true'
+    testLogging.exceptionFormat = 'full'
+    testLogging.events 'failed'
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+    doFirst {
+        project.delete("$buildDir/example-tests/data")
+    }
+}
+
 configurations {
     ecj
 }

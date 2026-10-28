@@ -593,6 +593,27 @@ function wikiLinks() {
 	return problems;
 }
 
+function constants() {
+	const classes = new Map();
+	for (const file of files(EXAMPLES, ['.java'])) {
+		const name = basename(file, '.java');
+		classes.set(name, [...(classes.get(name) ?? []), readFileSync(file, 'utf-8')]);
+	}
+	const problems = [];
+	for (const entry of [...pages().filter((entry) => !generated(entry)), ...descriptions()]) {
+		entry.source.split(/\r?\n/).forEach((line, index) => {
+			for (const match of line.matchAll(/\b([A-Z]\w*)\.([A-Z][A-Z0-9_]*)\b(?![\w(])/g)) {
+				const sources = classes.get(match[1]) ?? [];
+				const declared = new RegExp(String.raw`(?:\bfinal\s+[\w<>\[\], .?]+\s+${match[2]}\s*=|^\s*${match[2]}\s*[,;(])`, 'm');
+				if (sources.length > 0 && !sources.some((source) => declared.test(source))) {
+					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: ${match[1]} of the examples declares no ${match[2]}, a reader who copies this line cannot compile it: ${line.trim().slice(0, 90)}`);
+				}
+			}
+		});
+	}
+	return problems;
+}
+
 function drafts() {
 	return files(DOCS, ['.md', '.mdx']).filter((file) => /^:::todo/m.test(readFileSync(file, 'utf-8'))).map((file) => `${relative(DOCS, file)} is still a draft`);
 }
@@ -618,7 +639,13 @@ run('run-examples', () => {
 	if (!existsSync(report)) {
 		throw new Error('run-examples wrote no report, see the Gradle output above');
 	}
-	return readFileSync(report, 'utf-8').split(/\r?\n/).filter((line) => /^(?:FAIL|UNUSED|STALE) /.test(line));
+	const problems = readFileSync(report, 'utf-8').split(/\r?\n/).filter((line) => /^(?:FAIL|UNUSED|STALE) /.test(line));
+	try {
+		gradle(':documentation-examples:exampleTests', '-q');
+	} catch {
+		problems.push('a JUnit test of the examples failed, see the Gradle output above and documentation/examples/build/reports/tests/exampleTests/index.html');
+	}
+	return problems;
 });
 
 run('catalog', checkCatalog);
@@ -634,6 +661,7 @@ run('lombok', lombok);
 run('images', images);
 
 run('snippets', snippets);
+run('constants', constants);
 run('line-width', lineWidth);
 run('banned-words', bannedWords);
 run('control-characters', controlCharacters);

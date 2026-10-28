@@ -22,6 +22,7 @@ Extend it in the tests of your backend and return your snapshot backend from `cr
 ## Learn more
 
 - [The suites](/build/testing-a-backend/#the-suites)
+- [References and the report](/build/testing-a-backend/#references-and-the-report)
 
 ## Creation
 

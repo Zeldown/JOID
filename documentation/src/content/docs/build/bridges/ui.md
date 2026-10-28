@@ -37,7 +37,7 @@ What [[UIBridge]] does for you.
 | Member | What you get |
 |---|---|
 | [[UIBridge#mousePressed]], [[UIBridge#mouseReleased]], [[UIBridge#mouseMoved]], [[UIBridge#mouseScroll]], [[UIBridge#charTyped]], [[UIBridge#keyPressed]], [[UIBridge#keyReleased]] | The dispatch of each event to the UIs from the top down, with the consumption rules of [Input forwarding](/build/input/#provided): each returns `true` when JOID consumed the event. |
-| [[UIBridge#load]], [[UIBridge#update]], [[UIBridge#draw]] | The steps of a frame for this bridge: layout at the window size, update of each UI, then the release of unused GPU resources, the drawing of the shown UIs and the cursor. |
+| [[UIBridge#load]], [[UIBridge#update]], [[UIBridge#draw]] | The steps of a frame for this bridge, in the order given at the end of [Guarantees](#guarantees). |
 | [[UIBridge#add]], [[UIBridge#remove]], [[UIBridge#isOpen]], [[UIBridge#getUiList]] | The list of the open UIs, sorted by `zindex`. A `StackUIBridge` also lays a UI out when it is added. |
 | [[UIBridge#isOnTop]] | Whether a UI is the first of its kind (screens and popups, or overlays) to receive the input. |
 | [[UIBridge#hasScreen]], [[UIBridge#isScreenOpen]] | Whether this bridge holds a UI that is not an overlay; JOID never calls `isScreenOpen` itself, so a host can override it to answer for its own screens too. |

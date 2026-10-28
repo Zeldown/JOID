@@ -23,6 +23,7 @@ Entries nest: only the outermost `enter()` starts the journal and resets the pip
 ## Learn more
 
 - [The state journal](/build/embedding-in-a-host/#the-state-journal)
+- [Check the guard](/build/embedding-in-a-host/#check-the-guard)
 - [base-opengl](/build/base-modules/opengl/)
 
 ## Creation

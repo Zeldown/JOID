@@ -60,5 +60,5 @@ export function generateGlossary() {
 		}
 		out.push('');
 	}
-	writeFileSync(PAGE, `${out.join('\n')}\n`);
+	writeFileSync(PAGE, `${out.join('\n').trimEnd()}\n`);
 }

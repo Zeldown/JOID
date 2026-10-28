@@ -52,7 +52,7 @@ A final backend picks its base modules, adds what is specific to its library, an
 | [LWJGL 3](/build/backends/lwjgl3/) | glfw, openal, opengl | the LWJGL 3 OpenGL binding and the context hints |
 | [Vulkan](/build/backends/vulkan/) | glfw, openal | the whole renderer, and the hosts that own the device and the frame |
 
-Each jar of a backend embeds the core and its base modules, with the libraries of the core relocated under `dev.joid.shaded`.
+Each jar of a backend embeds the core and its base modules, with Gson, Guava, Commons IO, Commons Lang, JSVG, TwelveMonkeys and ASM relocated under `dev.joid.shaded`; JavaCV, JavaCPP and FFmpeg keep their own packages, and so does JNA in the LWJGL 2 jars.
 An application declares one JOID jar, next to the libraries of its backend (LWJGL, for the official ones).
 
 ## The tools sit beside the layers

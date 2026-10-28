@@ -20,6 +20,7 @@ The window bridge of the `Display` of LWJGL 2, in screen pixels, with the clipbo
 ## Learn more
 
 - [Window](/build/backends/lwjgl2/#window)
+- [Cursors](/build/backends/lwjgl2/#cursors)
 
 ## Creation
 

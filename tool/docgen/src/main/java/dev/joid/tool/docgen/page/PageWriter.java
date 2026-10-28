@@ -162,7 +162,7 @@ public final class PageWriter {
 
 			final Matcher link = PageWriter.RELATED.matcher(text);
 			while (link.find()) {
-				linked.add(link.group(2).replaceFirst("#.*$", ""));
+				linked.add(link.group(2));
 			}
 
 			if (text.toString().trim().length() > 0) {
@@ -179,19 +179,23 @@ public final class PageWriter {
 
 	private void related(final TypePage page, final Map<String, String> related, final Set<String> linked, final String path, final StringBuilder out) {
 		final Map<String, String> all = new LinkedHashMap<>();
-		final Set<String> pages = new LinkedHashSet<>(linked);
+		final Set<String> shown = new LinkedHashSet<>(linked);
+		final Set<String> pages = linked.stream().map(url -> url.replaceFirst("#.*$", "")).collect(Collectors.toCollection(LinkedHashSet::new));
 		final String owner = this.backlinks.ownerOf(page.getType().getFqcn());
 		if (owner != null && !pages.contains(owner)) {
 			final String anchored = related.keySet().stream().filter(url -> url.replaceFirst("#.*$", "").equals(owner)).findFirst().orElse(null);
 			final String title = anchored != null ? related.get(anchored) : this.backlinks.getTitles().get(owner);
 			if (title != null) {
+				final String key = anchored != null ? anchored : owner;
 				pages.add(owner);
-				all.put(anchored != null ? anchored : owner, title);
+				shown.add(key);
+				all.put(key, title);
 			}
 		}
 
 		for (final Map.Entry<String, String> link : related.entrySet()) {
-			if (!this.backlinks.isHidden(link.getKey()) && pages.add(link.getKey().replaceFirst("#.*$", ""))) {
+			if (!this.backlinks.isHidden(link.getKey()) && shown.add(link.getKey())) {
+				pages.add(link.getKey().replaceFirst("#.*$", ""));
 				all.put(link.getKey(), link.getValue());
 			}
 		}
