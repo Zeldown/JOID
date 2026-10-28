@@ -42,7 +42,7 @@ public class TaskTest {
 	public void runsOnceItsDelayElapsed() {
 		final NodeUI ui = this.open();
 		final Task task = Task.create(100L).onRun(event -> this.runs.incrementAndGet()).attach(ui);
-		this.bridges.frames(6);
+		this.bridges.rewindTheWallClock().frames(6);
 		Assert.assertEquals(0, this.runs.get());
 		this.bridges.frame();
 		Assert.assertEquals(1, this.runs.get());

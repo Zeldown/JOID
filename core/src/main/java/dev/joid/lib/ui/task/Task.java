@@ -47,7 +47,7 @@ public final class Task {
 		if (this.period < 0L) {
 			this.detach();
 		} else {
-			this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.period;
+			this.nextRun = BridgeHandler.CLOCK.get().nanoTime() + this.period * 1_000_000L;
 		}
 
 		if (this.eventBus.has(Task.RUN)) {
@@ -80,13 +80,13 @@ public final class Task {
 		this.ui = ui;
 		this.node = node;
 		if (this.isAttached()) {
-			this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.delay;
+			this.nextRun = BridgeHandler.CLOCK.get().nanoTime() + this.delay * 1_000_000L;
 		}
 		return this;
 	}
 
 	public boolean isDue() {
-		return this.isAttached() && BridgeHandler.CLOCK.get().currentTimeMillis() >= this.nextRun;
+		return this.isAttached() && BridgeHandler.CLOCK.get().nanoTime() - this.nextRun >= 0L;
 	}
 
 	public boolean isAttached() {

@@ -56,7 +56,7 @@ public final class TweenAnimator extends Signal<Float> {
 
 	public @NonNull TweenAnimator start() {
 		this.requireTimeline().start();
-		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().nanoTime();
 		TweenAnimator.RUNNING_SET.add(this);
 		return this;
 	}
@@ -104,7 +104,7 @@ public final class TweenAnimator extends Signal<Float> {
 		}
 
 		this.timeline = timeline;
-		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().nanoTime();
 		this.listenTimeline();
 		return this;
 	}
@@ -234,10 +234,10 @@ public final class TweenAnimator extends Signal<Float> {
 	}
 
 	private void advance() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final long delta = now - this.lastUpdate;
 		this.lastUpdate = now;
-		this.advance(delta);
+		this.advance(delta / 1_000_000F);
 	}
 
 	private void advance(final float delta) {

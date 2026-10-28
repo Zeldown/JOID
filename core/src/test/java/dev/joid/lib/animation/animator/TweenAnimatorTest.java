@@ -20,6 +20,7 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.clock.RewoundClockBridge;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
@@ -113,11 +114,17 @@ public class TweenAnimatorTest {
 	@Test
 	public void readsTheElapsedTimeFromTheClock() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(100F, 10F).start();
-		Assert.assertEquals(1000L, TweenAnimatorTest.lastUpdate(animator));
-		this.clock.advance(25L);
-		animator.update();
-		Assert.assertEquals(2.5F, animator.get(), 0F);
-		Assert.assertEquals(1025L, TweenAnimatorTest.lastUpdate(animator));
+		final RewoundClockBridge wall = new RewoundClockBridge(3_600_000L, this.clock);
+		Assert.assertEquals(this.clock.nanoTime(), TweenAnimatorTest.lastUpdate(animator));
+		BridgeHandler.CLOCK.register(wall);
+		try {
+			this.clock.advance(25L);
+			animator.update();
+			Assert.assertEquals(2.5F, animator.get(), 0F);
+			Assert.assertEquals(this.clock.nanoTime(), TweenAnimatorTest.lastUpdate(animator));
+		} finally {
+			BridgeHandler.CLOCK.unregister(wall);
+		}
 	}
 
 	@Test

@@ -66,7 +66,7 @@ public abstract class UIBridge implements IUIBridge {
 		}
 
 		final MouseButton button = this.pressed;
-		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTimeMap.get(button);
+		final long deltaTime = (BridgeHandler.CLOCK.get().nanoTime() - this.pressTimeMap.get(button)) / 1_000_000L;
 		final UI ui = this.dispatch(current -> current.fireMouseDragged(button, deltaTime));
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 	}
@@ -77,7 +77,7 @@ public abstract class UIBridge implements IUIBridge {
 			this.pressedNode = this.getHoveredNode();
 		}
 
-		this.pressTimeMap.putIfAbsent(button, BridgeHandler.CLOCK.get().currentTimeMillis());
+		this.pressTimeMap.putIfAbsent(button, BridgeHandler.CLOCK.get().nanoTime());
 
 		this.consumedButtonSet.remove(button);
 		final UI ui = this.dispatch(this.pressedButtonMap.computeIfAbsent(button, pressed -> new LinkedHashSet<>()), current -> current.fireMousePressed(button));
@@ -91,7 +91,7 @@ public abstract class UIBridge implements IUIBridge {
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
 		final boolean consumed = this.consumedButtonSet.remove(button);
 		final Long pressTime = this.pressTimeMap.remove(button);
-		final long deltaTime = pressTime == null ? 0L : BridgeHandler.CLOCK.get().currentTimeMillis() - pressTime;
+		final long deltaTime = pressTime == null ? 0L : (BridgeHandler.CLOCK.get().nanoTime() - pressTime) / 1_000_000L;
 		if (this.pressed == button) {
 			this.pressed     = null;
 			this.pressedNode = null;

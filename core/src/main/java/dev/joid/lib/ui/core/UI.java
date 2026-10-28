@@ -987,12 +987,12 @@ public abstract class UI implements IIndexedElement {
 		if (this.lastFpsUpdate == 0L) {
 			this.fps = 0D;
 			this.fpsCounter = 0;
-			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+			this.lastFpsUpdate = BridgeHandler.CLOCK.get().nanoTime();
 		} else if (this.frameTime > 0D) {
 			this.fpsCounter++;
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			if (now - this.lastFpsUpdate >= 1000L) {
-				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1000D);
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
+			if (now - this.lastFpsUpdate >= 1_000_000_000L) {
+				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1_000_000_000D);
 				this.fpsCounter = 0;
 				this.lastFpsUpdate = now;
 			}

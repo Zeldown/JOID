@@ -1453,7 +1453,7 @@ public class UITest {
 	@Test
 	public void countsItsFramesEverySecond() {
 		final TraceUI ui = new TraceUI(this.trace);
-		this.bridges.open(ui).frames(62);
+		this.bridges.open(ui).rewindTheWallClock().frames(62);
 		Assert.assertEquals(0D, ui.getFps(), 0D);
 		this.bridges.frame();
 		Assert.assertEquals(62.5D, ui.getFps(), 0.0001D);

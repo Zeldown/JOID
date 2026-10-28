@@ -20,7 +20,7 @@ public final class FrameBufferPool {
 	private static final Map<List<Object>, PooledFrameBuffers> POOL = new HashMap<>();
 
 	public static @NonNull IFrameBuffer[] allocate(final @NonNull Object owner, final int depth, final int count, final int width, final int height) {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final List<Object> key = Arrays.asList(owner, depth, count);
 		final PooledFrameBuffers pooled = FrameBufferPool.POOL.get(key);
 		final boolean owned = pooled != null;
@@ -54,11 +54,11 @@ public final class FrameBufferPool {
 	}
 
 	public static void releaseUnused() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final Iterator<PooledFrameBuffers> iterator = FrameBufferPool.POOL.values().iterator();
 		while (iterator.hasNext()) {
 			final PooledFrameBuffers pooled = iterator.next();
-			if (now - pooled.lastUse >= 5000L) {
+			if (now - pooled.lastUse >= 5_000_000_000L) {
 				pooled.delete();
 				iterator.remove();
 			}
