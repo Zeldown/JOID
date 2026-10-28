@@ -130,7 +130,7 @@ To get it without `bind` or a node that draws the resource, call [[Resource#prep
 
 <figure>
 
-![A light grey pyramid turned to show two of its faces, one lit in white and the other in a slightly darker grey, the light coming from the viewer](/captures/further-framebuffers-model.webp)
+![A blue pyramid turned to show two of its faces, one lit in a light blue and the other in a deeper blue, the light coming from the viewer](/captures/further-framebuffers-model.webp)
 
 <figcaption>
 The normals give each face its own light, so four triangles read as a solid pyramid.

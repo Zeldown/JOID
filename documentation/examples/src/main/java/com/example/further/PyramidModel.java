@@ -13,7 +13,7 @@ public class PyramidModel implements IDrawableModel {
 	public void render() {
 		final Tessellator tessellator = Tessellator.inst();
 		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.setColor(200, 200, 200);
+		tessellator.setColor(91, 140, 255);
 		for (int side = 0; side < 4; side++) {
 			final double[] start = PyramidModel.CORNERS[side];
 			final double[] end = PyramidModel.CORNERS[(side + 1) % 4];
