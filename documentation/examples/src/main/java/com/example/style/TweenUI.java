@@ -50,7 +50,12 @@ public class TweenUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(TweenUI.ELEMENT, 1.5F))
 		.body(area -> {
-			RectNode.create(0, 0, 80, 80).color(TweenUI.ACCENT).x(() -> 520D * this.x).y(() -> 320D * this.y).attach(area);
+			RectNode
+			.create(0, 0, 80, 80)
+			.color(TweenUI.ACCENT)
+			.x(() -> 20D + 480D * this.x)
+			.y(() -> 20D + 260D * this.y)
+			.attach(area);
 		})
 		.attach(this);
 		// #endregion

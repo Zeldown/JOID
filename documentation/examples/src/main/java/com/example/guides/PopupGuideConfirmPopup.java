@@ -39,7 +39,7 @@ public class PopupGuideConfirmPopup extends UI {
 		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 26F).color(PopupGuideConfirmPopup.ON_ACCENT);
 
 		RectNode
-		.create(710, 390, 500, 300)
+		.create(710, 320, 500, 300)
 		.color(PopupGuideConfirmPopup.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(PopupGuideConfirmPopup.ELEMENT, 1.5F))

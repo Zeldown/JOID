@@ -61,19 +61,36 @@ public abstract class DepthDiagramUI extends UI {
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color, final Color note) {
 		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 24F).weight(FontWeight.BOLD).color(color);
 		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 20F).color(note);
+		final double titleHeight = Text.create(title, bold).getHeight();
+		final double detailHeight = detail.isEmpty() ? 0D : Text.create(detail, regular).getHeight() * DepthDiagramUI.lines(detail, regular, width - 20D);
+		final double top = detail.isEmpty() ? (height - titleHeight) / 2D : (height - titleHeight - 6D - detailHeight) / 2D;
 		return RectNode
 		.create(x, y, width, height)
 		.color(fill)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(fill == DepthDiagramUI.ACCENT ? DepthDiagramUI.ACCENT : DepthDiagramUI.ELEMENT, 1.5F))
 		.body(rect -> {
-			if (detail.isEmpty()) {
-				TextNode.create(0, 0, width, height).text(Text.create(title, bold).align(Align.CENTER)).attach(rect);
-			} else {
-				TextNode.create(0, 0, width, height / 2D + 2D).text(Text.create(title, bold).alignX(Align.CENTER).alignY(Align.END)).attach(rect);
-				TextNode.create(10, height / 2D + 8D, width - 20D, height / 2D - 8D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(0, top, width, titleHeight).text(Text.create(title, bold).align(Align.CENTER)).attach(rect);
+			if (!detail.isEmpty()) {
+				TextNode.create(10, top + titleHeight + 6D, width - 20D, detailHeight).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).mode(TextMode.SPLIT).attach(rect);
 			}
 		});
+	}
+
+	private static int lines(final String text, final TextInfo info, final double width) {
+		final double space = Text.create(" ", info).getWidth();
+		int lines = 1;
+		double line = 0D;
+		for (final String word : text.split(" ")) {
+			final double length = Text.create(word, info).getWidth();
+			if (line > 0D && line + space + length > width) {
+				lines++;
+				line = length;
+			} else {
+				line += line > 0D ? space + length : length;
+			}
+		}
+		return lines;
 	}
 
 }

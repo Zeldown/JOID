@@ -9,7 +9,7 @@ wait 300
 press LEFT
 release LEFT
 wait 1100
-moveto 875 625 400
+moveto 850 545 400
 wait 300
 press LEFT
 release LEFT

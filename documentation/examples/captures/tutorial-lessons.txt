@@ -6,10 +6,10 @@
 # still tutorial-interaction-hover 40
 # crop tutorial-polish 700 120 1120 950
 # hold tutorial-polish 1500
-# crop tutorial-interaction-popup 80 80 1120 560
+# crop tutorial-interaction-popup 96 100 760 460
 # still tutorial-interaction-popup 90
 # crop tutorial-state 80 80 1120 560
-# crop tutorial-settings 80 80 1120 560
+# crop tutorial-settings 96 100 760 460
 # still tutorial-settings 50
 # crop tutorial-overview 80 80 1120 590
 ui com.example.tutorial.setup.MenuUI

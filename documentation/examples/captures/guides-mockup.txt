@@ -4,6 +4,7 @@
 ui com.example.guides.MockupGuideUI
 wait 100
 shot guides-mockup-card
+move 1140 450
 # film guides-mockup-overlay
 wait 600
 key F2

@@ -1,6 +1,6 @@
 ---
 title: "Catalog"
-description: "Every node, control, effect, transition, easing curve, text effect and cursor, with a capture."
+description: "Every node, control, effect, transition, easing curve and text effect with a capture, and every cursor in a table."
 genre: reference
 tableOfContents:
   maxHeadingLevel: 2
