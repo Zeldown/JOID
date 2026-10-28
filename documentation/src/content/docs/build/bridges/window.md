@@ -43,7 +43,7 @@ The rest of the core only reads the window bridge:
 | Rule | Why |
 |---|---|
 | Report the size and the mouse in the same unit, screen pixels. | On a high-density screen, the size that the system gives the window and its size in screen pixels differ; mixing them shifts the hover by the scale factor. |
-| Put the origin of the mouse at the top-left corner, `y` growing downwards, from `0` to `height - 1`. | The design canvas grows downwards. |
+| Put the origin of the mouse at the top-left corner, `y` growing downwards; a pointer outside the window reports positions outside `0` to the size. | The design canvas grows downwards. |
 | Answer `isKeyDown` by physical position, never through the layout. | The core translates the layout keys itself, from what the input forwarder sends. |
 | Never throw from `getClipboard` or `setClipboard`. | A text field reads it on every paste; a clipboard the system refuses reads as `""`. |
 
