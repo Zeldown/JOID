@@ -2,6 +2,7 @@
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 # crop catalog-controls-textfieldnode 28 28 364 324
+# still catalog-controls-textfieldnode 50
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 330 295
@@ -24,9 +25,10 @@ moveto 330 295 500
 wait 200
 press LEFT
 release LEFT
-wait 400
+wait 500
 cut
 # crop catalog-controls-multilinetextfieldnode 398 28 364 324
+# still catalog-controls-multilinetextfieldnode 72
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 700 295
@@ -55,9 +57,10 @@ moveto 700 295 500
 wait 200
 press LEFT
 release LEFT
-wait 400
+wait 500
 cut
 # crop catalog-controls-integerfieldnode 768 28 364 324
+# still catalog-controls-integerfieldnode 75
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1070 295
@@ -80,7 +83,7 @@ moveto 1070 295 500
 wait 200
 press LEFT
 release LEFT
-wait 400
+wait 500
 cut
 # crop catalog-controls-checkboxnode 1138 28 364 324
 ui com.example.catalog.ControlsCatalogUI
@@ -115,7 +118,7 @@ cut
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1810 295
-# film catalog-controls-togglenode
+# film catalog-controls-togglenode 60
 wait 300
 moveto 1720 157 500
 wait 200
@@ -165,6 +168,7 @@ moveto 330 635 500
 wait 300
 cut
 # crop catalog-controls-selectornode 398 368 364 324
+# still catalog-controls-selectornode 45
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 700 635

@@ -69,7 +69,7 @@ The overlay that shows the volume asks for the same store, and gets the same ins
 
 <figure>
 
-![A dark settings card reading "Volume: 5" and "Sound on", and in the top right corner a blue overlay reading "Volume 5"; the pointer clicks + twice and - twice, and the card and the overlay show the same volume at each click](/captures/state-stores.webp)
+![A dark settings card reading "Volume: 5" and "Sound on", and above it, in the top right corner of the screen, a blue overlay reading "Volume 5"; the pointer clicks + twice and - twice, and the card and the overlay show the same volume at each click](/captures/state-stores.webp)
 
 <figcaption>Two UIs, one store: the overlay follows the volume that the settings screen changes.</figcaption>
 </figure>

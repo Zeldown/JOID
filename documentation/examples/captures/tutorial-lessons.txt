@@ -23,7 +23,7 @@ wait 300
 shot tutorial-layout
 ui com.example.tutorial.interaction.MenuUI
 move 1000 520
-# film tutorial-interaction-hover
+# film tutorial-interaction-hover 60
 wait 300
 moveto 900 350 500
 wait 1000

@@ -24,10 +24,10 @@ public class ZoomUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 96F).color(ZoomUI.TEXT);
 		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 120F).color(ZoomUI.ON_ACCENT);
 
-		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.SURFACE).attach(this);
-
 		// #region zoom
 		super.zoom(0.8D);
+
+		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.SURFACE).attach(this);
 
 		RectNode
 		.create(660, 290, 600, 500)

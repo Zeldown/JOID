@@ -1,4 +1,4 @@
-# crop further-3d-models-cubes 25 55 680 375
+# crop further-3d-models-cubes 25 55 650 375
 # still further-3d-models-cubes 0
 ui com.example.further.ModelsUI
 wait 200
@@ -8,7 +8,7 @@ wait 250
 moveto 420 200 400
 wait 150
 press LEFT
-moveto 660 200 700
+moveto 600 200 700
 wait 300
 moveto 420 200 700
 release LEFT
@@ -17,27 +17,27 @@ moveto 230 372 400
 wait 200
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 press LEFT
 release LEFT
-wait 200
+wait 150
 moveto 380 390 300
 wait 850

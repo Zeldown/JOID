@@ -33,7 +33,7 @@ moveto 1040 530 700
 wait 100
 moveto 930 530 700
 release LEFT
-wait 300
+wait 2000
 moveto 1070 635 400
 wait 200
 cut
@@ -44,6 +44,7 @@ shot catalog-nodes-flexnode
 # crop catalog-nodes-gridnode 28 708 364 324
 shot catalog-nodes-gridnode
 # crop catalog-nodes-reorderableflexnode 398 708 364 324
+# still catalog-nodes-reorderableflexnode 84
 ui com.example.catalog.NodesCatalogUI
 wait 100
 move 700 975
