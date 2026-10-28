@@ -1,12 +1,12 @@
-# crop build-layers 380 150 1160 680
+# crop build-layers 510 155 900 770
 ui com.example.backend.diagram.LayersDiagramUI
 wait 100
 shot build-layers
-# crop build-registries 325 200 1270 520
+# crop build-registries 510 215 900 650
 ui com.example.backend.diagram.RegistriesDiagramUI
 wait 100
 shot build-registries
-# crop build-pipeline 315 240 1290 560
+# crop build-pipeline 510 170 900 740
 ui com.example.backend.diagram.PipelineDiagramUI
 wait 100
 shot build-pipeline

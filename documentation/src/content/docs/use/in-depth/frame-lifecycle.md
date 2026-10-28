@@ -10,11 +10,11 @@ You need this page only if you want to know when your code runs: when a click re
 
 <figure>
 
-![Three rows of boxes joined by arrows. Each frame: Input, Resize, Tasks, Update, Background, Draw UIs, Present, where Input and Present are outlined because your loop runs them, as the legend at the top right says. Draw UIs opens onto a row for each UI: Tasks, Backdrop, Transition, Nodes, Tooltip. Nodes opens onto a row for each node: Values, Layout, Hover, Scroll and drag, Effects, Draw.](/captures/depth-frame-lifecycle.webp)
+![Three columns of boxes joined by arrows. Each frame: Input, Resize, Tasks, Update, Background, Draw UIs, Present, where Input and Present are outlined because your loop runs them, as the legend at the bottom says. Draw UIs opens onto a column for each UI: Tasks, Backdrop, Transition, Nodes, Tooltip. Nodes opens onto a column for each node: Values, Layout, Hover, Scroll and drag, Effects, Draw.](/captures/depth-frame-lifecycle.webp)
 
 <figcaption>
 One frame zooms in twice: the frame, then each UI, then each node.
-A row runs from left to right, on one thread.
+A column runs from top to bottom, on one thread.
 </figcaption>
 </figure>
 

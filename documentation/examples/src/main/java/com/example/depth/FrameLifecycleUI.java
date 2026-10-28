@@ -14,42 +14,42 @@ public class FrameLifecycleUI extends DepthDiagramUI {
 
 	@Override
 	public void init() {
-		super.backdrop(360, 190, 1200, 700)
+		super.backdrop(510, 210, 900, 660)
 		.body(card -> {
-			super.label(600, 30, 575, 40, "Outlined: run by your loop", Align.END).attach(card);
-			this.row(card, 30D, 5, true, "Each frame", "Input", "Resize", "Tasks", "Update", "Background", "Draw UIs", "Present");
-			this.row(card, 270D, 3, false, "Each UI", "Tasks", "Backdrop", "Transition", "Nodes", "Tooltip");
-			this.row(card, 510D, -1, false, "Each node", "Values", "Layout", "Hover", "Scroll, drag", "Effects", "Draw");
+			this.column(card, 25D, 5, true, "Each frame", "Input", "Resize", "Tasks", "Update", "Background", "Draw UIs", "Present");
+			this.column(card, 340D, 3, false, "Each UI", "Tasks", "Backdrop", "Transition", "Nodes", "Tooltip");
+			this.column(card, 655D, -1, false, "Each node", "Values", "Layout", "Hover", "Scroll, drag", "Effects", "Draw");
+			super.label(25, 590, 850, 40, "Outlined: run by your loop", Align.START).attach(card);
 			card.layer((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(855D, 170D), Point.of(25D, 270D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(1005D, 170D), Point.of(839D, 270D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(523D, 410D), Point.of(25D, 510D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(673D, 410D), Point.of(1005D, 510D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(240D, 440D), Point.of(340D, 30D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(240D, 494D), Point.of(340D, 422D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(555D, 296D), Point.of(655D, 30D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(555D, 350D), Point.of(655D, 494D));
 			});
 		})
 		.attach(this);
 	}
 
-	private void row(final Node card, final double top, final int zoomed, final boolean loop, final String title, final String... steps) {
-		super.label(25, top, 400, 40, title, Align.START).attach(card);
+	private void column(final Node card, final double left, final int zoomed, final boolean loop, final String title, final String... steps) {
+		super.label(left, 30, 215, 40, title, Align.START).attach(card);
 		for (int i = 0; i < steps.length; i++) {
-			final double x = 25D + i * 166D;
+			final double y = 80D + i * 72D;
 			if (i == zoomed) {
-				super.subject(x, top + 50D, 150, 90, steps[i], "").attach(card);
+				super.subject(left, y, 215, 54, steps[i], "").attach(card);
 			} else if (loop && (i == 0 || i == steps.length - 1)) {
 				RectNode
-				.create(x, top + 50D, 150, 90)
+				.create(left, y, 215, 54)
 				.color(CaptureStyle.BACKGROUND)
 				.effect(RoundedNodeEffect.create(12F))
 				.effect(BorderNodeEffect.create(DepthDiagramUI.NOTE, 2F))
 				.attach(card);
-				super.label(x, top + 50D, 150, 90, steps[i], Align.CENTER).attach(card);
+				super.label(left, y, 215, 54, steps[i], Align.CENTER).attach(card);
 			} else {
-				super.box(x, top + 50D, 150, 90, steps[i], "").attach(card);
+				super.box(left, y, 215, 54, steps[i], "").attach(card);
 			}
 
 			if (i < steps.length - 1) {
-				super.arrow(card, x + 151D, top + 95D, x + 165D, top + 95D);
+				super.arrow(card, left + 107.5D, y + 55D, left + 107.5D, y + 71D);
 			}
 		}
 	}

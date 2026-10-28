@@ -11,22 +11,22 @@ public class MsdfTextUI extends DepthDiagramUI {
 
 	@Override
 	public void init() {
-		super.backdrop(310, 260, 1300, 560)
+		super.backdrop(510, 150, 900, 780)
 		.body(card -> {
-			super.box(40, 60, 220, 120, "Font file", ".ttf, .otf, .ttc").attach(card);
-			super.box(320, 60, 260, 120, "Cache folder", "an atlas of these bytes?").attach(card);
-			super.subject(640, 60, 260, 120, "Generation", "only when it is missing").attach(card);
-			super.box(960, 60, 300, 120, "Atlas", "2048 x 2048 distance field").attach(card);
-			super.arrow(card, 262D, 120D, 318D, 120D);
-			super.arrow(card, 582D, 120D, 638D, 120D);
-			super.arrow(card, 902D, 120D, 958D, 120D);
-			super.arrow(card, 1110D, 182D, 1110D, 258D);
-			super.box(780, 260, 480, 120, "Shader", "the edge of each screen pixel").attach(card);
-			super.label(40, 260, 700, 40, "One atlas draws every size:", Align.START).attach(card);
-			TextNode.create(40, 470).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 24F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
-			TextNode.create(120, 470).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 48F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
-			TextNode.create(260, 470).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 96F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
-			TextNode.create(500, 470).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 160F).color(DepthDiagramUI.ACCENT))).anchorY(Align.END).attach(card);
+			super.box(40, 40, 380, 110, "Font file", ".ttf, .otf, .ttc").attach(card);
+			super.box(480, 40, 380, 110, "Cache folder", "an atlas of these bytes?").attach(card);
+			super.subject(480, 210, 380, 110, "Generation", "only when it is missing").attach(card);
+			super.box(40, 210, 380, 110, "Atlas", "2048 x 2048 distance field").attach(card);
+			super.box(40, 380, 380, 110, "Shader", "the edge of each screen pixel").attach(card);
+			super.arrow(card, 422D, 95D, 478D, 95D);
+			super.arrow(card, 670D, 152D, 670D, 208D);
+			super.arrow(card, 478D, 265D, 422D, 265D);
+			super.arrow(card, 230D, 322D, 230D, 378D);
+			super.label(40, 530, 820, 40, "One atlas draws every size:", Align.START).attach(card);
+			TextNode.create(40, 740).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 24F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
+			TextNode.create(120, 740).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 48F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
+			TextNode.create(260, 740).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 96F).color(DepthDiagramUI.LABEL))).anchorY(Align.END).attach(card);
+			TextNode.create(500, 740).text(Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, 160F).color(DepthDiagramUI.ACCENT))).anchorY(Align.END).attach(card);
 		})
 		.attach(this);
 	}

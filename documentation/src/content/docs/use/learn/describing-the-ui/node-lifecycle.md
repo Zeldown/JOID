@@ -20,7 +20,7 @@ Listeners run your code at each of these moments: to start a counter when the no
 
 <figure>
 
-![A flow on two rows. The top row goes from left to right: attach to a UI, onInit once per attach, onUpdate before drawing, then onDraw and onRender while drawing. A loop arrow goes from onDraw back to onUpdate, labelled every frame while attached. Below onDraw, a side box onMount, first drawn frame only, hangs from it; from the loop, a last arrow goes left to onDetach after remove, at the start of the bottom row.](/captures/describing-lifecycle-flow.webp)
+![A flow on two rows. The top row goes from left to right: attach to a UI, onInit once per attach, onUpdate before drawing. An arrow goes down from onUpdate to onDraw and onRender while drawing, at the right end of the bottom row, and a loop arrow goes back up to onUpdate, labelled every frame while attached. From onDraw, an arrow goes left to a side box, onMount, first drawn frame only; from the loop, a last arrow goes left to onDetach after remove, at the start of the bottom row.](/captures/describing-lifecycle-flow.webp)
 
 <figcaption>
 `onInit` and `onDetach` frame the life of a node; the listeners in between run on every frame.
@@ -49,10 +49,10 @@ A node that is not visible skips its drawing listeners (`onMount`, `onDraw`, `on
 
 <figure>
 
-![A dark card that shows in light letters how long it has been in the UI, in seconds; the time grows, then starts again at 0 when the UI opens again](/captures/describing-lifecycle-frames.webp)
+![A dark card that shows in light letters how long it has been in the UI, in seconds; the time grows, Escape, shown in a key badge, closes the UI, then the same UI opens again and the time starts again at 0](/captures/describing-lifecycle-frames.webp)
 
 <figcaption>
-The time starts again at 0 each time the card joins the UI, here when the UI opens again.
+The time starts again at 0 each time the card joins the UI, here when the same UI opens again.
 </figcaption>
 </figure>
 

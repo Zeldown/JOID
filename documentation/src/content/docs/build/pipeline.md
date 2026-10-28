@@ -12,7 +12,7 @@ The contract itself is on [Render bridge](/build/bridges/render/); the user side
 
 <figure>
 
-![Two rows of boxes linked by arrows. The first row: Nodes and DrawUtils describe vertices, the Tessellator turns them into TRIANGLES or LINES, RenderBridge.draw picks the shader, then the highlighted drawPrimitive hook makes one draw call; a box below it, read at each draw, lists getState(), the matrices and resolveSampler(). The second row: JOID GLSL, one source per stage, parsed into a ShaderSource, translated once by the Shader, then given to the highlighted compileProgram hook in your dialect.](/captures/build-pipeline.webp)
+![Two columns of boxes linked by arrows, from top to bottom. The left column: Nodes and DrawUtils describe vertices, the Tessellator turns them into TRIANGLES or LINES, RenderBridge.draw picks the shader, then the highlighted drawPrimitive hook makes one draw call; a box below it, read at each draw, lists getState(), the matrices and resolveSampler(). The right column: JOID GLSL, one source per stage, parsed into a ShaderSource, translated once by the Shader, then given to the highlighted compileProgram hook in your dialect.](/captures/build-pipeline.webp)
 
 <figcaption>
 Your two hooks: `drawPrimitive` receives each draw with the state of that moment, `compileProgram` receives each shader once, translated from JOID GLSL.

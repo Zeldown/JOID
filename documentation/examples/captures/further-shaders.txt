@@ -12,5 +12,5 @@ wait 2000
 cut
 ui com.example.further.PipelineDiagramUI
 wait 100
-# crop further-shaders-diagram 60 80 1380 180
+# crop further-shaders-diagram 770 100 380 630
 shot further-shaders-diagram

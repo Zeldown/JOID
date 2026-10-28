@@ -10,7 +10,7 @@ You need this page only if you want to know why JOID text stays sharp at any siz
 
 <figure>
 
-![A row of boxes joined by arrows: Font file (.ttf, .otf, .ttc), Cache folder (an atlas of these bytes?), Generation (only when it is missing), Atlas (2048 x 2048 distance field), then down to Shader (the edge of each screen pixel). Under them, the letters Ag drawn at 24, 48, 96 and 160 pixels, all with sharp edges.](/captures/depth-msdf-text.webp)
+![Boxes joined by arrows that wind down the picture: Font file (.ttf, .otf, .ttc), Cache folder (an atlas of these bytes?), Generation (only when it is missing), Atlas (2048 x 2048 distance field), then down to Shader (the edge of each screen pixel). Under them, the letters Ag drawn at 24, 48, 96 and 160 pixels, all with sharp edges.](/captures/depth-msdf-text.webp)
 
 <figcaption>
 A font file becomes one atlas of distance fields, generated once per machine; the shader draws every size from that atlas.

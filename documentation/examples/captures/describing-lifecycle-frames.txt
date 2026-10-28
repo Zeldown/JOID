@@ -1,7 +1,10 @@
 # crop describing-lifecycle-frames 640 270 640 200
 # still describing-lifecycle-frames 40
 ui com.example.describing.lifecycle.LifecycleUI
+open com.example.capture.ReopenUI
 # film describing-lifecycle-frames
 wait 1500
-ui com.example.describing.lifecycle.LifecycleUI
+key ESCAPE
+wait 700
+open com.example.capture.ReopenUI
 wait 1500
