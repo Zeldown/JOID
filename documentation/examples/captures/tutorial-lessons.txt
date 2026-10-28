@@ -9,11 +9,11 @@
 # hold tutorial-polish 1500
 # crop tutorial-polish-hand 120 380 460 360
 # still tutorial-polish-hand 60
-# crop tutorial-interaction-popup 80 80 1120 560
+# crop tutorial-interaction-popup 90 90 770 470
 # still tutorial-interaction-popup 90
 # crop tutorial-state 80 80 1120 560
 # still tutorial-state 250
-# crop tutorial-settings 80 80 1120 560
+# crop tutorial-settings 420 173 440 374
 # still tutorial-settings 50
 # crop tutorial-overview 80 80 1120 590
 ui com.example.tutorial.setup.MenuUI
@@ -93,7 +93,7 @@ move 227 373
 press LEFT
 release LEFT
 wait 300
-move 400 467
+move 455 245
 wait 300
 # film tutorial-settings
 wait 300
@@ -117,7 +117,7 @@ wait 200
 press LEFT
 release LEFT
 wait 533
-moveto 400 467 400
+moveto 455 245 400
 wait 300
 cut
 ui com.example.tutorial.polish.MenuUI
