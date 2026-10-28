@@ -106,7 +106,7 @@ Zoom a UI to check it smaller or larger without changing its code or the window.
 ![The blue Clicks button of the counter; the pointer clicks it three times and it reads Clicks: 3; Ctrl + R, shown in a badge, reloads the UI and the count stays at 3; Ctrl + Shift + R renews it and the count goes back to 0](/captures/start-dev-reload.webp)
 
 <figcaption>
-A reload keeps the fields of the UI; a renew starts from a new instance.
+The shortcuts rebuild the UI without a button of your own: `Ctrl+R` keeps the count, `Ctrl+Shift+R` resets it.
 </figcaption>
 </figure>
 
@@ -138,7 +138,7 @@ The profiler writes each load of a UI on the standard output, except a reload, w
 [JOID] MenuUI took 21.73ms to draw a frame, more than the 16.66ms of 60 fps: …
 ```
 
-The slow-frame line ends with its advice: move the heavy work out of `draw()`, or spread it over several frames.
+The slow-frame line ends with its advice: move the heavy work out of `draw()`, the method of a node that draws itself ([Custom nodes](/use/learn/going-further/custom-nodes/#write-a-node-that-draws-itself)), or spread it over several frames.
 The inspector tells you which node is slow: its label gives the render time of the node under the pointer.
 [Performance](/use/in-depth/performance/#find-the-slow-part) explains what to look for.
 
@@ -171,7 +171,7 @@ Before you ship, [Ship your application](/use/guides/ship-your-application/) swi
 
 - The **dev jar** turns the **dev mode** on by itself; `JOIDEnv.isDevMode()` reads it.
 - **`F3`** shows the dev panel: **Inspect** (`I`), **Grid** (`G`), **Reload** (`R`); a click locks a node and lists its properties.
-- **`Ctrl+R`** runs `init()` again on the same instance; **`Ctrl+Shift+R`** renews the UI from its constructor.
+- **`Ctrl+R`** reloads the UI and **`Ctrl+Shift+R`** renews it ([Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui)).
 - **Hot reload** reloads a UI when its classes change; pair it with the debug mode of your IDE.
 - The **profiler** prints load times and frames over 16.66 ms; `@UIDataDebug` turns it off for one UI.
 - **`[JOID]`** warnings explain what JOID could not do; the reference lists them all.
@@ -190,14 +190,13 @@ Start the application in debug mode so that the IDE swaps the method body when y
 
 </details>
 
-**A counter from zero.**
-A counter of your UI must start from zero each time you test a change.
-Which shortcut do you use?
+**The node behind.**
+Inspect outlines a bar that sits on a card, but you want the render time of the card.
+How do you reach it?
 
 <details>
 <summary>Solution</summary>
 
-`Ctrl+Shift+R`: renewing creates a new instance, so every field starts again from its initial value.
-`Ctrl+R` keeps the instance and its counter.
+Hold `Ctrl`: Inspect outlines the node at the back of the pile under the pointer, here the card, with its render time.
 
 </details>

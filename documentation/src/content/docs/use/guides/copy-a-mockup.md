@@ -56,7 +56,7 @@ Here the card sits at 660, 290 on the frame, and the avatar at 900, 350: inside 
 ## 3. Copy the text styles
 
 The font size of the mockup is the font size of the [[TextInfo]].
-Letter spacing and line height are written on 1: a letter spacing of -2 % is `-0.02F`, a line height of 140 % is `1.4F`.
+Letter spacing and line height are written as shares, where `1F` is 100 %: a letter spacing of -2 % is `-0.02F`, a line height of 140 % is `1.4F`.
 
 ```java file="com/example/guides/MockupGuideUI.java" region="text"
 ```
@@ -100,7 +100,7 @@ With the dev jar, a click on a node with Inspect on locks it, and the dev panel 
 
 1. Everything is shifted or scaled: the frame of the mockup is not 1920 × 1080; resize the frame, or scale every value by the same factor.
 2. A child is offset by the position of its parent: its position was copied from the frame; subtract the position of the parent layer.
-3. A text is wider or narrower than in the mockup: the font or the weight differs, or the letter spacing was written on 100 (`-2F` instead of `-0.02F`).
+3. A text is wider or narrower than in the mockup: the font or the weight differs, or the letter spacing was written as a percentage (`-2F` instead of `-0.02F`).
 4. A magenta and black checkerboard covers the canvas, or nothing shows with the prod jar: the path of the PNG is wrong, and the dev jar prints the cause.
 5. Clicks stop working while the mockup shows: the image misses `interactive(false)`.
 

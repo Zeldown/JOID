@@ -171,7 +171,7 @@ The player starts the GIF on its own and loops it.
 </figure>
 
 A player sizes itself and fits its image like a `ResourceNode`, with `stretch(...)`.
-It starts on its own ([[ResourcePlayerNode#autoplay]]), plays once ([[ResourcePlayerNode#loop]]) and at full volume ([[ResourcePlayerNode#volume]], on 1).
+It starts on its own ([[ResourcePlayerNode#autoplay]]), plays once ([[ResourcePlayerNode#loop]]) and at full volume ([[ResourcePlayerNode#volume]], from `0F` to `1F`, where `1F` is 100 %).
 Here a video waits for the user, at half volume, and closes its UI when it ends:
 
 ```java file="com/example/describing/media/TrailerUI.java" region="video"
@@ -183,9 +183,9 @@ Here a video waits for the user, at half volume, and closes its UI when it ends:
 - [[ResourcePlayerNode#play]], [[ResourcePlayerNode#pause]], [[ResourcePlayerNode#toggle]], [[ResourcePlayerNode#stop]] and [[ResourcePlayerNode#restart]] control the playback, and [[ResourcePlayerNode#seek]] jumps to a time in seconds from the start, paused if the player was stopped.
 - Called before the player first draws, these calls wait for it to start.
   With `autoplay(false)`, the player waits paused on its first frame: `isPaused()` is `true`.
-- [[ResourcePlayerNode#isPlaying]], [[ResourcePlayerNode#isPaused]], [[ResourcePlayerNode#getDuration]] (seconds) and [[ResourcePlayerNode#getProgress]] (on 1) read the playback.
+- [[ResourcePlayerNode#isPlaying]], [[ResourcePlayerNode#isPaused]], [[ResourcePlayerNode#getDuration]] (seconds) and [[ResourcePlayerNode#getProgress]] (on a scale of 0 to 1) read the playback.
 - [[ResourcePlayerNode#onPlay]], [[ResourcePlayerNode#onPause]], [[ResourcePlayerNode#onStop]] and [[ResourcePlayerNode#onEnd]] follow it; `onEnd` never fires on a loop.
-  [[ResourcePlayerNode#onProgress]] receives a [[NodeProgressEvent]], with the progress on 1 and the current time in seconds.
+  [[ResourcePlayerNode#onProgress]] receives a [[NodeProgressEvent]], with the progress on a scale of 0 to 1 and the current time in seconds.
 
 The guide [Show a video](/use/guides/show-a-video/#what-you-will-build) shows a video playing under these controls, with a progress bar and a pause button.
 Each player has its own playback, created when it is attached: two players of one resource play independently.
@@ -198,7 +198,7 @@ An animated image drawn by a `ResourceNode` plays too, as many times as the file
 
 The sound of a video goes through the audio bridge of the backend, at the volume of its player.
 [[ResourcePlayerNode#audioGroup]] tags it, so that one setting changes every sound of a group.
-With JOID's backends, [[AlAudioBridge#groupVolume]] sets the volume of a group, on 1:
+With JOID's backends, [[AlAudioBridge#groupVolume]] sets the volume of a group, on a scale of 0 to 1:
 
 ```java fragment
 ResourcePlayerNode.create(0, 0, 640, 360).resource(intro).audioGroup("music").attach(this);

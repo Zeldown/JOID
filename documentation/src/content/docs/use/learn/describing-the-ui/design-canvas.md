@@ -92,7 +92,7 @@ The anchor is also the point that stays in place when the UI is scaled or zoomed
 ## Follow the interface scale
 
 The interface scale is a factor that the UI bridge applies on top of the fit, to make every UI larger or smaller, such as a scale option of the application that hosts JOID.
-The default window UI bridge gives 1; a UI bridge of your own gives another value ([Embedding JOID](/use/learn/running/embedding/)).
+The default window UI bridge gives 1; a UI bridge of your own gives another value ([Embedding JOID](/use/learn/running/embedding/#draw-joid-over-your-own-scene)).
 
 [[UIDataScale]] tells how a UI follows it:
 

@@ -20,7 +20,8 @@ Learn the pattern once on this page, then the options of each control.
 ## Bind a control to a signal
 
 A control is abstract: its look comes from its parts, the nodes that draw its box, its track or its thumb.
-The controls of this page get their parts where they are created, in an empty subclass of the control, such as a [[CheckboxNode]] created with `new CheckboxNode(...) {}`, followed by the setters of the parts; [Give your controls a look](/use/learn/going-further/ui-kit/) gathers them in reusable skins, and [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts of each control.
+The controls of this page get their parts where they are created, in an empty subclass of the control, such as a [[CheckboxNode]] created with `new CheckboxNode(...) {}`, followed by the setters of the parts; a number field such as [[IntegerFieldNode]], which draws its own text, has a `create(...)` factory instead ([Text fields](/use/learn/interactivity/text-fields/#add-a-text-field)).
+[Give your controls a look](/use/learn/going-further/ui-kit/) gathers them in reusable skins, and [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts of each control.
 A part created with a size of `0` takes the size that the control gives it ([Skin a control with parts](/use/learn/going-further/ui-kit/#skin-a-control-with-parts)).
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
@@ -225,6 +226,8 @@ A slider is a choice whose options sit along a track: a press on the track jumps
 | [[IntegerSliderNode]] | `range(min, max)` or `range(min, max, step)` |
 | [[DoubleSliderNode]] | `range(min, max, step)` |
 | [[StringSliderNode]] | `values(...)` of texts or of the constants of an enum, and `value(constant)` |
+
+A [[StringSliderNode]] holds the name of each constant, a `String`: bind it to a `Signal<String>`, such as `new Signal<>("HIGH")`.
 
 [[BaseSliderNode#inset]] keeps the first and the last step away from the ends, by half the thumb by default.
 [[SliderNode#speed]] eases the thumb to a new value, and `1F`, the default, moves it at once; [[BaseSliderNode#isSliding]] is `true` during a drag.

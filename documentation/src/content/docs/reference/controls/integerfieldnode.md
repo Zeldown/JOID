@@ -27,6 +27,7 @@ An empty field that the user leaves takes back its last value, `0` before any; w
 ## Learn more
 
 - [Text fields](/use/learn/interactivity/text-fields/#ask-for-a-number)
+- [Controls](/use/learn/interactivity/controls/)
 
 ## Creation
 

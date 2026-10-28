@@ -149,9 +149,6 @@ Before `register()`, JOID keeps that code and runs it at the end of `register()`
 Once the backend is registered, the code runs at once on the render thread, or at the start of the next frame when you call `onReady` from another thread.
 `JOID.inst().isReady()` tells you which case you are in.
 
-Code given before `register()` that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next `onReady` code still runs.
-Once JOID is ready, the exception reaches the caller on the render thread, and code sent from another thread prints `[JOID] A task sent to the render thread from another thread failed (…)`.
-
 ## Style the window UI bridge
 
 When you register no UI bridge of your own, the backend registers a [[WindowUIBridge]].

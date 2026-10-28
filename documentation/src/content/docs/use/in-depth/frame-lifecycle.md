@@ -40,12 +40,12 @@ Your input listeners (`handleMousePressed`, `onClick`, shortcuts…) therefore r
 
 1. **Resize**, only when the size of the window changed since the last frame: every open UI fits its view to the window.
    `init()` does not run again: it runs when [[JOID#open]] adds the UI, and on a reload.
-2. **Tasks**: the work that other threads sent to the render thread runs, in the order it was sent.
+2. **Tasks**: the work that other threads sent to the render thread runs, in the order it was sent, then every started [[TweenAnimator]] advances by the time since its last advance.
    A [[Signal]] written from another thread takes its value here.
 3. **Update**: every open UI updates, hidden or not.
    It reads its own followed values, updates its nodes in their order, then runs its own `update()`.
    A node reads its followed values, fires `onAnimate` for each animator whose value changed, updates its children, then runs its own `update()` and its `onUpdate` listeners.
-4. **Background**: the UI bridge with the lowest priority, by default the window UI bridge, clears the window to its background color.
+4. **Background**: the UI bridge with the lowest priority, by default the window UI bridge, clears the window to the window background.
 5. **Draw UIs**: every UI bridge draws its visible UIs, from the lowest priority up ([Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)).
    Inside a bridge, the overlays drawn under the screens come first, then the screens and popups, then the overlays drawn above them.
 6. **End**: JOID closes the frame of the render bridge, and your loop presents the image.
@@ -90,6 +90,7 @@ A hidden node, or a node outside the visible area of a container that clips its 
 | Input listeners, shortcuts | When the event arrives, before the frame |
 | `set(...)` on a signal, on the render thread | At once: the bound controls and the subscribers follow, and the nodes read it at their next update or draw |
 | `set(...)` on a signal, from another thread | Tasks step of the next frame |
+| The listeners of a `TweenAnimator` (`onStart`, `onComplete`, `onChange`…) | Tasks step, when the animator advances |
 | `update()`, `onUpdate`, `onAnimate` | Update step, once per frame, before anything draws |
 | The tasks of a UI | Start of the draw of the UI, once their delay is over |
 | A lambda given to a setter | At the update and at the draw of its node, on every frame |

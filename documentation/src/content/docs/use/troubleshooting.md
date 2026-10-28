@@ -34,7 +34,7 @@ With the dev jar, the inspector shows which nodes sit under the mouse ([Dev tool
 
 ## A text does not appear
 
-1. **The text has the color of its background.** The color of a text is in its [[TextInfo]], black by default.
+1. **The text has the color of what is behind it.** The color of a text is in its [[TextInfo]], black by default.
 2. **The characters are not in the font.** A generated atlas holds the characters from U+0020 to U+0233 ([MSDF text](/use/in-depth/msdf-text/#what-the-atlas-holds)).
 3. **The text node has no text.** A [[TextNode]] draws the [[Text]] given to `text(...)`, and nothing without it.
 
