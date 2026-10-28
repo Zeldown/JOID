@@ -33,8 +33,8 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 - [UIs](/use/learn/describing-the-ui/uis/)
 - [The design canvas](/use/learn/describing-the-ui/design-canvas/)
 - [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)
+- [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/)
 - [Nodes and the tree](/use/learn/describing-the-ui/nodes/)
-- [Custom nodes](/use/learn/going-further/custom-nodes/)
 
 ## Creation
 

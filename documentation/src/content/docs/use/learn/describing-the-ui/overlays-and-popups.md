@@ -68,10 +68,10 @@ A UI cannot be both a popup and an overlay: JOID refuses to create it.
 
 <figure>
 
-![The top-right corner of the screen, under a dark square with a blue disc in its middle; the pointer clicks the square twice: the disc doubles in size, then shrinks back.](/captures/describing-overlays-minimap.webp)
+![The top-right corner of the window: a dark square with a blue disc in its middle; the pointer clicks the square twice: the disc doubles in size, then shrinks back.](/captures/describing-overlays-minimap.webp)
 
 <figcaption>
-The minimap overlay is drawn above the screen and takes the clicks on it.
+The minimap overlay takes the clicks on it.
 </figcaption>
 </figure>
 

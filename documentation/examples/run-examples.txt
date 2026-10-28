@@ -19,6 +19,7 @@ skip com.example.describing.media.MediaSources reads a URL and a file of the dis
 skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer
 call com.example.further.FontsSources LIGHT
 skip com.example.running.RunningApp creates its own GLFW window and loop
+skip com.example.running.VulkanApp creates its own GLFW window and Vulkan loop
 skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapshot backend, run by the exampleTests task
 skip com.example.running.RunningFolders registers a backend on a window of its own
 skip com.example.running.RunningLibrary registers JOID.onReady for a program that starts later

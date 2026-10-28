@@ -129,7 +129,7 @@ A relative tooltip stays at the same place over the node, wherever the pointer i
 
 <figure>
 
-![The pointer moves along a dark grey "Target" button, circled by a blue ring that follows it](/captures/interactivity-tooltip-custom.webp)
+![The pointer moves along a dark grey "Target" button, and a blue crosshair follows the pointer](/captures/interactivity-tooltip-custom.webp)
 
 <figcaption>
 A custom tooltip draws with the [drawing API](/use/learn/going-further/drawing/), centered on the pointer.

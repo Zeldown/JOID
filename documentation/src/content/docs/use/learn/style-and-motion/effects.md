@@ -139,6 +139,7 @@ A transform, at `-100`, wraps the mask, at `0`, so the mask turns with the node;
 <figcaption>
 Left: the mask runs inside the transform and turns with the node.
 Right: `priority(-200)` starts the mask before the transform, so it stays horizontal.
+The faint rectangles, two other nodes, show the whole node.
 </figcaption>
 </figure>
 

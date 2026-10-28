@@ -148,7 +148,7 @@ A [[ResourcePlayerNode]] plays a resource that moves: an animated image, or a vi
 ![On a dark card, a light grey animated image where a grey square slides from left to right, then starts again from the left](/captures/describing-media-animation.webp)
 
 <figcaption>
-The player starts the GIF on its own and loops it; a click pauses it or plays it again.
+The player starts the GIF on its own and loops it.
 </figcaption>
 </figure>
 

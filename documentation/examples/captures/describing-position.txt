@@ -17,7 +17,7 @@ shot describing-position-copy
 # crop describing-position-hide 640 420 640 280
 ui com.example.describing.position.HideUI
 move 1000 660
-# film describing-position-hide
+# film describing-position-hide 60
 wait 300
 moveto 750 530 500
 wait 400

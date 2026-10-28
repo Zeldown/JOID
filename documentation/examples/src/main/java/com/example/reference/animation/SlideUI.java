@@ -26,7 +26,7 @@ public class SlideUI extends UI {
 		.effect(BorderNodeEffect.create(SlideUI.ELEMENT, 1.5F))
 		.onClick(event -> this.slide.sequence(600F, 1F, TweenEquations.QUAD_OUT).push(600F, 0F).start())
 		.body(rect -> {
-			RectNode.create(0, 0, 60, 60).color(SlideUI.ACCENT).x(() -> 340D * this.slide.get()).attach(rect);
+			RectNode.create(0, 0, 60, 60).color(SlideUI.ACCENT).x(340D * this.slide.get()).attach(rect);
 		})
 		.attach(this);
 	}
