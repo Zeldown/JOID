@@ -268,15 +268,15 @@ async function main() {
 		rmSync(join(OUTPUT, `${name}.still.webp`), { force: true });
 		const film = films[name];
 		if (!film) {
-			await sharp(frames[0]).extract(region).webp({ lossless: true }).toFile(target);
+			await sharp(frames[0]).extract(region).webp({ lossless: true, effort: 6 }).toFile(target);
 		} else {
 			if (film.times.length !== frames.length) {
 				throw new Error(`${name} has ${frames.length} raw frames instead of ${film.times.length}, render its scenario again`);
 			}
 			const delay = film.times.map((time, index) => (index + 1 < film.times.length ? film.times[index + 1] - time : setting.hold?.[0] ?? Math.round(1000 / film.fps)));
 			const buffers = await Promise.all(frames.map((frame, index) => keyed(sharp(frame).extract(region), film.labels[index], region, setting.keys)));
-			const encoding = setting.quality ? { quality: setting.quality[0], smartSubsample: true } : { lossless: true };
-			await sharp(buffers, { join: { animated: true } }).webp({ ...encoding, loop: 0, delay }).toFile(target);
+			const encoding = setting.quality ? { quality: setting.quality[0], smartSubsample: true } : { lossless: true, effort: 6 };
+			await sharp(buffers, { join: { animated: true } }).webp({ ...encoding, minSize: true, loop: 0, delay }).toFile(target);
 			const still = Math.min(setting.still?.[0] ?? buffers.length - 1, buffers.length - 1);
 			await sharp(buffers[still]).webp(encoding).toFile(join(OUTPUT, `${name}.still.webp`));
 		}
