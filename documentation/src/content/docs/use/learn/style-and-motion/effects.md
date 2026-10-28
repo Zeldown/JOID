@@ -98,7 +98,7 @@ By default, an effect applies to the node alone, and its children draw on top of
 
 ![Two dark cards with rounded corners and a blue header: on the left the header keeps its square top corners, on the right it is rounded with the card](/captures/style-scope.webp)
 
-<figcaption>`SELF`, the default, on the left; `CHILDREN` on the right.</figcaption>
+<figcaption>With `SELF`, the default, the rounded corners cut only the card; with `CHILDREN`, they cut its header too.</figcaption>
 </figure>
 
 Use `CHILDREN` for a card whose content reaches its edges, such as an image header or a list that scrolls.

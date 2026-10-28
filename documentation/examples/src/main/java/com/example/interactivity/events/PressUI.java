@@ -9,6 +9,8 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
@@ -16,6 +18,7 @@ public class PressUI extends UI {
 
 	private static final Color TEXT      = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
+	private static final Color SURFACE   = new Color(23, 26, 33).lock();
 	private static final Color ACCENT    = new Color(91, 140, 255).lock();
 	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
@@ -31,7 +34,9 @@ public class PressUI extends UI {
 		// #region listen
 		RectNode
 		.create(760, 340, 400, 400)
-		.color(PressUI.ELEMENT)
+		.color(PressUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(PressUI.ELEMENT, 1.5F))
 		.handleMousePressed(event -> {
 			heard.increment();
 			if (event.getNode().isHovered()) {

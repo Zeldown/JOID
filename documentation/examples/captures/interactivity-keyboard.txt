@@ -4,6 +4,7 @@
 # crop interactivity-shortcut 640 370 640 340
 # still interactivity-shortcut 140
 ui com.example.interactivity.keyboard.KeysUI
+move 1100 540
 # film interactivity-keys
 wait 500
 type h
@@ -18,6 +19,7 @@ type o
 wait 1200
 cut
 ui com.example.interactivity.keyboard.WalkUI
+move 1140 620
 # film interactivity-walk 60
 wait 200
 down D

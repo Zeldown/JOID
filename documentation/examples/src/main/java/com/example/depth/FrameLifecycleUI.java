@@ -21,10 +21,10 @@ public class FrameLifecycleUI extends DepthDiagramUI {
 			this.column(card, 655D, -1, false, "Each node", "Values", "Layout", "Hover", "Scroll, drag", "Effects", "Draw");
 			super.label(25, 590, 850, 40, "Outlined: run by your loop", Align.START).attach(card);
 			card.layer((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(240D, 440D), Point.of(340D, 30D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(240D, 494D), Point.of(340D, 422D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(555D, 296D), Point.of(655D, 30D));
-				DrawUtils.SHAPE.drawLine(DepthDiagramUI.ACCENT, 2F, Point.of(555D, 350D), Point.of(655D, 494D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.INK, 2F, Point.of(240D, 440D), Point.of(340D, 30D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.INK, 2F, Point.of(240D, 494D), Point.of(340D, 422D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.INK, 2F, Point.of(555D, 296D), Point.of(655D, 30D));
+				DrawUtils.SHAPE.drawLine(DepthDiagramUI.INK, 2F, Point.of(555D, 350D), Point.of(655D, 494D));
 			});
 		})
 		.attach(this);

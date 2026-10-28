@@ -12,6 +12,7 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class EffectOrderUI extends UI {
 
+	private static final Color LINE      = new Color(74, 82, 98).lock();
 	private static final Color TEXT      = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
 	private static final Color SURFACE   = new Color(23, 26, 33).lock();
@@ -26,7 +27,7 @@ public class EffectOrderUI extends UI {
 		RectNode
 		.create(410, 220, 1100, 640)
 		.color(EffectOrderUI.SURFACE)
-		.borderColor(EffectOrderUI.ACCENT)
+		.borderColor(EffectOrderUI.LINE)
 		.borderStroke(2D)
 		.effect(RoundedNodeEffect.create(12F))
 		.body(outer -> {
@@ -35,7 +36,7 @@ public class EffectOrderUI extends UI {
 			RectNode
 			.create(30, 110, 1040, 440)
 			.color(EffectOrderUI.ELEMENT)
-			.borderColor(EffectOrderUI.ACCENT)
+			.borderColor(EffectOrderUI.LINE)
 			.borderStroke(2D)
 			.effect(RoundedNodeEffect.create(12F))
 			.body(inner -> {
@@ -54,7 +55,7 @@ public class EffectOrderUI extends UI {
 				RectNode
 				.create(530, 30, 480, 290)
 				.color(EffectOrderUI.ELEMENT)
-				.borderColor(EffectOrderUI.ACCENT)
+				.borderColor(EffectOrderUI.LINE)
 				.borderStroke(2D)
 				.effect(RoundedNodeEffect.create(12F))
 				.body(children -> {

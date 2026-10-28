@@ -19,18 +19,14 @@ ui com.example.style.AnimationUI
 move 1460 285
 # film style-click 60
 wait 200
-moveto 1125 265 400
+moveto 1200 250 400
 wait 150
 press LEFT
 release LEFT
-moveto 1088 262 200
-wait 700
-moveto 1125 265 200
-wait 100
+wait 1100
 press LEFT
 release LEFT
-moveto 1088 262 200
-wait 700
+wait 1100
 moveto 1460 285 400
 wait 200
 cut

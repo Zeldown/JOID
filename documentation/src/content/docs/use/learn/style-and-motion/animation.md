@@ -40,7 +40,7 @@ A `TweenAnimator` moves one `float` over time:
 
 <figure>
 
-![A dark grey card fades in while it slides up into place](/captures/style-appear.webp)
+![A blue card fades in while it slides up into place](/captures/style-appear.webp)
 
 <figcaption>The value goes from 0 to 1 in 600 ms; the opacity and the position read it.</figcaption>
 </figure>
@@ -99,7 +99,7 @@ For any other curve, extend [[TweenEquation]] and return the eased progress from
 
 ![A blue square glides from the left end of a dark track to the right end and back, pauses, and starts again](/captures/style-loop.webp)
 
-<figcaption>Two steps, then a pause of 200 ms, forever.</figcaption>
+<figcaption>One `start()` loops the chain forever: `repeat` plays both steps again after each pause of 200 ms.</figcaption>
 </figure>
 
 - `repeat(count, delay)` plays the chain `count` more times, waiting `delay` ms between plays; `repeatYoyo(count, delay)` plays every second time backward.
@@ -181,7 +181,7 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 
 ![A blue square moves right, pauses, drops down with a small overshoot, then plays the same path backward](/captures/style-tween.webp)
 
-<figcaption>A sequence of two tweens with a pause, played back and forth.</figcaption>
+<figcaption>`repeatYoyo` plays every second pass backward, so one timeline of two tweens gives the whole round trip.</figcaption>
 </figure>
 
 `killAll()` comes first because `init()` runs again at each opening and reload, and the previous timeline would keep playing next to the fresh one.

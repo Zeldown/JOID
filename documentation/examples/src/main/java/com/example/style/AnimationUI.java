@@ -38,7 +38,7 @@ public class AnimationUI extends UI {
 
 		RectNode
 		.create(160, 0, 300, 180)
-		.color(AnimationUI.ELEMENT.withAlpha(appear.get()))
+		.color(AnimationUI.ACCENT.withAlpha(appear.get()))
 		.y(140D - 60D * appear.get())
 		.attach(this);
 		// #endregion
@@ -57,7 +57,7 @@ public class AnimationUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(260D * loop.get()).attach(track);
+			RectNode.create(10, 10, 40, 40).color(AnimationUI.ACCENT).x(10D + 260D * loop.get()).attach(track);
 		})
 		.onDetach(event -> loop.clear())
 		.attach(this);
@@ -77,7 +77,7 @@ public class AnimationUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(100D + 260D * pop.get()).attach(track);
+			RectNode.create(10, 10, 40, 40).color(AnimationUI.ACCENT).x(110D + 260D * pop.get()).attach(track);
 		})
 		.onDetach(event -> pop.clear())
 		.attach(this);
@@ -93,7 +93,7 @@ public class AnimationUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(260D * toggle.get()).attach(track);
+			RectNode.create(10, 10, 40, 40).color(AnimationUI.ACCENT).x(10D + 260D * toggle.get()).attach(track);
 		})
 		.attach(this);
 

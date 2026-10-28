@@ -29,10 +29,10 @@ public class ChartsLineChartNode extends ChartNode {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsLineChartNode.MUTED);
 		final double min = super.getMin().doubleValue();
 		final double max = super.getMax().doubleValue();
-		final double left = super.getX() + 50D;
+		final double left = super.getX() + 60D;
 		final double top = super.getY() + 15D;
-		final double width = super.getWidth() - 65D;
-		final double height = super.getHeight() - 46D;
+		final double width = super.getWidth() - 85D;
+		final double height = super.getHeight() - 60D;
 		final double step = super.getLabels().size() > 1 ? width / (super.getLabels().size() - 1) : 0D;
 
 		final String high = super.getYAxis().format(Math.round(max));
@@ -45,7 +45,7 @@ public class ChartsLineChartNode extends ChartNode {
 
 		int column = 0;
 		for (final String label : super.getLabels()) {
-			DrawUtils.TEXT.drawText(left + step * column, top + height + 8D, label, info, Align.CENTER, Align.START);
+			DrawUtils.TEXT.drawText(left + step * column, top + height + 12D, label, info, Align.CENTER, Align.START);
 			column++;
 		}
 

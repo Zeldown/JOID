@@ -29,7 +29,7 @@
 ## Zero repetition
 - Every notion has exactly one owner page (see `owners.md`). Anywhere else: one sentence at most, then a link to the owner page anchor.
 - The learn pages explain the common case; the reference lists everything. A learn page never copies a reference table; a reference page never re-teaches a concept (it links to the learn page).
-- The only teaching in the reference is the mini-guide of a central class (`Node`, `UI`, `Signal`, `NodeEffect`, the animators, the bridges): what it is, when to use it, one compiled example, then a link to its Learn page. It never explains the concept again.
+- The only teaching in the reference is the mini-guide of a central class (`Node`, `UI`, `Signal`, `NodeEffect`, the animators, the bridges): what it is, when to use it, its example, then a link to its Learn page. Its example is either its own compiled example, which shows something that no Learn or Build page shows, or one sentence with a link to the anchor of the page that shows the code. It never explains the concept again.
 - A guide is a short task: it links the Learn page of each notion it uses and never redoes a Learn chapter.
 - A diagram is drawn once, on the owner page.
 

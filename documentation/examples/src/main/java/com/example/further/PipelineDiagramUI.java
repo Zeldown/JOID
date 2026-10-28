@@ -38,9 +38,9 @@ public class PipelineDiagramUI extends UI {
 			for (int i = 0; i < arrows.length; i++) {
 				final double start = i * 120D + 114D;
 				final double end = i * 120D + 156D;
-				DrawUtils.SHAPE.drawLine(CaptureStyle.ACCENT, 3F, Point.of(170D, start), Point.of(170D, end));
+				DrawUtils.SHAPE.drawLine(CaptureStyle.LINE, 3F, Point.of(170D, start), Point.of(170D, end));
 				final Point tip = Point.of(170D, end);
-				DrawUtils.SHAPE.drawPolygon(CaptureStyle.ACCENT, tip, Point.of(162D, end - 12D), Point.of(178D, end - 12D));
+				DrawUtils.SHAPE.drawPolygon(CaptureStyle.LINE, tip, Point.of(162D, end - 12D), Point.of(178D, end - 12D));
 			}
 		})
 		.attach(this);

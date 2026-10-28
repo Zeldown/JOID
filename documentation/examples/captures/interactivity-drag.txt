@@ -12,7 +12,7 @@ wait 600
 press LEFT
 moveto 740 420 700
 release LEFT
-wait 600
+wait 1100
 cut
 ui com.example.interactivity.drag.SnapUI
 move 960 430

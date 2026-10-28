@@ -165,13 +165,13 @@ Get it from the UI registry once the backend is registered, and set what you nee
 | [[WindowUIBridge#background]] | The color that clears the window before every frame, behind every UI. |
 | [[WindowUIBridge#hoverInfo]] | The font, size and color of the tooltip text. |
 | [[WindowUIBridge#hoverColor]] | The fill of the tooltip box. |
-| [[WindowUIBridge#hoverBorderColor]] | The 1-pixel border of the tooltip box. |
+| [[WindowUIBridge#hoverBorderColor]] | The border of the tooltip box, one design pixel wide. |
 
 <figure>
 
 ![The pointer moves onto the Settings button and rests there; a dark tooltip with the light text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
 
-<figcaption>The tooltip of the window bridge with its default colors.</figcaption>
+<figcaption>Once `hoverInfo` is set, every node that gives a `hover(...)` text shows this tooltip, with no code in the UI.</figcaption>
 </figure>
 
 :::caution
