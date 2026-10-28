@@ -116,9 +116,9 @@ The table below says what happens outside that form; some code cannot be replaye
 | A lambda written inside the expression, such as `names.stream().filter(name -> ...)` | Frozen |
 | The time, a random number, a call with side effects | Frozen |
 
-The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its first argument, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
-Its [[TextInfo]] is not followed reliably: depending on the rest of the expression and of the chain, it keeps its first value, without a warning.
-To switch the style of a text with a signal, pass a lambda: `label(() -> Text.create(..., on.get() ? bold : regular))`.
+The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its arguments, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
+Its [[TextInfo]] is followed too: `Text.create(on.get() ? "On" : "Off", on.get() ? this.bold : this.regular)` switches the text and its style.
+Keep such styles in fields: a style held in a local variable, such as one of `init()` used inside a `body(...)`, and chosen by a signal stays fixed, with a warning in dev mode.
 
 This table is about the expression given to the value overload.
 A lambda given to the setter itself, or to `map(...)` and `Signal.from(...)`, is not part of an expression: the table of the previous section applies to it.
