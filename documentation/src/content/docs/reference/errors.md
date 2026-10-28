@@ -2273,7 +2273,7 @@ Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albindin
 
 The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
 
-Connect or enable an audio output, or register the backend with `audio(false)`: [What register() does](/use/learn/running/backends/#what-register-does).
+Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
 
 ### OpenAL cannot create a context on the default audio device, check that … {#openal-cannot-create-context}
 

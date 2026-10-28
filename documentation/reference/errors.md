@@ -1367,7 +1367,7 @@ Run the tests on a standard JVM.
 
 The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
 
-Connect or enable an audio output, or register the backend with `audio(false)`: [What register() does](/use/learn/running/backends/#what-register-does).
+Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
 
 ## IllegalStateException OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date
 

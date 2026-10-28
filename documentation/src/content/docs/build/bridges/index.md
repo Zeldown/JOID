@@ -48,7 +48,7 @@ Registering and unregistering are thread-safe, and reading never locks: each cha
 
 The registries are static, and the core puts three bridges in them before any backend: the system clock, the direct thread bridge and the identity replay bridge.
 A backend registers the rest from [[Backend#register]], one hook per bridge, then its defaults ([Writing a backend](/build/writing-a-backend/#extend-backend) lists the hooks).
-[What register() does](/use/learn/running/backends/#what-register-does) gives the whole sequence from the side of an application.
+[What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) gives the whole sequence from the side of an application.
 
 Application code and plugins add to the registries at any time.
 Code that must run after the backend, whatever the load order, goes into [[JOID#onReady]], which runs at once on the render thread when JOID is already loaded, and at the start of the next frame from another thread.
