@@ -37,6 +37,7 @@ Create `SettingsStore.java`:
 
 The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int` ([Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk)).
 Nothing uses the store yet, so the menu looks the same.
+`Main` closes every open UI after the loop, so the store is also saved when the player closes the window ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 
 ## 2. Change the settings in the popup
 
@@ -71,18 +72,7 @@ As in `SettingsUI`, read both signals through local variables ([What JOID follow
 
 **Run it.**
 Open the settings and change the music and the volume: the line under the buttons changes at once, behind the popup.
-
-## 4. Close the UIs when the program stops
-
-JOID saves the store when a UI that uses it closes, and again when the program exits normally.
-When the player closes the window, the menu is still open when the loop ends: without one more line, the store still reaches the disk when the JVM exits, but the close listeners of the open UIs never run.
-Close every open UI after the loop, before the window is destroyed ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
-
-```java file="com/example/tutorial/settings/Main.java" title="Main.java" ins={43}
-```
-
-**Run it.**
-Change the settings, close the window, and run the program again: the menu shows your settings.
+Close the window and run the program again: the menu shows your settings.
 They live in `joid/store/settings.store`, under the working directory: [Where JOID stores files](/use/learn/running/files/#find-the-folders) explains the folder.
 
 <details>
@@ -118,6 +108,6 @@ A property suits a value that belongs to one UI; a store suits values that sever
 ## What you learned
 
 - A [store](/use/learn/state/stores-and-properties/) holds values that outlive a UI; its scope decides how long it lives and whether it is saved.
-- Two UIs that ask for the same `PERMANENT` store share its signals.
+- Two UIs that ask for the same `PERMANENT` store share its signals ([Use a store from several UIs](/use/learn/state/stores-and-properties/#use-a-store-from-several-uis)).
 - JOID saves stores and properties when a UI closes; [close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends) so that they close properly.
 - A field marked `@UIProperty` keeps its value from one run to the next ([Stores and remembered properties](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui)).

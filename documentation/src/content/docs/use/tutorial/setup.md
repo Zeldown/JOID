@@ -43,9 +43,8 @@ For now it is empty: a UI draws nothing by itself.
 ```
 
 `Main` is the program of the Quick Start, with the title of the game and the menu as the UI that [[JOID#open]] opens.
-Leave out the call to `closeAll()` for now: lesson 6 brings it back with its reason.
 
-```java file="com/example/tutorial/setup/Main.java" title="Main.java" ins={22,31}
+```java file="com/example/tutorial/setup/Main.java" title="Main.java" ins={24,33}
 ```
 
 **Run it** with `gradle run`.

@@ -7,6 +7,8 @@ import org.lwjgl.opengl.GL;
 import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.lib.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.WindowUIBridge;
 
 public final class Main {
 
@@ -35,6 +37,7 @@ public final class Main {
 			GLFW.glfwSwapBuffers(window);
 		}
 
+		BridgeHandler.UI.getBridge(WindowUIBridge.class).closeAll();
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
 	}
