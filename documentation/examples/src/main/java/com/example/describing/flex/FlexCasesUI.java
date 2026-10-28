@@ -6,7 +6,6 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 
 public class FlexCasesUI extends UI {
@@ -121,28 +120,6 @@ public class FlexCasesUI extends UI {
 			.color(FlexCasesUI.ELEMENT)
 			.height(() -> list.getHeight() + 40D)
 			.body(panel -> list.attach(panel))
-			.attach(card);
-			// #endregion
-		})
-		.attach(this);
-
-		RectNode
-		.create(520, 460, 400, 300)
-		.color(FlexCasesUI.SURFACE)
-		.effect(RoundedNodeEffect.create(12F))
-		.effect(BorderNodeEffect.create(FlexCasesUI.ELEMENT, 1.5F))
-		.body(card -> {
-			// #region scroll
-			FlexNode
-			.vertical(20, 20, 360)
-			.margin(10D)
-			.height(260)
-			.overflow(OverflowProperty.SCROLL)
-			.body(flex -> {
-				for (int i = 0; i < 8; i++) {
-					RectNode.create(0, 0, 360, 50).color(i % 2 == 0 ? FlexCasesUI.ACCENT : FlexCasesUI.ELEMENT).attach(flex);
-				}
-			})
 			.attach(card);
 			// #endregion
 		})

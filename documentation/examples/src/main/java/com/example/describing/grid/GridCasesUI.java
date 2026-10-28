@@ -6,7 +6,6 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 
 public class GridCasesUI extends UI {
@@ -95,27 +94,6 @@ public class GridCasesUI extends UI {
 				RectNode.create(0, 0, 110, 80).color(GridCasesUI.ACCENT).attach(grid);
 				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ACCENT).attach(grid);
 				RectNode.create(0, 0, 170, 60).color(GridCasesUI.ACCENT).attach(grid);
-			})
-			.attach(card);
-			// #endregion
-		})
-		.attach(this);
-
-		RectNode
-		.create(60, 460, 400, 300)
-		.color(GridCasesUI.SURFACE)
-		.effect(RoundedNodeEffect.create(12F))
-		.effect(BorderNodeEffect.create(GridCasesUI.ELEMENT, 1.5F))
-		.body(card -> {
-			// #region scroll
-			GridNode
-			.create(20, 20, 360, 260)
-			.margin(10D)
-			.overflow(OverflowProperty.SCROLL)
-			.body(grid -> {
-				for (int i = 0; i < 20; i++) {
-					RectNode.create(0, 0, 80, 80).color(i % 2 == 0 ? GridCasesUI.ACCENT : GridCasesUI.ELEMENT).attach(grid);
-				}
 			})
 			.attach(card);
 			// #endregion
