@@ -17,8 +17,7 @@ A key of the keyboard, as the key events, the shortcuts and the key state name i
 
 ## Description
 
-A key event holds two keys: [`NodeKeyEvent.getKey`](/reference/events/nodekeyevent/#NodeKeyEvent-method-getKey), the key that the layout of the user names, and [`NodeKeyEvent.getPhysicalKey`](/reference/events/nodekeyevent/#NodeKeyEvent-method-getPhysicalKey), the place of the key on a US QWERTY keyboard.
-Only the letters and the punctuation keys differ between the two; the digits, the arrows, the modifiers and the function keys are the same.
+A key event names a key by the layout of the user or by its place on the keyboard.
 Each constant below names the key by what it types on a US keyboard.
 
 Backend note: on LWJGL 2, JOID learns the key that a place types from the characters the user types, so a letter or punctuation key pressed with Shift or Alt before it was ever typed alone reports its place.

@@ -4,7 +4,6 @@ summary: The base of every text field: it edits a text, reads a value of type `V
 
 A field turns its text into a value with `parse` and a value into its text with `format`; [[TextFieldNode]], [[IntegerFieldNode]] and [[MultilineTextFieldNode]] are ready to use, and a field of your own type extends [[LineFieldNode]].
 The field draws its text itself; its only part is an optional `background`.
-While it has the focus, it consumes every key and every character; one field has the focus at a time, in all the UIs of a bridge.
 A held Backspace, Delete or arrow key repeats after 500 ms, then every 100 ms.
 Attaching a field without a [[TextInfo]] throws an `IllegalStateException`.
 

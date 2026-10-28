@@ -11,11 +11,7 @@ final Color shadow = new Color(0F, 0F, 0F, 0.6F);
 final Color glow = Color.decode("#5B8CFF").toGradient(Color.decode("#7DA4FF"));
 ```
 
-The `withX`, `darker`, `brighter`, `multiply`, `add`, `scale`, `to` and `toGradient` methods return a new color and leave this one unchanged.
-The `red`, `green`, `blue` and `alpha` setters change this color in place; the named constants are locked and throw `IllegalStateException` there, so take a `copy()` first.
-
-An animated color carries an update function ([[Color#RAINBOW]], [[Color#LOADING]], or your own), which JOID applies each time it draws the color.
-A color derived from an animated color stays animated: `Color.RAINBOW.scale(0.5F)` is a darker rainbow.
+An animated color, such as [[Color#RAINBOW]], carries an update function that JOID applies each time it draws the color.
 Two colors are equal when their channels, their gradient and their update function are equal; the update function compares by identity.
 
 Learn: [Colors and styling](/use/learn/style-and-motion/styling/).
