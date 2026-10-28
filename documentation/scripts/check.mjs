@@ -265,7 +265,7 @@ function chainedLambdas(lines, where) {
 		}
 		const open = (line.match(/\(/g) ?? []).length - (line.match(/\)/g) ?? []).length;
 		if (open > 0 && (lines[index + 1] ?? '').trim().startsWith('.')) {
-			problems.push(`${where(index)}: a lambda whose chain spans several lines takes a block, the chain one tab further in: (card -> {, the chain, then })`);
+			problems.push(`${where(index)}: a lambda whose chain spans several lines takes a block, the chain one tab further in: (card -> {, the chain, then }), or (value -> {, return and the chain, then }) for a factory`);
 		}
 	});
 	return problems;
