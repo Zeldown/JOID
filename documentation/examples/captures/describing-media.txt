@@ -14,3 +14,9 @@ wait 500
 # film describing-media-stretch 60
 wait 3000
 cut
+# crop describing-media-loading 390 355 1140 370
+dev true
+ui com.example.describing.media.LoadingUI
+wait 500
+shot describing-media-loading
+dev false
