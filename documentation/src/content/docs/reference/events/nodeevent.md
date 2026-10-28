@@ -23,7 +23,7 @@ An event about a node, and the event of the node events that carry nothing else,
 
 ## Learn more
 
-- [Events](/use/learn/interactivity/events/#know-the-three-kinds-of-events)
+- [Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)
 - [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/)
 - [Custom nodes](/use/learn/going-further/custom-nodes/)
 

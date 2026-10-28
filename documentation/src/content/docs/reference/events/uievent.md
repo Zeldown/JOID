@@ -19,7 +19,7 @@ The base class of the events about a UI, such as its input or its closing.
 
 ## Learn more
 
-- [Events](/use/learn/interactivity/events/#know-the-three-kinds-of-events)
+- [Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)
 
 ## Creation
 

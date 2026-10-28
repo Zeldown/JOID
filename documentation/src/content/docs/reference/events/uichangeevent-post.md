@@ -18,7 +18,7 @@ The event of an `onX` listener of a UI, which fires once a value of the UI chang
 
 ## Learn more
 
-- [Events](/use/learn/interactivity/events/#know-the-three-kinds-of-events)
+- [Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)
 
 ## Creation
 
