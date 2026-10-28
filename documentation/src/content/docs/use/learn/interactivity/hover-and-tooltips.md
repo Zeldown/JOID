@@ -34,7 +34,9 @@ The color follows the hover progress, both when the pointer enters and when it l
 </figure>
 
 The hover progress runs from `0F` (not hovered) to `1F` (hovered).
-[[Node#hoverValue]] multiplies a value by it, to animate any property of your own; `hoverValue` is a method of the node, not a signal of yours, so give the setter a lambda:
+[[Node#hoverValue]] multiplies a value by it, to animate any property of your own.
+It reads the hover animation of the node, a signal: in a node of your own, an expression that calls `super.hoverValue(...)` follows it.
+On a node held in a local variable, as here, the expression stays fixed, so give the setter a lambda:
 
 ```java file="com/example/interactivity/hover/HoverUI.java" region="value"
 ```

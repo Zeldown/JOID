@@ -112,11 +112,14 @@ The table below says what happens outside that form; some code cannot be replaye
 | `get()` on a signal returned by a getter of a field, such as `this.settings.getMusic().get()` | Followed |
 | `get()` on a signal returned by a getter of a local variable, such as `settings.getMusic().get()` | Followed, except after a condition decided by a signal in the same expression: frozen |
 | A field of the class that is not a signal, such as `this.bonus` | Read again each time a signal of the expression changes, never on its own |
+| A getter of a node, a control or the UI, such as `isChecked()`, `getWidth()` or `super.getViewWidth()` | It returns a field: read again each time a signal of the expression changes, never on its own; on a node held in a local variable, frozen |
 | A local variable set before the call, from fields or signals | Followed |
 | The variable of a loop inside a text, such as `name + ": " + score.get()` | Followed |
 | The variable of a loop combined with a signal in a calculation, or deciding a condition | Frozen |
 | A lambda written inside the expression, such as `names.stream().filter(name -> ...)` | Frozen |
 | The time, a random number, a call with side effects | Frozen |
+
+To follow a getter, pass a lambda, as [The design canvas](/use/learn/describing-the-ui/design-canvas/#reach-the-edges-of-the-window) does with the view; to follow a control, bind it to a signal ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal)).
 
 The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its arguments, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
 Its [[TextInfo]] is followed too: `Text.create(on.get() ? "On" : "Off", on.get() ? this.bold : this.regular)` switches the text and its style.
@@ -211,6 +214,7 @@ A signal can be written from any thread: JOID applies the write on the render th
 - For any setter call, ask **"When does JOID compute this value again?"**: a plain value never, an expression that reads signals or a signal when they change, a lambda or a method reference on every frame.
 - Write a value that depends on signals as an **expression** that calls `get()`, or pass the signal itself; keep **lambdas** for values that change without a signal.
 - The variable of a loop combined with a signal, a lambda inside the expression, the time or a random number **freeze** the expression; fix it with a **field**, **`map(...)`** or a **lambda**.
+- A **getter** of a node, a control or the UI returns a field that JOID does not follow: pass a lambda, or bind the control to a signal.
 - `peek()` reads a signal **without following** it.
 - **Collection signals** follow their reads, change through their own operations and notify only on a real change; **`fireChange()`** notifies after a change made in place.
 
