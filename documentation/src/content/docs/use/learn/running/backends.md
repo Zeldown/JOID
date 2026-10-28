@@ -198,8 +198,8 @@ To run JOID on another library or engine, implement its bridges: [Writing a back
 
 ## Try it
 
-**A light window.**
-Give the window the background `#DDDDDD` and tooltips with dark grey text on a white box.
+**A window in your palette.**
+Give the window the background `#171A21` and tooltips with text `#E7E9EE` on a box `#262B35`.
 
 <details>
 <summary>Solution</summary>
@@ -207,9 +207,9 @@ Give the window the background `#DDDDDD` and tooltips with dark grey text on a w
 ```java fragment
 BridgeHandler.UI
 .getBridge(WindowUIBridge.class)
-.background(Color.decode("#DDDDDD"))
-.hoverColor(Color.WHITE)
-.hoverInfo(TextInfo.create(font, 20F).color(new Color(85, 85, 85)));
+.background(Color.decode("#171A21"))
+.hoverColor(Color.decode("#262B35"))
+.hoverInfo(TextInfo.create(font, 20F).color(Color.decode("#E7E9EE")));
 ```
 
 </details>

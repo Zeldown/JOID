@@ -64,7 +64,7 @@ Check, in this order:
 
 ## Run any example of this documentation
 
-The examples of Learn and of the guides are UIs, and the "Full file" link under each one shows its class without a `main`.
+Most examples of Learn and of the guides are UIs, and the "Full file" link under each one shows its class without a `main`; the few that start JOID themselves, in [Running your UI](/use/learn/running/), have their own `main`.
 Most of them write their text with `ExampleFont.REGULAR`, a family of two faces of Montserrat loaded once for every example.
 Add this class to the package `com.example`, and put `Montserrat-Bold.ttf` next to the `Montserrat-Regular.ttf` of step 1:
 
@@ -184,7 +184,7 @@ Read [Signals](/use/learn/interactivity/signals/), then [Derived values](/use/le
 ## Remember a value
 
 A field annotated with [[UIProperty]] keeps its value from one run to the next.
-JOID saves it when the UI closes, which `closeAll()` does after the loop of `Main` and of the launcher ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
+JOID saves it when the UI closes ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
 
 ```java file="com/example/start/TourUI.java" region="property"
 ```

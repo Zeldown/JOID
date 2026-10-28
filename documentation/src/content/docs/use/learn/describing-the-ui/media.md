@@ -38,7 +38,7 @@ One image, many ways to draw it: natural size, proportional size, tint, the thre
 A `ResourceNode` sizes itself from the image:
 
 - Without a size, or with `0` for both, it takes the size of the image, one design pixel per image pixel.
-- With a width and a height of `0`, it takes the height that keeps the proportions of the image; with a height and a width of `0`, the width.
+- With only a width (the height at `0`), such as `create(400, 40, 160, 0)`, it computes the height that keeps the proportions of the image; with only a height (the width at `0`), the width.
 - With both, it fills that box, as [Fit, tint and crop](#fit-tint-and-crop) shows.
 
 An image has a fixed number of pixels, while the canvas scales with the window ([The design canvas](/use/learn/describing-the-ui/design-canvas/)).
@@ -134,7 +134,7 @@ Images that share other settings, such as the sprites of a pixel-art game, come 
 [[ResourceBuilder#create]] starts with the settings of `Resource.of(...)`; `nearest()`, `linear()`, `mipmap(...)` and `textureCoords(...)` each return a builder with that setting.
 Each resource starts with a copy of the settings of its builder, and its own setters change that resource only; [[Resource#reset]] gives it back the settings of its builder.
 Resources of every builder share their decoded content, kept in memory 5 minutes after its last use.
-[[ResourceBuilder#cache]] gives a builder a cache of its own, a [[MemoryResourceCache]] such as `MemoryResourceCache.create().size(50).expiry(60000L)` for 50 contents kept one minute, or `null` to make each resource decode its own copy.
+[[ResourceBuilder#cache]] gives a builder a cache of its own, such as a [[MemoryResourceCache]], or `null` to make each resource decode its own copy.
 
 ## Play animated images and videos
 
@@ -213,13 +213,6 @@ Wrap the texture in a borrowed texture of the backend, then give it to `Resource
 |---|---|---|
 | LWJGL 2, LWJGL 3 | [[GlBorrowedTexture]] | The name of an OpenGL texture, or an `IntSupplier` that returns it |
 | Vulkan | [[VulkanBorrowedTexture]] | A [[VulkanImage]], or a `Supplier` that returns one |
-
-On Vulkan, a `VulkanImage` describes your image by its handle, its view, its size in pixels and its number of mipmap levels:
-
-```java fragment
-final VulkanImage image = VulkanImage.of(imageHandle, viewHandle, 512, 512, 1);
-ResourceNode.create(0, 0, 512, 512).resource(Resource.of(VulkanBorrowedTexture.of(image))).attach(this);
-```
 
 JOID draws the texture where it is: it never copies it, never writes into it and never deletes it.
 It calls a supplier each time it draws, so the node follows your renderer when it replaces its texture, after a resize for example.

@@ -28,8 +28,8 @@ Each control reads and writes a signal of the store.
 
 ## 1. Write the store
 
-Write a [[UIStore]] of scope [[UIStoreScope#PERMANENT]], with one signal per setting, a getter for each, and the `toJson`/`fromJson` that keep them on disk, as [Write a store](/use/learn/state/stores-and-properties/#write-a-store) and [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk) show.
-This guide names its file `audio` in [[UIStoreData]] and keeps two signals:
+Start from the [[UIStore]] of [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk), with a [[BooleanSignal]] for the sound.
+This guide names its file `audio` in [[UIStoreData]]:
 
 ```java file="com/example/guides/SettingsGuideStore.java" region="fields"
 ```
@@ -38,11 +38,7 @@ This guide names its file `audio` in [[UIStoreData]] and keeps two signals:
 
 ## 2. Bind the controls to the store
 
-`useStore` returns the store, and creates it the first time with the factory you give it:
-
-```java file="com/example/guides/SettingsGuideUI.java" region="use"
-```
-
+In `init()`, `store` is the store that `useStore` returns ([Use a store from several UIs](/use/learn/state/stores-and-properties/#use-a-store-from-several-uis)).
 Bind each control to its signal: `checked(...)` for the checkbox, `value(...)` for the slider.
 The control then shows the signal and writes the value the user picks into it:
 
@@ -55,8 +51,6 @@ The control then shows the signal and writes the value the user picks into it:
 - `save()` in `onChange` writes the file as soon as a value changes, so a crash loses nothing.
 - `enabled(store.getSound())` greys the slider out while the sound is off.
 - The label derives its text from the volume with `map(...)` ([Derived values](/use/learn/state/derived-values/)).
-
-Another UI that asks for the store gets the same signals, so it follows this screen ([Use a store from several UIs](/use/learn/state/stores-and-properties/#use-a-store-from-several-uis)).
 
 **Check:** move the volume to 30, then uncheck the sound: the label reads `Volume 30`, and the slider greys out.
 Close the application and start it again: the screen shows the same values, read from `store/audio.store` in the [data folder](/use/learn/running/files/).

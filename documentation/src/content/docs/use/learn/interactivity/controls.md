@@ -72,7 +72,8 @@ Keep `onChange` for an action, such as saving the settings or playing a sound.
 ![A slider at 5 of 10 with a blue thumb, a dark grey "Set to 10" button and the text "Volume: 5"; the pointer drags the thumb to the end of the track: the text stays at 8 and, at the release, the thumb goes back to 8; then it clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
 
 <figcaption>
-`beforeChange` refuses the values above 8 that the user asks for: the thumb goes back to 8 at the release. "Set to 10" writes the signal, which is never refused.
+`beforeChange` refuses the values above 8 that the user asks for: the thumb goes back to 8 at the release.
+"Set to 10" writes the signal, which is never refused.
 </figcaption>
 </figure>
 
@@ -209,7 +210,6 @@ A slider is a choice whose options sit along a track: a press on the track jumps
 | [[StringSliderNode]] | `values(...)` of texts or of the constants of an enum, and `value(constant)` |
 
 [[BaseSliderNode#inset]] keeps the first and the last step away from the ends, by half the thumb by default.
-A range builds no list: `range(1, Integer.MAX_VALUE)` costs nothing.
 [[SliderNode#speed]] eases the thumb to a new value, and `1F`, the default, moves it at once; [[BaseSliderNode#isSliding]] is `true` during a drag.
 
 ## Show a progress

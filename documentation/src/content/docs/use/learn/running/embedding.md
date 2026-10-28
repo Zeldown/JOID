@@ -134,7 +134,7 @@ The UI registry, [[BridgeHandler#UI]], orders its bridges by priority:
 - Input goes to the bridges from the highest and stops at the first one that consumes it.
   A key release goes to every bridge, and a mouse release to every bridge that received the press.
 - Only the lowest bridge clears the window, so the bridges above it never clear the window background.
-- Each bridge draws its own tooltips with its own `hoverInfo`, and the window shows the cursor of the highest bridge whose hovered node sets one.
+- Each bridge draws its own tooltips with its own `hoverInfo`, and the window shows the cursor of the hovered node of the highest bridge that has one, the default arrow when that node and its parents set none.
 
 [[BridgeRegistry#getBridgeList]] lists the bridges from the lowest to the highest priority, and [[BridgeRegistry#unregister]] removes one.
 Writing the contract of a UI bridge of your own belongs to the Build on JOID documentation.

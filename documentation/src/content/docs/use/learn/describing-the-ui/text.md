@@ -85,8 +85,8 @@ Any node can also carry a label: [[Node#label]] draws a `Text` centered on the n
 ![A dark card with two dark grey buttons, the word Play centered in the first and Settings centered in the second](/captures/describing-text-align.webp)
 
 <figcaption>
-A centered text node and a label give the same result.
-A label needs no extra node, a text node lets you place the text anywhere in the box.
+To center a text on a node, `label(...)` needs no extra node.
+A text node in the box places the text anywhere else in it, with the alignments of the `Text`.
 </figcaption>
 </figure>
 

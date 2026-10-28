@@ -21,10 +21,8 @@ A package of your application that runs on the prod jar of its backend, draws ev
 
 ## 1. Clear the warnings with the dev jar
 
-Before you switch, run every screen with the dev jar until the error output shows no line that starts with `[JOID]`.
+Before you switch, run every screen with the dev jar until the error output shows no line that starts with `[JOID]`: most warnings exist only in dev mode ([Read the warnings](/use/get-started/dev-tools/#read-the-warnings)).
 The lines that JOID prints on the standard output, such as the line it prints when it loads or the load time of each font, are not warnings.
-
-Most warnings exist only in dev mode, and the prod jar draws a resource it cannot read as nothing instead of a checkerboard: a problem you miss now stays invisible.
 
 **Check:** a full tour of the application prints no `[JOID]` line on the error output.
 

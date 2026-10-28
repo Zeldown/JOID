@@ -37,7 +37,6 @@ Create `SettingsStore.java`:
 
 The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int` ([Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk)).
 Nothing uses the store yet, so the menu looks the same.
-`Main` closes every open UI after the loop, so the store is also saved when the player closes the window ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 
 ## 2. Change the settings in the popup
 

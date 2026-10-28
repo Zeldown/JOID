@@ -93,7 +93,7 @@ The mockup marks each text with a bar, so the text only has to sit on its bar.
 </figcaption>
 </figure>
 
-With the dev jar, the inspector shows the position and the size of the node under the mouse ([Dev tools](/use/get-started/dev-tools/)).
+With the dev jar, a click on a node with Inspect on locks it, and the dev panel lists its bounds ([Inspect a UI](/use/get-started/dev-tools/#inspect-a-ui)).
 [Pixel alignment](/use/in-depth/pixel-alignment/) explains where each edge lands on the screen.
 
 ## If it does not work

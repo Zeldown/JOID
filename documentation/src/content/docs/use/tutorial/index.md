@@ -41,7 +41,7 @@ The [Quick Start](/use/get-started/quick-start/) tours the topics that the lesso
 ## How the lessons work
 
 Each lesson shows the code it changes, with the changed lines highlighted, and the complete file when most of it changes.
-Every file of the game goes in the package `com.example.starfall`, and each lesson edits the same files.
+Each lesson edits the same files.
 
 The last column of the table links the complete code at the end of each lesson, a program that runs on its own.
 To start a lesson from there, or to compare your code, copy the folder of the lesson before it; `polish` is the finished game.

@@ -51,7 +51,7 @@ The factory of the property names the area that holds the node:
 | `DraggableProperty.free()` | Nothing: it goes anywhere |
 
 A node dragged with `parent()` must have a parent: on a node attached to the UI itself, the drag throws an `IllegalStateException`.
-The node moves through [[Node#move]], so [[Node#beforeMove]] can refuse or correct a position ([Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)).
+The node moves through [[Node#move]], so [[Node#beforeMove]] can refuse a position ([Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)).
 
 ## React to the drag
 
@@ -66,8 +66,8 @@ The square of the first example counts its drops:
 | [[Node#onDragStart]] | The drag started |
 | [[Node#onDrag]] | The pointer moved during the drag |
 | [[Node#beforeDragDrop]] | The button was released; `cancel()` sends the node back where the drag started |
+| [[Node#onDragSnap]] | The node was dropped on a target ([Drop on a target](#drop-on-a-target)), before `onDragDrop` |
 | [[Node#onDragDrop]] | The node was dropped |
-| [[Node#onDragSnap]] | The node was dropped on a target ([Drop on a target](#drop-on-a-target)) |
 
 Each listener receives a [[NodeDragEvent]]; `getTarget()` is the target of the drop, or `null`.
 [[Node#isDragging]] is `true` from the start to the release: in `beforeDragDrop`, the drag is already over and it reads `false`.
@@ -135,7 +135,7 @@ A drag that started goes to its end, drop animation included, even when the poin
 
 :::caution
 A listener that writes the bound `x` signal on every change, for example to round it, stops the easing on `x` at its first write.
-Round the position in [[Node#beforeMove]] instead, or with a target.
+Round the position once the node is dropped, with `move(...)` in [[Node#onDragDrop]], or give the node snap targets.
 :::
 
 A node dragged with `DraggableType.MOVE` must have a position that the drag can write: a `x(...)` or `y(...)` given as a lambda or as a signal that cannot be written throws an `IllegalStateException`.
