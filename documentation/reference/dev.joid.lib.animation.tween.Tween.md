@@ -5,9 +5,9 @@ summary: Moves one `float` value, read and written through a getter and a setter
 The getter is read when the tween begins, after its delay, so a tween placed in a sequence starts from the value that the previous steps left.
 [[TweenAnimator#tween]] gives a tween already wired to an animator.
 A duration below `0` throws an `IllegalArgumentException`.
-This UI moves two fields with two tweens, one after the other:
+This tween moves `alpha` to `1F` in 400 ms; it moves only while its manager is updated:
 
-```java file="com/example/style/TweenUI.java" region="timeline"
+```java file="com/example/reference/animation/FadeTween.java" region="tween"
 ```
 
 Learn: [Animation](/use/learn/style-and-motion/animation/).

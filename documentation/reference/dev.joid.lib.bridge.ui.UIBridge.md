@@ -4,10 +4,7 @@ summary: The base class of every UI bridge, which dispatches the input to its UI
 
 A subclass decides what opening and closing a UI mean; [[StackUIBridge]] already does it with a screen stack, and is the usual base.
 [[UIBridgeRegistry]] calls the input methods and the steps of the frame; each input method returns `true` when the bridge consumed the event.
-This bridge overrides `drawBackground()` to keep the scene of the host under its UIs:
-
-```java file="com/example/running/SceneUIBridge.java"
-```
+[Draw JOID over your own scene](/use/learn/running/embedding/#draw-joid-over-your-own-scene) overrides `drawBackground()` to keep the scene of the host under the UIs.
 
 Learn: [UI bridge](/build/bridges/ui/), [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own).
 

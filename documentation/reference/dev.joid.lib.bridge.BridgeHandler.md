@@ -4,10 +4,7 @@ summary: The static registries through which the core of JOID reaches its bridge
 
 Each constant is a [[BridgeRegistry]] of one kind of bridge.
 Before any backend, JOID registers a [[SystemClockBridge]] in `CLOCK`, a [[DirectThreadBridge]] in `THREAD` and an identity bridge in `SIGNAL_REPLAY`; [[Backend#register]] fills the others.
-Your code reaches a registry when it needs a bridge directly, to read one or to add one:
-
-```java file="com/example/running/PanelPlugin.java" region="ready"
-```
+Your code reaches a registry when it needs a bridge directly, to read one or to add one, as [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own) does.
 
 Learn: [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own), [The bridges](/build/bridges/).
 
