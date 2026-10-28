@@ -19,6 +19,7 @@ public class FocusFieldUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	private final BooleanSignal focused = new BooleanSignal(false);
@@ -38,6 +39,7 @@ public class FocusFieldUI extends UI {
 			.create(60, 60, 480, 60)
 			.info(info)
 			.placeholder("Search")
+			.placeholderColor(FocusFieldUI.MUTED)
 			.focused(this.focused)
 			.beforeBlur(event -> {
 				if (event.getNode().getText().isEmpty()) {

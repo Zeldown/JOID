@@ -19,6 +19,7 @@ public class NameFieldUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 
 	// #region signal
 	private final StringSignal  name    = new StringSignal("");
@@ -41,6 +42,7 @@ public class NameFieldUI extends UI {
 			.onSubmit(event -> this.submits.increment())
 			.info(info)
 			.placeholder("Your name")
+			.placeholderColor(NameFieldUI.MUTED)
 			.text(this.name)
 			.background(RectNode.create(0, 0, 0, 0).color(NameFieldUI.ELEMENT))
 			.marginHorizontal(12D)

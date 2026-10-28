@@ -39,7 +39,7 @@ The signal follows each key, so "Hello, Ada" changes while the user types; Enter
 
 [[TextFieldNode]] needs a [[TextInfo]] before it is attached; without one, the attach throws an `IllegalStateException`.
 With the factory without a height, the field takes the height of its font plus its margins, set by [[FieldNode#margin]], or one side at a time with `marginTop(...)`, `marginBottom(...)`, `marginLeft(...)` and `marginRight(...)`.
-The fields of this page take a dark grey `background(...)`; any node can be the background.
+The fields of this page take a dark grey `background(...)`, and any node can be the background; their `placeholderColor(...)` is a grey that reads better on it than the default, the text color at half its opacity.
 
 - [[FieldNode#onChange]] runs on each edit with a [[NodeFieldChangeEvent.Post]]: `getText()` is the text, `getValue()` the value, `isValid()` whether the text is a valid value.
 - [[LineFieldNode#onSubmit]] runs when the user presses Enter, after the field lost the focus.

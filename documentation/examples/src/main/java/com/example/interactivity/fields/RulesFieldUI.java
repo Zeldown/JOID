@@ -18,6 +18,7 @@ public class RulesFieldUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 
 	private final StringSignal code = new StringSignal("");
 
@@ -36,6 +37,7 @@ public class RulesFieldUI extends UI {
 			.create(60, 60, 480, 60)
 			.info(info)
 			.placeholder("Code")
+			.placeholderColor(RulesFieldUI.MUTED)
 			.accept(text -> text.matches("[A-Za-z ]*"))
 			.maxTextLength(6)
 			.normalize(text -> text.trim().toUpperCase())
