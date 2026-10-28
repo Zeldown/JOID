@@ -19,10 +19,8 @@ Base class of a screen, an overlay or a popup that builds its node tree in `init
 ## Description
 
 A `UI` is one interface: a screen, an overlay or a popup.
-Write one class per interface, build its nodes in `init()`, configure it with annotations on the class ([`UIData`](/reference/annotations/uidata/), [`UIDataPopup`](/reference/annotations/uidatapopup/), [`UIDataOverlay`](/reference/annotations/uidataoverlay/), [`UIDataScale`](/reference/annotations/uidatascale/), [`UIDataDebug`](/reference/annotations/uidatadebug/)), then open it with [`JOID.open`](/reference/ui/joid/#JOID-method-open):
-
-```java file="com/example/reference/ProfileUI.java" region="ui"
-```
+Write one class per interface, build its nodes in `init()`, configure it with annotations on the class ([`UIData`](/reference/annotations/uidata/), [`UIDataPopup`](/reference/annotations/uidatapopup/), [`UIDataOverlay`](/reference/annotations/uidataoverlay/), [`UIDataScale`](/reference/annotations/uidatascale/), [`UIDataDebug`](/reference/annotations/uidatadebug/)), then open it with [`JOID.open`](/reference/ui/joid/#JOID-method-open).
+[Write a UI](/use/learn/describing-the-ui/uis/#write-a-ui) shows one.
 
 Every position that a `UI` method takes or returns is in design pixels on the 1920 × 1080 canvas, unless the entry says screen pixels.
 The input reaches the nodes first, from the front-most, then the `handleX` listeners of the UI.

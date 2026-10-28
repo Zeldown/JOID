@@ -1,4 +1,0 @@
-# crop reference-effects-underline 60 60 280 190
-ui com.example.reference.effects.UnderlineUI
-wait 200
-shot reference-effects-underline

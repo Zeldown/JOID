@@ -16,18 +16,12 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Read-only `float` signal that a timeline of tweens moves over time, the usual way to animate a node.
 
-![The pointer clicks a dark bar with rounded corners; a blue square slides to its right end, then back to its left end.](/captures/reference-animation-slide.webp)
-
 ## Description
 
 A `TweenAnimator` is a [`Signal`](/reference/signals/signal/) of a `float` that you never set: a [`Timeline`](/reference/animation/timeline/) of steps moves it, and everything that reads it follows.
 Use one for any motion or fade that plays over time: describe the steps with `sequence(...)` and `push(...)`, then call `start()`.
 Read its value like any signal, in a node property, a `map(...)` or an `onChange` listener.
-
-```java file="com/example/reference/animation/SlideUI.java" region="slide"
-```
-
-A click plays the animator from its current value to `1F` in 600 ms, then back to `0F`, and the square follows it on every frame.
+[Chain, repeat and replay](/use/learn/style-and-motion/animation/#chain-repeat-and-replay) starts one on a click.
 
 ## Learn more
 
