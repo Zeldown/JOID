@@ -133,8 +133,6 @@ A drag that started goes to its end, drop animation included, even when the poin
 
 ## Know how a drag writes the position
 
-After the release, the node still eases toward the pointer, its target or its start.
-
 :::caution
 A listener that writes the bound `x` signal on every change, for example to round it, stops the easing on `x` at its first write.
 Round the position in [[Node#beforeMove]] instead, or with a target.

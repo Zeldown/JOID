@@ -24,7 +24,6 @@ A shadow, a mask, a transform and every `draw` of an effect always cover the chi
 ## Learn more
 
 - [Effects](/use/learn/style-and-motion/effects/#round-a-node-with-its-children)
-- [Custom effects](/use/learn/going-further/custom-effects/)
 
 ## Values
 
