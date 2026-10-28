@@ -46,7 +46,7 @@ Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors
 | [background](#WindowUIBridge-property-background) | [`Color`](/reference/drawing/color/) | `Color.BLACK` | Sets the color that clears the window before every frame, behind every UI. |
 | [hoverColor](#WindowUIBridge-property-hoverColor) | [`Color`](/reference/drawing/color/) | `Color.decode("#18181b")` | Sets the fill of the tooltip box. |
 | [hoverInfo](#WindowUIBridge-property-hoverInfo) | [`TextInfo`](/reference/text/textinfo/) | `null` | Sets the text style of the tooltips; without it, the bridge draws no tooltip and, with the dev jar, prints a warning once. |
-| [hoverBorderColor](#WindowUIBridge-property-hoverBorderColor) | [`Color`](/reference/drawing/color/) | `Color.decode("#27272a")` | Sets the color of the 1-pixel border of the tooltip box. |
+| [hoverBorderColor](#WindowUIBridge-property-hoverBorderColor) | [`Color`](/reference/drawing/color/) | `Color.decode("#27272a")` | Sets the color of the border, one design pixel wide, of the tooltip box. |
 
 <a id="WindowUIBridge-methods"></a>
 
@@ -145,7 +145,7 @@ Sets the text style of the tooltips; without it, the bridge draws no tooltip and
 
 **Default:** `Color.decode("#27272a")`
 
-Sets the color of the 1-pixel border of the tooltip box.
+Sets the color of the border, one design pixel wide, of the tooltip box.
 
 ## Method details
 

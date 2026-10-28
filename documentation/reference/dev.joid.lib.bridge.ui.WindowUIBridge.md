@@ -29,7 +29,7 @@ Sets the text style of the tooltips; without it, the bridge draws no tooltip and
 
 ## hoverBorderColor(Color)
 
-Sets the color of the 1-pixel border of the tooltip box.
+Sets the color of the border, one design pixel wide, of the tooltip box.
 
 ## drawHover(UI,Object,double,double)
 

@@ -43,7 +43,7 @@ Your subclass creates its bridges in hooks:
 ```java file="com/example/backend/EngineBackend.java" region="backend"
 ```
 
-[[Backend#register]] calls the hooks in this order, between its version check and the loading of JOID ([What register() does](/use/learn/running/backends/#what-register-does) gives the whole sequence from the side of an application):
+[[Backend#register]] calls the hooks in this order, between its version check and the loading of JOID ([What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) gives the whole sequence from the side of an application):
 
 | Hook | What it gives | Default |
 |---|---|---|

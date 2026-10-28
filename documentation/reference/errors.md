@@ -168,7 +168,7 @@ No fix is needed; the reason is in the parentheses: [Inspect a UI](/use/get-star
 
 ## warning [JOID] The update of … failed (…), the next updates still run: catch the exception inside update() to handle it
 
-The `update()` of a node threw during a frame; JOID prints it once per node and kind of exception, and the other nodes still update.
+The `update()` of a node threw during a frame; JOID prints it once per class of node and kind of exception, and the other nodes still update.
 
 Catch the exception inside `update()`, or fix the code it names: [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
 
@@ -538,7 +538,7 @@ Give a right edge above the left one and a bottom edge above the top one: [Write
 
 A [[BitmapFont]] was created with a size of `0` or less.
 
-Pass the height of a glyph cell in texels, above `0`: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
+Pass the number of font pixels per em, above `0`: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
 
 ## IllegalArgumentException A font family needs at least one face, got none: pass its faces to FontFamily.of(...)
 
@@ -1367,7 +1367,7 @@ Run the tests on a standard JVM.
 
 The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
 
-Connect or enable an audio output, or register the backend with `audio(false)`: [What register() does](/use/learn/running/backends/#what-register-does).
+Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
 
 ## IllegalStateException OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date
 

@@ -296,7 +296,7 @@ No fix is needed; the reason is in the parentheses: [Inspect a UI](/use/get-star
 
 Emitted by [`Node.fireUpdate`](/reference/nodes/node/#Node-method-fireUpdate).
 
-The `update()` of a node threw during a frame; JOID prints it once per node and kind of exception, and the other nodes still update.
+The `update()` of a node threw during a frame; JOID prints it once per class of node and kind of exception, and the other nodes still update.
 
 Catch the exception inside `update()`, or fix the code it names: [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
 
@@ -906,7 +906,7 @@ Emitted by [`BitmapFont`](/reference/text/bitmapfont/#BitmapFont-constructor).
 
 A [`BitmapFont`](/reference/text/bitmapfont/) was created with a size of `0` or less.
 
-Pass the height of a glyph cell in texels, above `0`: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
+Pass the number of font pixels per em, above `0`: [Write a pixel-art font](/use/learn/going-further/fonts/#write-a-pixel-art-font).
 
 ### A font family needs at least one face, got none {#font-family-needs-least}
 
@@ -2273,7 +2273,7 @@ Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-glfw/lwjgl3albindin
 
 The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
 
-Connect or enable an audio output, or register the backend with `audio(false)`: [What register() does](/use/learn/running/backends/#what-register-does).
+Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
 
 ### OpenAL cannot create a context on the default audio device, check that … {#openal-cannot-create-context}
 

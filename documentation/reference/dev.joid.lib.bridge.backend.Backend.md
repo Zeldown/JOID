@@ -2,10 +2,7 @@
 summary: The base class of every backend, which connects JOID to a window, a graphics API and an audio device in one `register()` call.
 ---
 
-An application never extends `Backend`: it creates the backend of its library, sets its options, calls `register()` once the window and its graphics context exist, then `frame()` once per iteration of its loop.
-
-```java file="com/example/reference/backends/BackendLoop.java" region="loop"
-```
+An application never extends `Backend`: it creates the backend of its library, sets its options, calls `register()` once the window and its graphics context exist, then `frame()` once per iteration of its loop ([Start a backend](/use/learn/running/backends/#start-a-backend)).
 
 A backend author extends it and implements the `create...` hooks, which `register()` calls in a fixed order.
 
@@ -29,7 +26,7 @@ Sets the folder where JOID writes the caches it can rebuild; it wins over the `j
 
 ## register()
 
-Connects the backend to JOID, loads JOID and runs the [[JOID#onReady]] listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
+Connects the backend to JOID, loads JOID and runs the [[JOID#onReady]] listeners: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) lists every step.
 Call it once, on the thread of your loop, with the graphics context current; a second call throws an `IllegalStateException`.
 
 ## frame()

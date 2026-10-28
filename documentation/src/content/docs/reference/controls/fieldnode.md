@@ -106,9 +106,9 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | Returns | Signature | Summary |
 |---|---|---|
 | `T` | [focused](#FieldNode-method-focused)(boolean focused) | Gives the field its start focus: `true` gives it the keyboard. |
-| `T` | [focused](#FieldNode-method-focused)(Signal<Boolean> focused) | Binds the focus to a signal both ways: the field takes or loses the focus with the signal, and writes into it when the user gives or takes the focus. |
+| `T` | [focused](#FieldNode-method-focused)(Signal<Boolean> focused) | Binds the focus to a signal both ways: the field gains or loses the focus with the signal, and writes into it when the user focuses or blurs the field. |
 | `this` | [focus](#FieldNode-method-focus)() <span class="joid-qualifier">fluent</span> | Gives the field the focus as a press would: `beforeFocus` can refuse it, then `onFocus` fires. |
-| `T` | [beforeFocus](#FieldNode-method-beforeFocus)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the field takes the focus on a press or `focus()`; `cancel()` refuses the focus. |
+| `T` | [beforeFocus](#FieldNode-method-beforeFocus)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the field gains the focus on a press or `focus()`; `cancel()` refuses the focus. |
 | `boolean` | [isFocused](#FieldNode-method-isFocused)() | If `true`, the field has the focus. |
 
 ### Queries
@@ -127,7 +127,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `T` | [selection](#FieldNode-method-selection)(Signal<FieldSelection> selection) | Binds the selection to a signal of [`FieldSelection`](/reference/controls/fieldselection/) both ways. |
 | `this` | [change](#FieldNode-method-change)(String text) <span class="joid-qualifier">fluent</span> | Replaces the text as if the user typed it: `beforeChange` can refuse it, then `onChange` fires. |
 | `T` | [beforeChange](#FieldNode-method-beforeChange)(EventListener<NodeFieldChangeEvent.Pre<T,V>> listener) | Adds a listener that runs before an edit of the user or `change(...)`, with the text now, the text asked for and the value read from it; `cancel()` refuses the edit. |
-| `this` | [blur](#FieldNode-method-blur)() <span class="joid-qualifier">fluent</span> | Takes the focus from the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires. |
+| `this` | [blur](#FieldNode-method-blur)() <span class="joid-qualifier">fluent</span> | Blurs the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires. |
 | `T` | [beforeBlur](#FieldNode-method-beforeBlur)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the field loses the focus on a press elsewhere, Escape, Enter or `blur()`; `cancel()` keeps the focus. |
 | `this` | [select](#FieldNode-method-select)(int start, int end) <span class="joid-qualifier">fluent</span> | Selects a range as if the user did: `beforeSelect` can refuse it, then `onSelect` fires. |
 | `T` | [beforeSelect](#FieldNode-method-beforeSelect)(EventListener<NodeChangeEvent.Pre<T,FieldSelection>> listener) | Adds a listener that runs before the selection changes on a key, a press or `select(...)`; `cancel()` keeps the selection. |
@@ -138,13 +138,13 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 |---|---|---|
 | `void` | [layout](#FieldNode-method-layout)() <span class="joid-qualifier">hook</span> | Places the background over the whole field. |
 | `void` | [draw](#FieldNode-method-draw)(double mouseX, double mouseY) <span class="joid-qualifier">hook</span> | Draws the field with `drawField()`, then repeats a held editing key. |
-| `void` | [mousePressed](#FieldNode-method-mousePressed)(NodeMouseEvent<?> event) <span class="joid-qualifier">hook</span> | On a press over the field that no one consumed, takes the focus from the other fields, gives it to this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line. |
+| `void` | [mousePressed](#FieldNode-method-mousePressed)(NodeMouseEvent<?> event) <span class="joid-qualifier">hook</span> | On a press over the field that no one consumed, blurs the other fields, focuses this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line. |
 | `void` | [mouseReleased](#FieldNode-method-mouseReleased)(NodeMouseEvent<?> event) <span class="joid-qualifier">hook</span> | Ends the selection that a press started. |
 | `void` | [mouseDragged](#FieldNode-method-mouseDragged)(NodeMouseEvent<?> event) <span class="joid-qualifier">hook</span> | Extends the selection to the character under the pointer. |
 | `void` | [mouseScroll](#FieldNode-method-mouseScroll)(NodeMouseScrollEvent<?> event) <span class="joid-qualifier">hook</span> | Over the focused field, steps the value up or down with `increment` when its type has steps, and consumes the wheel. |
 | `void` | [charTyped](#FieldNode-method-charTyped)(NodeCharEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, inserts the character at the cursor, in place of the selection, and consumes it. |
-| `void` | [keyPressed](#FieldNode-method-keyPressed)(NodeKeyEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape takes the focus. |
-| `void` | [detach](#FieldNode-method-detach)() <span class="joid-qualifier">hook</span> | Takes the focus from the field when it leaves the tree. |
+| `void` | [keyPressed](#FieldNode-method-keyPressed)(NodeKeyEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape blurs the field. |
+| `void` | [detach](#FieldNode-method-detach)() <span class="joid-qualifier">hook</span> | Blurs the field when it leaves the tree. |
 | `boolean` | [holdsInput](#FieldNode-method-holdsInput)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container. |
 | `void` | [drawField](#FieldNode-method-drawField)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that draws the text, the cursor and the selection, on every frame. |
 | `boolean` | [isMultiline](#FieldNode-method-isMultiline)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that returns `true` when the text may hold line breaks; a one-line field drops them from a paste. |
@@ -162,7 +162,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `this` | [bindValue](#FieldNode-method-bindValue)(Signal<V> value) <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">protected</span> | Binds the value to a signal of its type both ways: the field shows the signal through `format`, and writes the value of each valid edit into it. |
 | `void` | [write](#FieldNode-method-write)(V value, boolean refusable) <span class="joid-qualifier">protected</span> | Shows a value, brought into its bounds and formatted. |
 | `void` | [revalidate](#FieldNode-method-revalidate)() <span class="joid-qualifier">protected</span> | Shows again the value asked for last, after a bound of the field changed, such as its `min` or its `max`. |
-| `void` | [blurNow](#FieldNode-method-blurNow)() <span class="joid-qualifier">protected</span> | Takes the focus from the field at once. |
+| `void` | [blurNow](#FieldNode-method-blurNow)() <span class="joid-qualifier">protected</span> | Blurs the field at once. |
 | `boolean` | [insert](#FieldNode-method-insert)(String text) <span class="joid-qualifier">protected</span> | Inserts a text at the cursor, in place of the selection, as typing would: cleaned of control characters, cut to `maxTextLength`, and tested by `accept` and `accepts`. |
 | `void` | [placeCursor](#FieldNode-method-placeCursor)(int position, boolean forward) <span class="joid-qualifier">protected</span> | Moves the cursor to an index and scrolls to keep it in view; with Shift held, extends the selection. |
 | `void` | [increaseCursor](#FieldNode-method-increaseCursor)(int value) <span class="joid-qualifier">protected</span> | Moves the cursor forward by a number of characters and scrolls to keep it in view. |
@@ -187,7 +187,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | Event | Listener | Summary |
 |---|---|---|
 | [onChange](#FieldNode-event-onChange) | [`EventListener<NodeFieldChangeEvent.Post<T,V>>`](/reference/events/nodefieldchangeevent-post/) | Adds a listener that runs after each real change of the text, whatever its source. |
-| [onFocus](#FieldNode-event-onFocus) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the field takes the focus, whatever its source. |
+| [onFocus](#FieldNode-event-onFocus) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the field gains the focus, whatever its source. |
 | [onBlur](#FieldNode-event-onBlur) | [`EventListener<NodeChangeEvent.Post<T,Boolean>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs each time the field loses the focus, after it rewrote its text from its value. |
 | [onCursorMove](#FieldNode-event-onCursorMove) | [`EventListener<NodeChangeEvent.Post<T,Integer>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each move of the cursor, whatever its source. |
 | [onSelect](#FieldNode-event-onSelect) | [`EventListener<NodeChangeEvent.Post<T,FieldSelection>>`](/reference/events/nodechangeevent-post/) | Adds a listener that runs after each change of the selection, whatever its source. |
@@ -500,7 +500,7 @@ Gives the field its start focus: `true` gives it the keyboard.
 
 `<T extends FieldNode<V>> T focused(Signal<Boolean> focused)` 
 
-Binds the focus to a signal both ways: the field takes or loses the focus with the signal, and writes into it when the user gives or takes the focus.
+Binds the focus to a signal both ways: the field gains or loses the focus with the signal, and writes into it when the user focuses or blurs the field.
 Throws an `IllegalArgumentException` for a signal that cannot be written.
 
 <a id="FieldNode-method-focus"></a>
@@ -517,7 +517,7 @@ Gives the field the focus as a press would: `beforeFocus` can refuse it, then `o
 
 `<T extends FieldNode<V>> T beforeFocus(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener)` 
 
-Adds a listener that runs before the field takes the focus on a press or `focus()`; `cancel()` refuses the focus.
+Adds a listener that runs before the field gains the focus on a press or `focus()`; `cancel()` refuses the focus.
 
 <a id="FieldNode-method-isFocused"></a>
 
@@ -588,7 +588,7 @@ Adds a listener that runs before an edit of the user or `change(...)`, with the 
 
 `this blur()` <span class="joid-qualifier">fluent</span>
 
-Takes the focus from the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires.
+Blurs the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires.
 
 <a id="FieldNode-method-beforeBlur"></a>
 
@@ -637,8 +637,8 @@ An override calls `super.draw(...)`.
 
 `void mousePressed(NodeMouseEvent<?> event)` <span class="joid-qualifier">hook</span>
 
-On a press over the field that no one consumed, takes the focus from the other fields, gives it to this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line.
-Any other press takes the focus from the field.
+On a press over the field that no one consumed, blurs the other fields, focuses this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line.
+Any other press blurs the field.
 
 <a id="FieldNode-method-mouseReleased"></a>
 
@@ -679,7 +679,7 @@ A character typed with Ctrl (Cmd on macOS) and without Alt is a shortcut and is 
 
 `void keyPressed(NodeKeyEvent<?> event)` <span class="joid-qualifier">hook</span>
 
-While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape takes the focus.
+While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape blurs the field.
 It asks `handleKey` first.
 
 <a id="FieldNode-method-detach"></a>
@@ -688,7 +688,7 @@ It asks `handleKey` first.
 
 `void detach()` <span class="joid-qualifier">hook</span>
 
-Takes the focus from the field when it leaves the tree.
+Blurs the field when it leaves the tree.
 
 <a id="FieldNode-method-holdsInput"></a>
 
@@ -838,7 +838,7 @@ Shows again the value asked for last, after a bound of the field changed, such a
 
 `void blurNow()` <span class="joid-qualifier">protected</span>
 
-Takes the focus from the field at once.
+Blurs the field at once.
 
 <a id="FieldNode-method-insert"></a>
 
@@ -930,7 +930,7 @@ Adds a listener that runs after each real change of the text, whatever its sourc
 
 `<T extends FieldNode<V>> T onFocus(EventListener<NodeChangeEvent.Post<T,Boolean>> listener)` 
 
-Adds a listener that runs each time the field takes the focus, whatever its source.
+Adds a listener that runs each time the field gains the focus, whatever its source.
 
 <a id="FieldNode-event-onBlur"></a>
 

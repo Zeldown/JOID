@@ -2,7 +2,7 @@
 summary: The base class of a render bridge, which keeps the matrices, the render state and the frame in Java and leaves the GPU calls to its subclass.
 ---
 
-A subclass implements the clears, `drawPrimitive` and the three `create...` methods, and calls `requireFrame()` before it touches the GPU in a frame.
+A subclass implements the three clears, `drawPrimitive`, the three `create...` methods, `suspend` and `raster`, and calls `requireFrame()` before it touches the GPU in a frame.
 Its `drawPrimitive` reads the render state and the samplers that the base class resolved, then draws, as [Implement the render bridge](/build/writing-a-backend/#implement-the-render-bridge) shows.
 
 Learn: [Render bridge](/build/bridges/render/), [Implement the render bridge](/build/writing-a-backend/#implement-the-render-bridge).

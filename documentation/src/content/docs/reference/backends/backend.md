@@ -18,10 +18,7 @@ The base class of every backend, which connects JOID to a window, a graphics API
 
 ## Description
 
-An application never extends `Backend`: it creates the backend of its library, sets its options, calls `register()` once the window and its graphics context exist, then `frame()` once per iteration of its loop.
-
-```java file="com/example/reference/backends/BackendLoop.java" region="loop"
-```
+An application never extends `Backend`: it creates the backend of its library, sets its options, calls `register()` once the window and its graphics context exist, then `frame()` once per iteration of its loop ([Start a backend](/use/learn/running/backends/#start-a-backend)).
 
 A backend author extends it and implements the `create...` hooks, which `register()` calls in a fixed order.
 
@@ -55,7 +52,7 @@ A backend author extends it and implements the `create...` hooks, which `registe
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [register](#Backend-method-register)() <span class="joid-qualifier">fluent</span> | Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step. |
+| `this` | [register](#Backend-method-register)() <span class="joid-qualifier">fluent</span> | Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) lists every step. |
 | `this` | [frame](#Backend-method-frame)() <span class="joid-qualifier">fluent</span> | Runs one frame of every UI bridge through [`UIBridgeRegistry.frame`](/reference/backends/uibridgeregistry/#UIBridgeRegistry-method-frame): resize when the window changed, update, clear and draw. |
 | `String` | [getVersion](#Backend-method-getVersion)() | Returns the version of JOID that the backend was built for, read from `backend.properties`. |
 | `boolean` | [isRegistered](#Backend-method-isRegistered)() | If `true`, `register()` has run. |
@@ -128,7 +125,7 @@ Sets the folder where JOID writes the caches it can rebuild; it wins over the `j
 
 - `IllegalStateException`: … is already registered, call register() only once
 
-Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
+Connects the backend to JOID, loads JOID and runs the [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) listeners: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) lists every step.
 Call it once, on the thread of your loop, with the graphics context current; a second call throws an `IllegalStateException`.
 
 <a id="Backend-method-frame"></a>

@@ -71,7 +71,7 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [isMultiline](#LineFieldNode-method-isMultiline)() <span class="joid-qualifier">protected</span> | Returns `false`: the text holds one line. |
-| `boolean` | [handleKey](#LineFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Enter and the Enter of the keypad: takes the focus, then fires `onSubmit`. |
+| `boolean` | [handleKey](#LineFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Enter and the Enter of the keypad: blurs the field, then fires `onSubmit`. |
 | `int` | [getPositionAt](#LineFieldNode-method-getPositionAt)(double mouseX, double mouseY) <span class="joid-qualifier">protected</span> | Returns the index in the text nearest to the pointer, along the line. |
 | `void` | [followCursorForward](#LineFieldNode-method-followCursorForward)() <span class="joid-qualifier">protected</span> | Scrolls the text to the left when the cursor passes the right margin. |
 | `void` | [followCursorBackward](#LineFieldNode-method-followCursorBackward)() <span class="joid-qualifier">protected</span> | Scrolls the text to the right when the cursor passes the left margin. |
@@ -183,7 +183,7 @@ Returns `false`: the text holds one line.
 
 `boolean handleKey(Key key)` <span class="joid-qualifier">protected</span>
 
-Handles Enter and the Enter of the keypad: takes the focus, then fires `onSubmit`.
+Handles Enter and the Enter of the keypad: blurs the field, then fires `onSubmit`.
 
 <a id="LineFieldNode-method-getPositionAt"></a>
 

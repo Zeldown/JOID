@@ -3,10 +3,7 @@ summary: A UI bridge in which opening a screen closes the open screens and popup
 ---
 
 It is the usual base of a UI bridge of your own: you keep the usual opening and closing and override what your host needs.
-This bridge takes every overlay and draws it at a scale that the host sets:
-
-```java file="com/example/reference/backends/ScaledOverlayUIBridge.java" region="bridge"
-```
+[UI bridge](/build/bridges/ui/#example) shows one that takes every overlay.
 
 Learn: [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own), [UI bridge](/build/bridges/ui/).
 

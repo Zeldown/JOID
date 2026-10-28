@@ -4,7 +4,7 @@ summary: An event about a node, and the event of the node events that carry noth
 
 [[Node#onInit]], [[Node#onUpdate]], [[Node#onMount]], [[Node#onDetach]], the playback events of [[ResourcePlayerNode]] and [[LineFieldNode#onSubmit]] receive a plain `NodeEvent`; the other node events extend it.
 
-Learn: [Events](/use/learn/interactivity/events/#know-the-three-kinds-of-events), [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
+Learn: [Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens), [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
 
 ## create(N)
 

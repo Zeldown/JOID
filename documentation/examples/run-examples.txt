@@ -48,11 +48,8 @@ skip com.example.backend.HostLoop part of the backend of an imaginary engine, it
 skip com.example.backend.HostPreviewNode part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.IEngineTexture part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.OverlayUIBridge part of the backend of an imaginary engine, it needs that engine to run
-skip com.example.backend.SteppedFrames part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.engine.Engine the imaginary engine of the Build on JOID examples, it does not exist
 skip com.example.backend.engine.EngineDevice the imaginary engine of the Build on JOID examples, it does not exist
 skip com.example.backend.engine.EngineListener the imaginary engine of the Build on JOID examples, it does not exist
 skip com.example.backend.engine.EngineSprite the imaginary engine of the Build on JOID examples, it does not exist
-skip com.example.reference.backends.BackendLoop program that runs its own loop on a backend
-skip com.example.reference.backends.ScaledOverlayUIBridge UI bridge of a host, registered by the host
 skip com.example.reference.animation.FadeTween tween of a reference page, run by no UI and drawing nothing

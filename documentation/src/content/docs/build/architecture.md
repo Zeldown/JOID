@@ -62,7 +62,7 @@ An application declares one JOID jar, next to the libraries of its backend (LWJG
 | `tool-msdf` | Generates the MSDF atlases of the fonts; the core embeds it. |
 | `tool-testkit` | Renders scenarios on a hidden surface and runs the contract suites that every backend passes ([Testing a backend](/build/testing-a-backend/)). |
 
-The `snapshot` packages of `base-glfw`, `base-opengl` and of each final backend hold the hidden surfaces of the tests; those of `base-opengl` and of the backends use the testkit, and only the dev and demo jars carry them.
+The `snapshot` packages of `base-glfw`, `base-opengl` and of each final backend hold the hidden surfaces and the captures of the tests; those of `base-opengl` and of the backends use the testkit, and only the dev and demo jars carry them.
 
 ## Feed the core, never the interface
 

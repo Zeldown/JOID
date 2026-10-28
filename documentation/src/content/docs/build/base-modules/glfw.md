@@ -45,7 +45,7 @@ Its position table (`getPhysicalKey`, `getCode`, `isKeyDown`) needs no GLFW call
 ## OpenAL of LWJGL 3
 
 [[Lwjgl3AlBinding#inst]] is the [[IAlBinding]] of LWJGL 3 for the audio bridge of [base-openal](/build/base-modules/openal/).
-It lives here, with the OpenAL library of LWJGL 3 and its natives, so that base-openal depends on no LWJGL version.
+It lives here, next to the dependency of the module on the OpenAL library of LWJGL 3, so that base-openal depends on no LWJGL version.
 
 ## Hidden windows
 
