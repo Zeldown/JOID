@@ -7,13 +7,13 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 // #region class
 @UIDataOverlay(active = true)
-public class HudOverlay extends UI {
+public class StatusOverlay extends UI {
 
 	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
-		RectNode.create(40, 40, 400, 40).color(HudOverlay.ACCENT).attach(this);
+		RectNode.create(40, 40, 400, 40).color(StatusOverlay.ACCENT).attach(this);
 	}
 
 }

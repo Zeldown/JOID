@@ -51,7 +51,7 @@ Opening another screen closes the current screen with every popup open above it 
 
 An overlay is a UI annotated with [[UIDataOverlay]] and `active = true`, which turns it on as for a popup:
 
-```java file="com/example/describing/overlays/HudOverlay.java" region="class"
+```java file="com/example/describing/overlays/StatusOverlay.java" region="class"
 ```
 
 An overlay stays open when screens open and close, and Escape never closes it: [[JOID#close]] does.
@@ -117,7 +117,7 @@ With several UI bridges, each one stacks its own UIs, and the bridges stack by p
 ## Try it
 
 **Let the status bar see the mouse.**
-Make the bar of `HudOverlay` react to a click, while it stays below the screens.
+Make the bar of `StatusOverlay` react to a click, while it stays below the screens.
 
 <details>
 <summary>Solution</summary>

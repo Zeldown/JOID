@@ -104,7 +104,7 @@ The default window bridge gives 1; a UI bridge of your own gives another value (
 
 ```java fragment
 @UIDataScale(limited = true, limit = 1.5D)
-public class HudUI extends UI {
+public class GaugeUI extends UI {
 ```
 
 - By default, the UI follows the interface scale.

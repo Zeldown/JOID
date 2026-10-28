@@ -44,7 +44,7 @@ public final class HostApp {
 		// #endregion
 
 		// #region loop
-		JOID.open(new HostHudUI());
+		JOID.open(new HostOverlayUI());
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
 			GL11.glClearColor(0.1F, 0.15F, 0.3F, 1F);

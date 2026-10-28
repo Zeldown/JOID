@@ -18,9 +18,9 @@ public class KitGuideUI extends UI {
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 
 	// #region state
-	private final Signal<IGuideKit> kit     = new Signal<>(new PlainGuideKit());
-	private final BooleanSignal     checked = new BooleanSignal(true);
 	private final IntegerSignal     volume  = new IntegerSignal(60);
+	private final BooleanSignal     checked = new BooleanSignal(true);
+	private final Signal<IGuideKit> kit     = new Signal<>(new PlainGuideKit());
 	// #endregion
 
 	@Override

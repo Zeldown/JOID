@@ -13,8 +13,8 @@ import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 @UIStoreData(id = "audio", scope = UIStoreScope.PERMANENT)
 public class SettingsGuideStore extends UIStore {
 
-	private final BooleanSignal sound  = new BooleanSignal(true);
 	private final IntegerSignal volume = new IntegerSignal(80);
+	private final BooleanSignal sound  = new BooleanSignal(true);
 	// #endregion
 
 	// #region json

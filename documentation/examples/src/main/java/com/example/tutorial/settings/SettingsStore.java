@@ -12,8 +12,8 @@ import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 @UIStoreData(id = "settings", scope = UIStoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
-	private final BooleanSignal music  = new BooleanSignal(true);
 	private final IntegerSignal volume = new IntegerSignal(8);
+	private final BooleanSignal music  = new BooleanSignal(true);
 
 	public BooleanSignal getMusic() {
 		return this.music;

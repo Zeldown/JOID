@@ -74,7 +74,7 @@ Draw your scene, then let JOID draw over it:
 ```java file="com/example/running/HostApp.java" region="loop"
 ```
 
-`HostHudUI` is an overlay ([[UIDataOverlay]]) whose button receives the mouse.
+`HostOverlayUI` is an overlay ([[UIDataOverlay]]) whose button receives the mouse.
 It sets no `background` in [[UIData]], so the scene shows around its button; a UI backdrop (`background = true`) covers the whole window and hides the scene.
 `SceneUIBridge` extends [[WindowUIBridge]], so it keeps the tooltips and every setting of the window bridge.
 On Vulkan, the frame of JOID loads the image of the host without clearing it: the scene is what the host recorded into its command buffer before `frame()`.
@@ -92,7 +92,7 @@ Your bridge follows the screens of JOID with two hooks of [[StackUIBridge]], `at
 ```
 
 JOID calls `attachScreen()` when the first screen or popup of the bridge opens, and `detachScreen()` when the last one closes.
-Overlays do not count, so `HostHudUI` never pauses the game, and a screen that replaces another one calls neither hook.
+Overlays do not count, so `HostOverlayUI` never pauses the game, and a screen that replaces another one calls neither hook.
 Register `GameUIBridge.create(window)` in place of `SceneUIBridge`, and skip the update of your game while `isPaused()` returns `true`.
 
 ## Draw a UI inside your own projection

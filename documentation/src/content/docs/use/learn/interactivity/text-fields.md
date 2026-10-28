@@ -8,7 +8,6 @@ sidebar:
 
 A text field turns what the user types into a value: a name, a number, a color.
 It is a [control](/use/learn/interactivity/controls/) with a text: everything that page says about signals, `beforeChange` and `onChange` holds here.
-Unlike the controls of that page, a field draws its own text and cursor: it has a `create(...)` factory, and its `background(...)` is optional.
 This page adds what only a field has: the focus, the cursor, and the rules on the text.
 
 **You will learn**
@@ -20,6 +19,7 @@ This page adds what only a field has: the focus, the cursor, and the rules on th
 
 ## Add a text field
 
+Unlike the other controls, a field draws its own text and cursor: it has a `create(...)` factory, and its `background(...)` is optional.
 A field takes its font with `info(...)`, and binds its text to a [[StringSignal]]:
 
 ```java file="com/example/interactivity/fields/NameFieldUI.java" region="signal"
