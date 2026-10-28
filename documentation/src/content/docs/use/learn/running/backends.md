@@ -165,7 +165,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 | [[WindowUIBridge#background]] | The color that clears the window before every frame, behind every UI. |
 | [[WindowUIBridge#hoverInfo]] | The font, size and color of the tooltip text. |
 | [[WindowUIBridge#hoverColor]] | The fill of the tooltip box. |
-| [[WindowUIBridge#hoverBorderColor]] | The 1-pixel border of the tooltip box. |
+| [[WindowUIBridge#hoverBorderColor]] | The border of the tooltip box, one design pixel wide. |
 
 <figure>
 
