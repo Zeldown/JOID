@@ -1,7 +1,7 @@
 ---
 summary: Holds a value that nodes, derived signals and listeners follow, so the interface shows each change without rebuilding.
 capture: reference-signals-counter
-alt: A text that reads "Clicks: 0" above a white button; the pointer clicks the button three times, and the text counts up to "Clicks: 3".
+alt: A text that reads "Clicks: 0" above a dark grey button; the pointer clicks the button three times, and the text counts up to "Clicks: 3".
 ---
 
 A `Signal<T>` holds one value that changes while a UI is open: a count, a name, a list, a setting.

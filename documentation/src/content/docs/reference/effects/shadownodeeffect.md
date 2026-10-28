@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws a soft shadow of the shape of a node under it, or a glow when the color is light.
 
-![A white rectangle casting a soft grey shadow below it](/captures/catalog-effects-shadownodeeffect.webp)
+![A dark grey rectangle casting a soft blue shadow below it](/captures/catalog-effects-shadownodeeffect.webp)
 
 ## Description
 

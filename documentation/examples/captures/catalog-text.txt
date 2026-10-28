@@ -14,6 +14,7 @@ shot catalog-text-underline-effect
 # crop catalog-text-highlight-effect 1150 40 340 300
 shot catalog-text-highlight-effect
 # crop catalog-text-scramble-effect 1520 40 340 300
+# still catalog-text-scramble-effect 51
 ui com.example.catalog.TextCatalogUI
 wait 100
 # film catalog-text-scramble-effect 30

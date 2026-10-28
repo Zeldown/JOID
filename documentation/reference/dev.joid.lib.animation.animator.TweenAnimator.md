@@ -1,7 +1,7 @@
 ---
 summary: Read-only `float` signal that a timeline of tweens moves over time, the usual way to animate a node.
 capture: reference-animation-slide
-alt: A grey square slides to the right end of a white bar, then back to its left end, after a click on the bar.
+alt: The pointer clicks a dark bar with rounded corners; a blue square slides to its right end, then back to its left end.
 ---
 
 A `TweenAnimator` is a [[Signal]] of a `float` that you never set: a [[Timeline]] of steps moves it, and everything that reads it follows.

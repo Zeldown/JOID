@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A checkbox made of two parts: a `box` that covers the control and a `mark` shown while it is checked.
 
-![Two checkboxes, the second one checked; the pointer checks the first one, unchecks the second one, then puts both back](/captures/catalog-controls-checkboxnode.webp)
+![Two checkboxes, the second one checked with a blue mark; the pointer checks the first one, unchecks the second one, then puts both back](/captures/catalog-controls-checkboxnode.webp)
 
 ## Description
 

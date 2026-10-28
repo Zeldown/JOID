@@ -15,7 +15,7 @@ public class KitSwitchNode<V> extends SwitchNode<V> {
 		super(x, y, width, height);
 		super.option((value, index) -> RectNode
 		.create(0, 0, 0, 0)
-		.color(() -> this.isSelected(value) ? KitColors.INK : KitColors.SURFACE)
+		.color(() -> this.isSelected(value) ? KitColors.ACCENT : KitColors.ELEMENT)
 		.label(() -> Text.create(String.valueOf(value), TextInfo.create(ExampleFont.REGULAR, 20F).color(this.getInk(value)))));
 	}
 
@@ -28,7 +28,7 @@ public class KitSwitchNode<V> extends SwitchNode<V> {
 	}
 
 	private Color getInk(final V value) {
-		return this.isSelected(value) ? KitColors.SURFACE : KitColors.INK;
+		return this.isSelected(value) ? KitColors.ON_ACCENT : KitColors.TEXT;
 	}
 
 }

@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws a 3D model that the user turns by dragging and zooms with the wheel, within ranges.
 
-![A textured cube that the pointer drags: the cube turns under the mouse one way, then back](/captures/catalog-nodes-modelviewernode.webp)
+![A textured cube that the pointer drags: the cube turns under the mouse one way, then back to where it started](/captures/catalog-nodes-modelviewernode.webp)
 
 ## Description
 

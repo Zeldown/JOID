@@ -10,7 +10,6 @@ import com.example.kit.KitStringSliderNode;
 import com.example.kit.KitSwitchNode;
 import com.example.kit.KitToggleNode;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode;
@@ -27,22 +26,22 @@ public class ControlsCatalogUI extends CatalogUI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 22F).color(CatalogUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 22F).color(CatalogUI.TEXT);
 
-		super.card(0).body(card -> TextFieldNode.create(30, 125, 280, 50).info(info).margin(12D).background(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).text("Text field").attach(card)).attach(this);
+		super.card(0).body(card -> TextFieldNode.create(30, 125, 280, 50).info(info).margin(12D).background(RectNode.create(0, 0, 0, 0).color(CatalogUI.ELEMENT)).text("Text field").attach(card)).attach(this);
 
 		super.card(1).body(card -> {
 			MultilineTextFieldNode
 			.create(30, 50, 280, 200)
 			.info(info)
 			.margin(12D)
-			.background(RectNode.create(0, 0, 0, 0).color(Color.WHITE))
+			.background(RectNode.create(0, 0, 0, 0).color(CatalogUI.ELEMENT))
 			.text("A text field that wraps its text on several lines")
 			.attach(card);
 		})
 		.attach(this);
 
-		super.card(2).body(card -> IntegerFieldNode.create(70, 125, 200, 50).value(42).info(info).margin(12D).background(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).attach(card)).attach(this);
+		super.card(2).body(card -> IntegerFieldNode.create(70, 125, 200, 50).value(42).info(info).margin(12D).background(RectNode.create(0, 0, 0, 0).color(CatalogUI.ELEMENT)).attach(card)).attach(this);
 
 		super.card(3).body(card -> {
 			KitCheckboxNode.create(80, 120, 60).attach(card);
@@ -83,7 +82,7 @@ public class ControlsCatalogUI extends CatalogUI {
 				.margin(10D)
 				.body(flex -> {
 					for (int i = 0; i < 6; i++) {
-						RectNode.create(0, 0, 236, 60).color(Color.WHITE).attach(flex);
+						RectNode.create(0, 0, 236, 60).color(CatalogUI.ELEMENT).attach(flex);
 					}
 				})
 				.attach(area);

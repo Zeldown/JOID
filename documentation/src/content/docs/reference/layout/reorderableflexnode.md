@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A flex column or row whose children the user reorders by dragging them.
 
-![A vertical list of four rows, the second one grey; the pointer drags the grey row to the bottom, the other rows slide up, then it drags the row back to second place](/captures/catalog-nodes-reorderableflexnode.webp)
+![A vertical list of four dark grey rows, the second one blue; the pointer drags the blue row to the bottom, the other rows slide up, then it drags the row back to second place](/captures/catalog-nodes-reorderableflexnode.webp)
 
 ## Description
 

@@ -10,7 +10,7 @@ You need this page only if you wonder why an edge, a line or a moving node lands
 
 <figure>
 
-![Three magnified grids of screen pixels, each with the exact outline of a shape in violet. Exact edges: a rectangle whose left and right edges fall in the middle of a pixel paints two columns at half strength. Snapped edges: the same rectangle with each edge moved to the nearest pixel boundary, every pixel fully painted or empty. Thin line: a line 0.4 pixel thick drawn as one row of pixels at 40 % strength.](/captures/depth-pixel-alignment.webp)
+![Three magnified grids of screen pixels, dark grey cells painted in light grey, each with the exact outline of a shape in blue. Exact edges: a rectangle whose left and right edges fall in the middle of a pixel paints two columns at half strength. Snapped edges: the same rectangle with each edge moved to the nearest pixel boundary, every pixel fully painted or empty. Thin line: a line 0.4 pixel thick drawn as one row of pixels at 40 % strength.](/captures/depth-pixel-alignment.webp)
 
 <figcaption>
 An edge between two pixels blurs into a half-painted column; JOID moves it to the nearest boundary instead.

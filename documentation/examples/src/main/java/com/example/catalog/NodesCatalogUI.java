@@ -4,7 +4,6 @@ import com.example.ExampleFont;
 import com.example.further.ChartsLineChartNode;
 import com.example.further.ChartsRadarChartNode;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.obj.ObjModel;
@@ -32,7 +31,7 @@ public class NodesCatalogUI extends CatalogUI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CatalogUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CatalogUI.TEXT);
 
 		super.card(0).body(card -> RectNode.create(90, 70, 160, 160).color(CatalogUI.INK).attach(card)).attach(this);
 
@@ -47,7 +46,7 @@ public class NodesCatalogUI extends CatalogUI {
 		super.card(5).body(card -> {
 			ProgressNode
 			.create(40, 135, 260, 30)
-			.track(RectNode.create(0, 0, 0, 0).color(Color.WHITE))
+			.track(RectNode.create(0, 0, 0, 0).color(CatalogUI.ELEMENT))
 			.fill(RectNode.create(0, 0, 0, 0).color(CatalogUI.INK))
 			.progress(0.6F)
 			.attach(card);
@@ -62,7 +61,7 @@ public class NodesCatalogUI extends CatalogUI {
 			ContainerNode
 			.create(40, 40, 260, 220)
 			.body(container -> {
-				RectNode.create(0, 0, 260, 220).color(Color.WHITE).attach(container);
+				RectNode.create(0, 0, 260, 220).color(CatalogUI.ELEMENT).attach(container);
 				RectNode.create(30, 30, 90, 90).color(CatalogUI.INK).attach(container);
 				RectNode.create(140, 100, 90, 90).color(CatalogUI.INK).attach(container);
 			})
@@ -89,7 +88,7 @@ public class NodesCatalogUI extends CatalogUI {
 			.margin(10D)
 			.body(grid -> {
 				for (int i = 0; i < 12; i++) {
-					RectNode.create(0, 0, 55, 60).color(i % 2 == 0 ? CatalogUI.INK : Color.WHITE).attach(grid);
+					RectNode.create(0, 0, 55, 60).color(i % 2 == 0 ? CatalogUI.INK : CatalogUI.ELEMENT).attach(grid);
 				}
 			})
 			.attach(card);
@@ -102,7 +101,7 @@ public class NodesCatalogUI extends CatalogUI {
 			.margin(10D)
 			.body(flex -> {
 				for (int i = 0; i < 4; i++) {
-					RectNode.create(0, 0, 200, 47).color(i == 1 ? CatalogUI.INK : Color.WHITE).attach(flex);
+					RectNode.create(0, 0, 200, 47).color(i == 1 ? CatalogUI.INK : CatalogUI.ELEMENT).attach(flex);
 				}
 			})
 			.attach(card);

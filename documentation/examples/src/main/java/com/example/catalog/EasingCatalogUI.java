@@ -1,17 +1,26 @@
 package com.example.catalog;
 
+import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
+
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.draw.text.Text;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.text.TextNode;
+import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.geom.Point;
 
 public class EasingCatalogUI extends CatalogUI {
 
-	private static final Color OUT = new Color(102, 102, 102).lock();
+	private static final Color[] COLORS = {CaptureStyle.ACCENT, CaptureStyle.TEXT, CaptureStyle.MUTED};
+
+	private static final String[] NAMES = {"IN", "OUT", "IN_OUT"};
 
 	@Override
 	public void init() {
@@ -35,7 +44,15 @@ public class EasingCatalogUI extends CatalogUI {
 			.sequence(1500F, 1F, TweenEquations.LINEAR)
 			.repeat(BaseTween.INFINITY, 500F)
 			.start();
-			super.card(i).body(card -> new CurveNode(family, progress).attach(card)).onDetach(event -> progress.clear()).attach(this);
+			super.card(i).body(card -> {
+				new CurveNode(family, progress).attach(card);
+				for (int j = 0; j < family.length && family.length > 1; j++) {
+					final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(EasingCatalogUI.COLORS[j]);
+					TextNode.create(40 + j * 90, 254, 80, 30).text(Text.create(EasingCatalogUI.NAMES[j], info).align(Align.CENTER)).attach(card);
+				}
+			})
+			.onDetach(event -> progress.clear())
+			.attach(this);
 		}
 	}
 
@@ -52,7 +69,6 @@ public class EasingCatalogUI extends CatalogUI {
 
 		@Override
 		public void draw(final double mouseX, final double mouseY) {
-			final Color[] colors = {CatalogUI.INK, EasingCatalogUI.OUT, Color.WHITE};
 			double min = 0D;
 			double max = 1D;
 			for (final TweenEquation equation : this.equations) {
@@ -64,22 +80,22 @@ public class EasingCatalogUI extends CatalogUI {
 
 			final double unit = Math.min(super.getHeight(), 240D / (max - min));
 			final double middle = super.getY() + super.getHeight() / 2D + unit * (max + min) / 2D;
-			DrawUtils.SHAPE.drawBorder(super.getX(), middle - unit, super.getWidth(), unit, Color.WHITE, 2D);
+			DrawUtils.SHAPE.drawBorder(super.getX(), middle - unit, super.getWidth(), unit, CaptureStyle.STROKE, 2D);
 			for (int i = 0; i < this.equations.length; i++) {
 				final Point[] points = new Point[61];
 				for (int step = 0; step < points.length; step++) {
 					final float t = step / 60F;
 					points[step] = Point.of(super.getX() + t * super.getWidth(), middle - this.equations[i].compute(t) * unit);
 				}
-				DrawUtils.SHAPE.drawLine(colors[i], 4F, points);
+				DrawUtils.SHAPE.drawLine(EasingCatalogUI.COLORS[i], 4F, points);
 			}
 
 			final float time = this.progress.get();
 			final double x = super.getX() + time * super.getWidth();
 			for (int i = 0; i < this.equations.length; i++) {
 				final double y = middle - this.equations[i].compute(time) * unit;
-				DrawUtils.SHAPE.drawCircle(x, y, EasingCatalogUI.OUT, 10D);
-				DrawUtils.SHAPE.drawCircle(x, y, colors[i], 7D);
+				DrawUtils.SHAPE.drawCircle(x, y, CaptureStyle.SURFACE, 10D);
+				DrawUtils.SHAPE.drawCircle(x, y, EasingCatalogUI.COLORS[i], 7D);
 			}
 		}
 

@@ -8,7 +8,6 @@ import com.example.text.HighlightTextEffect;
 import com.example.text.RainbowTextEffect;
 import com.example.text.ScrambleTextEffect;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.font.TextInfo;
@@ -21,13 +20,14 @@ public class TextCatalogUI extends CatalogUI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 30F).color(CatalogUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 30F).color(CatalogUI.TEXT);
 		final ITextEffect[] effects = {new WaveTextEffect(), new RainbowTextEffect(), UnderlineTextEffect.INSTANCE, new HighlightTextEffect(), new ScrambleTextEffect()};
 		final TextModifier[] modifiers = {TextModifier.UPPER_CASE, TextModifier.LOWER_CASE, TextModifier.CAPITALIZE, TextModifier.WORD_CAPITALIZE, TextModifier.CAMEL_CASE, TextModifier.UPPER_CAMEL_CASE, TextModifier.SNAKE_CASE};
 
 		for (int i = 0; i < effects.length; i++) {
-			final TextInfo style = (effects[i] instanceof HighlightTextEffect ? info.copy().color(Color.WHITE) : info).withEffects(effects[i]);
-			super.card(i).body(card -> TextNode.create(30, 115, 280, 0).text(Text.create("Text effects move every glyph", style).alignX(Align.CENTER)).mode(TextMode.SPLIT).attach(card)).attach(this);
+			final TextInfo style = info.withEffects(effects[i]);
+			final String sentence = effects[i] instanceof RainbowTextEffect ? "Every glyph" : "Text effects move every glyph";
+			super.card(i).body(card -> TextNode.create(30, 115, 280, 0).text(Text.create(sentence, style).alignX(Align.CENTER)).mode(TextMode.SPLIT).attach(card)).attach(this);
 		}
 
 		super.card(5).body(card -> TextNode.create(30, 115, 280, 0).text(Text.create("A <b>bold</b> word and an <em>underlined</em> one", info.withMarkups(new TagTextMarkup())).alignX(Align.CENTER)).mode(TextMode.SPLIT).attach(card)).attach(this);

@@ -8,8 +8,8 @@ public class KitCheckboxNode extends CheckboxNode {
 
 	protected KitCheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.box(RectNode.create(0, 0, 0, 0).color(KitColors.SURFACE));
-		super.mark(RectNode.create(0, 0, width / 2D, height / 2D).color(KitColors.INK));
+		super.box(RectNode.create(0, 0, 0, 0).color(KitColors.ELEMENT));
+		super.mark(RectNode.create(0, 0, width / 2D, height / 2D).color(KitColors.ACCENT));
 	}
 
 	public static KitCheckboxNode create(final double x, final double y, final double size) {

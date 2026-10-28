@@ -1,7 +1,7 @@
 ---
 summary: Base of every effect, an object added to a node that changes how the node is drawn, never its layout nor the area that receives the mouse.
 capture: reference-effects-underline
-alt: A white card on a light grey background, with a dark grey bar under it, as wide as the card.
+alt: A dark card with rounded corners and a thin border, with a blue bar under it, as wide as the card.
 ---
 
 A `NodeEffect` changes how its node is drawn: it draws around the node, changes the matrix or the render state for it, or processes its pixels with shader passes.

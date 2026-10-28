@@ -17,7 +17,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Base of every effect, an object added to a node that changes how the node is drawn, never its layout nor the area that receives the mouse.
 
-![A white card on a light grey background, with a dark grey bar under it, as wide as the card.](/captures/reference-effects-underline.webp)
+![A dark card with rounded corners and a thin border, with a blue bar under it, as wide as the card.](/captures/reference-effects-underline.webp)
 
 ## Description
 

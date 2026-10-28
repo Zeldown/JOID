@@ -10,16 +10,16 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class KitSelectorNode<V> extends SelectorNode<V> {
 
-	private static final Color HOVER = new Color(238, 238, 238).lock();
+	private static final Color HOVER = new Color(54, 61, 77).lock();
 
 	protected KitSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.field(RectNode.create(0, 0, 0, 0).color(KitColors.INK));
+		super.field(RectNode.create(0, 0, 0, 0).color(KitColors.ACCENT));
 		super.option(value -> RectNode
 		.create(0, 0, 0, 0)
-		.color(KitColors.SURFACE)
+		.color(KitColors.ELEMENT)
 		.hoveredColor(KitSelectorNode.HOVER)
-		.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22F).color(KitColors.INK))));
+		.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22F).color(KitColors.TEXT))));
 	}
 
 	public static <V> KitSelectorNode<V> create(final double x, final double y, final double width, final double height) {

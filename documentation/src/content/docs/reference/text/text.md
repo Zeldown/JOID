@@ -26,8 +26,8 @@ The width and the height are measured on demand and kept until an element or its
 - [Text](/use/learn/describing-the-ui/text/)
 - [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/)
 - [Drawing shapes and text](/use/learn/going-further/drawing/)
+- [Signals](/use/learn/interactivity/signals/)
 - [Derived values](/use/learn/state/derived-values/)
-- [Rebuilding the tree](/use/learn/state/rebuilding/)
 
 ## Creation
 

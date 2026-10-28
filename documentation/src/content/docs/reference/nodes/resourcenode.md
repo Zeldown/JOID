@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws an image resource in its bounds, tinted by a color, with an optional image that fades in on hover.
 
-![A placeholder image crossed by two diagonals](/captures/catalog-nodes-resourcenode.webp)
+![A light grey placeholder image crossed by two diagonals, on a dark card](/captures/catalog-nodes-resourcenode.webp)
 
 ## Description
 

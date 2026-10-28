@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Cuts what a node draws to the largest disc centered in its bounds.
 
-![A grey square cut into a disc](/captures/catalog-effects-circlenodeeffect.webp)
+![A blue square cut into a disc](/captures/catalog-effects-circlenodeeffect.webp)
 
 ## Description
 

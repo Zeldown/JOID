@@ -6,9 +6,7 @@ import com.example.kit.KitPillToggleNode;
 import com.example.kit.KitSwitchNode;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class KitUI extends UI {
 
 	@Override

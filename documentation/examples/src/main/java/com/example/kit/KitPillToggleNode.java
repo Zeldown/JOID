@@ -32,13 +32,13 @@ public class KitPillToggleNode extends BaseToggleNode<Boolean, Boolean> {
 
 		RectNode
 		.create(0, 0, super.getWidth(), super.getHeight())
-		.color(() -> KitColors.SURFACE.to(KitColors.INK, this.knob.get()))
+		.color(() -> KitColors.ELEMENT.to(KitColors.ACCENT, this.knob.get()))
 		.effect(RoundedNodeEffect.create((float) super.dh(2D)))
 		.attach(this);
 
 		CircleNode
 		.create(0, 4, super.getHeight() - 8D)
-		.color(() -> this.knob.get() > 0.5F ? KitColors.SURFACE : KitColors.INK)
+		.color(() -> this.knob.get() > 0.5F ? KitColors.ON_ACCENT : KitColors.TEXT)
 		.<CircleNode>x(() -> 4D + (super.getWidth() - super.getHeight()) * this.knob.get())
 		.attach(this);
 	}

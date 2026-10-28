@@ -1,6 +1,7 @@
 package com.example.describing;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -9,6 +10,7 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
@@ -17,11 +19,13 @@ import dev.joid.lib.utils.geom.Point;
 
 public abstract class DiagramUI extends UI {
 
-	public static final Color INK      = new Color(153, 153, 153);
-	public static final Color LABEL    = new Color(85, 85, 85);
-	public static final Color ACCENT   = new Color(124, 92, 255);
-	public static final Color SURFACE  = Color.WHITE;
-	public static final Color BACKDROP = new Color(221, 221, 221);
+	public static final Color INK      = CaptureStyle.LINE;
+	public static final Color NOTE     = CaptureStyle.MUTED;
+	public static final Color LABEL    = CaptureStyle.TEXT;
+	public static final Color ACCENT   = CaptureStyle.ACCENT;
+	public static final Color ELEMENT  = CaptureStyle.STROKE;
+	public static final Color SURFACE  = CaptureStyle.SURFACE;
+	public static final Color BACKDROP = Color.TRANSPARENT;
 
 	protected final RectNode backdrop(final double x, final double y, final double width, final double height) {
 		return RectNode.create(x, y, width, height).color(DiagramUI.BACKDROP);
@@ -33,11 +37,11 @@ public abstract class DiagramUI extends UI {
 	}
 
 	protected final RectNode box(final double x, final double y, final double width, final double height, final String title, final String detail) {
-		return DiagramUI.block(x, y, width, height, title, detail, DiagramUI.SURFACE, DiagramUI.LABEL);
+		return DiagramUI.block(x, y, width, height, title, detail, DiagramUI.SURFACE, DiagramUI.LABEL, DiagramUI.NOTE);
 	}
 
 	protected final RectNode subject(final double x, final double y, final double width, final double height, final String title, final String detail) {
-		return DiagramUI.block(x, y, width, height, title, detail, DiagramUI.ACCENT, DiagramUI.SURFACE);
+		return DiagramUI.block(x, y, width, height, title, detail, DiagramUI.ACCENT, CaptureStyle.ON_ACCENT, CaptureStyle.ON_ACCENT);
 	}
 
 	protected final void arrow(final Node node, final double fromX, final double fromY, final double toX, final double toY) {
@@ -55,13 +59,14 @@ public abstract class DiagramUI extends UI {
 		node.layer((layered, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(DiagramUI.INK, 3F, Point.of(fromX, fromY), Point.of(toX, toY)));
 	}
 
-	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color) {
+	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color, final Color note) {
 		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 24F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 22F).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 22F).color(note);
 		return RectNode
 		.create(x, y, width, height)
 		.color(fill)
-		.effect(RoundedNodeEffect.create(10F))
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(fill == DiagramUI.ACCENT ? DiagramUI.ACCENT : DiagramUI.ELEMENT, 1.5F))
 		.body(rect -> {
 			TextNode.create(0, 0, width, detail.isEmpty() ? height : height / 2D + 4D).text(Text.create(title, bold).alignX(Align.CENTER).alignY(detail.isEmpty() ? Align.CENTER : Align.END)).attach(rect);
 			TextNode.create(0, height / 2D + 10D, width, height / 2D - 10D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).attach(rect);

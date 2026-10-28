@@ -18,7 +18,7 @@ This page gives the few ideas behind that model, without code, so that every lat
 
 <figure>
 
-![A map of JOID on a light grey background. A top row of three white boxes joined by arrows from left to right: Your loop (events, frame(), present), Backend (LWJGL 3, Vulkan or LWJGL 2) and UI bridge (routes input, draws the UIs). An arrow goes down from the UI bridge to the open UIs, labelled Open UIs, stacked: a white Screen card with a violet Popup card over its corner. An arrow goes left from the screen to a node tree inside an outlined frame labelled Design canvas, 1920 x 1080: a UI box with arrows to a RectNode box and a TextNode box, and an arrow from the RectNode box down to a box reading Clicks: 2. At the bottom left, a violet box labelled Signal reads clicks = 2, with an arrow to the Clicks: 2 box.](/captures/thinking-map.webp)
+![A map of JOID. A top row of three dark boxes joined by arrows from left to right: Your loop (events, frame(), present), Backend (LWJGL 3, Vulkan or LWJGL 2) and UI bridge (routes input, draws the UIs). An arrow goes down from the UI bridge to the open UIs, labelled Open UIs, stacked: a dark Screen card with a blue Popup card over its corner. An arrow goes left from the screen to a node tree inside an outlined frame labelled Design canvas, 1920 x 1080: a UI box with arrows to a RectNode box and a TextNode box, and an arrow from the RectNode box down to a box reading Clicks: 2. At the bottom left, a blue box labelled Signal reads clicks = 2, with an arrow to the Clicks: 2 box.](/captures/thinking-map.webp)
 
 <figcaption>
 Your loop runs the backend, the UI bridge holds the open UIs, each UI is a tree of nodes on the design canvas, and the nodes follow signals.

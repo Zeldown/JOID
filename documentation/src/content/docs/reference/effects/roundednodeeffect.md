@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Rounds the corners of what a node draws, all four or only some of them.
 
-![A grey rectangle with rounded corners](/captures/catalog-effects-roundednodeeffect.webp)
+![A blue rectangle with rounded corners](/captures/catalog-effects-roundednodeeffect.webp)
 
 ## Description
 
