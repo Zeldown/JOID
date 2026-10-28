@@ -101,6 +101,7 @@ Until then, the node draws a placeholder in its place ([Rebuilding the tree](/us
 ```java file="com/example/describing/media/LoadingUI.java" region="events"
 ```
 
+Without a file at `photos/beach.png` in the working directory, the status reads `Missing photo`: `onError` ran.
 Both run on the render thread; added after the resource reached that state, they run at once.
 [[Resource#isLoaded]] and [[Resource#isFailed]] read the state at any time.
 A resource that cannot be read takes 64 × 64 design pixels in a node without a size; it draws a magenta and black checkerboard with the dev jar, and nothing with the prod jar.
@@ -256,7 +257,7 @@ To draw a resource in your own drawing code, see [Build your own geometry](/use/
 ## Try it
 
 **A logo that lights up.**
-Show the placeholder image in dark grey, turning to its own colors under the mouse.
+Show the placeholder image in grey, turning to its own colors under the mouse.
 
 <details>
 <summary>Solution</summary>
@@ -264,7 +265,7 @@ Show the placeholder image in dark grey, turning to its own colors under the mou
 `color` tints the image and `hoveredColor` gives the tint under the mouse; white keeps the image as it is.
 
 ```java fragment
-ResourceNode.create(100, 100).resource(logo).color(new Color(85, 85, 85)).hoveredColor(Color.WHITE).attach(this);
+ResourceNode.create(100, 100).resource(logo).color(GalleryUI.MUTED).hoveredColor(Color.WHITE).attach(this);
 ```
 
 </details>

@@ -86,6 +86,7 @@ gradle run --args="com.example.start.CounterUI"
 
 An example that reads a file reads it from the resources, under the path that its code names.
 The [resources of the examples](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/resources) hold every one of them: fonts, images, a video and 3D models.
+The exception is an example that reads the disk with `new File(...)`: put a file of yours at that path, from the working directory.
 Copy the folders you need into your `src/main/resources`, under the same paths.
 
 JOID draws no control by itself: each example of a control gives it its parts, the nodes that draw it, where it creates it.
