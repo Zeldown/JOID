@@ -36,7 +36,7 @@ moveto 960 670 500
 wait 200
 press LEFT
 release LEFT
-wait 500
+wait 1000
 open com.example.describing.uis.MenuUI
 wait 300
 moveto 1140 730 500
