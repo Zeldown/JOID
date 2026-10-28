@@ -111,7 +111,9 @@ Each bridge has a **priority**, an `int`: the highest priority receives the inpu
 
 ![Three stacked dark boxes: PanelUIBridge with priority 10 on top, your bridge with priority 0 in the middle, and WindowUIBridge, the default that clears the window, at the bottom. A blue arrow on the left goes down, labeled Input; a blue arrow on the right goes up, labeled Drawing.](/captures/running-embedding-bridges.webp)
 
-<figcaption>Input tries the highest bridge first; drawing starts from the lowest, so the highest is drawn on top.</figcaption>
+<figcaption>
+Input tries the highest bridge first; drawing starts from the lowest, so the highest is drawn on top.
+</figcaption>
 </figure>
 
 The bridge decides which UIs it hosts with `canHandle`:

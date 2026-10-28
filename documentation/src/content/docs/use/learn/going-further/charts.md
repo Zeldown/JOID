@@ -33,7 +33,9 @@ Give the chart its axes, then its series:
 
 ![A dark grey line chart with a blue and a grey series over Mon to Fri, labeled 8 k and 1 k on the left, next to a radar chart with five axes](/captures/further-charts-start.webp)
 
-<figcaption>The line chart draws one line per series, in the order they were added; the radar chart draws one axis per data.</figcaption>
+<figcaption>
+The line chart draws one line per series, in the order they were added; the radar chart draws one axis per data.
+</figcaption>
 </figure>
 
 [[ChartNode.ChartAxis]] creates the axes.
@@ -60,7 +62,9 @@ JOID calls `draw` on every frame, so the chart shows a change of its data on the
 
 ![The charts of the previous figure; the pointer clicks Next week, and the line chart keeps one series with new values, scaled up to 9 k, while the Power axis of the radar chart grows](/captures/further-charts-next.webp)
 
-<figcaption>The click replaces one series and removes the other; the scale follows the new values.</figcaption>
+<figcaption>
+The click replaces one series and removes the other; the scale follows the new values.
+</figcaption>
 </figure>
 
 - `data(name, data)` replaces a whole series, and `removeData(name)` removes one.

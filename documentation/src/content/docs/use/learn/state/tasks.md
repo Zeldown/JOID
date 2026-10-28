@@ -77,7 +77,9 @@ A download or a long computation belongs on another thread, and its result comes
 
 ![A dark card with a blue button "Load" above the text "Not loaded"; the pointer clicks Load, and the text reads "Loading...", then "Loaded"](/captures/state-loader.webp)
 
-<figcaption>The future completes on a worker thread, and the text shows its result at the next frame.</figcaption>
+<figcaption>
+The future completes on a worker thread, and the text shows its result at the next frame.
+</figcaption>
 </figure>
 
 A `set` made on another thread does not change the signal at once: JOID applies it on the render thread at the start of the next frame, then runs the listeners there.

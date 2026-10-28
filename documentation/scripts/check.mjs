@@ -220,6 +220,41 @@ function images() {
 	return problems;
 }
 
+function htmlBlocks() {
+	const problems = [];
+	const html = (line) => line.trim().startsWith('<');
+	for (const entry of pages()) {
+		const lines = entry.source.split(/\r?\n/);
+		let fence = null;
+		lines.forEach((line, index) => {
+			const match = line.match(FENCE);
+			if (fence === null && match) {
+				fence = match[2];
+				return;
+			}
+			if (fence !== null) {
+				if (line.trim().startsWith(fence) && line.trim().replace(/[`~]/g, '') === '') {
+					fence = null;
+				}
+				return;
+			}
+			const where = `${relative(DOCUMENTATION, entry.file)}:${index + 1}`;
+			const previous = lines[index - 1] ?? '';
+			const next = lines[index + 1] ?? '';
+			if (/^<(?:figure|details|div)\b/.test(line.trim()) && previous.trim() !== '' && !html(previous) && previous.trim() !== '---') {
+				problems.push(`${where}: leave a blank line before an HTML block, or the line above swallows it`);
+			}
+			if (/^<\/(?:figure|details|div)>$/.test(line.trim()) && next.trim() !== '' && !html(next)) {
+				problems.push(`${where}: leave a blank line after an HTML block, or the next line shows as raw Markdown`);
+			}
+			if (/^<figcaption>./.test(line.trim()) && entry.path !== 'use/catalog') {
+				problems.push(`${where}: write the caption on its own lines, between <figcaption> and </figcaption> (templates.md)`);
+			}
+		});
+	}
+	return problems;
+}
+
 function ownerRows() {
 	const rows = [];
 	for (const line of readFileSync(OWNERS, 'utf-8').split(/\r?\n/)) {
@@ -659,6 +694,7 @@ run('phrases', phrases);
 run('mentions', mentions);
 run('lombok', lombok);
 run('images', images);
+run('html-blocks', htmlBlocks);
 
 run('snippets', snippets);
 run('constants', constants);

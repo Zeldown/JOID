@@ -120,6 +120,7 @@ The blue rectangle is attached first, then the dark grey one covers it; attachin
 Each click attaches the clicked rectangle to the card again, so it becomes the last child and is drawn on top.
 </figcaption>
 </figure>
+
 To keep a node above or below its siblings whatever the attach order, give it a `zindex` ([Position and size](/use/learn/describing-the-ui/position-and-size/#choose-what-is-drawn-on-top)).
 
 ## Read the tree

@@ -36,7 +36,9 @@ The buttons only change the signal:
 
 ![The blue buttons "Add" and "Remove" above two dark grey rows, "First item" and "Second item"; a click on Add adds the row "Item 3", and a click on Remove takes it away](/captures/state-rebuild.webp)
 
-<figcaption>At each click, the watch removes the rows and builds them again from `items`.</figcaption>
+<figcaption>
+At each click, the watch removes the rows and builds them again from `items`.
+</figcaption>
 </figure>
 
 A body runs once, when the node is created.
@@ -97,7 +99,9 @@ Here, a [task](/use/learn/state/tasks/) of the UI sets the value after two secon
 
 ![A blue rectangle in place of the profile card, replaced after two seconds by a dark card with the text "Name: Ada Lovelace"](/captures/state-wait.webp)
 
-<figcaption>While `profile` holds no value, JOID draws the skeleton in place of the card; once it holds one, the card and its children appear.</figcaption>
+<figcaption>
+While `profile` holds no value, JOID draws the skeleton in place of the card; once it holds one, the card and its children appear.
+</figcaption>
 </figure>
 
 The body runs at once, like any body: the text exists from the start and follows `profile`.

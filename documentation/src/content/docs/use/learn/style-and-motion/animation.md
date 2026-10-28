@@ -42,7 +42,9 @@ A `TweenAnimator` moves one `float` over time:
 
 ![A blue card fades in while it slides up into place](/captures/style-appear.webp)
 
-<figcaption>The value goes from 0 to 1 in 600 ms; the opacity and the position read it.</figcaption>
+<figcaption>
+The value goes from 0 to 1 in 600 ms; the opacity and the position read it.
+</figcaption>
 </figure>
 
 1. `TweenAnimator.create(0F)` starts the value at `0F`.
@@ -99,7 +101,9 @@ For any other curve, extend [[TweenEquation]] and return the eased progress from
 
 ![A blue square glides from the left end of a dark track to the right end and back, pauses, and starts again](/captures/style-loop.webp)
 
-<figcaption>One `start()` loops the chain forever: `repeat` plays both steps again after each pause of 200 ms.</figcaption>
+<figcaption>
+One `start()` loops the chain forever: `repeat` plays both steps again after each pause of 200 ms.
+</figcaption>
 </figure>
 
 - `repeat(count, delay)` plays the chain `count` more times, waiting `delay` ms between plays; `repeatYoyo(count, delay)` plays every second time backward.
@@ -121,7 +125,9 @@ To play an animation on demand, call `sequence(...)` again: it replaces the runn
 
 ![A click on the blue Toggle button slides a blue square to the right end of its track, and the next click slides it back; the counter goes from "Plays: 0" to "Plays: 2"](/captures/style-click.webp)
 
-<figcaption>Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.</figcaption>
+<figcaption>
+Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.
+</figcaption>
 </figure>
 
 `onStart`, `onIterationEnd`, `onComplete` and the other listeners of [[TweenAnimator]] belong to the animator and run for every sequence that follows.
@@ -153,7 +159,9 @@ When the target keeps moving, move the value a share of the remaining distance o
 
 ![A blue disc follows the pointer from left to right along a dark grey band and back, with a smooth delay](/captures/style-follow.webp)
 
-<figcaption>The disc covers a share of the distance to the pointer on every frame, so it slows down as it arrives.</figcaption>
+<figcaption>
+The disc covers a share of the distance to the pointer on every frame, so it slows down as it arrives.
+</figcaption>
 </figure>
 
 `lerpByFramerate(value, target, speed, snapDiff)` returns the next value.
@@ -181,7 +189,9 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 
 ![A blue square moves right, pauses, drops down with a small overshoot, then plays the same path backward](/captures/style-tween.webp)
 
-<figcaption>`repeatYoyo` plays every second pass backward, so one timeline of two tweens gives the whole round trip.</figcaption>
+<figcaption>
+`repeatYoyo` plays every second pass backward, so one timeline of two tweens gives the whole round trip.
+</figcaption>
 </figure>
 
 `killAll()` comes first because `init()` runs again at each opening and reload, and the previous timeline would keep playing next to the fresh one.
