@@ -45,6 +45,10 @@ public final class SignalReplaySite {
 		return this.sliceList.stream().allMatch(slice -> slice.getSignalCount() == 0) && this.sliceList.stream().anyMatch(SignalReplaySlice::isParameter);
 	}
 
+	public boolean encloses(final SignalReplaySlice slice) {
+		return this.sliceList.stream().anyMatch(candidate -> candidate.encloses(slice));
+	}
+
 	private static void collect(final SignalReplayClass replayClass, final MethodNode method, final int lineNumber, final String setter, final List<SignalReplaySlice> sliceList) {
 		SignalReplayMethod replayMethod = null;
 		int line = -1;
@@ -74,7 +78,7 @@ public final class SignalReplaySite {
 			for (int argument = argumentTypes.length - 1; argument >= 0; argument--) {
 				final SourceValue value = frame.getStack(frame.getStackSize() - argumentTypes.length + argument);
 				final int start = replayMethod.expressionStart(value.insns, end);
-				callList.add(0, SignalReplaySlice.of(replayMethod, start, end, argumentTypes[argument]));
+				callList.add(0, SignalReplaySlice.of(replayMethod, start, end, argumentTypes[argument], new ArrayList<>(callList)));
 				end = start;
 			}
 			sliceList.addAll(callList);

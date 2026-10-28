@@ -24,26 +24,28 @@ import lombok.Getter;
 @Getter
 public final class SignalReplaySlice {
 
-	private final int                start;
-	private final int                end;
-	private final Type               type;
-	private final String             signature;
-	private final SignalReplayMethod method;
-	private final List<String>       signalNameList;
+	private final int                     start;
+	private final int                     end;
+	private final Type                    type;
+	private final String                  signature;
+	private final SignalReplayMethod      method;
+	private final List<String>            signalNameList;
+	private final List<SignalReplaySlice> followingList;
 
 	private int signalCount;
 
-	private SignalReplaySlice(final SignalReplayMethod method, final int start, final int end, final Type type) {
+	private SignalReplaySlice(final SignalReplayMethod method, final int start, final int end, final Type type, final List<SignalReplaySlice> followingList) {
 		this.method         = method;
 		this.start          = start;
 		this.end            = end;
 		this.type           = type;
+		this.followingList  = followingList;
 		this.signalNameList = new ArrayList<>();
 		this.signature      = this.describe();
 	}
 
-	public static SignalReplaySlice of(final SignalReplayMethod method, final int start, final int end, final Type type) {
-		return new SignalReplaySlice(method, start, end, type);
+	public static SignalReplaySlice of(final SignalReplayMethod method, final int start, final int end, final Type type, final List<SignalReplaySlice> followingList) {
+		return new SignalReplaySlice(method, start, end, type, followingList);
 	}
 
 	public boolean hasLambda() {
@@ -106,6 +108,10 @@ public final class SignalReplaySlice {
 
 	public boolean isEquivalent(final SignalReplaySlice slice) {
 		return Objects.equals(this.type, slice.type) && this.signature.equals(slice.signature);
+	}
+
+	public boolean encloses(final SignalReplaySlice slice) {
+		return this.method == slice.method && this.start <= slice.start && slice.end <= this.end && this.end - this.start > slice.end - slice.start;
 	}
 
 	public Object convert(final Object value) {
