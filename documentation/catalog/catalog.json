@@ -118,19 +118,19 @@
 					],
 					"fps": 60,
 					"steps": [
-						"wait 200",
-						"moveto 150 150 400",
+						"wait 100",
+						"moveto 150 150 300",
 						"wait 100",
 						"press LEFT",
-						"moveto 260 150 700",
+						"moveto 260 150 600",
 						"wait 100",
-						"moveto 150 150 700",
+						"moveto 150 150 600",
 						"release LEFT",
 						"wait 2000",
-						"moveto 290 255 400",
-						"wait 200"
+						"moveto 290 255 300",
+						"wait 100"
 					],
-					"still": 160
+					"still": 70
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.layout.ContainerNode",

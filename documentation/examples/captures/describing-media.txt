@@ -9,7 +9,7 @@ wait 500
 # film describing-media-animation
 wait 2367
 cut
-# crop describing-media-stretch 470 320 980 440
+# crop describing-media-stretch 470 320 980 400
 # still describing-media-stretch 115
 ui com.example.describing.media.StretchFlowUI
 wait 500

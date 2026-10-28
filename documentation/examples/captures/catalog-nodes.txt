@@ -56,22 +56,22 @@ cut
 # crop catalog-nodes-modelnode 398 368 364 324
 shot catalog-nodes-modelnode
 # crop catalog-nodes-modelviewernode 768 368 364 324
-# still catalog-nodes-modelviewernode 160
+# still catalog-nodes-modelviewernode 70
 ui com.example.catalog.NodesCatalogUI
 wait 100
 move 1070 635
 # film catalog-nodes-modelviewernode 60
-wait 200
-moveto 930 530 400
+wait 100
+moveto 930 530 300
 wait 100
 press LEFT
-moveto 1040 530 700
+moveto 1040 530 600
 wait 100
-moveto 930 530 700
+moveto 930 530 600
 release LEFT
 wait 2000
-moveto 1070 635 400
-wait 200
+moveto 1070 635 300
+wait 100
 cut
 # crop catalog-nodes-containernode 1138 368 364 324
 shot catalog-nodes-containernode
