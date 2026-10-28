@@ -255,6 +255,35 @@ function htmlBlocks() {
 	return problems;
 }
 
+function chainedLambdas(lines, where) {
+	const problems = [];
+	lines.forEach((line, index) => {
+		const arrow = line.lastIndexOf('->');
+		const rest = arrow < 0 ? '' : line.slice(arrow + 2).trim();
+		if (rest === '' || rest.startsWith('{')) {
+			return;
+		}
+		const open = (line.match(/\(/g) ?? []).length - (line.match(/\)/g) ?? []).length;
+		if (open > 0 && (lines[index + 1] ?? '').trim().startsWith('.')) {
+			problems.push(`${where(index)}: a lambda whose chain spans several lines takes a block, the chain one tab further in: (card -> {, the chain, then })`);
+		}
+	});
+	return problems;
+}
+
+function lambdaChains() {
+	const problems = [];
+	for (const file of files(join(DOCUMENTATION, 'examples', 'src'), ['.java'])) {
+		problems.push(...chainedLambdas(readFileSync(file, 'utf-8').split(/\r?\n/), (index) => `${relative(DOCUMENTATION, file)}:${index + 1}`));
+	}
+	for (const entry of pages()) {
+		for (const block of codeBlocks(entry.source).filter((block) => block.lang === 'java')) {
+			problems.push(...chainedLambdas(block.body, (index) => `${relative(DOCUMENTATION, entry.file)}:${block.line + index + 1}`));
+		}
+	}
+	return problems;
+}
+
 function ownerRows() {
 	const rows = [];
 	for (const line of readFileSync(OWNERS, 'utf-8').split(/\r?\n/)) {
@@ -695,6 +724,7 @@ run('mentions', mentions);
 run('lombok', lombok);
 run('images', images);
 run('html-blocks', htmlBlocks);
+run('lambda-chains', lambdaChains);
 
 run('snippets', snippets);
 run('constants', constants);

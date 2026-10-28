@@ -24,11 +24,13 @@ public class MsdfZoomUI extends UI {
 		.color(CaptureStyle.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
-		.body(card -> TextNode
-		.create(300, 200)
-		.text(() -> Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, this.getSize()).color(CaptureStyle.TEXT)).align(Align.CENTER))
-		.anchor(Align.CENTER)
-		.attach(card))
+		.body(card -> {
+			TextNode
+			.create(300, 200)
+			.text(() -> Text.create("Ag", TextInfo.create(ExampleFont.REGULAR, this.getSize()).color(CaptureStyle.TEXT)).align(Align.CENTER))
+			.anchor(Align.CENTER)
+			.attach(card);
+		})
 		.attach(this);
 	}
 

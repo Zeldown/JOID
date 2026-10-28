@@ -13,10 +13,12 @@ public class KitSwitchNode<V> extends SwitchNode<V> {
 
 	protected KitSwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.option((value, index) -> RectNode
-		.create(0, 0, 0, 0)
-		.color(() -> this.isSelected(value) ? KitColors.ACCENT : KitColors.ELEMENT)
-		.label(() -> Text.create(String.valueOf(value), TextInfo.create(ExampleFont.REGULAR, 20F).color(this.getInk(value)))));
+		super.option((value, index) -> {
+			return RectNode
+			.create(0, 0, 0, 0)
+			.color(() -> this.isSelected(value) ? KitColors.ACCENT : KitColors.ELEMENT)
+			.label(() -> Text.create(String.valueOf(value), TextInfo.create(ExampleFont.REGULAR, 20F).color(this.getInk(value))));
+		});
 	}
 
 	public static <V> KitSwitchNode<V> create(final double x, final double y, final double width, final double height) {

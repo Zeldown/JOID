@@ -15,11 +15,13 @@ public class KitSelectorNode<V> extends SelectorNode<V> {
 	protected KitSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.field(RectNode.create(0, 0, 0, 0).color(KitColors.ACCENT));
-		super.option(value -> RectNode
-		.create(0, 0, 0, 0)
-		.color(KitColors.ELEMENT)
-		.hoveredColor(KitSelectorNode.HOVER)
-		.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22F).color(KitColors.TEXT))));
+		super.option(value -> {
+			return RectNode
+			.create(0, 0, 0, 0)
+			.color(KitColors.ELEMENT)
+			.hoveredColor(KitSelectorNode.HOVER)
+			.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22F).color(KitColors.TEXT)));
+		});
 	}
 
 	public static <V> KitSelectorNode<V> create(final double x, final double y, final double width, final double height) {
