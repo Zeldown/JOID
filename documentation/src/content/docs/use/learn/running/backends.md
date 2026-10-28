@@ -43,7 +43,7 @@ Choose **LWJGL 2** when your application already runs on LWJGL 2.
 
 The stencil buffer clips the masks of your UIs: without it, masked content draws outside its mask.
 Framebuffer objects come with OpenGL 3.0, or with the `GL_ARB_framebuffer_object` or `GL_EXT_framebuffer_object` extension of an older context.
-On a machine below the minimum, `register()` throws `JOID needs OpenGL 2.1 with GLSL 1.20, this context offers …`, `JOID needs framebuffer objects (…), this context offers …` or `No Vulkan 1.3 device able to present to the window was found`.
+On a machine below the minimum, `register()` throws `JOID needs OpenGL 2.1 with GLSL 1.20, this context offers …` or `JOID needs framebuffer objects (…), this context offers …`; with Vulkan, creating the host throws `No Vulkan 1.3 device able to present to the window was found`.
 
 [Installation](/use/get-started/installation/) lists the jars and the libraries to declare for each backend.
 
@@ -182,7 +182,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 | Setting | What it changes |
 |---|---|
 | [[WindowUIBridge#background]] | The color that clears the window before every frame, behind every UI. |
-| [[WindowUIBridge#hoverInfo]] | The font, size and color of the tooltip text. Without it, JOID draws no tooltip. |
+| [[WindowUIBridge#hoverInfo]] | The font, size and color of the tooltip text. |
 | [[WindowUIBridge#hoverColor]] | The fill of the tooltip box. |
 | [[WindowUIBridge#hoverBorderColor]] | The 1-pixel border of the tooltip box. |
 
@@ -190,7 +190,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 
 ![The pointer moves onto the Settings button and rests there; a dark tooltip with the light text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
 
-<figcaption>The tooltip of the window bridge with its default colors: the text style is the one setting it cannot guess.</figcaption>
+<figcaption>The tooltip of the window bridge with its default colors.</figcaption>
 </figure>
 
 :::caution

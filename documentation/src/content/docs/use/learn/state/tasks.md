@@ -55,7 +55,7 @@ Attaching it again starts its delay over, so one task hides a message three seco
 
 A task runs while its owner is drawn:
 - attached to a UI, while the UI is open and drawn; [[UI#getTaskList]] lists them;
-- attached to a node, while the node is in an open UI: it pauses while the node is detached, and goes on when the node comes back.
+- attached to a node, while the node is in an open UI: it does not run while the node is detached, but its timer keeps counting, so a run that fell due meanwhile happens on the first frame after the node comes back.
 
 A task attached in `init()` lasts one opening: closing the UI or [reloading](/use/get-started/dev-tools/) it detaches the task, and the next `init()` attaches a fresh one.
 A task attached to the UI in its constructor comes back at each opening, with its delay started over.

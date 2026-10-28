@@ -124,7 +124,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `List<Task>` | [getTaskList](#UI-method-getTaskList)() | The tasks attached to the UI itself, without those of its nodes; a read-only view. |
 | `List<Shortcut>` | [getShortcutList](#UI-method-getShortcutList)() | The shortcuts attached to the UI itself, without those of its nodes; a read-only view. |
 | `int` | [getIndex](#UI-method-getIndex)() | The `zindex` of the UI, which orders it among the open UIs of its bridge. |
-| `double` | [getZoom](#UI-method-getZoom)() | The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed. |
+| `double` | [getZoom](#UI-method-getZoom)() | The zoom of the UI as it is shown, within the bounds of the interface scale, `1D` when it is not zoomed. |
 | `double` | [getWindowWidth](#UI-method-getWindowWidth)() | Width of the window, in screen pixels. |
 | `double` | [getWindowHeight](#UI-method-getWindowHeight)() | Height of the window, in screen pixels. |
 | `double` | [getViewX](#UI-method-getViewX)() | Position of the left edge of the window on the design canvas. |
@@ -486,7 +486,7 @@ The `zindex` of the UI, which orders it among the open UIs of its bridge.
 
 `double getZoom()` 
 
-The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed.
+The zoom of the UI as it is shown, within the bounds of the interface scale, `1D` when it is not zoomed.
 
 <a id="UI-method-getWindowWidth"></a>
 

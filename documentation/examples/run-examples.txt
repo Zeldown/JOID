@@ -27,8 +27,6 @@ skip com.example.running.SceneUIBridge UI bridge registered by HostApp
 skip com.example.running.GameUIBridge UI bridge of a host loop
 skip com.example.running.PanelUIBridge UI bridge registered by PanelPlugin
 expect com.example.describing.media.LoadingUI beach.png cannot be read
-expect com.example.describing.media.MenuBackgroundUI background.mp4 cannot be read
-expect com.example.describing.media.TrailerUI trailer.mp4 cannot be read
 expect com.example.further.FontsUI The font weight 700 is not loaded in the family of Pixel
 skip com.example.backend.EngineBackend part of the backend of an imaginary engine, it needs that engine to run
 skip com.example.backend.EngineBorrowedTexture part of the backend of an imaginary engine, it needs that engine to run

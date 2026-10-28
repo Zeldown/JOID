@@ -1,7 +1,5 @@
 package com.example.describing.media;
 
-import java.io.File;
-
 import com.example.ExampleFont;
 
 import dev.joid.lib.JOID;
@@ -35,7 +33,7 @@ public class TrailerUI extends UI {
 			// #region video
 			final ResourcePlayerNode trailer = ResourcePlayerNode
 			.create(40, 40, 640, 360)
-			.resource(Resource.of(new File("videos/trailer.mp4")))
+			.resource(Resource.of("videos/intro.mp4"))
 			.autoplay(false)
 			.volume(0.5F)
 			.onEnd(event -> JOID.close(this))
@@ -51,8 +49,8 @@ public class TrailerUI extends UI {
 			RectNode
 			.create(200, 440, 140, 50)
 			.color(TrailerUI.ACCENT)
-			.onClick(event -> trailer.seek(30D))
-			.label(Text.create("0:30", label))
+			.onClick(event -> trailer.seek(5D))
+			.label(Text.create("0:05", label))
 			.attach(card);
 			RectNode.create(360, 460, 320, 10).color(TrailerUI.ELEMENT).attach(card);
 			RectNode.create(360, 460, 0, 10).color(TrailerUI.ACCENT).width(() -> trailer.getProgress() * 320D).attach(card);

@@ -57,8 +57,8 @@ An [[IAssetLocator]] says which inputs it supports, then turns each one into an 
 `supports(handle)` decides from the input alone, without reading anything.
 `locate(handle)` returns one of the built-in assets ([[ClasspathAsset]], [[FileAsset]], [[UrlAsset]], [[StreamAsset]]) or an [[Asset]] of your own, which implements `open()` and passes its unique id to the constructor.
 
-When a locator throws for a `String`, the resource fails like a missing file: its `onError` listeners receive the exception, and in dev mode it draws a magenta and black checkerboard.
-For any other input, `Resource.of(...)` throws the exception itself.
+When a locator throws an `IllegalArgumentException` for a `String`, the resource fails like a missing file: its `onError` listeners receive the exception, and in dev mode it draws a magenta and black checkerboard.
+Any other exception, and any exception for another input, reaches the caller of `Resource.of(...)`.
 
 ## Decode a file type of your own
 

@@ -46,7 +46,7 @@ Nothing uses the store yet, so the menu looks the same.
 ```
 
 - `useStore(SettingsStore.class, SettingsStore::new)` returns the store, and creates it with the factory the first time.
-- `music` and `volume` hold the two signals of the store: JOID follows a signal read from a local variable anywhere in an expression, while a getter of `settings` read after a condition on a signal is not followed ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
+- `music` and `volume` hold the two signals of the store: a setter follows a signal read from a local variable that holds it, in any expression ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 - The On/Off button toggles `music`, and its label is built from it.
 - The minus and plus buttons change `volume` by one step, between 0 and 10; the text shows it as a percentage.
 
@@ -66,7 +66,7 @@ Add a line under the buttons, built from both settings:
 ```java file="com/example/tutorial/settings/MenuUI.java" region="footer"
 ```
 
-As in `SettingsUI`, the two signals go into local variables first: the line decides between `Music on` and `Music off` from `music` before it reads the volume.
+As in `SettingsUI`, read both signals through local variables ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 
 **Run it.**
 Open the settings and change the music and the volume: the line under the buttons changes at once, behind the popup.

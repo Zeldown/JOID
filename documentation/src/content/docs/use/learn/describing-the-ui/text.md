@@ -63,6 +63,8 @@ Changing a shared style with a setter, `body.fontSize(20F)`, changes every text 
 Derive a variant with a `with...` method instead.
 :::
 
+[[LockableValue#lock]] makes a shared style safe: its setters then throw an `IllegalStateException`, and its `with...` copies still work ([Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe)).
+
 ## Align a text in a box
 
 The alignment belongs to the `Text`: [[Text#alignX]] and [[Text#alignY]] take an [[Align]] (`START`, `CENTER` or `END`), and [[Text#align]] sets both.
@@ -175,7 +177,7 @@ Center the word "Settings" in a 1920 × 100 bar at the top of the canvas.
 Give the bar a label, the text is centered on it:
 
 ```java fragment
-RectNode.create(0, 0, 1920, 100).color(Color.WHITE).label(Text.create("Settings", info)).attach(this);
+RectNode.create(0, 0, 1920, 100).color(GreetingUI.ELEMENT).label(Text.create("Settings", info)).attach(this);
 ```
 
 </details>

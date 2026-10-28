@@ -62,7 +62,6 @@ A transition is a class that extends [[Transition]] and passes two [[TransitionS
 This one slides the UI up from below its place with a small overshoot, and drops it down when it closes.
 `getModelView()` of the render bridge is the matrix stack that every drawing goes through: `with(...)` saves it, runs the lambda, which translates it and draws `body`, then restores it.
 
-
 ```java file="com/example/style/SlideTransition.java"
 ```
 

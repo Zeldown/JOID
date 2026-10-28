@@ -65,7 +65,7 @@ Three settings take a node out of the input, and each one applies to the childre
 
 | Setting | The node is drawn | The pointer can hover it | Its listeners and its own handling run |
 |---|---|---|---|
-| [[Node#interactive]] `(false)` | Yes | No, the pointer reaches the node behind | No |
+| [[Node#interactive]] `(false)` | Yes | No, the pointer reaches the node behind | For keys and characters only |
 | [[Node#enabled]] `(false)` | Yes | Yes | No |
 | [[Node#visible]] `(false)` | No | No | No |
 
@@ -112,7 +112,6 @@ This field never receives a digit:
 The user types `R2D2`: the listener consumes both digits before they reach the field.
 </figcaption>
 </figure>
-
 
 ### Follow an input through the tree
 
@@ -200,7 +199,7 @@ A listener of a UI added in `init()` lasts one opening, one added in the constru
 ## Recap
 
 - [[Node#onClick]] runs when the left button goes down over the node, and **consumes** the press.
-- The **hovered** node is the frontmost interactive node under the pointer, with all its parents; `interactive(false)` lets the pointer through a node.
+- `onClick` runs only on a **hovered** node; `interactive(false)` lets the pointer through a node.
 - The **`handle`** listeners hear the raw input of the whole UI, wherever the pointer is, before the node handles it; `consume()` stops the input.
 - A consumed input reaches no other `handle` listener, no UI below and not the host; only the **`MONITOR`** listeners still hear it.
 - A **`before`** listener cancels a change that a gesture or a call such as `move(...)` asks for; setters and signals are never refused.

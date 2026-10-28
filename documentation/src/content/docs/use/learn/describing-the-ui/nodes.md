@@ -124,8 +124,8 @@ The setters that every node has, such as `visible`, `onClick` or `attach`, retur
 So call the setters of the type first, then the shared ones:
 
 ```java fragment
-RectNode.create(0, 0, 100, 100).visible(true).color(Color.WHITE); // ✗ visible returns a Node, which has no color
-RectNode.create(0, 0, 100, 100).color(Color.WHITE).visible(true); // ✓ the RectNode setters come first
+RectNode.create(0, 0, 100, 100).visible(true).color(new Color(91, 140, 255)); // ✗ visible returns a Node: no color
+RectNode.create(0, 0, 100, 100).color(new Color(91, 140, 255)).visible(true); // ✓ the RectNode setters come first
 ```
 
 When the order cannot change, give the type to the shared setter: `.<RectNode>visible(true).color(...)`.
@@ -165,7 +165,7 @@ These pages teach them by role:
 ## Try it
 
 **Add a badge.**
-Add a small white disc in the top-right corner of the header of `ProfileUI`.
+Add a small dark disc in the top-right corner of the header of `ProfileUI`.
 
 <details>
 <summary>Solution</summary>
@@ -175,8 +175,8 @@ Give the header a body: the disc is positioned from the header, not from the car
 ```java fragment
 RectNode
 .create(40, 40, 520, 80)
-.color(ProfileUI.INK)
-.body(header -> CircleNode.create(470, 15, 50).color(Color.WHITE).attach(header))
+.color(ProfileUI.ACCENT)
+.body(header -> CircleNode.create(470, 15, 50).color(ProfileUI.ELEMENT).attach(header))
 .attach(card);
 ```
 
@@ -187,7 +187,7 @@ This line does not compile.
 Make it compile without changing what it does.
 
 ```java fragment
-CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(Color.WHITE).attach(this);
+CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(new Color(91, 140, 255)).attach(this);
 ```
 
 <details>
@@ -196,7 +196,7 @@ CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(Color.WHITE
 `onClick` is shared by every node: call `color` first.
 
 ```java fragment
-CircleNode.create(0, 0, 40).color(Color.WHITE).onClick(event -> JOID.close(this)).attach(this);
+CircleNode.create(0, 0, 40).color(new Color(91, 140, 255)).onClick(event -> JOID.close(this)).attach(this);
 ```
 
 </details>

@@ -180,7 +180,7 @@ A click listener calls `JOID.close(this)` from inside the UI.
 The card is 400 design pixels high: make it 500 high so that the bar fits.
 
 ```java fragment
-RectNode.create(50, 400, 300, 70).color(Color.WHITE).onClick(event -> JOID.close(this)).attach(card);
+RectNode.create(50, 400, 300, 70).color(MenuUI.ELEMENT).onClick(event -> JOID.close(this)).attach(card);
 ```
 
 </details>

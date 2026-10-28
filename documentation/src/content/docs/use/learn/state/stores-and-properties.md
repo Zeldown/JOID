@@ -110,7 +110,8 @@ JOID writes the file only when its text differs from the one it last read or wro
 
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.
 
-When the file cannot be read, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
+When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
+A file that cannot be read at all is left in place, and the store starts from `init()`.
 
 :::caution
 Close the UIs before the program ends: a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
@@ -141,7 +142,7 @@ It writes them when the UI closes, before a reload, and when the program ends, i
 - A **store** extends `UIStore`, carries `@UIStoreData`, and holds signals.
 - **`useStore(Class, factory)`** gives the one instance of its scope, created by the factory at the first call.
 - A **`PERMANENT`** store is saved through `toJson()` when a UI closes and when the program ends, and restored through `fromJson()`.
-- An unreadable store file becomes **`.store.corrupt`**, and the store starts from `init()`.
+- A store file of invalid JSON becomes **`.store.corrupt`**, and the store starts from `init()`.
 - **`@UIProperty`** remembers a field of a UI across launches, read before each `init()`.
 
 ## Try it

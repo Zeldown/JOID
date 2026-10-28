@@ -31,12 +31,12 @@ public class MinimapOverlay extends UI {
 		.color(MinimapOverlay.SURFACE)
 		.onClick(event -> this.zoom = this.zoom == 1D ? 2D : 1D)
 		.body(map -> CircleNode
-			.create(160, 160, 40)
-			.color(MinimapOverlay.ACCENT)
-			.width(() -> 40D * this.zoom)
-			.height(() -> 40D * this.zoom)
-			.anchor(Align.CENTER)
-			.attach(map))
+		.create(160, 160, 40)
+		.color(MinimapOverlay.ACCENT)
+		.width(() -> 40D * this.zoom)
+		.height(() -> 40D * this.zoom)
+		.anchor(Align.CENTER)
+		.attach(map))
 		.attach(this);
 	}
 

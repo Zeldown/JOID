@@ -18,9 +18,19 @@ public class MenuUI extends UI {
 	public void init() {
 		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(MenuUI.ON_ACCENT);
 
-		RectNode.create(560, 160, 240, 60).color(MenuUI.ACCENT).onClick(event -> JOID.open(new PopPopupUI())).label(Text.create("Pop", label)).attach(this);
+		RectNode
+		.create(560, 160, 240, 60)
+		.color(MenuUI.ACCENT)
+		.onClick(event -> JOID.open(new PopPopupUI()))
+		.label(Text.create("Pop", label))
+		.attach(this);
 
-		RectNode.create(840, 160, 240, 60).color(MenuUI.ACCENT).onClick(event -> JOID.open(new SlidePopupUI())).label(Text.create("Slide", label)).attach(this);
+		RectNode
+		.create(840, 160, 240, 60)
+		.color(MenuUI.ACCENT)
+		.onClick(event -> JOID.open(new SlidePopupUI()))
+		.label(Text.create("Slide", label))
+		.attach(this);
 
 		// #region open
 		RectNode

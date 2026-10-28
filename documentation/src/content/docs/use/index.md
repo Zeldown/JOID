@@ -21,7 +21,7 @@ Here is a complete screen: a card with a button that turns the notifications on 
 <figcaption>
 The screen above, clicked four times.
 The button reads the signal `notifications`, so its color and its label follow each click by themselves.
-The label is a lambda because its text style changes too: JOID follows the text of a [[Text]]`.create(...)` by itself, but not reliably its style ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
+The label is a lambda because its style changes with the state too ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 </figcaption>
 </figure>
 
@@ -62,6 +62,7 @@ A page explains one notion in full; any other page that needs it gives one sente
 
 The examples of Learn and of the guides are UIs: the [launcher of the Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation) runs any of them.
 The [glossary](/reference/glossary/) defines the terms that many pages use, such as design pixel, signal or popup.
+When something goes wrong, [Troubleshooting](/use/troubleshooting/) lists the checks by symptom, and [Best practices](/use/best-practices/) sums up the rules of the documentation in one page.
 
 ## License
 

@@ -35,7 +35,7 @@ public class MenuSnapshotTest {
 		.execute("ui " + RunningMenuUI.class.getName(), "shot menu")
 		.get("menu");
 		shot.write(new File("build/snapshots/menu.png"));
-		Assert.assertEquals(0xFFFFFFFF, shot.getPixels()[520 * shot.getWidth() + 870]);
+		Assert.assertEquals(0xFF262B35, shot.getPixels()[520 * shot.getWidth() + 870]);
 	}
 	// #endregion
 

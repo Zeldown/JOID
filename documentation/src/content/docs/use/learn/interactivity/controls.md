@@ -134,6 +134,7 @@ Inside your own [[Signal#batch]], `onChange` runs at once, and the nodes bound t
 
 [[BaseToggleNode]] holds a `boolean` with `toggle(...)`, and a press switches it.
 `state(onValue, offValue)` gives the two values that `getValue()` returns, here `"Night"` and `"Day"`.
+Its two type parameters are the types of the on value and of the off value.
 [[ToggleNode#speed]] sets how fast a [[ToggleNode]] slides to its new state: the part of the way done in 1/60 s, and `1F` moves at once.
 
 ## Choose one of a few options

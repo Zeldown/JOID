@@ -28,9 +28,9 @@ public class LoadingUI extends UI {
 		MsdfFontLoader
 		.load("fonts/Montserrat/Montserrat-Regular.ttf")
 		.thenAccept(font -> TextNode
-			.create(50, 70)
-			.text(Text.create("Font ready", TextInfo.create(font, 40F).color(LoadingUI.TEXT)))
-			.attach(card));
+		.create(50, 70)
+		.text(Text.create("Font ready", TextInfo.create(font, 40F).color(LoadingUI.TEXT)))
+		.attach(card));
 		// #endregion
 	}
 

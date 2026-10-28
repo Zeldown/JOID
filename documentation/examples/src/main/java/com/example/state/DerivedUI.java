@@ -44,8 +44,18 @@ public class DerivedUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(DerivedUI.ELEMENT, 1.5F))
 		.body(card -> {
-			RectNode.create(60, 60, 200, 60).color(DerivedUI.ACCENT).onClick(event -> price.increment()).label(Text.create("Price +1", label)).attach(card);
-			RectNode.create(300, 60, 200, 60).color(DerivedUI.ACCENT).onClick(event -> quantity.increment()).label(Text.create("Quantity +1", label)).attach(card);
+			RectNode
+			.create(60, 60, 200, 60)
+			.color(DerivedUI.ACCENT)
+			.onClick(event -> price.increment())
+			.label(Text.create("Price +1", label))
+			.attach(card);
+			RectNode
+			.create(300, 60, 200, 60)
+			.color(DerivedUI.ACCENT)
+			.onClick(event -> quantity.increment())
+			.label(Text.create("Quantity +1", label))
+			.attach(card);
 			// #region batch
 			RectNode
 			.create(540, 60, 200, 60)

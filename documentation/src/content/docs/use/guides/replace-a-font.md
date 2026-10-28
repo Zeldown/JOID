@@ -46,8 +46,7 @@ Define each [[TextInfo]] once, next to the font, and lock it with `lock()`:
 ```java file="com/example/guides/FontGuideStyle.java" region="styles"
 ```
 
-A locked style refuses its setters, so no code can change every text that shares it by mistake.
-A text that needs a variant asks the style for a modified copy, such as `withColor(...)`.
+A locked style refuses its setters, and a variant is a `with...` copy ([Describe a style](/use/learn/describing-the-ui/text/#describe-a-style)).
 
 **Check:** with the red of [[Color]], `FontGuideStyle.BODY.color(Color.RED)` throws an `IllegalStateException`, and `FontGuideStyle.BODY.withColor(Color.RED)` returns a red copy.
 

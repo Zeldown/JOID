@@ -161,7 +161,7 @@ A row that the user can drag into another order is a [[ReorderableFlexNode]] ([R
 ## Try it
 
 **A toolbar.**
-Build a row of five white squares of 60 design pixels, 15 design pixels apart, centered on a row 100 design pixels high.
+Build a row of five blue squares of 60 design pixels, 15 design pixels apart, centered on a row 100 design pixels high.
 
 <details>
 <summary>Solution</summary>

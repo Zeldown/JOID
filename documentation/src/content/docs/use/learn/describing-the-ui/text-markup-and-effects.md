@@ -126,7 +126,7 @@ A string never goes through a converter.
 ## Try it
 
 **A highlight.**
-Write an effect that draws a light rectangle under each glyph, from the top of the line to its bottom.
+Write an effect that draws a grey rectangle under each glyph, from the top of the line to its bottom.
 
 <details>
 <summary>Solution</summary>
@@ -137,7 +137,7 @@ Draw in `background`, before the glyphs: the ascender and the descender are meas
 public void background(final ITextGlyph glyph) {
 	final double top = glyph.getBaseline() - glyph.getAscender();
 	final double bottom = glyph.getBaseline() - glyph.getDescender();
-	DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), bottom - top, Color.WHITE);
+	DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), bottom - top, new Color(54, 61, 77));
 }
 ```
 
