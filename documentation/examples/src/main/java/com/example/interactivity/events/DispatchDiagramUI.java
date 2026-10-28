@@ -59,8 +59,6 @@ public class DispatchDiagramUI extends UI {
 				.attach(card);
 			})
 			.attach(backdrop);
-			TextNode.create(40, 510).text(Text.create("The front child receives the press first,", small)).attach(backdrop);
-			TextNode.create(40, 545).text(Text.create("then its parent, up to the UI.", small)).attach(backdrop);
 			for (int i = 0; i < DispatchDiagramUI.STEPS.length; i++) {
 				final boolean highlighted = i == 1;
 				CircleNode

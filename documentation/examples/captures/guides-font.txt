@@ -2,7 +2,7 @@
 # still guides-font-card 50
 ui com.example.guides.FontGuideUI
 move 1180 720
-# film guides-font-card
+# film guides-font-card 60
 wait 300
 moveto 810 660 600
 wait 1400

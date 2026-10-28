@@ -31,7 +31,7 @@ public class TypesUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(TypesUI.TEXT);
 
 		RectNode
-		.create(560, 340, 800, 400)
+		.create(560, 340, 800, 330)
 		.color(TypesUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(TypesUI.ELEMENT, 1.5F))

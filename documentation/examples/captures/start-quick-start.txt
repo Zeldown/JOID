@@ -1,10 +1,10 @@
 # crop quick-start-counter 560 380 800 320
 # still quick-start-counter 120
-# crop quick-start-flex 30 30 440 320
-# crop quick-start-image 490 30 440 320
-# crop quick-start-effects 950 30 440 320
-# crop quick-start-animation 1410 30 440 320
-# crop quick-start-click 30 370 440 320
+# crop quick-start-flex 20 20 460 340
+# crop quick-start-image 480 20 460 340
+# crop quick-start-effects 940 20 460 340
+# crop quick-start-animation 1400 20 460 340
+# crop quick-start-click 20 360 460 340
 # still quick-start-click 90
 ui com.example.start.CounterUI
 move 1290 640

@@ -23,6 +23,7 @@ The components are read each time the rotation is applied.
 ## Learn more
 
 - [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)
+- [Effects](/use/learn/style-and-motion/effects/)
 
 ## Creation
 

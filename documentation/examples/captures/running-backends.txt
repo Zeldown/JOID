@@ -5,7 +5,7 @@ shot running-backends-start
 # crop running-backends-tooltip 660 370 600 340
 # still running-backends-tooltip 45
 move 1180 650
-# film running-backends-tooltip
+# film running-backends-tooltip 60
 wait 300
 moveto 905 545 500
 wait 1400

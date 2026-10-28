@@ -15,6 +15,7 @@ public class NotesFieldUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 
 	@Override
 	public void init() {
@@ -31,6 +32,7 @@ public class NotesFieldUI extends UI {
 			.create(60, 60, 480, 280)
 			.info(info)
 			.placeholder("Notes")
+			.placeholderColor(NotesFieldUI.MUTED)
 			.margin(12D)
 			.background(RectNode.create(0, 0, 0, 0).color(NotesFieldUI.ELEMENT))
 			.attach(card);

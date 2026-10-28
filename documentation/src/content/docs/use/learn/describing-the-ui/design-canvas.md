@@ -49,7 +49,12 @@ A node that follows the view covers the whole window:
 ```
 
 On a wide window, `getViewX()` is negative and `getViewWidth()` is more than 1920.
-The nodes placed on the canvas stay where they are, and the nodes that follow the view reach the edges:
+The nodes placed on the canvas, here a darker rectangle of its size and a blue card, stay where they are:
+
+```java file="com/example/describing/canvas/EdgesUI.java" region="canvas"
+```
+
+The nodes that follow the view reach the edges:
 
 ```java file="com/example/describing/canvas/EdgesUI.java" region="edges"
 ```

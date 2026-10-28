@@ -8,3 +8,5 @@ key ESCAPE
 wait 700
 open com.example.capture.ReopenUI
 wait 1500
+key ESCAPE
+wait 700

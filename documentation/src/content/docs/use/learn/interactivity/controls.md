@@ -72,12 +72,11 @@ Keep `onChange` for an action, such as saving the settings or playing a sound.
 ![A slider at 5 of 10 with a blue thumb, a dark grey "Set to 10" button and the text "Volume: 5"; the pointer drags the thumb to the end of the track: the text stays at 8 and, at the release, the thumb goes back to 8; then it clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
 
 <figcaption>
-`beforeChange` refuses every value above 8: the text never passes 8, and the thumb goes back to 8 at the release.
+`beforeChange` refuses the values above 8 that the user asks for: the thumb goes back to 8 at the release. "Set to 10" writes the signal, which is never refused.
 </figcaption>
 </figure>
 
-The setters and the bound signal are never refused: "Set to 10" writes `10` into `volume`, and the slider shows `10`.
-A refusal belongs to the user, the value of your code always applies.
+The setters and the bound signal are never refused: a refusal belongs to the user, the value of your code always applies.
 A refused value does not stop the drag of a slider: the thumb follows the pointer, and the value keeps the last step that passed.
 
 ## Keep a value that the bounds refuse

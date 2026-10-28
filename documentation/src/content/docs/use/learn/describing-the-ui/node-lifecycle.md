@@ -49,7 +49,7 @@ A node that is not visible skips its drawing listeners (`onMount`, `onDraw`, `on
 
 <figure>
 
-![A dark card that shows in light letters how long it has been in the UI, in seconds; the time grows, Escape, shown in a key badge, closes the UI, then the same UI opens again and the time starts again at 0](/captures/describing-lifecycle-frames.webp)
+![A dark card that shows in light letters how long it has been in the UI, in seconds; the time grows, Escape, shown in a key badge, closes the UI, then the same UI opens again, the time starts again at 0, and Escape closes it again](/captures/describing-lifecycle-frames.webp)
 
 <figcaption>
 The time starts again at 0 each time the card joins the UI, here when the same UI opens again.

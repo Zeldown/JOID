@@ -38,7 +38,7 @@ public class SettingsUI extends UI {
 		// #endregion
 
 		RectNode
-		.create(560, 340, 800, 400)
+		.create(1060, 150, 800, 400)
 		.color(SettingsUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(SettingsUI.ELEMENT, 1.5F))

@@ -84,7 +84,7 @@
 						"wait 100",
 						"moveto 150 150 700",
 						"release LEFT",
-						"wait 300",
+						"wait 2000",
 						"moveto 290 255 400",
 						"wait 200"
 					]
@@ -113,6 +113,7 @@
 						255
 					],
 					"fps": 60,
+					"still": 84,
 					"steps": [
 						"wait 300",
 						"moveto 170 120 500",
@@ -157,6 +158,7 @@
 						290,
 						255
 					],
+					"still": 50,
 					"steps": [
 						"wait 300",
 						"moveto 270 152 500",
@@ -176,7 +178,7 @@
 						"wait 200",
 						"press LEFT",
 						"release LEFT",
-						"wait 400"
+						"wait 500"
 					]
 				},
 				{
@@ -187,6 +189,7 @@
 						290,
 						255
 					],
+					"still": 72,
 					"steps": [
 						"wait 300",
 						"moveto 200 150 500",
@@ -212,7 +215,7 @@
 						"wait 200",
 						"press LEFT",
 						"release LEFT",
-						"wait 400"
+						"wait 500"
 					]
 				},
 				{
@@ -223,6 +226,7 @@
 						290,
 						255
 					],
+					"still": 75,
 					"steps": [
 						"wait 300",
 						"moveto 240 152 500",
@@ -242,7 +246,7 @@
 						"wait 200",
 						"press LEFT",
 						"release LEFT",
-						"wait 400"
+						"wait 500"
 					]
 				},
 				{
@@ -287,6 +291,7 @@
 						290,
 						255
 					],
+					"fps": 60,
 					"steps": [
 						"wait 300",
 						"moveto 200 117 500",
@@ -350,6 +355,7 @@
 						290,
 						255
 					],
+					"still": 45,
 					"steps": [
 						"wait 300",
 						"moveto 190 152 500",

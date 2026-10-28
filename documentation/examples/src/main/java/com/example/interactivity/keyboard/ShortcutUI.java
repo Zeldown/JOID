@@ -20,6 +20,7 @@ public class ShortcutUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 
 	private final IntegerSignal saves = new IntegerSignal(0);
 	private final IntegerSignal helps = new IntegerSignal(0);
@@ -43,6 +44,7 @@ public class ShortcutUI extends UI {
 			.create(60, 40, 480, 60)
 			.info(info)
 			.placeholder("Notes")
+			.placeholderColor(ShortcutUI.MUTED)
 			.background(RectNode.create(0, 0, 0, 0).color(ShortcutUI.ELEMENT))
 			.marginHorizontal(12D)
 			.attach(card);

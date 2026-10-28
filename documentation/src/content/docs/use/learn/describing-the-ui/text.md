@@ -156,7 +156,7 @@ A `TextInfo` measures a string in its style: [[TextInfo#getWidth]] gives its wid
 
 <figure>
 
-![The bottom of a dark card with a dark grey box sized to the word Settings, with the same space on its left and on its right](/captures/describing-text-measure.webp)
+![A dark card with a dark grey box sized to the word Settings, with the same space on its left and on its right](/captures/describing-text-measure.webp)
 
 <figcaption>
 Measured from its label, the box fits the word in any font and at any size.

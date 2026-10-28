@@ -15,6 +15,7 @@ public class NoDigitsUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
 
 	@Override
 	public void init() {
@@ -31,6 +32,7 @@ public class NoDigitsUI extends UI {
 			.create(50, 70, 300, 60)
 			.info(info)
 			.placeholder("No digits")
+			.placeholderColor(NoDigitsUI.MUTED)
 			.background(RectNode.create(0, 0, 0, 0).color(NoDigitsUI.ELEMENT))
 			.marginHorizontal(12D)
 			.handleCharTyped(event -> {

@@ -1,8 +1,9 @@
 # crop interactivity-hover 640 370 640 340
 # still interactivity-hover 60
 # crop interactivity-underline 640 370 640 340
+# still interactivity-underline 60
 # crop interactivity-enter 640 320 640 440
-# crop interactivity-tooltip-text 40 320 600 300
+# crop interactivity-tooltip-text 40 320 600 320
 # still interactivity-tooltip-text 70
 # crop interactivity-tooltip-node 660 320 600 440
 # still interactivity-tooltip-node 60

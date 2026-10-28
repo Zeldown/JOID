@@ -10,8 +10,8 @@ shot describing-text-align
 ui com.example.describing.text.ModesUI
 wait 100
 shot describing-text-modes
-# crop describing-text-runs 590 320 740 280
-# crop describing-text-measure 590 590 740 170
+# crop describing-text-runs 590 280 740 310
+# crop describing-text-measure 590 580 740 210
 # still describing-text-runs 70
 ui com.example.describing.text.RunsUI
 wait 100
@@ -19,7 +19,7 @@ shot describing-text-measure
 move 1200 555
 # film describing-text-runs
 wait 300
-moveto 1000 535 500
+moveto 1000 495 500
 wait 200
 press LEFT
 release LEFT

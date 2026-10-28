@@ -31,7 +31,7 @@ public class TooltipUI extends UI {
 		final IntegerSignal coins = new IntegerSignal(120);
 
 		RectNode
-		.create(60, 340, 560, 400)
+		.create(60, 340, 560, 280)
 		.color(TooltipUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(TooltipUI.ELEMENT, 1.5F))

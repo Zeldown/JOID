@@ -6,7 +6,7 @@ shot depth-frame-lifecycle
 ui com.example.depth.SignalTrackingUI
 wait 100
 shot depth-signal-tracking
-# crop depth-msdf-text 510 150 900 780
+# crop depth-msdf-text 510 105 900 870
 ui com.example.depth.MsdfTextUI
 wait 100
 shot depth-msdf-text
