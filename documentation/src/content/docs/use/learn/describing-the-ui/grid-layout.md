@@ -124,6 +124,6 @@ Make the last row of the `align` example sit against the right edge.
 <details>
 <summary>Solution</summary>
 
-Replace `Align.CENTER` by `Align.END`: each row goes against the right edge, the full row included, which moves by 10 design pixels since it is 350 wide.
+Replace `Align.CENTER` by `Align.END`: each row goes against the right edge, the full row included, which moves 5 design pixels to the right, from 5 to 10 away from the left edge, since it is 350 wide.
 
 </details>

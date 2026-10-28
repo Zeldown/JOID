@@ -66,7 +66,7 @@ Read [Keyboard and shortcuts](/use/learn/interactivity/keyboard/) to learn who r
 Every control follows the same pattern: options, a value bound to a signal, `beforeChange` and `onChange`.
 
 ```java fragment
-new IntegerSliderNode(240, 140, 300, 40) {}.track(...).thumb(...).range(0, 10).value(this.volume).attach(card);
+new IntegerSliderNode(240, 140, 300, 40) {}.range(0, 10).track(...).thumb(...).value(this.volume).attach(card);
 ```
 
 Read [Controls](/use/learn/interactivity/controls/) to learn the pattern, the order of a change and the options of each control.
