@@ -19,7 +19,7 @@ public class KeysUI extends UI {
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	private final StringSignal typed = new StringSignal("");
-	private final StringSignal key = new StringSignal("none");
+	private final StringSignal key   = new StringSignal("none");
 
 	@Override
 	public void init() {

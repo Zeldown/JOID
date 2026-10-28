@@ -33,7 +33,7 @@ The resolver that turns a `BufferedImage` into a resource, one resource per imag
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [supports](#BufferedImageResourceResolver-method-supports)(Object input) | If `true`, the input is a `BufferedImage`. |
-| [`Resource`](/reference/resources/resource/) | [resolve](#BufferedImageResourceResolver-method-resolve)(ResourceBuilder builder, Object input) | Returns the resource of the image, decoded once; the same image gives the same resource while it lives. |
+| [`Resource`](/reference/resources/resource/) | [resolve](#BufferedImageResourceResolver-method-resolve)(ResourceBuilder builder, Object input) | Returns a resource of the image; while the image lives, every call shares the same decoded data, each in its own resource. |
 
 ## Creation details
 
@@ -61,7 +61,7 @@ If `true`, the input is a `BufferedImage`.
 
 `Resource resolve(ResourceBuilder builder, Object input)` 
 
-Returns the resource of the image, decoded once; the same image gives the same resource while it lives.
+Returns a resource of the image; while the image lives, every call shares the same decoded data, each in its own resource.
 
 ---
 

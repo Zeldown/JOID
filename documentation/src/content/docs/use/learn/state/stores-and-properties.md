@@ -71,7 +71,9 @@ The overlay that shows the volume asks for the same store, and gets the same ins
 
 ![A dark settings card reading "Volume: 5" and "Sound on", and above it, in the top right corner of the screen, a blue overlay reading "Volume 5"; the pointer clicks + twice and - twice, and the card and the overlay show the same volume at each click](/captures/state-stores.webp)
 
-<figcaption>Two UIs, one store: the overlay follows the volume that the settings screen changes.</figcaption>
+<figcaption>
+Two UIs, one store: the overlay follows the volume that the settings screen changes.
+</figcaption>
 </figure>
 
 The second argument is the factory: JOID calls it when no instance exists yet, then calls `init()` on the new store.
@@ -110,6 +112,8 @@ Read a number through `Number`, as in `((Number) json.get("volume")).intValue()`
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.
 
 When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
+
+[Build a settings screen](/use/guides/build-a-settings-screen/) binds controls to a store kept on disk.
 
 :::danger
 A process that is killed or crashes saves nothing: call `save()` on a store that must survive a crash, at the moment its values change.

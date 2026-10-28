@@ -33,6 +33,7 @@ A UI is a class that extends [[UI]] and creates its nodes in `init()`:
 ```
 
 - [[MsdfFontLoader]] loads the font; the first run on a machine takes a few seconds, and later runs read a [cache](/use/in-depth/msdf-text/#what-happens-when-a-font-loads).
+- `lock()` keeps a shared color from being changed by accident ([Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe)).
 - [[RectNode]]`.create(760, 480, 400, 120)` is a 400 × 120 rectangle at the center of the 1920 × 1080 canvas, and `attach(this)` adds it to the UI.
 - `onClick(...)` increments the signal `clicks`, and the label that reads `this.clicks.get()` follows it: [Signals](/use/learn/interactivity/signals/) explains how.
 
@@ -240,7 +241,7 @@ Read [Animation](/use/learn/style-and-motion/animation/), then [Transitions](/us
 ## Open a popup
 
 A popup is a UI opened above the current one.
-The annotation [[UIDataPopup]], `@UIDataPopup(active = true)`, turns a UI into a popup, and [[JOID#open]] opens it:
+The annotation [[UIDataPopup]], `@UIDataPopup(active = true)`, turns a UI into a popup, `background = true` of [[UIData]] dims the screen behind it, and [[JOID#open]] opens it:
 
 ```java file="com/example/start/NoticeUI.java" region="popup"
 ```

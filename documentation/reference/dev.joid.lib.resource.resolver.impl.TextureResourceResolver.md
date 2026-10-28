@@ -14,4 +14,4 @@ If `true`, the input is an [[ITexture]].
 
 ## resolve(ResourceBuilder,Object)
 
-Returns the resource that shows the texture as it is, without decoding; the same texture gives the same resource while it lives.
+Returns a resource that shows the texture as it is, without decoding; while the texture lives, every call shares the same data, each in its own resource.

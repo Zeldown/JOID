@@ -18,8 +18,7 @@ Value of a node that both the code and the user change, with its bounds, its eve
 ## Description
 
 The controls, the position of a node, its scroll offsets, the zoom of a UI and the camera of `ModelViewerNode` keep their value in an `InteractiveValue`.
-It separates the requested value (the last value given by a setter, by the bound signal or by a gesture) from the applied value (the requested one passed through `clamp`), so the order of the setters in a chain does not matter.
-A change made by the user fires a cancellable `before` event, applies the value, writes it to the bound signal, then fires the `on` event.
+It keeps the last value requested by a setter, the bound signal or a gesture, and applies it within the bounds ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)); a change runs its steps in a fixed order ([Know the order of a change](/use/learn/interactivity/controls/#know-the-order-of-a-change)).
 A custom control creates one in its constructor and calls it from its own setters and input handlers.
 
 ## Learn more

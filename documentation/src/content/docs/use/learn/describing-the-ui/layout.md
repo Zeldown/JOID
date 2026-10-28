@@ -147,6 +147,7 @@ The node measures its new content on the next frame, and the wheel scrolls furth
 The list grows each time its end is reached, and `scrollTo(0D, 0D)` glides back to the start as the wheel does.
 </figcaption>
 </figure>
+
 [Events](/use/learn/interactivity/events/) explains listeners, their phases and cancellation.
 
 ## Add a scrollbar

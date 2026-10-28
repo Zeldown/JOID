@@ -94,7 +94,7 @@ Then apply it each time you draw, here in a [layer](/use/learn/going-further/dra
 ```java file="com/example/further/TransformsUI.java" region="spin-draw"
 ```
 
-The square turns a full circle every 4 seconds of the clock of the backend.
+The square turns a full circle every 4 seconds of the [clock of JOID](/use/learn/running/testing/#keep-every-run-identical).
 To move, turn or scale a whole node and its children, give it a [[TransformNodeEffect]] instead ([Effects](/use/learn/style-and-motion/effects/)).
 
 ## Use the matrix stack

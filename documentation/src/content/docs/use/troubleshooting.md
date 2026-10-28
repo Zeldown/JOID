@@ -76,7 +76,7 @@ Give it one with `hoverInfo(...)` ([Style the window UI bridge](/use/learn/runni
 ## The first launch is slow
 
 The first time a font loads on a machine, JOID generates its atlas and keeps it in the cache folder; later launches read it back ([What happens when a font loads](/use/in-depth/msdf-text/#what-happens-when-a-font-loads)).
-The first video also downloads the FFmpeg natives into the cache folder ([Show a video](/use/guides/show-a-video/)).
+The first video also downloads the FFmpeg natives into the cache folder ([Play videos on every machine](/use/learn/describing-the-ui/media/#play-videos-on-every-machine)).
 
 ## Settings are lost after a restart
 

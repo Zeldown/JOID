@@ -23,7 +23,9 @@ A popup, a UI whose [[UIDataPopup]] sets `active = true`, plays a [[PopTransitio
 
 ![The pointer clicks Pop in a row of three blue buttons: under them, a dark popup that reads Saved grows into view while its backdrop dims the buttons, stays, then shrinks away and the buttons light up again when Escape, shown in a key badge, closes it](/captures/style-pop.webp)
 
-<figcaption>The pop transition, in and out; the backdrop of the popup fades with it.</figcaption>
+<figcaption>
+The pop transition, in and out; the backdrop of the popup fades with it.
+</figcaption>
 </figure>
 
 The `transition` element of `@UIDataPopup` chooses which half plays:
@@ -69,7 +71,9 @@ The step moves the UI with the model-view matrix stack of the render bridge, `ge
 
 ![The pointer clicks Slide in a row of three blue buttons: under the buttons, dimmed by the popup backdrop, a dark card slides up from below with a small bounce, stays, then drops down and disappears while the buttons light up again when Escape, shown in a key badge, closes it](/captures/style-transition.webp)
 
-<figcaption>Each step has its own duration and easing: the slide overshoots on the way in and falls away on the way out.</figcaption>
+<figcaption>
+Each step has its own duration and easing: the slide overshoots on the way in and falls away on the way out.
+</figcaption>
 </figure>
 
 `TransitionStep.create(duration, easing)` gives the duration in milliseconds and the [easing](/use/learn/style-and-motion/animation/#shape-the-motion-with-easing) of the step.

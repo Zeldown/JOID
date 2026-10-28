@@ -28,7 +28,9 @@ This page shows how to add effects, drive them with changing values, and predict
 
 ![A dark card with rounded corners, a thin blue border and a soft blue glow under it, the shadow of the card](/captures/style-stack.webp)
 
-<figcaption>Three effects on one rectangle: the border and the shadow follow the rounded corners.</figcaption>
+<figcaption>
+Three effects on one rectangle: the border and the shadow follow the rounded corners.
+</figcaption>
 </figure>
 
 A node holds one effect per class: a second [[RoundedNodeEffect]] replaces the first.
@@ -80,7 +82,9 @@ Build the suppliers that read the node inside [[Node#self]], which hands you the
 
 ![The pointer enters a dark rectangle: its corners round strongly and its blue border thickens, then go back as the pointer leaves](/captures/style-effect-hover.webp)
 
-<figcaption>The radius goes from 8 to 48 design pixels and the border from 1 to 6 with the hover progress.</figcaption>
+<figcaption>
+The radius goes from 8 to 48 design pixels and the border from 1 to 6 with the hover progress.
+</figcaption>
 </figure>
 
 `hoverValue(max)` is the hover progress of the node scaled to `max` ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
@@ -98,7 +102,9 @@ By default, an effect applies to the node alone, and its children draw on top of
 
 ![Two dark cards with rounded corners and a blue header: on the left the header keeps its square top corners, on the right it is rounded with the card](/captures/style-scope.webp)
 
-<figcaption>With `SELF`, the default, the rounded corners cut only the card; with `CHILDREN`, they cut its header too.</figcaption>
+<figcaption>
+With `SELF`, the default, the rounded corners cut only the card; with `CHILDREN`, they cut its header too.
+</figcaption>
 </figure>
 
 Use `CHILDREN` for a card whose content reaches its edges, such as an image header or a list that scrolls.
@@ -159,7 +165,9 @@ The same rule places a shadow: at its own `-50`, it turns and moves with the nod
 
 ![The top half of a blue disc, cut flat by the mask](/captures/style-clip.webp)
 
-<figcaption>The circle is drawn whole, and the mask keeps the top half of the node.</figcaption>
+<figcaption>
+The circle is drawn whole, and the mask keeps the top half of the node.
+</figcaption>
 </figure>
 
 The overload that takes a [[Resource]] first keeps the pixels where the image is opaque (alpha above `0.5F`), to cut a drawing to a star, a logo or a rounded frame.

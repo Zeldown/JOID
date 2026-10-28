@@ -78,7 +78,9 @@ It follows the size of the window by itself, so you need no resize callback.
 
 ![A dark grey Settings button on a dark card, in the middle of the window](/captures/running-backends-start.webp)
 
-<figcaption>The program above, with `RunningStartUI` open: the window shows the UI from the first frame.</figcaption>
+<figcaption>
+The program above, with `RunningStartUI` open: the window shows the UI from the first frame.
+</figcaption>
 </figure>
 
 ### Close the UIs before the program ends
@@ -171,7 +173,9 @@ Get it from the UI registry once the backend is registered, and set what you nee
 
 ![The pointer moves onto the Settings button and rests there; a dark tooltip with the light text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
 
-<figcaption>Once `hoverInfo` is set, every node that gives a `hover(...)` text shows this tooltip, with no code in the UI.</figcaption>
+<figcaption>
+Once `hoverInfo` is set, every node that gives a `hover(...)` text shows this tooltip, with no code in the UI.
+</figcaption>
 </figure>
 
 :::caution

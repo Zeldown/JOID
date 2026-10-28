@@ -48,6 +48,8 @@ A popup differs from a screen in three ways:
 Escape closes the popup when it is closeable, like a screen.
 Opening another screen closes the current screen with every popup open above it ([UIs](/use/learn/describing-the-ui/uis/#replace-the-current-screen)).
 
+[Make a modal popup](/use/guides/make-a-modal-popup/) builds a confirmation popup end to end.
+
 ## Keep an overlay over every screen
 
 An overlay is a UI annotated with [[UIDataOverlay]] and `active = true`, which turns it on as for a popup:

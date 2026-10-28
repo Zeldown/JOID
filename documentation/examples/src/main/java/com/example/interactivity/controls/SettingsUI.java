@@ -24,7 +24,7 @@ public class SettingsUI extends UI {
 	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	// #region signals
-	private final IntegerSignal volume = new IntegerSignal(7);
+	private final IntegerSignal volume    = new IntegerSignal(7);
 	private final BooleanSignal subtitles = new BooleanSignal(true);
 	// #endregion
 

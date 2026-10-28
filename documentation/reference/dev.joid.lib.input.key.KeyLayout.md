@@ -3,7 +3,7 @@ summary: Translates the place of a letter or punctuation key into the key that t
 ---
 
 A window library reports a key by its place on a US QWERTY keyboard: on a French AZERTY keyboard, the key that types `a` arrives as [[Key#Q]].
-A window bridge gives each key press two keys, its place and the key that the layout names; a `KeyLayout` computes the second from the first.
+The input forwarder of a backend gives each key press two keys, its place and the key that the layout names ([Input forwarding](/build/input/#required)); a `KeyLayout` computes the second from the first.
 Only the letters `A` to `Z` and the punctuation keys from [[Key#APOSTROPHE]] to [[Key#GRAVE_ACCENT]] depend on the layout; every other key passes through unchanged.
 
 Learn: [Input forwarding](/build/input/#guarantees).

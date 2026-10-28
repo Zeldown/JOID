@@ -43,7 +43,7 @@ Each event goes to the UIs first; an event that no UI [consumes](/use/learn/inte
 ```
 
 Here, Escape closes the window only when no UI used it, for example to [close a screen](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard).
-To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Place nodes on the canvas](/use/learn/describing-the-ui/design-canvas/#place-nodes-on-the-canvas)).
+To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Convert between the window and the UI](/use/learn/describing-the-ui/design-canvas/#convert-between-the-window-and-the-ui)).
 The same rule holds for releases: when a UI consumed a press, your callback receives neither the press nor its release.
 An overlay that receives the input is the exception: `cancelClick`, `cancelScroll` and `cancelKeyboard` of [[UIDataOverlayInteraction]] decide whether an event it used still reaches your callback ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 
@@ -111,7 +111,9 @@ Each bridge has a **priority**, an `int`: the highest priority receives the inpu
 
 ![Three stacked dark boxes: PanelUIBridge with priority 10 on top, your bridge with priority 0 in the middle, and WindowUIBridge, the default that clears the window, at the bottom. A blue arrow on the left goes down, labeled Input; a blue arrow on the right goes up, labeled Drawing.](/captures/running-embedding-bridges.webp)
 
-<figcaption>Input tries the highest bridge first; drawing starts from the lowest, so the highest is drawn on top.</figcaption>
+<figcaption>
+Input tries the highest bridge first; drawing starts from the lowest, so the highest is drawn on top.
+</figcaption>
 </figure>
 
 The bridge decides which UIs it hosts with `canHandle`:

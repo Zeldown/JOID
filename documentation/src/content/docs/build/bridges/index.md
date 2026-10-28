@@ -51,7 +51,7 @@ A backend registers the rest from [[Backend#register]], one hook per bridge, the
 [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register) gives the whole sequence from the side of an application.
 
 Application code and plugins add to the registries at any time.
-Code that must run after the backend, whatever the load order, goes into [[JOID#onReady]], which runs at once on the render thread when JOID is already loaded, and at the start of the next frame from another thread.
+Code that must run after the backend, whatever the load order, goes into [[JOID#onReady]] ([Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready)).
 
 ## Only the UI registry combines its bridges
 

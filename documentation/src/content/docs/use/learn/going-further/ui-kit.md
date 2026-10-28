@@ -68,7 +68,7 @@ A control of your own that takes parts sets each one with [[Node#part]], which p
 | [[ToggleNode]] | `track`, `knob` (required) | The track covers the control; the knob is half its width by default and slides from left to right. |
 | [[SliderNode]] | `track`, `thumb` (required) | The track covers the control; the thumb is a square of its height by default and moves with the value. |
 | [[SwitchNode]] | `option((value, index) -> node)` (required) | Creates one node per value and splits the width between them; a click on one selects its value. |
-| [[SelectorNode]] | `field`, `option(value -> node)` (required) | The field covers the list, open or closed; each option is one row of the height of the control, shown while the list is open, and the selected one while it is closed. |
+| [[SelectorNode]] | `field` (required), `option(value -> node)` (required) | The field covers the list, open or closed; each option is one row of the height of the control, shown while the list is open, and the selected one while it is closed. |
 | [[ProgressNode]] | `fill` (required), `track` | The track covers the control; the fill covers the part that the progress reaches, from the side of its direction. |
 | [[ScrollbarNode]] | `track`, `thumb` (required) | The track covers the bar; the thumb is sized and moved from the scroll of the node it serves. |
 | Text fields ([[FieldNode]]) | `background` | The background covers the field. A text field draws its text itself and needs no skin. |
