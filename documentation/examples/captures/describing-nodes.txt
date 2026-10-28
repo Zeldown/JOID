@@ -6,9 +6,9 @@ shot describing-nodes-tree
 ui com.example.describing.nodes.ProfileUI
 wait 100
 shot describing-nodes-profile
-# crop describing-nodes-build 640 270 640 440
+# crop describing-nodes-build 640 270 640 260
 ui com.example.describing.nodes.TreeEditUI
-move 1180 600
+move 1160 470
 wait 300
 # film describing-nodes-build 60
 wait 300
@@ -34,25 +34,25 @@ wait 400
 press LEFT
 release LEFT
 wait 400
-moveto 1180 600 400
+moveto 1160 470 400
 wait 300
 cut
-# crop describing-nodes-front 640 270 640 440
+# crop describing-nodes-front 640 520 500 210
 ui com.example.describing.nodes.TreeEditUI
-move 1180 600
+move 1080 610
 wait 300
 # film describing-nodes-front 60
 wait 300
-moveto 720 560 450
+moveto 975 675 450
 wait 150
 press LEFT
 release LEFT
 wait 900
-moveto 990 640 400
+moveto 725 575 400
 wait 150
 press LEFT
 release LEFT
 wait 900
-moveto 1180 600 400
+moveto 1080 610 400
 wait 300
 cut
