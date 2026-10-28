@@ -42,7 +42,7 @@ Returns `false`: the text holds one line.
 
 ## handleKey(Key)
 
-Handles Enter and the Enter of the keypad: takes the focus, then fires `onSubmit`.
+Handles Enter and the Enter of the keypad: blurs the field, then fires `onSubmit`.
 
 ## getPositionAt(double,double)
 

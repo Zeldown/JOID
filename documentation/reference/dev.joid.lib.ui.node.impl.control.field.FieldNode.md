@@ -129,7 +129,7 @@ Gives the field its start focus: `true` gives it the keyboard.
 
 ## focused(Signal)
 
-Binds the focus to a signal both ways: the field takes or loses the focus with the signal, and writes into it when the user gives or takes the focus.
+Binds the focus to a signal both ways: the field gains or loses the focus with the signal, and writes into it when the user focuses or blurs the field.
 Throws an `IllegalArgumentException` for a signal that cannot be written.
 
 ## focus()
@@ -138,11 +138,11 @@ Gives the field the focus as a press would: `beforeFocus` can refuse it, then `o
 
 ## blur()
 
-Takes the focus from the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires.
+Blurs the field as a press elsewhere would: `beforeBlur` can refuse it, then `onBlur` fires.
 
 ## beforeFocus(EventListener)
 
-Adds a listener that runs before the field takes the focus on a press or `focus()`; `cancel()` refuses the focus.
+Adds a listener that runs before the field gains the focus on a press or `focus()`; `cancel()` refuses the focus.
 
 ## beforeBlur(EventListener)
 
@@ -150,7 +150,7 @@ Adds a listener that runs before the field loses the focus on a press elsewhere,
 
 ## onFocus(EventListener)
 
-Adds a listener that runs each time the field takes the focus, whatever its source.
+Adds a listener that runs each time the field gains the focus, whatever its source.
 
 ## onBlur(EventListener)
 
@@ -218,8 +218,8 @@ An override calls `super.draw(...)`.
 
 ## mousePressed(NodeMouseEvent)
 
-On a press over the field that no one consumed, takes the focus from the other fields, gives it to this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line.
-Any other press takes the focus from the field.
+On a press over the field that no one consumed, blurs the other fields, focuses this one, places the cursor and starts a selection, and consumes the press; a double press selects a word, a triple press a line.
+Any other press blurs the field.
 
 ## mouseReleased(NodeMouseEvent)
 
@@ -240,12 +240,12 @@ A character typed with Ctrl (Cmd on macOS) and without Alt is a shortcut and is 
 
 ## keyPressed(NodeKeyEvent)
 
-While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape takes the focus.
+While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape blurs the field.
 It asks `handleKey` first.
 
 ## detach()
 
-Takes the focus from the field when it leaves the tree.
+Blurs the field when it leaves the tree.
 
 ## drawField()
 
@@ -319,7 +319,7 @@ Shows again the value asked for last, after a bound of the field changed, such a
 
 ## blurNow()
 
-Takes the focus from the field at once.
+Blurs the field at once.
 
 ## insert(String)
 
