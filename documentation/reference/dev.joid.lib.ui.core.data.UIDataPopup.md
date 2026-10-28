@@ -9,7 +9,7 @@ Learn: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/),
 
 ## active()
 
-If `true`, the UI is a popup.
+If `true`, the UI is a popup; the annotation without `active = true` changes nothing, and dev mode warns.
 
 ## transition()
 

@@ -19,7 +19,6 @@ import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -184,9 +183,7 @@ public final class JOID {
 		}
 
 		for (final IUIBridge bridge : BridgeHandler.UI.getBridgeList()) {
-			for (final UI ui : new ArrayList<>(bridge.getUiList())) {
-				UIPropertyHook.save(ui);
-			}
+			bridge.closeAll();
 		}
 		UIStoreHook.saveAll();
 	}

@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import dev.joid.lib.draw.text.Text;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
+import dev.joid.lib.ui.node.impl.text.TextNode;
+import dev.joid.lib.ui.node.impl.text.TextNodeTest.TextFont;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -19,9 +23,11 @@ import lombok.Setter;
 @UIDataDebug(profiler = false, hotreload = false)
 public class ReplayScenarioUI extends UI {
 
+	private final TextInfo                           quiet  = TextInfo.create(new TextFont(), 8F);
 	private final List<String>                       names  = Collections.singletonList("Ada");
 	private final IntegerSignal                      other  = new IntegerSignal(0);
 	private final IntegerSignal                      clicks = new IntegerSignal(0);
+	private final List<TextInfo>                     infos  = Collections.singletonList(TextInfo.create(new TextFont(), 10F));
 	private final ConcurrentHashMap<String, Integer> keys   = new ConcurrentHashMap<>(Collections.singletonMap("Ada", 1));
 
 	private final String scenario;
@@ -47,6 +53,11 @@ public class ReplayScenarioUI extends UI {
 				break;
 			case "hidden":
 				SignalReplayNode.create().text("h" + this.apply(() -> this.clicks.get())).attach(this);
+				break;
+			case "style":
+				for (final TextInfo info : this.infos) {
+					TextNode.create(0D, 0D).text(Text.create(this.clicks.get() > 0 ? "On" : "Off", this.clicks.get() > 0 ? this.quiet : info)).attach(this);
+				}
 				break;
 			case "enclosed":
 				SignalReplayNode.create().text("o" + this.clicks.get() + SignalReplayNode.titled("t" + this.apply(() -> 1)).getText().get()).attach(this);

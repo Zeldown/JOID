@@ -1,7 +1,7 @@
 ---
 summary: Code that runs once after a delay, or on a period, while it is attached to a UI or a node.
 ---
-A task counts its delay from the moment it is attached, and runs on the render thread when its UI starts to draw, on the first frame after it is due (after the update step).
+A task counts its delay from the moment it is attached, and again each time its node joins a UI; it runs on the render thread when its UI starts to draw, on the first frame after it is due (after the update step).
 A task attached to a node runs while the node belongs to an open UI; a one-shot task detaches itself when it runs.
 A task attached in the constructor of a UI comes back at every opening; one attached in `init()` lasts until the UI closes.
 
@@ -59,7 +59,7 @@ Time, in ms, between two runs; negative for a task that runs once.
 
 ## getNextRun()
 
-Time of the next run, in ms of the clock bridge.
+Time of the next run, in nanoseconds of the clock bridge (`nanoTime()`).
 
 ## getEventBus()
 

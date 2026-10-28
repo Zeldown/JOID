@@ -1,5 +1,9 @@
 package dev.joid.demo.replay;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -41,8 +45,12 @@ import lombok.Getter;
 public class SetterUI extends UI {
 
 	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
+	private final TextInfo      quiet = TextInfo.create(new TextFont(), 8F);
 	private final IntegerSignal step  = new IntegerSignal(0);
 	private final BooleanSignal muted = new BooleanSignal(false);
+
+	private final List<TextNode>      rowList    = new ArrayList<>();
+	private final List<BooleanSignal> switchList = Arrays.asList(new BooleanSignal(false), new BooleanSignal(false));
 
 	private Switch             named;
 	private RectNode           rect;
@@ -51,6 +59,8 @@ public class SetterUI extends UI {
 	private FlexNode           flex;
 	private TextNode           state;
 	private TextNode           label;
+	private TextNode           mixed;
+	private TextNode           styled;
 	private Switch             indexed;
 	private ModelNode          model;
 	private CircleNode         circle;
@@ -62,6 +72,8 @@ public class SetterUI extends UI {
 	private RadarChartData     radar;
 	private ProgressNode       progress;
 	private ShadowNodeEffect   glow;
+	private ShadowNodeEffect   halo;
+	private BorderNodeEffect   edge;
 	private BorderNodeEffect   border;
 	private ShadowNodeEffect   shadow;
 	private BorderNodeEffect   outline;
@@ -97,6 +109,11 @@ public class SetterUI extends UI {
 		.attach(this);
 		this.state = TextNode.create(0D, 0D).text(Text.create(this.muted.get() ? "Muted" : "Sound on", this.info)).attach(this);
 		this.label = TextNode.create(0D, 0D).text(Text.create("Muted " + this.muted.get(), this.info)).attach(this);
+		this.styled = TextNode.create(0D, 0D).text(Text.create(this.muted.get() ? "Muted" : "Sound on", this.muted.get() ? this.quiet : this.info)).attach(this);
+		this.mixed = TextNode.create(0D, 0D).text(Text.create(this.muted.get() ? "Muted" : "Sound on", this.step.get() > 0 ? this.quiet : this.info)).attach(this);
+		for (final BooleanSignal on : this.switchList) {
+			this.rowList.add(TextNode.create(0D, 0D).text(Text.create(on.get() ? "On" : "Off", on.get() ? this.quiet : this.info)).attach(this));
+		}
 		this.progress = ProgressNode
 		.create(0D, 0D, 100D, 10D)
 		.progress(this.step.get() / 4F)
@@ -152,6 +169,8 @@ public class SetterUI extends UI {
 		this.rounded = RoundedNodeEffect.create(this.step.get() * 4F);
 		this.outline = BorderNodeEffect.create(this.step.get() > 0 ? Color.RED : Color.WHITE, 1F + this.step.get());
 		this.glow = ShadowNodeEffect.create(this.step.get() > 0 ? Color.RED : Color.BLACK, 2F + this.step.get());
+		this.edge = BorderNodeEffect.create(this.muted.get() ? Color.RED : Color.WHITE, 1F + this.step.get());
+		this.halo = ShadowNodeEffect.create(this.muted.get() ? Color.RED : Color.BLACK, 2F + this.step.get());
 		this.radar = RadarChartData
 		.create("a")
 		.value(this.step.get() * 10)

@@ -527,6 +527,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.getWindow().getKeys().add(Key.ENTER);
 		this.press(field, Key.ENTER);
 		Assert.assertEquals("ab\n", field.getText());
+		this.bridges.rewindTheWallClock();
 		this.elapse(500L);
 		Assert.assertEquals("ab\n\n", field.getText());
 		this.elapse(100L);

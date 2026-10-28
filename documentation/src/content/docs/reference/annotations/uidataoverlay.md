@@ -31,7 +31,7 @@ A UI cannot be both an overlay and a popup.
 
 | Type | Element | Default | Summary |
 |---|---|---|---|
-| `boolean` | [active](#UIDataOverlay-element-active) | `false` | If `true`, the UI is an overlay. |
+| `boolean` | [active](#UIDataOverlay-element-active) | `false` | If `true`, the UI is an overlay; the annotation without `active = true` changes nothing, and dev mode warns. |
 | [`UIDataOverlayRender`](/reference/annotations/uidataoverlayrender/) | [render](#UIDataOverlay-element-render) | `@UIDataOverlayRender` | When the overlay is drawn: see [`UIDataOverlayRender`](/reference/annotations/uidataoverlayrender/). |
 | [`UIDataOverlayInteraction`](/reference/annotations/uidataoverlayinteraction/) | [interaction](#UIDataOverlay-element-interaction) | `@UIDataOverlayInteraction` | Whether the overlay receives the input, and what it lets through: see [`UIDataOverlayInteraction`](/reference/annotations/uidataoverlayinteraction/). |
 
@@ -43,7 +43,7 @@ A UI cannot be both an overlay and a popup.
 
 `boolean active() default false` 
 
-If `true`, the UI is an overlay.
+If `true`, the UI is an overlay; the annotation without `active = true` changes nothing, and dev mode warns.
 
 <a id="UIDataOverlay-element-render"></a>
 

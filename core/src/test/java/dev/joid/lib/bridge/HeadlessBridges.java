@@ -12,6 +12,7 @@ import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.clock.RewoundClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RenderSingletons;
 import dev.joid.lib.bridge.ui.UIBridge;
@@ -27,6 +28,7 @@ public final class HeadlessBridges extends ExternalResource {
 
 	private final DemoUIBridge          ui     = new DemoUIBridge() {};
 	private final ManualClockBridge     clock  = new ManualClockBridge(0L);
+	private final RewoundClockBridge    wall   = new RewoundClockBridge(3_600_000L, this.clock);
 	private final RecordingWindowBridge window = new RecordingWindowBridge();
 	private final RecordingRenderBridge render = new RecordingRenderBridge();
 
@@ -50,6 +52,7 @@ public final class HeadlessBridges extends ExternalResource {
 		RenderSingletons.reset();
 		BridgeHandler.UI.unregister(this.ui);
 		BridgeHandler.CLOCK.unregister(this.clock);
+		BridgeHandler.CLOCK.unregister(this.wall);
 		BridgeHandler.WINDOW.unregister(this.window);
 		BridgeHandler.RENDER.unregister(this.render);
 		HeadlessBridges.stopTheAnimators();
@@ -65,6 +68,11 @@ public final class HeadlessBridges extends ExternalResource {
 		this.render.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
 		this.render.getState().viewport(0, 0, width, height);
 		this.ui.load();
+		return this;
+	}
+
+	public @NonNull HeadlessBridges rewindTheWallClock() {
+		BridgeHandler.CLOCK.register(this.wall);
 		return this;
 	}
 

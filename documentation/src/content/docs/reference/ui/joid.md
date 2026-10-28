@@ -40,7 +40,7 @@ Entry point that opens and closes UIs, finds the open ones and runs code once JO
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [load](#JOID-method-load)() <span class="joid-qualifier">fluent</span> | Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that saves the stores and properties when the JVM stops, then runs the `onReady` listeners. |
+| `this` | [load](#JOID-method-load)() <span class="joid-qualifier">fluent</span> | Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that closes the open UIs and saves the stores when the JVM stops, then runs the `onReady` listeners. |
 | `void` | [onReady](#JOID-method-onReady)(Runnable callback) <span class="joid-qualifier">static</span> | Runs the listener on the render thread once JOID has loaded; when it has already loaded, at once on the render thread, or at the start of the next frame from another thread. |
 | `void` | [checkVersion](#JOID-method-checkVersion)(String version) <span class="joid-qualifier">static</span> | Throws an `IllegalStateException` when this version has another major number than the loaded core. |
 | `String` | [readVersion](#JOID-method-readVersion)(Class<?> owner, String resource) <span class="joid-qualifier">static</span> | Reads the `version` property of a properties file found next to this class, or `development` when the file or the property is missing. |
@@ -79,7 +79,7 @@ The single instance of `JOID`.
 
 **Thread:** runs on the render thread.
 
-Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that saves the stores and properties when the JVM stops, then runs the `onReady` listeners.
+Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that closes the open UIs and saves the stores when the JVM stops, then runs the `onReady` listeners.
 [`Backend`](/reference/backends/backend/) calls it at the end of `register()`; a second call does nothing.
 
 <a id="JOID-method-onReady"></a>

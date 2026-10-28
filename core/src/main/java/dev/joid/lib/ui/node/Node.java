@@ -317,6 +317,7 @@ public abstract class Node implements INode {
 		try {
 			this.ui = ui;
 			this.attached = true;
+			this.taskList.forEach(task -> task.owner(null, this));
 			this.drawList.forEach(child -> child.load(this.ui));
 
 			if (this.scrollbar != null) {

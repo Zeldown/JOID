@@ -10,7 +10,6 @@ import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.backend.lwjgl2.Lwjgl2Natives;
 import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -36,7 +35,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 		Keyboard.enableRepeatEvents(true);
-		JOID.onReady(() -> BridgeHandler.UI.register(this));
+		BridgeHandler.UI.register(this);
 		this.backend.register();
 
 		super.start();

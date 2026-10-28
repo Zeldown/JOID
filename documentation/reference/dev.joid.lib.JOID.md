@@ -16,7 +16,7 @@ The single instance of `JOID`.
 
 ## load()
 
-Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that saves the stores and properties when the JVM stops, then runs the `onReady` listeners.
+Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that closes the open UIs and saves the stores when the JVM stops, then runs the `onReady` listeners.
 [[Backend]] calls it at the end of `register()`; a second call does nothing.
 
 ## isReady()

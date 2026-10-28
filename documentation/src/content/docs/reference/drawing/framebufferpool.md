@@ -18,7 +18,7 @@ Lends offscreen framebuffers by owner and nesting depth, grows them when a draw 
 ## Description
 
 The effects, the shader passes and [`DrawRaster`](/reference/drawing/drawraster/) borrow their framebuffers here, so that a size that changes on every frame does not create one each time.
-A framebuffer grows to the next power of two of the size asked, and is freed after 5 seconds without use.
+A framebuffer grows to the next power of two of the size asked, and is freed after 5 seconds without use, or when no draw of the last 5 seconds needed its full size: the next draw creates it again at the size it needs.
 Each draw of a UI bridge calls `releaseUnused()`, so a host that draws through the UI bridge has nothing to call.
 
 ## Learn more
@@ -34,7 +34,7 @@ Each draw of a UI bridge calls `releaseUnused()`, so a host that draws through t
 |---|---|---|
 | [`IFrameBuffer[]`](/reference/bridges/iframebuffer/) | [allocate](#FrameBufferPool-method-allocate)(Object owner, int depth, int count, int width, int height) <span class="joid-qualifier">static</span> | Returns `count` framebuffers of at least `width` × `height` pixels for `owner` at nesting depth `depth`, the same ones as last time when they are large enough. |
 | `void` | [cleanup](#FrameBufferPool-method-cleanup)() <span class="joid-qualifier">static</span> | Frees every pooled framebuffer, for example before the render bridge is destroyed. |
-| `void` | [releaseUnused](#FrameBufferPool-method-releaseUnused)() <span class="joid-qualifier">static</span> | Frees the framebuffers that no `allocate` asked for in the last 5 seconds. |
+| `void` | [releaseUnused](#FrameBufferPool-method-releaseUnused)() <span class="joid-qualifier">static</span> | Frees the framebuffers that no `allocate` asked for in the last 5 seconds, and those larger than the power of two that the largest `allocate` of the last 5 seconds needed. |
 
 ## Method details
 
@@ -61,7 +61,7 @@ Frees every pooled framebuffer, for example before the render bridge is destroye
 
 `void releaseUnused()` <span class="joid-qualifier">static</span>
 
-Frees the framebuffers that no `allocate` asked for in the last 5 seconds.
+Frees the framebuffers that no `allocate` asked for in the last 5 seconds, and those larger than the power of two that the largest `allocate` of the last 5 seconds needed.
 
 ---
 

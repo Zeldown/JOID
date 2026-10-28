@@ -56,12 +56,14 @@ public abstract class BaseSliderNode<V> extends BaseChoiceNode<V> {
 	}
 
 	public final double getProgress() {
-		if (this.sliding) {
-			return this.slideProgress;
+		final int count = super.getValueList().size();
+		if (count <= 1) {
+			return 0D;
 		}
 
-		final int count = super.getValueList().size();
-		return count <= 1 ? 0D : super.getValueIndex() / (double) (count - 1);
+		final double step = 1D / (count - 1);
+		final double progress = super.getValueIndex() * step;
+		return this.sliding ? Math.min(progress + step / 2D, Math.max(progress - step / 2D, this.slideProgress)) : progress;
 	}
 
 	public final <T extends BaseSliderNode<V>> @NonNull T inset(final double inset) {

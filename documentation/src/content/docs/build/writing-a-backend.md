@@ -140,7 +140,7 @@ When the events belong to the loop of the application (a queue drained each fram
 ## Run it
 
 With every hook implemented, an application runs your backend like an official one.
-The `DemoWindow` of the template, in `src/demo/java`, registers itself as the UI bridge from [[JOID#onReady]], registers `ExampleBackend`, opens the menu of the demos and calls `frame()` in an endless loop.
+The `DemoWindow` of the template, in `src/demo/java`, registers itself as the UI bridge, then registers `ExampleBackend`, opens the menu of the demos and calls `frame()` in an endless loop.
 Give it the constructor of your backend and the loop of your engine: poll the events, call `frame()`, present.
 
 **Check**: `./gradlew runDemo` opens the JOID demos on your engine ([Demos](/build/demos/)).

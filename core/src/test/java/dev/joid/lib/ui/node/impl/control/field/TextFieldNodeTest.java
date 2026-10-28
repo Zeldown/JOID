@@ -505,7 +505,7 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(2, field.getCursorPosition());
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
-		this.bridges.getClock().advance(600L);
+		this.bridges.rewindTheWallClock().getClock().advance(600L);
 		this.click(124D, 120D);
 		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}

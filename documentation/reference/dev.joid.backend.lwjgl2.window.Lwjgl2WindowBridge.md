@@ -6,7 +6,7 @@ Learn: [Window](/build/backends/lwjgl2/#window), [Cursors](/build/backends/lwjgl
 
 ## Lwjgl2WindowBridge()
 
-Creates the window bridge of the current LWJGL 2 display.
+Creates the window bridge of the current LWJGL 2 display, and turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside it.
 
 ## getWidth()
 

@@ -18,7 +18,7 @@ A clock that moves only when you set or advance it, so that every animation give
 
 ## Description
 
-Register it above the system clock in a test, then unregister it at the end: the system clock takes over again.
+Register it above the system clock in a test, then unregister it at the end, once the UIs of the test are closed: the system clock takes over again.
 
 ## Learn more
 
@@ -45,7 +45,7 @@ Register it above the system clock in a test, then unregister it at the end: the
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [advance](#ManualClockBridge-method-advance)(long milliseconds) | Moves the clock forward by that many milliseconds. |
-| `long` | [nanoTime](#ManualClockBridge-method-nanoTime)() | Returns the time of the clock converted to nanoseconds. |
+| `long` | [nanoTime](#ManualClockBridge-method-nanoTime)() | Returns the nanoseconds of the clock registered when this one was created, moved by the time set or advanced since. |
 | `long` | [currentTimeMillis](#ManualClockBridge-method-currentTimeMillis)() | Returns the time of the clock, in milliseconds. |
 
 ## Creation details
@@ -57,6 +57,7 @@ Register it above the system clock in a test, then unregister it at the end: the
 `ManualClockBridge(long time)` 
 
 Creates a clock at that time, in milliseconds.
+Its nanoseconds start from those of the clock registered at that moment, so that the durations already measured go on.
 
 ## Property details
 
@@ -86,7 +87,7 @@ Moves the clock forward by that many milliseconds.
 
 `long nanoTime()` 
 
-Returns the time of the clock converted to nanoseconds.
+Returns the nanoseconds of the clock registered when this one was created, moved by the time set or advanced since.
 
 <a id="ManualClockBridge-method-currentTimeMillis"></a>
 

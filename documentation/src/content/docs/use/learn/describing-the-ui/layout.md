@@ -127,7 +127,7 @@ A positive offset, such as `scrollY(40D)`, comes back to `0D`, with a warning in
 
 Four listeners follow the scroll of a node, for both axes; the event names the axis with `getAxis()`:
 
-- [[Node#beforeScroll]] fires before the offset changes; `cancel()` keeps the node where it is.
+- [[Node#beforeScroll]] fires before the offset changes; `cancel()` keeps the node where it is, and its scrollbar thumb with it, even under a drag.
 - [[Node#onScroll]] fires once the offset changed; `getPrevious()` and `getOffset()` give both offsets.
 - [[Node#onScrollToEnd]] fires when a scroll heads to the end of the content.
 - [[Node#onScrollEndReached]] fires when the content arrives at its end, after the glide.

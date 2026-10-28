@@ -80,7 +80,7 @@ The first video also downloads the FFmpeg natives into the cache folder ([Show a
 
 ## Settings are lost after a restart
 
-1. **The program was killed.** JOID saves stores and properties when a UI closes and when the JVM shuts down normally; a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+1. **The program was killed.** JOID saves stores and properties when a UI closes, and closes the open UIs when the JVM shuts down normally; a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 2. **The store is not permanent.** Only a store of scope `PERMANENT` writes a file ([Stores and remembered properties](/use/learn/state/stores-and-properties/)).
 3. **The working directory changed.** The data folder is relative to the working directory by default ([Where JOID stores files](/use/learn/running/files/)).
 

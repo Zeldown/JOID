@@ -405,8 +405,10 @@ public class SliderNodeTest {
 		Assert.assertTrue(slider.isSliding());
 		Assert.assertEquals(5, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), proposals);
+		Assert.assertEquals(4.5D / 8D, slider.getProgress(), 1E-9D);
 		this.bridges.drag(150D, 125D).frames(2);
 		Assert.assertEquals(Arrays.asList(7, 2), proposals);
+		Assert.assertEquals(3.5D / 8D, slider.getProgress(), 1E-9D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(3);
 		Assert.assertFalse(slider.isSliding());

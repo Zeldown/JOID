@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -199,6 +200,7 @@ public abstract class UI implements IIndexedElement {
 	public final void load(final double finalWidth, final double finalHeight) {
 		final long start = System.nanoTime();
 
+		this.lastHoveredFrame = -1L;
 		this.rescale();
 		this.bindings.subscribe(this.loaded);
 		this.view.resize(finalWidth, finalHeight);
@@ -277,6 +279,9 @@ public abstract class UI implements IIndexedElement {
 		this.closeTimeline = null;
 		this.closed = true;
 		this.initialized = false;
+		this.lastFrame = 0L;
+		this.frameTime = 0D;
+		this.lastFpsUpdate = 0L;
 
 		if (this.watched) {
 			this.watched = false;
@@ -791,6 +796,9 @@ public abstract class UI implements IIndexedElement {
 		if (this.popup.active() && this.overlay.active()) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
 		}
+
+		UI.warnInactive(this.getClass(), UIDataPopup.class, UIDataPopup::active);
+		UI.warnInactive(this.getClass(), UIDataOverlay.class, UIDataOverlay::active);
 	}
 
 	private void refreshTransition() {
@@ -987,12 +995,12 @@ public abstract class UI implements IIndexedElement {
 		if (this.lastFpsUpdate == 0L) {
 			this.fps = 0D;
 			this.fpsCounter = 0;
-			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+			this.lastFpsUpdate = BridgeHandler.CLOCK.get().nanoTime();
 		} else if (this.frameTime > 0D) {
 			this.fpsCounter++;
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			if (now - this.lastFpsUpdate >= 1000L) {
-				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1000D);
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
+			if (now - this.lastFpsUpdate >= 1_000_000_000L) {
+				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1_000_000_000D);
 				this.fpsCounter = 0;
 				this.lastFpsUpdate = now;
 			}
@@ -1071,6 +1079,16 @@ public abstract class UI implements IIndexedElement {
 			annotationMap.put(annotation.annotationType(), annotation);
 		}
 		return annotationMap;
+	}
+
+	private static <A extends Annotation> void warnInactive(final Class<?> type, final Class<A> annotationType, final Predicate<A> active) {
+		final A annotation = type.getDeclaredAnnotation(annotationType);
+		if (annotation == null || active.test(annotation) || type.getSuperclass().isAnnotationPresent(annotationType)) {
+			return;
+		}
+
+		final String name = annotationType.getSimpleName();
+		JOIDLog.devWarnOnce("UI." + name + "." + type.getName(), () -> "@" + name + " on " + JOIDLog.nameOf(type) + " leaves active = false and changes nothing: write @" + name + "(active = true)");
 	}
 
 	private static Transition createPopupTransition(final PopupTransition popupTransition) {

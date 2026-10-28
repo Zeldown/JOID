@@ -304,8 +304,7 @@ Time that the last frame of the UI took to draw, in nanoseconds.
 
 ## getFrameTime()
 
-Time between the last two drawn frames of the UI, in ms: `0` until the UI first draws, `1000 / 60` on its first frame.
-After the UI closes and opens again on the same instance, its first frame measures the time since the last frame drawn before the close.
+Time between the last two drawn frames of the UI, in ms: `0` until the UI first draws and once it closes, `1000 / 60` on the first frame of each opening.
 
 ## isOnTop()
 

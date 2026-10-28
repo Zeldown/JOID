@@ -246,6 +246,7 @@ Throws an `IllegalStateException` when no frame is begun.
 `void destroy()` 
 
 Waits for the device and destroys the swapchain, the surface, the device and the instance; call it after `VulkanBackend.destroy()`.
+`destroy()` ends a frame left open, begun and not ended.
 
 ---
 

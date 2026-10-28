@@ -89,7 +89,7 @@ An overlay that lets the input through returns `false`, so the host keeps its co
 
 [[StateGuardContractSuite]] proves that a JOID frame leaves the context of the host as it found it.
 Each test sets one unusual state in the host (one [[StateTrap]]: a scissor, a logic operation, a bound pixel buffer, client arrays, a sampler object, a read framebuffer…), runs a frame, and compares the result with a clean context, pixel for pixel.
-It also checks that a drawing of the host nested in a raster gets its state back.
+It also checks that a raster which holds another raster gives its state back to the drawing inside it, and to the host after it.
 
 Implement [[IStateGuardBackend]] in your tests to run it ([Testing a backend](/build/testing-a-backend/#the-suites)):
 

@@ -39,11 +39,10 @@ The field keeps the value that the UI gives it.
 
 Keep the type of a remembered field, or give it another name: [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui).
 
-## warning [JOID] The field … of … cannot be saved as the property … (…), the property is not saved
+## warning [JOID] The field … of … cannot be saved as the property … (…), its previous value is kept
 
-When the UI closed, the value of a field marked [[UIProperty]] could not be turned into JSON, for example a `Class` that Gson refuses to write.
-The property is removed from the file: at the next launch, the field keeps the value that the UI gives it.
-An object that refers to itself prints no warning: it overflows the stack with a `StackOverflowError`.
+When the UI closed, the value of a field marked [[UIProperty]] could not be turned into JSON, for example a `Class` that Gson refuses to write, or an object that refers to itself (`StackOverflowError` in the parentheses).
+The file keeps the value saved before, which the field reads back at the next opening; the other properties of the UI are saved.
 
 Remember a value that JSON can hold: numbers, strings, booleans, lists, maps and plain objects of them.
 See [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui).
@@ -147,6 +146,13 @@ Fix the constructor from the error in the parentheses: [UIs](/use/learn/describi
 The UI is annotated with an active [[UIDataPopup]] and an active [[UIDataOverlay]]; a UI is one of the two at most.
 
 Keep one annotation: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
+
+## warning [JOID] @… on … leaves active = false and changes nothing: write @…(active = true)
+
+With the dev jar, a UI was created, or reloaded, whose class carries [[UIDataPopup]] or [[UIDataOverlay]] without `active = true`, and whose parent class does not carry that annotation.
+The UI opens as a screen: the annotation keeps the values of a UI without it.
+
+Write `active = true` in the annotation: [Open a popup above a screen](/use/learn/describing-the-ui/overlays-and-popups/#open-a-popup-above-a-screen).
 
 ## IllegalStateException The class … has no public method …(...) for the annotation value …, add it
 
@@ -1216,7 +1222,8 @@ A test of [[StateGuardContractSuite]] found a frame of JOID that changes with th
 | `IRenderBridge.suspend must run the host draw it is given` | `suspend` does not run its drawing. |
 | `JOID must leave the state of the host as the nested host draw left it` | The end of the frame does not give the state back as the host left it. |
 | `Reading the pixels must leave the state of the host` | The capture of the snapshot backend changes the state. |
-| `JOID must give the host its state back after a raster nested in a host draw` | A raster inside a drawing of the host leaves the state changed. |
+| `JOID must give the host its state back after a raster nested in a host draw` | A raster inside the drawing of another raster leaves the state of that drawing changed. |
+| `JOID must give the host its state back after a raster with another raster nested in it` | A raster that holds another raster leaves the state of the host changed after it. |
 
 Journal every state that your bridge changes, and restore it at the end of the frame and around the drawings of the host: [Check the guard](/build/embedding-in-a-host/#check-the-guard).
 

@@ -89,7 +89,8 @@ A value that depends on signals is an expression that reads them, or the signal 
 A value that changes without any signal (the time, the position of the pointer) is a lambda; an [animator](/use/learn/style-and-motion/animation/#animate-a-value) is a signal.
 A value that never changes is a plain value.
 
-The factories (`create(...)`) take plain values: their arguments follow nothing.
+Most factories (`create(...)`) take plain values: their arguments follow nothing.
+The factories of [[Text]] and of the rounded, border, shadow and blur effects follow the signals that their arguments read, as a setter does: a [[BorderNodeEffect]] created with `BorderNodeEffect.create(on.get() ? accent : element, 1.5F)` changes color with `on`.
 Calling a setter again replaces what it followed: `width(200D)` after `width(40D + clicks.get() * 80D)` stops following `clicks`.
 
 Some setters take a `Signal` in place of a `Supplier`: the value of a control, the position of a node (`x(...)`, `y(...)`), its scroll.
@@ -116,9 +117,9 @@ The table below says what happens outside that form; some code cannot be replaye
 | A lambda written inside the expression, such as `names.stream().filter(name -> ...)` | Frozen |
 | The time, a random number, a call with side effects | Frozen |
 
-The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its first argument, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
-Its [[TextInfo]] is not followed reliably: depending on the rest of the expression and of the chain, it keeps its first value, without a warning.
-To switch the style of a text with a signal, pass a lambda: `label(() -> Text.create(..., on.get() ? bold : regular))`.
+The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its arguments, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
+Its [[TextInfo]] is followed too: `Text.create(on.get() ? "On" : "Off", on.get() ? this.bold : this.regular)` switches the text and its style.
+Keep such styles in fields: a style held in a local variable, such as one of `init()` used inside a `body(...)`, and chosen by a signal stays fixed, with a warning in dev mode.
 
 This table is about the expression given to the value overload.
 A lambda given to the setter itself, or to `map(...)` and `Signal.from(...)`, is not part of an expression: the table of the previous section applies to it.

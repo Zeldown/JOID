@@ -20,8 +20,7 @@ Here is a complete screen: a card with a button that turns the notifications on 
 
 <figcaption>
 The screen above, clicked four times.
-The button reads the signal `notifications`, so its color and its label follow each click by themselves.
-The label is a lambda because its style changes with the state too ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
+The button reads the signal `notifications`, so its color, its label and the style of its label follow each click by themselves.
 </figcaption>
 </figure>
 

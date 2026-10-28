@@ -23,13 +23,14 @@ public class IntroUI extends UI {
 	private static final Color SHADOW    = new Color(0, 0, 0, 153).lock();
 	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
+	private final TextInfo on  = TextInfo.create(ExampleFont.REGULAR, 36F).color(IntroUI.ON_ACCENT);
+	private final TextInfo off = TextInfo.create(ExampleFont.REGULAR, 36F).color(IntroUI.TEXT);
+
 	private final BooleanSignal notifications = new BooleanSignal(false);
 
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(ExampleFont.REGULAR, 40F).color(IntroUI.TEXT);
-		final TextInfo on = TextInfo.create(ExampleFont.REGULAR, 36F).color(IntroUI.ON_ACCENT);
-		final TextInfo off = TextInfo.create(ExampleFont.REGULAR, 36F).color(IntroUI.TEXT);
 
 		RectNode
 		.create(660, 440, 600, 200)
@@ -48,7 +49,7 @@ public class IntroUI extends UI {
 			.color(this.notifications.get() ? IntroUI.ACCENT : IntroUI.ELEMENT)
 			.effect(RoundedNodeEffect.create(8F))
 			.onClick(event -> this.notifications.toggle())
-			.label(() -> Text.create(this.notifications.get() ? "On" : "Off", this.notifications.get() ? on : off))
+			.label(Text.create(this.notifications.get() ? "On" : "Off", this.notifications.get() ? this.on : this.off))
 			.attach(card);
 		})
 		.attach(this);

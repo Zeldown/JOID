@@ -29,6 +29,9 @@ public class UIDemoSignal extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
+	private final TextInfo plain    = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSignal.INK);
+	private final TextInfo emphasis = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSignal.INK).italic(true);
+
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSignal.INK);
@@ -178,8 +181,8 @@ public class UIDemoSignal extends UIDemo {
 			.label(Text.create("+1", label))
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(heat.get() >= 3 ? UIDemoSignal.INK : Color.WHITE).attach(rect);
-			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Color", info)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", heat.get() >= 3 ? this.emphasis : this.plain)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Color and style", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

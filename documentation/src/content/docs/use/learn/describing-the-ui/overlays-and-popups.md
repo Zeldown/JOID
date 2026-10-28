@@ -18,7 +18,8 @@ This page shows the two kinds of UI that do: popups and overlays.
 
 ## Open a popup above a screen
 
-A popup is a UI annotated with [[UIDataPopup]] and `active = true`: without it, the annotation does nothing, so that a subclass can turn the popup off with `active = false`.
+A popup is a UI annotated with [[UIDataPopup]] and `active = true`.
+Without `active = true`, the annotation does nothing and dev mode prints a warning: its defaults are those of a UI without it, so that [hot reload](/use/get-started/dev-tools/#reload-a-ui-while-you-work) turns the popup off when you delete the annotation.
 
 ```java file="com/example/describing/overlays/ConfirmPopup.java" region="class"
 ```

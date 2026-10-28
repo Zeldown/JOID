@@ -19,23 +19,16 @@ public final class SignalReplayMatch {
 	private final Map<String, String>    holeMap;
 	private final Map<Object, Signal<?>> positionalMap;
 	private final boolean[]              consumed;
+	private final boolean                followed;
 
-	public static SignalReplayMatch of(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
-		return new SignalReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed);
+	public static SignalReplayMatch of(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed, final boolean followed) {
+		return new SignalReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed, followed);
 	}
 
 	public List<Signal<?>> getReadList(final List<Signal<?>> readList) {
-		return this.select(readList, true);
-	}
-
-	public List<Signal<?>> getRemainingList(final List<Signal<?>> readList) {
-		return this.select(readList, false);
-	}
-
-	private List<Signal<?>> select(final List<Signal<?>> readList, final boolean consumed) {
 		final List<Signal<?>> selectedList = new ArrayList<>();
 		for (int index = 0; index < readList.size(); index++) {
-			if (this.consumed[index] == consumed) {
+			if (this.consumed[index]) {
 				selectedList.add(readList.get(index));
 			}
 		}

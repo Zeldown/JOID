@@ -7,6 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.clock.RewoundClockBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
@@ -49,6 +51,34 @@ public class FrameBufferPoolTest {
 		final IFrameBuffer[] again = FrameBufferPool.allocate(owner, 0, 1, 10, 10);
 		Assert.assertNotSame(small, again);
 		Assert.assertFalse(((RecordingFrameBuffer) again[0]).isDeleted());
+	}
+
+	@Test
+	public void shrinksToItsPeakOfTheLastFiveSeconds() {
+		final ManualClockBridge clock = new ManualClockBridge(1000L);
+		final RewoundClockBridge wall = new RewoundClockBridge(3_600_000L, clock);
+		BridgeHandler.CLOCK.register(clock);
+		try {
+			final Object owner = new Object();
+			FrameBufferPool.allocate(owner, 0, 1, 200, 100);
+			final IFrameBuffer[] large = FrameBufferPool.allocate(owner, 0, 1, 4000, 4000);
+			Assert.assertEquals(4096, large[0].getWidth());
+			BridgeHandler.CLOCK.register(wall);
+			for (int i = 0; i < 9; i++) {
+				clock.advance(1000L);
+				FrameBufferPool.releaseUnused();
+				Assert.assertSame(large, FrameBufferPool.allocate(owner, 0, 1, 200, 100));
+			}
+			clock.advance(1000L);
+			FrameBufferPool.releaseUnused();
+			Assert.assertTrue(((RecordingFrameBuffer) large[0]).isDeleted());
+			final IFrameBuffer[] small = FrameBufferPool.allocate(owner, 0, 1, 200, 100);
+			Assert.assertEquals(256, small[0].getWidth());
+			Assert.assertEquals(128, small[0].getHeight());
+		} finally {
+			BridgeHandler.CLOCK.unregister(wall);
+			BridgeHandler.CLOCK.unregister(clock);
+		}
 	}
 
 }

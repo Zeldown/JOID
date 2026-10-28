@@ -5,7 +5,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.backend.Backend;
 import lombok.AccessLevel;
@@ -35,7 +34,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 			throw new IllegalStateException("GLFW cannot create the 1920x1080 demo window of " + this.getBackendName() + ", check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)");
 		}
 
-		JOID.onReady(() -> BridgeHandler.UI.register(this));
+		BridgeHandler.UI.register(this);
 		this.backend = this.registerBackend(this.window);
 
 		super.start();
