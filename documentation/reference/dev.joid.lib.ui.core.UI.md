@@ -45,7 +45,7 @@ Throws an `IllegalStateException` when the annotations make the UI both a popup 
 
 ## renew()
 
-Replaces this open UI by a fresh instance of its class, built by its constructor without argument, at the same place among the open UIs, and returns that instance.
+Replaces this open UI by a fresh instance of its class, built by its constructor without argument, opened in its place in the bridge at the top of the UIs of its `zindex`, and returns that instance.
 Throws an `IllegalStateException` when the UI is not open, when the class has no constructor without argument, or when that constructor fails.
 
 ## getNodeList()

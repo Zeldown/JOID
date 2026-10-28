@@ -26,7 +26,7 @@ If `true`, `load()` has finished; another thread sees it at once.
 ## onReady(Runnable)
 
 Runs the listener on the render thread once JOID has loaded, or at once (on the render thread) when it has already loaded.
-A listener that throws prints a warning and does not stop the next ones.
+A listener given before JOID has loaded that throws prints a warning and does not stop the next ones; once JOID has loaded, the exception reaches a caller on the render thread, and a call from another thread prints the warning of a failed render-thread task.
 
 ## checkVersion(String)
 

@@ -158,7 +158,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `this` | [zoomTo](#UI-method-zoomTo)(double zoom) <span class="joid-qualifier">fluent</span> | Zooms to this value as a change: the `beforeZoom` listeners can refuse it and `onZoom` fires. |
 | `this` | [zoomBy](#UI-method-zoomBy)(double delta) <span class="joid-qualifier">fluent</span> | Zooms by this amount from the current zoom, as a change, like `zoomTo`. |
 | `T` | [beforeZoom](#UI-method-beforeZoom)(EventListener<UIChangeEvent.Pre<T,Double>> listener) | Adds a listener that runs before the zoom changes; cancelling the event refuses the change. |
-| [`UI`](/reference/ui/ui/) | [renew](#UI-method-renew)() | Replaces this open UI by a fresh instance of its class, built by its constructor without argument, at the same place among the open UIs, and returns that instance. |
+| [`UI`](/reference/ui/ui/) | [renew](#UI-method-renew)() | Replaces this open UI by a fresh instance of its class, built by its constructor without argument, opened in its place in the bridge at the top of the UIs of its `zindex`, and returns that instance. |
 | `this` | [add](#UI-method-add)(Node... nodes) <span class="joid-qualifier">fluent</span> | Attaches nodes at the root of the UI, in front of the other roots of the same `zindex`. |
 | `this` | [remove](#UI-method-remove)(Node... nodes) <span class="joid-qualifier">fluent</span> | Detaches these root nodes from the UI; a node that is not a root of this UI is ignored. |
 | `this` | [addTask](#UI-method-addTask)(Task task) <span class="joid-qualifier">fluent</span> | Attaches a task to the UI: it runs while the UI is open, and stops when the UI closes. |
@@ -725,7 +725,7 @@ Adds a listener that runs before the zoom changes; cancelling the event refuses 
 - `IllegalStateException`: The UI … has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead
 - `IllegalStateException`: The UI … cannot be renewed: its constructor without argument failed (…), fix the constructor from this error
 
-Replaces this open UI by a fresh instance of its class, built by its constructor without argument, at the same place among the open UIs, and returns that instance.
+Replaces this open UI by a fresh instance of its class, built by its constructor without argument, opened in its place in the bridge at the top of the UIs of its `zindex`, and returns that instance.
 Throws an `IllegalStateException` when the UI is not open, when the class has no constructor without argument, or when that constructor fails.
 
 <a id="UI-method-add"></a>

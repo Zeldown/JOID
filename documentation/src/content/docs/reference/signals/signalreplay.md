@@ -55,7 +55,7 @@ Returns a supplier that computes again the expression that produced `value`, or 
 `void run(Object owner, Object parent, Runnable runnable)` <span class="joid-qualifier">static</span>
 
 Runs `runnable` with read tracking on, for the code of `owner` (a UI or a node) and of `parent` (the UI of a node), so the replay can find the object that the bytecode calls `this`.
-JOID calls it around `init()`, bodies and watches.
+JOID calls it around `init()`, bodies, listeners, tasks, shortcuts and watches.
 
 <a id="SignalReplay-method-reset"></a>
 

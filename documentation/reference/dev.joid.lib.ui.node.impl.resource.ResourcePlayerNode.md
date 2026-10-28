@@ -65,7 +65,7 @@ Default: 50, the distance of the video decoder
 
 ## play()
 
-Starts the playback, or resumes it after a pause or a stop, and fires `onPlay`.
+Starts the playback, or resumes it after a pause or a stop; `onPlay` fires on the next frame, once the playback runs.
 Throws an `IllegalStateException` when the resource has no playback, such as a still image.
 
 ## pause()
