@@ -28,7 +28,7 @@ Pass it to the `color(...)` setter of a shape, to a [[TextInfo]] for text, or to
 
 ![Five squares on a dark card whose lower half is a light grey band: grey, a medium blue, an orange, a green and a half-transparent blue that lets the band show through](/captures/style-create.webp)
 
-<figcaption>A preset, float components, integer components, a hex string and an `rgba(...)` string.</figcaption>
+<figcaption>Every form gives the same kind of `Color`: pick the one that matches the value you copy.</figcaption>
 </figure>
 
 There are four ways to build a color:
@@ -53,7 +53,7 @@ The constructor picks its scale from the type of its arguments: `new Color(1, 0,
 
 ![Six blue squares on a dark card whose lower half is a light grey band: the base, two darker shades, a lighter tint, a half-transparent copy that lets the band show through, and an opaque mix with white](/captures/style-derive.webp)
 
-<figcaption>From left to right: the base, `darker()`, `darker(0.25F)`, `brighter(0.6F)`, `withAlpha(0.5F)` and `to(Color.WHITE, 0.5F)`.</figcaption>
+<figcaption>One base color gives the whole palette, and the base itself stays as it was.</figcaption>
 </figure>
 
 - `darker(scale)` multiplies the red, green and blue components by `1 - scale` (`0.5F` without argument).
@@ -75,7 +75,7 @@ A gradient is a `Color` too, so it goes where a color goes: fills, borders, text
 
 ![Four gradients from blue on a dark card whose lower half is a light grey band: to white left to right, to white top to bottom, to white along the diagonal, and blue fading to transparent, which lets the card and the band show through](/captures/style-gradient.webp)
 
-<figcaption>The default direction, then from the top to the bottom, along the diagonal, and toward the same blue with an alpha of 0.</figcaption>
+<figcaption>Two points turn the same gradient in any direction, and a target with an alpha of 0 fades it out.</figcaption>
 </figure>
 
 Without points, the gradient goes from the left edge to the right edge.

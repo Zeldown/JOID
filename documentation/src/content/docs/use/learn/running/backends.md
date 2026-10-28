@@ -171,7 +171,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 
 ![The pointer moves onto the Settings button and rests there; a dark tooltip with the light text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
 
-<figcaption>The tooltip of the window bridge with its default colors.</figcaption>
+<figcaption>Once `hoverInfo` is set, every node that gives a `hover(...)` text shows this tooltip, with no code in the UI.</figcaption>
 </figure>
 
 :::caution

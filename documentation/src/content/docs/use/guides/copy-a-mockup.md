@@ -16,7 +16,7 @@ This guide turns those values into nodes without conversion, then lays the mocku
 ![A dark rounded card with a soft shadow: a dark grey circle for the avatar, the name Ada Lovelace in bold, the role Analyst, and a rounded blue Follow button](/captures/guides-mockup-card.webp)
 
 <figcaption>
-A profile card copied from a 1920 × 1080 mockup.
+Every value of the card comes from its 1920 × 1080 mockup as it is, with no conversion.
 </figcaption>
 </figure>
 

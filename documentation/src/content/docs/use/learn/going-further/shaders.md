@@ -181,7 +181,7 @@ The program and the pass:
 ![Two grey rectangles side by side; the second one is drawn in its inverse, a dark ochre](/captures/further-shaders-invert.webp)
 
 <figcaption>
-Without the pass, then with `InvertShaderPass` at `1F`.
+Two identical nodes, without and with `InvertShaderPass` at `1F`: the pass changes only how its node reaches the screen.
 </figcaption>
 </figure>
 
