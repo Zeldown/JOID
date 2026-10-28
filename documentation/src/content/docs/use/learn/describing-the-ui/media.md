@@ -76,6 +76,15 @@ To read from a source of your own, such as an archive, write an asset locator ([
 | `CONTAIN` | The whole image, as large as the box allows, centered; the rest of the box stays empty. |
 | `COVER` | The image fills the box and keeps its proportions; what goes beyond the box is cut. |
 
+<figure>
+
+![Three dark grey boxes labelled STRETCH, CONTAIN and COVER, each holding the same light grey placeholder image, change shape in a loop, from wide to square, to tall, then back to square and wide: the first image deforms with its box, the second stays whole with empty bands beside it, the third fills its box and loses its edges](/captures/describing-media-stretch.webp)
+
+<figcaption>
+Only `STRETCH` deforms the image; `CONTAIN` and `COVER` keep its proportions whatever the shape of the box.
+</figcaption>
+</figure>
+
 [[ResourceNode#color]] tints the image: JOID multiplies each pixel by the [[Color]], so white, the default, keeps the image as it is.
 [[ResourceNode#hoveredColor]] gives the tint under the mouse, and [[ResourceNode#hoveredResource]] another image, with a fade ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)):
 

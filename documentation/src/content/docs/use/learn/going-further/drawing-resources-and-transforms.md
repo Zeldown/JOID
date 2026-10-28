@@ -58,8 +58,19 @@ A [[Transformation]] is a list of operations that apply to everything you draw i
 ![Two grey outlines mark where two blue rectangles start; each rectangle is turned by 20 degrees around a light dot, the first at its center, the second at its top-left corner](/captures/further-transforms-pivot.webp)
 
 <figcaption>
-The same rotation around two pivots, marked by the dots: the pivot is the point that stays in place.
+The same rotation of 20 degrees around two pivots, marked by the dots.
 The outlines show the starting place.
+</figcaption>
+</figure>
+
+With an angle that grows over time, each rectangle turns around its pivot:
+
+<figure>
+
+![The same two blue rectangles turn a full circle in four seconds, the first around its center, the second around its top-left corner, over their grey starting outlines; the two light dots never move](/captures/further-transforms-spin.webp)
+
+<figcaption>
+The pivot is the one point of the drawing that the rotation leaves in place.
 </figcaption>
 </figure>
 

@@ -47,6 +47,16 @@ A border draws its strokes inside the box, each at least one pixel thick, so a b
 A node whose position differs from the previous frame is moving, whatever moves it: a scroll, a drag, an animator, a layout or your own code.
 While it moves, JOID shifts it by a whole number of pixels from the place where it rested, so its edges, its text and its images keep their exact shape on every frame and move together.
 
+<figure>
+
+![Two magnified rows of screen pixels under the same blue outline of a rectangle three pixels wide, which slides eight pixels to the right and back. Exact position: the pixels at its edges are painted at partial strength, which changes as it slides. On the screen: three whole pixels, fully painted, that jump from one pixel to the next and keep their shape](/captures/depth-pixel-motion.webp)
+
+<figcaption>
+While the node moves, its pixels keep the shape they had at rest and move by whole pixels: no edge fades in or out.
+</figcaption>
+</figure>
+
+
 When the node stops, JOID draws it at its exact position again.
 The node may move by less than a pixel once, and its resting place never depends on the path it took: a list reordered by drag ends with the same spacing as before.
 The offset of a scrolling container is itself a whole number of pixels, so its content does not jump when the scroll stops.

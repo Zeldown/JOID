@@ -99,6 +99,16 @@ Opening a screen closes the open screens first, with the popups open above them:
 ```
 
 `MenuUI` closes, then `EditorUI` opens.
+
+<figure>
+
+![The Menu card with its three grey buttons; the editor card, with its blue Save button, opens in its place; the pointer clicks Save, and the Menu card comes back in place of the editor](/captures/describing-uis-replace.webp)
+
+<figcaption>
+Opening a screen closes the one before it: the editor, which refuses to close until Save is clicked, lets `MenuUI` come back once it is.
+</figcaption>
+</figure>
+
 When a UI that must close refuses, the new screen does not open; in dev mode, JOID prints a warning that names both UIs.
 
 [[JOID#forceOpen]] closes every open UI without asking them, then opens the new one:

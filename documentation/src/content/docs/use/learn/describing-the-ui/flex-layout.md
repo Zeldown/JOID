@@ -108,6 +108,17 @@ The column measures 170 design pixels, three bars and two gaps, and the panel fo
 </figcaption>
 </figure>
 
+The panel keeps wrapping the column when bars appear or disappear:
+
+<figure>
+
+![On a dark card, a dark grey panel wraps a column of blue bars, next to two blue buttons, Add a bar and Remove a bar; the pointer clicks Add a bar twice, then Remove a bar twice: the column goes from two bars to four and back to two, and the panel grows and shrinks with it](/captures/describing-flex-flow.webp)
+
+<figcaption>
+A hidden bar leaves the column, and the panel, which reads the height of the column, follows it.
+</figcaption>
+</figure>
+
 A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node): with an [[OverflowProperty]] other than `NONE`, it stays fixed and the children scroll inside it.
 
 ## Nest rows inside a column

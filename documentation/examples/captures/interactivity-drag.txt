@@ -32,3 +32,45 @@ moveto 1160 540 700
 release LEFT
 wait 1000
 cut
+# crop interactivity-drag-bounds 640 320 800 520
+ui com.example.interactivity.drag.DragUI
+move 1000 700
+# film interactivity-drag-bounds 60
+wait 300
+moveto 740 420 500
+wait 200
+press LEFT
+moveto 1400 460 700
+wait 300
+moveto 1400 800 500
+wait 300
+moveto 740 420 800
+release LEFT
+wait 600
+moveto 1000 700 400
+wait 300
+cut
+# crop interactivity-handle 540 320 840 440
+ui com.example.interactivity.drag.HandleUI
+move 1150 650
+# film interactivity-handle 60
+wait 300
+moveto 770 540 500
+wait 200
+press LEFT
+moveto 1000 620 500
+release LEFT
+wait 400
+moveto 770 420 500
+wait 200
+press LEFT
+moveto 1000 520 600
+release LEFT
+wait 500
+press LEFT
+moveto 770 420 600
+release LEFT
+wait 500
+moveto 1150 650 500
+wait 300
+cut

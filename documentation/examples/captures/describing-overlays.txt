@@ -38,3 +38,13 @@ wait 900
 moveto 1420 380 500
 wait 300
 cut
+# crop describing-overlays-status 20 20 1160 740
+ui com.example.describing.overlays.SettingsUI
+open com.example.describing.overlays.StatusOverlay
+# film describing-overlays-status
+wait 1000
+open com.example.describing.uis.MenuUI
+wait 1500
+open com.example.describing.overlays.SettingsUI
+wait 500
+cut
