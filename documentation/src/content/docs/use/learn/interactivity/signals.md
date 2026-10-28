@@ -89,7 +89,8 @@ A value that depends on signals is an expression that reads them, or the signal 
 A value that changes without any signal (the time, the position of the pointer) is a lambda; an [animator](/use/learn/style-and-motion/animation/#animate-a-value) is a signal.
 A value that never changes is a plain value.
 
-The factories (`create(...)`) take plain values: their arguments follow nothing.
+Most factories (`create(...)`) take plain values: their arguments follow nothing.
+The factories of [[Text]] and of the rounded, border, shadow and blur effects follow the signals that their arguments read, as a setter does: a [[BorderNodeEffect]] created with `BorderNodeEffect.create(on.get() ? accent : element, 1.5F)` changes color with `on`.
 Calling a setter again replaces what it followed: `width(200D)` after `width(40D + clicks.get() * 80D)` stops following `clicks`.
 
 Some setters take a `Signal` in place of a `Supplier`: the value of a control, the position of a node (`x(...)`, `y(...)`), its scroll.
