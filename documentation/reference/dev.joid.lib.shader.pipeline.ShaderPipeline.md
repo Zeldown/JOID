@@ -17,4 +17,4 @@ Without passes, or with an area of no width or height, it runs `baseDraw` direct
 
 ## render(double,double,double,double,Runnable,List)
 
-Same as the varargs form, with the passes in a list.
+Runs `baseDraw` into the area at `x`, `y` of `width` × `height`, then applies the passes of the list in order, as the varargs form does.

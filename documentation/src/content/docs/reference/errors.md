@@ -149,10 +149,10 @@ Move loading and computing out of the draw, onto a worker thread or into several
 
 Emitted by [`UI.fireUpdate`](/reference/ui/ui/#UI-method-fireUpdate), [`UI.fireMousePressed`](/reference/ui/ui/#UI-method-fireMousePressed), [`UI.fireMouseReleased`](/reference/ui/ui/#UI-method-fireMouseReleased), [`UI.fireMouseDragged`](/reference/ui/ui/#UI-method-fireMouseDragged), [`UI.fireMouseScroll`](/reference/ui/ui/#UI-method-fireMouseScroll), [`UI.fireCharTyped`](/reference/ui/ui/#UI-method-fireCharTyped), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.fireKeyReleased`](/reference/ui/ui/#UI-method-fireKeyReleased).
 
-A handler of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
+A listener or the `update()` of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
 JOID prints it once per kind of input and of exception, and the next inputs still run.
 
-Catch the exception inside the handler, or fix the code it names: [Events](/use/learn/interactivity/events/).
+Catch the exception inside the listener or `update()`, or fix the code it names: [Events](/use/learn/interactivity/events/).
 
 ### @… on … leaves active = false and changes nothing {#leaves-active-false-changes}
 
@@ -1755,7 +1755,7 @@ Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and clos
 
 Emitted by [`RenderBridge.requireFrame`](/reference/bridges/renderbridge/#RenderBridge-method-requireFrame).
 
-Something drew or cleared outside a frame of the render bridge, such as a draw from an input handler, from a worker thread, or before the loop.
+Something drew or cleared outside a frame of the render bridge, such as a draw from an input listener, from a worker thread, or before the loop.
 
 Draw from the draw of a node or of a UI, which runs inside the frame: [The frame lifecycle](/use/in-depth/frame-lifecycle/).
 

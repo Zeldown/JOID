@@ -44,7 +44,7 @@ A gradient color uses its start color.
 
 ## drawShadow(double,double,double,double,Color,float,boolean,boolean,boolean,boolean,float)
 
-Same as the other `drawShadow`, with only the corners of the chosen sides rounded, as in `drawRoundedRect`.
+Draws the soft shadow of a box whose corners are rounded only on the chosen sides, as in `drawRoundedRect`, blurred by `blur` design pixels.
 
 ## drawCircle(double,double,Color,double)
 

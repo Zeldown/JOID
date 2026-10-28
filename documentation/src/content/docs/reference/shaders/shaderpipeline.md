@@ -34,7 +34,7 @@ The framebuffers come from [`FrameBufferPool`](/reference/drawing/framebufferpoo
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [render](#ShaderPipeline-method-render)(double x, double y, double width, double height, Runnable baseDraw, IShaderPass... passes) <span class="joid-qualifier">static</span> | Runs `baseDraw` into the area at `x`, `y` of `width` × `height`, in the coordinates you draw in, then applies `passes` in order. |
-| `void` | [render](#ShaderPipeline-method-render)(double x, double y, double width, double height, Runnable baseDraw, List<IShaderPass> passes) <span class="joid-qualifier">static</span> | Same as the varargs form, with the passes in a list. |
+| `void` | [render](#ShaderPipeline-method-render)(double x, double y, double width, double height, Runnable baseDraw, List<IShaderPass> passes) <span class="joid-qualifier">static</span> | Runs `baseDraw` into the area at `x`, `y` of `width` × `height`, then applies the passes of the list in order, as the varargs form does. |
 
 ## Method details
 
@@ -49,7 +49,7 @@ Without passes, or with an area of no width or height, it runs `baseDraw` direct
 
 `void render(double x, double y, double width, double height, Runnable baseDraw, List<IShaderPass> passes)` <span class="joid-qualifier">static</span>
 
-Same as the varargs form, with the passes in a list.
+Runs `baseDraw` into the area at `x`, `y` of `width` × `height`, then applies the passes of the list in order, as the varargs form does.
 
 ---
 

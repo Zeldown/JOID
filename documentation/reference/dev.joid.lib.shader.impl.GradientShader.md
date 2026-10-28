@@ -16,4 +16,4 @@ Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor
 
 ## use(Point,Point,Color,Color,boolean,Runnable,BoundingBox)
 
-Same as the other `use`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
+Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor` at `endPoint`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.

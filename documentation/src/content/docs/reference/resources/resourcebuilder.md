@@ -57,7 +57,7 @@ Every setting returns a new builder and leaves this one unchanged.
 | [`ResourceBuilder`](/reference/resources/resourcebuilder/) | [textureCoords](#ResourceBuilder-method-textureCoords)(double u, double v, double width, double height) | Returns a builder whose resources draw the region at `u`, `v` of `width` × `height` pixels. |
 | [`Resource`](/reference/resources/resource/) | [of](#ResourceBuilder-method-of)(Object input) | Returns a handle on the resource of `input`: a texture of the application or another input that a resolver knows, otherwise an [`Asset`](/reference/resources/asset/), whose format is detected from its first bytes. |
 | [`Resource`](/reference/resources/resource/) | [compute](#ResourceBuilder-method-compute)(String uniqueId, Supplier<ResourceData> dataSupplier) | Returns a handle on the data cached under `uniqueId`, creating it with `dataSupplier` when the cache does not have it. |
-| [`Resource`](/reference/resources/resource/) | [compute](#ResourceBuilder-method-compute)(String uniqueId, Supplier<ResourceData> dataSupplier, Consumer<Resource> onCreate) | Same as `compute(String, Supplier)`, and calls `onCreate` with the handle when the data was created rather than found in the cache. |
+| [`Resource`](/reference/resources/resource/) | [compute](#ResourceBuilder-method-compute)(String uniqueId, Supplier<ResourceData> dataSupplier, Consumer<Resource> onCreate) | Returns a handle on the data cached under `uniqueId`, creating it with `dataSupplier` when the cache does not have it, and calls `onCreate` with the handle when the data was created rather than found in the cache. |
 | `this` | [remove](#ResourceBuilder-method-remove)(ResourceData data) <span class="joid-qualifier">fluent</span> | Removes `data` from the cache, under the id it was cached with, when the cache still holds it. |
 | `this` | [reload](#ResourceBuilder-method-reload)() <span class="joid-qualifier">fluent</span> | Removes from the cache every data that this builder put there and that is still cached, so the next `of` reads the files again. |
 
@@ -165,7 +165,7 @@ Use it in a resolver or for data you build yourself.
 
 `Resource compute(String uniqueId, Supplier<ResourceData> dataSupplier, Consumer<Resource> onCreate)` 
 
-Same as `compute(String, Supplier)`, and calls `onCreate` with the handle when the data was created rather than found in the cache.
+Returns a handle on the data cached under `uniqueId`, creating it with `dataSupplier` when the cache does not have it, and calls `onCreate` with the handle when the data was created rather than found in the cache.
 
 <a id="ResourceBuilder-method-remove"></a>
 

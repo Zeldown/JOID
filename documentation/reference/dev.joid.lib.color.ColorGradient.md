@@ -17,7 +17,7 @@ Runs `runnable` with the gradient shader bound and spread over `canvas`, in the 
 
 ## use(boolean,Runnable,BoundingBox)
 
-Same as `use(Runnable, BoundingBox)`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
+Runs `runnable` with the gradient shader bound over `canvas`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
 
 ## getStartColor()
 

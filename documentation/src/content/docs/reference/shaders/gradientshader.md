@@ -37,7 +37,7 @@ The shader of linear gradients, which colors what is drawn along a line between 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [use](#GradientShader-method-use)(Point startPoint, Point endPoint, Color startColor, Color endColor, Runnable runnable, BoundingBox canvas) <span class="joid-qualifier">static</span> | Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor` at `endPoint`, points on 1 of `canvas`, then restores the previous shader. |
-| `void` | [use](#GradientShader-method-use)(Point startPoint, Point endPoint, Color startColor, Color endColor, boolean hasTexture, Runnable runnable, BoundingBox canvas) <span class="joid-qualifier">static</span> | Same as the other `use`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it. |
+| `void` | [use](#GradientShader-method-use)(Point startPoint, Point endPoint, Color startColor, Color endColor, boolean hasTexture, Runnable runnable, BoundingBox canvas) <span class="joid-qualifier">static</span> | Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor` at `endPoint`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it. |
 
 <details>
 <summary>Inherited from <a href="/reference/shaders/shaderprogram/#ShaderProgram-methods"><code>ShaderProgram</code></a> (8)</summary>
@@ -68,7 +68,7 @@ Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor
 
 `void use(Point startPoint, Point endPoint, Color startColor, Color endColor, boolean hasTexture, Runnable runnable, BoundingBox canvas)` <span class="joid-qualifier">static</span>
 
-Same as the other `use`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
+Runs `runnable` with the gradient from `startColor` at `startPoint` to `endColor` at `endPoint`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
 
 ---
 

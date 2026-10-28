@@ -109,7 +109,7 @@ For a gradient, it binds the gradient shader instead, spread over `canvas` in th
 
 ## bind(Runnable,BoundingBox,boolean)
 
-Same as `bind(Runnable, BoundingBox)`; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image.
+Runs `runnable` with this color applied, then restores the previous color; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image.
 
 ## getRGB()
 

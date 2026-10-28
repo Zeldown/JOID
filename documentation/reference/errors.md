@@ -79,10 +79,10 @@ Move loading and computing out of the draw, onto a worker thread or into several
 
 ## warning [JOID] The … of … failed (…), the next inputs still run: catch the exception inside the handler to handle it
 
-A handler of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
+A listener or the `update()` of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
 JOID prints it once per kind of input and of exception, and the next inputs still run.
 
-Catch the exception inside the handler, or fix the code it names: [Events](/use/learn/interactivity/events/).
+Catch the exception inside the listener or `update()`, or fix the code it names: [Events](/use/learn/interactivity/events/).
 
 ## warning [JOID] No key resolver knows the shortcut binding … of type … yet, the shortcut fires only once an IKeyResolver that knows it is registered: pass a Key or register an IKeyResolver with KeyResolver.register(...)
 
@@ -1047,7 +1047,7 @@ Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and clos
 
 ## IllegalStateException … draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop
 
-Something drew or cleared outside a frame of the render bridge, such as a draw from an input handler, from a worker thread, or before the loop.
+Something drew or cleared outside a frame of the render bridge, such as a draw from an input listener, from a worker thread, or before the loop.
 
 Draw from the draw of a node or of a UI, which runs inside the frame: [The frame lifecycle](/use/in-depth/frame-lifecycle/).
 
