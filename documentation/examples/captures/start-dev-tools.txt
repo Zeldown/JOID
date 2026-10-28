@@ -1,7 +1,7 @@
 # crop start-dev-inspect 260 0 700 540
 # still start-dev-inspect 90
 # crop start-dev-panel 260 0 700 540
-# still start-dev-panel 80
+# still start-dev-panel 100
 # crop start-dev-move 0 0 960 540
 # still start-dev-move 120
 # keys start-dev-move 880 14
@@ -9,60 +9,7 @@ dev true
 resize 960 540
 scale 2
 ui com.example.start.DevSceneUI
-key F3
-move 340 90
-wait 300
 move 620 180
-wait 1200
-mask 832 488 108 40
-# film start-dev-inspect 60
-wait 200
-moveto 340 90 400
-wait 600
-moveto 380 155 400
-wait 600
-down LEFT_CONTROL
-wait 800
-up LEFT_CONTROL
-wait 300
-key I
-wait 700
-key I
-wait 500
-moveto 620 180 400
-wait 300
-cut
-# film start-dev-panel 60
-wait 200
-moveto 460 280 450
-wait 250
-press LEFT
-release LEFT
-unmask
-mask 740 490 100 40
-wait 600
-moveto 550 437 400
-wait 250
-scroll -3
-wait 700
-press LEFT
-release LEFT
-wait 700
-key ENTER
-wait 200
-moveto 900 470 300
-scroll -6
-wait 1000
-press RIGHT
-release RIGHT
-unmask
-mask 832 488 108 40
-wait 350
-moveto 620 180 300
-wait 150
-cut
-unmask
-key F3
 wait 1200
 # film start-dev-move 60
 wait 300
@@ -89,6 +36,66 @@ key F3
 wait 300
 moveto 620 180 400
 wait 100
+cut
+key F3
+move 340 90
+move 620 180
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+wait 10
+# film start-dev-inspect 60
+wait 200
+moveto 340 90 400
+wait 600
+moveto 380 155 400
+wait 600
+down LEFT_CONTROL
+wait 800
+up LEFT_CONTROL
+wait 300
+key I
+wait 700
+key I
+wait 500
+moveto 620 180 400
+wait 300
+cut
+# film start-dev-panel 60
+wait 200
+moveto 460 280 450
+wait 250
+press LEFT
+release LEFT
+wait 1000
+moveto 550 422 400
+wait 250
+scroll -5
+wait 700
+press LEFT
+release LEFT
+wait 700
+key ENTER
+wait 700
+press RIGHT
+release RIGHT
+wait 350
+moveto 620 180 300
+wait 150
 cut
 # crop start-dev-reload 230 160 500 240
 # still start-dev-reload 100

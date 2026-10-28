@@ -23,6 +23,7 @@ public class DevSceneUI extends UI {
 		.color(CaptureStyle.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
+		.<RectNode>onClick(event -> event.getNode().color(CaptureStyle.STROKE))
 		.body(card -> {
 			TextNode.create(20, 20).text(Text.create("Profile", info)).attach(card);
 			FlexNode
