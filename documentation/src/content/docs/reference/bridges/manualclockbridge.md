@@ -20,11 +20,6 @@ A clock that moves only when you set or advance it, so that every animation give
 
 Register it above the system clock in a test, then unregister it at the end: the system clock takes over again.
 
-This method plays frames 16 ms apart, whatever time they take:
-
-```java file="com/example/backend/SteppedFrames.java" region="clock"
-```
-
 ## Learn more
 
 - [Use a manual clock in a test](/build/bridges/clock/#use-a-manual-clock-in-a-test)

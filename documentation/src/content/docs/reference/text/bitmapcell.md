@@ -18,7 +18,7 @@ The rectangle of a texture that holds one glyph of a bitmap font, and where that
 ## Description
 
 [`BitmapTextRenderer.getCell`](/reference/text/bitmaptextrenderer/#BitmapTextRenderer-method-getCell) returns one per glyph.
-The texel coordinates pick the glyph in the texture; the bounds place it, in units of the bitmap size, from the left edge of the glyph and from the top of its ascender.
+The texel coordinates pick the glyph in the texture; the bounds place it, in font pixels, from the left edge of the glyph and from the top of its ascender.
 Each texel is filtered by the area it covers on screen, so the glyph stays crisp at its bitmap size and smooth at other sizes.
 
 ## Learn more
@@ -37,7 +37,7 @@ Each texel is filtered by the area it covers on screen, so the glyph stays crisp
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [bold](#BitmapCell-property-bold) | `boolean` |  | If `true`, the glyph draws twice, the second time one bitmap unit to the right, which thickens a font that has no bold face. |
+| [bold](#BitmapCell-property-bold) | `boolean` |  | If `true`, the glyph draws twice, the second time one font pixel to the right, which thickens a font that has no bold face. |
 | [grayscale](#BitmapCell-property-grayscale) | `boolean` |  | If `true`, the red channel of the texels is the coverage of a white glyph, tinted by the text color; if `false`, the texels are colors with alpha, multiplied by the text color. |
 
 <a id="BitmapCell-methods"></a>
@@ -48,9 +48,9 @@ Each texel is filtered by the area it covers on screen, so the glyph stays crisp
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [bounds](#BitmapCell-method-bounds)(double left, double top, double right, double bottom) <span class="joid-qualifier">fluent</span> | Sets where the glyph draws, in bitmap units: `left` and `right` from the left edge of the glyph, `top` and `bottom` from the top of the ascender. |
-| `double` | [getWidth](#BitmapCell-method-getWidth)() | Returns the width of the bounds, in bitmap units. |
-| `double` | [getHeight](#BitmapCell-method-getHeight)() | Returns the height of the bounds, in bitmap units. |
+| `this` | [bounds](#BitmapCell-method-bounds)(double left, double top, double right, double bottom) <span class="joid-qualifier">fluent</span> | Sets where the glyph draws, in font pixels: `left` and `right` from the left edge of the glyph, `top` and `bottom` from the top of the ascender. |
+| `double` | [getWidth](#BitmapCell-method-getWidth)() | Returns the width of the bounds, in font pixels. |
+| `double` | [getHeight](#BitmapCell-method-getHeight)() | Returns the height of the bounds, in font pixels. |
 
 ### Queries
 
@@ -63,10 +63,10 @@ Each texel is filtered by the area it covers on screen, so the glyph stays crisp
 | `int` | [getTexelLeft](#BitmapCell-method-getTexelLeft)() | Returns the left column of the texel rectangle, included. |
 | `int` | [getTexelRight](#BitmapCell-method-getTexelRight)() | Returns the right column of the texel rectangle, excluded. |
 | [`ITexture`](/reference/bridges/itexture/) | [getTexture](#BitmapCell-method-getTexture)() | Returns the texture that holds the glyph. |
-| `double` | [getTop](#BitmapCell-method-getTop)() | Returns the top of the bounds, in bitmap units from the top of the ascender. |
-| `double` | [getBottom](#BitmapCell-method-getBottom)() | Returns the bottom of the bounds, in bitmap units from the top of the ascender. |
-| `double` | [getLeft](#BitmapCell-method-getLeft)() | Returns the left of the bounds, in bitmap units from the left edge of the glyph. |
-| `double` | [getRight](#BitmapCell-method-getRight)() | Returns the right of the bounds, in bitmap units from the left edge of the glyph. |
+| `double` | [getTop](#BitmapCell-method-getTop)() | Returns the top of the bounds, in font pixels from the top of the ascender. |
+| `double` | [getBottom](#BitmapCell-method-getBottom)() | Returns the bottom of the bounds, in font pixels from the top of the ascender. |
+| `double` | [getLeft](#BitmapCell-method-getLeft)() | Returns the left of the bounds, in font pixels from the left edge of the glyph. |
+| `double` | [getRight](#BitmapCell-method-getRight)() | Returns the right of the bounds, in font pixels from the left edge of the glyph. |
 
 ## Creation details
 
@@ -94,7 +94,7 @@ Throws `IllegalArgumentException` when the rectangle holds no texel.
 
 **Default:** 
 
-If `true`, the glyph draws twice, the second time one bitmap unit to the right, which thickens a font that has no bold face.
+If `true`, the glyph draws twice, the second time one font pixel to the right, which thickens a font that has no bold face.
 
 <a id="BitmapCell-property-grayscale"></a>
 
@@ -119,7 +119,7 @@ If `true`, the red channel of the texels is the coverage of a white glyph, tinte
 
 - `IllegalArgumentException`: The bounds of a bitmap cell cannot be empty, got …, …, …, …: give a right above the left and a bottom above the top
 
-Sets where the glyph draws, in bitmap units: `left` and `right` from the left edge of the glyph, `top` and `bottom` from the top of the ascender.
+Sets where the glyph draws, in font pixels: `left` and `right` from the left edge of the glyph, `top` and `bottom` from the top of the ascender.
 Bounds larger than the texels stretch them.
 Throws `IllegalArgumentException` when the bounds are empty.
 
@@ -129,7 +129,7 @@ Throws `IllegalArgumentException` when the bounds are empty.
 
 `double getWidth()` 
 
-Returns the width of the bounds, in bitmap units.
+Returns the width of the bounds, in font pixels.
 
 <a id="BitmapCell-method-getHeight"></a>
 
@@ -137,7 +137,7 @@ Returns the width of the bounds, in bitmap units.
 
 `double getHeight()` 
 
-Returns the height of the bounds, in bitmap units.
+Returns the height of the bounds, in font pixels.
 
 <a id="BitmapCell-method-getTexelWidth"></a>
 
@@ -201,7 +201,7 @@ Returns the texture that holds the glyph.
 
 `double getTop()` 
 
-Returns the top of the bounds, in bitmap units from the top of the ascender.
+Returns the top of the bounds, in font pixels from the top of the ascender.
 
 <a id="BitmapCell-method-getBottom"></a>
 
@@ -209,7 +209,7 @@ Returns the top of the bounds, in bitmap units from the top of the ascender.
 
 `double getBottom()` 
 
-Returns the bottom of the bounds, in bitmap units from the top of the ascender.
+Returns the bottom of the bounds, in font pixels from the top of the ascender.
 
 <a id="BitmapCell-method-getLeft"></a>
 
@@ -217,7 +217,7 @@ Returns the bottom of the bounds, in bitmap units from the top of the ascender.
 
 `double getLeft()` 
 
-Returns the left of the bounds, in bitmap units from the left edge of the glyph.
+Returns the left of the bounds, in font pixels from the left edge of the glyph.
 
 <a id="BitmapCell-method-getRight"></a>
 
@@ -225,7 +225,7 @@ Returns the left of the bounds, in bitmap units from the left edge of the glyph.
 
 `double getRight()` 
 
-Returns the right of the bounds, in bitmap units from the left edge of the glyph.
+Returns the right of the bounds, in font pixels from the left edge of the glyph.
 
 ---
 

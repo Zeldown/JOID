@@ -21,7 +21,7 @@ The start is never after the end; an empty range has the start equal to the end.
 
 ## Learn more
 
-- [Text fields](/use/learn/interactivity/text-fields/#give-and-take-the-focus)
+- [Text fields](/use/learn/interactivity/text-fields/#move-the-focus)
 
 ## Creation
 

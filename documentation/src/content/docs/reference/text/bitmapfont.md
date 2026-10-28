@@ -19,7 +19,7 @@ Base class of the pixel fonts, glyph fonts drawn from texture cells at an exact 
 ## Description
 
 Extend it with a [`BitmapTextRenderer`](/reference/text/bitmaptextrenderer/) of your own that returns the [`BitmapCell`](/reference/text/bitmapcell/) of each glyph.
-At a font size equal to the bitmap size, one texel of a cell is one design pixel; other sizes scale the cells.
+At a font size equal to the bitmap size, one font pixel (one texel of a cell unless its `bounds` say otherwise) is one design pixel; other sizes scale the cells.
 
 ## Learn more
 
@@ -30,7 +30,7 @@ At a font size equal to the bitmap size, one texel of a cell is one design pixel
 
 | Returns | Signature | Summary |
 |---|---|---|
-|  | [BitmapFont](#BitmapFont-constructor)(FontFamily<F> family, int bitmapSize) <span class="joid-qualifier">protected</span> | Creates the font from its faces and its bitmap size: the font size, in design pixels, at which one texel draws as one design pixel. |
+|  | [BitmapFont](#BitmapFont-constructor)(FontFamily<F> family, int bitmapSize) <span class="joid-qualifier">protected</span> | Creates the font from its faces and its bitmap size: the number of font pixels per em, which is the font size in design pixels at which one font pixel draws as one design pixel. |
 
 <a id="BitmapFont-methods"></a>
 
@@ -55,7 +55,7 @@ At a font size equal to the bitmap size, one texel of a cell is one design pixel
 
 `BitmapFont(FontFamily<F> family, int bitmapSize)` <span class="joid-qualifier">protected</span>
 
-Creates the font from its faces and its bitmap size: the font size, in design pixels, at which one texel draws as one design pixel.
+Creates the font from its faces and its bitmap size: the number of font pixels per em, which is the font size in design pixels at which one font pixel draws as one design pixel.
 Throws `IllegalArgumentException` when `bitmapSize` is 0 or less.
 
 ## Method details

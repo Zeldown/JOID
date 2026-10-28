@@ -4,7 +4,7 @@ summary: A range of characters of a field, from a start index to an end index.
 
 The start is never after the end; an empty range has the start equal to the end.
 
-Learn: [Text fields](/use/learn/interactivity/text-fields/#give-and-take-the-focus).
+Learn: [Text fields](/use/learn/interactivity/text-fields/#move-the-focus).
 
 ## of(int,int)
 

@@ -146,6 +146,15 @@ A [[NodeEffect]] that changes how a node is drawn (rounded corners, border, shad
 
 See [Effects](/use/learn/style-and-motion/effects/).
 
+<a id="term-focus"></a>
+
+### focus
+
+The state of the text field that receives the typed keys: one field at a time has it among the UIs of a UI bridge.
+A field gains the focus ("focuses the field") on a press over it or with `focus()`, and loses it ("blurs the field") on a press elsewhere, Escape, Enter in a one-line field, its detach or `blur()`.
+
+See [Text fields](/use/learn/interactivity/text-fields/).
+
 <a id="term-frame"></a>
 
 ### frame
