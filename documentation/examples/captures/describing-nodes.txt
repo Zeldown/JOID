@@ -2,7 +2,7 @@
 ui com.example.describing.nodes.TreeDiagramUI
 wait 100
 shot describing-nodes-tree
-# crop describing-nodes-profile 660 290 600 500
+# crop describing-nodes-profile 640 270 640 540
 ui com.example.describing.nodes.ProfileUI
 wait 100
 shot describing-nodes-profile

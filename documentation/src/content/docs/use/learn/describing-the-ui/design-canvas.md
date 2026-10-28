@@ -24,7 +24,7 @@ JOID scales the whole canvas to the window, by the same factor on both axes, so 
 
 <figure>
 
-![Two windows drawn in dark grey. On the left, a wide window holds a white design canvas of 1920 by 1080 in its middle, with dark bands on its left and right. On the right, a tall window holds the white canvas in its middle, with dark bands above and below. The labels read: wider window, more on the sides; taller window, more above and below.](/captures/describing-canvas-diagram.webp)
+![Two windows drawn in dark grey. On the left, a wide window holds a darker design canvas of 1920 by 1080 in its middle, with dark grey bands on its left and right. On the right, a tall window holds the canvas in its middle, with dark grey bands above and below. The labels read: wider window, more on the sides; taller window, more above and below.](/captures/describing-canvas-diagram.webp)
 
 <figcaption>
 The canvas always fits: a window of another shape shows more space on two of its sides.
@@ -56,7 +56,7 @@ The nodes placed on the canvas stay where they are, and the nodes that follow th
 
 <figure>
 
-![A wide window: a light grey area fills it, a white canvas sits in its middle with a grey card in the center, a dark grey bar runs along the whole top edge of the window, and a grey square sits in its top-right corner.](/captures/describing-canvas-wide.webp)
+![A wide window: a dark grey area fills it, a darker canvas sits in its middle with a blue card in the center, a grey bar runs along the whole top edge of the window, and a blue square sits in its top-right corner.](/captures/describing-canvas-wide.webp)
 
 <figcaption>
 On a wide window, the bar and the square follow the view, while the card stays in the middle of the canvas.
@@ -65,7 +65,7 @@ On a wide window, the bar and the square follow the view, while the card stays i
 
 <figure>
 
-![A tall window: the white canvas is in its middle with the grey card, light grey areas above and below it, the dark grey bar along the top edge of the window, above the canvas, and the grey square in the top-right corner.](/captures/describing-canvas-tall.webp)
+![A tall window: the darker canvas is in its middle with the blue card, dark grey areas above and below it, the grey bar along the top edge of the window, above the canvas, and the blue square in the top-right corner.](/captures/describing-canvas-tall.webp)
 
 <figcaption>
 The same UI on a tall window: the bar and the square still reach the top edge.
@@ -85,7 +85,7 @@ By default, the canvas sits in the middle of the window.
 
 <figure>
 
-![A wide window filled with light grey, with a white square holding a grey disc in its top-right corner.](/captures/describing-canvas-pinned.webp)
+![A wide window filled with dark grey, with a darker square holding a blue disc in its top-right corner.](/captures/describing-canvas-pinned.webp)
 
 <figcaption>
 Pinned to the top-right corner, the canvas keeps the minimap against the right edge of a wide window.
@@ -120,7 +120,7 @@ The zoom makes a UI smaller around its anchor, on top of the fit and the interfa
 
 <figure>
 
-![A window whose light grey UI is drawn smaller than the window, framed by the dark window around it, with a white card in its middle that reads 80 % above two grey buttons marked minus and plus; the pointer clicks plus and the UI grows to 90 %, then clicks minus and the UI shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
+![A window whose UI is drawn smaller than the window, its dark canvas framed by the stage around it, with a dark grey card in its middle that reads 80 % above two blue buttons marked minus and plus; the pointer clicks plus and the UI grows to 90 %, then clicks minus and the UI shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
 
 <figcaption>
 At a zoom of `0.8D`, the whole UI is drawn at 80 % of its size, around the center of the window.

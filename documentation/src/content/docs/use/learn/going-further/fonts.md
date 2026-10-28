@@ -86,7 +86,7 @@ The renderer asks for `bold` when the text asks for a heavier weight than its fa
 In dev mode, JOID still warns once that the weight 700 is not loaded in the family: the synthetic bold stands in for a face that does not exist.
 An italic text drawn with an upright face is slanted the same way.
 
-## Draw glyphs your own way
+## Glyph drawing
 
 A [[GlyphFont]] holds a [[FontFamily]] of faces, and its [[GlyphTextRenderer]] lays out each line: it picks the face of each weight and style, applies the kerning, the letter spacing, the markup and the text effects, then hands you each glyph to draw.
 A bitmap renderer is a glyph renderer that draws a cell of an atlas; a glyph renderer of your own draws each glyph its own way.

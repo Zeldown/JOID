@@ -1,7 +1,11 @@
 package com.example.depth;
 
+import com.example.capture.CaptureStyle;
+
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.geom.Point;
@@ -12,6 +16,7 @@ public class FrameLifecycleUI extends DepthDiagramUI {
 	public void init() {
 		super.backdrop(360, 190, 1200, 700)
 		.body(card -> {
+			super.label(600, 30, 575, 40, "Outlined: run by your loop", Align.END).attach(card);
 			this.row(card, 30D, 5, true, "Each frame", "Input", "Resize", "Tasks", "Update", "Background", "Draw UIs", "Present");
 			this.row(card, 270D, 3, false, "Each UI", "Tasks", "Backdrop", "Transition", "Nodes", "Tooltip");
 			this.row(card, 510D, -1, false, "Each node", "Values", "Layout", "Hover", "Scroll, drag", "Effects", "Draw");
@@ -34,8 +39,9 @@ public class FrameLifecycleUI extends DepthDiagramUI {
 			} else if (loop && (i == 0 || i == steps.length - 1)) {
 				RectNode
 				.create(x, top + 50D, 150, 90)
-				.color(DepthDiagramUI.INK)
-				.body(rect -> RectNode.create(3, 3, 144, 84).color(DepthDiagramUI.BACKDROP).attach(rect))
+				.color(CaptureStyle.BACKGROUND)
+				.effect(RoundedNodeEffect.create(12F))
+				.effect(BorderNodeEffect.create(DepthDiagramUI.NOTE, 2F))
 				.attach(card);
 				super.label(x, top + 50D, 150, 90, steps[i], Align.CENTER).attach(card);
 			} else {

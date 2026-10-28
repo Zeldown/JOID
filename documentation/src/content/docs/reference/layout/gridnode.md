@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Places its visible children in rows that wrap at its width, and takes the height of its content.
 
-![Twelve squares in rows and columns, alternating grey and white](/captures/catalog-nodes-gridnode.webp)
+![Twelve squares in rows and columns, alternating blue and dark grey](/captures/catalog-nodes-gridnode.webp)
 
 ## Description
 

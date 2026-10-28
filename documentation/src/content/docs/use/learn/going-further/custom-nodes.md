@@ -31,7 +31,7 @@ It attaches, nests and positions like any built-in node:
 
 <figure>
 
-![Three white discs side by side on a light grey background, each with a smaller grey disc at its center](/captures/further-custom-nodes-dots.webp)
+![Three dark grey discs side by side, each with a smaller blue disc at its center](/captures/further-custom-nodes-dots.webp)
 
 <figcaption>
 Each `DotNode` draws two circles in its own bounds.
@@ -88,7 +88,7 @@ This one splits its width between its children, with a gap of 10 design pixels:
 
 <figure>
 
-![Three white panels side by side in three equal slots; the first and the last fill their slot, the middle one starts lower and is shorter](/captures/further-custom-nodes-split.webp)
+![Three grey panels side by side in three equal slots; the first and the last fill their slot, the middle one starts lower and is shorter](/captures/further-custom-nodes-split.webp)
 
 <figcaption>
 Each panel takes its slot; the middle one keeps its own `y` of 20 and its height of 80 inside it.
@@ -168,7 +168,7 @@ The UI owns the signal and reads it anywhere:
 
 <figure>
 
-![The pointer moves onto a grey square and clicks it: a white frame appears inside the square, and the text next to it changes from Plain and Changes: 0 to Favorite and Changes: 1](/captures/further-custom-nodes-swatch.webp)
+![The pointer moves onto a blue square and clicks it: a light frame appears inside the square, and the text next to it changes from Plain and Changes: 0 to Favorite and Changes: 1](/captures/further-custom-nodes-swatch.webp)
 
 <figcaption>
 The click selects the swatch, writes the signal and fires `onSelect`.

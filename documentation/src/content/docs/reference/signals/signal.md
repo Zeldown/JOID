@@ -17,7 +17,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Holds a value that nodes, derived signals and listeners follow, so the interface shows each change without rebuilding.
 
-![A text that reads "Clicks: 0" above a white button; the pointer clicks the button three times, and the text counts up to "Clicks: 3".](/captures/reference-signals-counter.webp)
+![A text that reads "Clicks: 0" above a dark grey button; the pointer clicks the button three times, and the text counts up to "Clicks: 3".](/captures/reference-signals-counter.webp)
 
 ## Description
 

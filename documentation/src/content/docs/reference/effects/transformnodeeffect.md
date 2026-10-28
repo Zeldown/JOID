@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Moves, rotates or scales the drawing of a node and its children without changing the layout.
 
-![A grey rectangle rotated by 20 degrees](/captures/catalog-effects-transformnodeeffect.webp)
+![A blue rectangle rotated by 20 degrees](/captures/catalog-effects-transformnodeeffect.webp)
 
 ## Description
 

@@ -9,11 +9,11 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 @UIDataOverlay(active = true)
 public class HudOverlay extends UI {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
-		RectNode.create(40, 40, 400, 40).color(HudOverlay.INK).attach(this);
+		RectNode.create(40, 40, 400, 40).color(HudOverlay.ACCENT).attach(this);
 	}
 
 }

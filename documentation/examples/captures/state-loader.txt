@@ -1,7 +1,7 @@
 # crop state-loader 540 370 840 340
 # still state-loader 60
 ui com.example.state.LoaderUI
-move 1260 680
+move 1260 670
 # film state-loader
 wait 300
 moveto 780 490 500
@@ -9,5 +9,5 @@ wait 200
 press LEFT
 release LEFT
 wait 1600
-moveto 1260 680 500
+moveto 1260 670 500
 wait 300

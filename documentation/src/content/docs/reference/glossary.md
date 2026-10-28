@@ -376,4 +376,3 @@ See [UIs](/use/learn/describing-the-ui/uis/).
 The bridge that holds the open UIs, routes the input to them and draws them every frame; `WindowUIBridge` is the default one.
 
 See [Embedding JOID](/use/learn/running/embedding/).
-

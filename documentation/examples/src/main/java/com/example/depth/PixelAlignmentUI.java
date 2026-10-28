@@ -1,6 +1,5 @@
 package com.example.depth;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.align.Align;
@@ -27,7 +26,7 @@ public class PixelAlignmentUI extends DepthDiagramUI {
 					final double coverageX = Math.max(0D, Math.min(column + 1D, x + width) - Math.max(column, x));
 					final double coverageY = Math.max(0D, Math.min(row + 1D, y + height) - Math.max(row, y));
 					final float coverage = (float) (coverageX * coverageY);
-					DrawUtils.SHAPE.drawRect(left + column * cell, 90D + row * cell, cell - 3D, cell - 3D, Color.WHITE);
+					DrawUtils.SHAPE.drawRect(left + column * cell, 90D + row * cell, cell - 3D, cell - 3D, DepthDiagramUI.ELEMENT);
 					if (coverage > 0F) {
 						DrawUtils.SHAPE.drawRect(left + column * cell, 90D + row * cell, cell - 3D, cell - 3D, DepthDiagramUI.LABEL.withAlpha(coverage));
 					}

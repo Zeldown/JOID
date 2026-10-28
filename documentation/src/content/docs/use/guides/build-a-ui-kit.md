@@ -13,7 +13,7 @@ This guide writes two kits for a checkbox and a slider, and switches the kit of 
 
 <figure>
 
-![A light grey card with a square checkbox and a flat square slider, above two white buttons Plain kit and Round kit; the pointer drags the slider, then clicks Round kit, and the card turns white with a rounded checkbox and a pill-shaped slider with a round knob, at the same value; it drags the slider back and clicks Plain kit](/captures/guides-kit.webp)
+![A dark card with a square checkbox and a flat square slider, above two dark grey buttons Plain kit and Round kit; the pointer drags the slider, then clicks Round kit, and the card turns a lighter grey with a rounded checkbox and a pill-shaped slider with a round knob, at the same value; it drags the slider back and clicks Plain kit](/captures/guides-kit.webp)
 
 <figcaption>
 A click on a kit changes the skins of the controls; their values stay.
@@ -51,7 +51,7 @@ Each kit implements it with its own skins and colors:
 ```java file="com/example/guides/RoundGuideKit.java" region="kit"
 ```
 
-`PlainGuideKit` returns the plain skins with the same signatures, and a light grey surface.
+`PlainGuideKit` returns the plain skins with the same signatures, and a dark surface.
 
 **Check:** put `new RoundGuideKit().checkbox(100, 100)` in a UI: it shows the round checkbox of step 1.
 
@@ -78,7 +78,7 @@ A click sets the kit signal, and the card rebuilds itself:
 ```
 
 **Check:** uncheck the box, move the slider, then click Round kit.
-The card turns white, the controls change their look, the box stays unchecked and the slider keeps its value.
+The card turns a lighter grey, the controls change their look, the box stays unchecked and the slider keeps its value.
 
 ## If it does not work
 

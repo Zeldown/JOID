@@ -7,13 +7,15 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class TweenUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	// #region fields
 	private final TweenManager manager = new TweenManager();
@@ -41,9 +43,11 @@ public class TweenUI extends UI {
 		// #region node
 		RectNode
 		.create(660, 340, 600, 400)
-		.color(Color.WHITE)
+		.color(TweenUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(TweenUI.ELEMENT, 1.5F))
 		.body(area -> {
-			RectNode.create(0, 0, 80, 80).color(TweenUI.INK).x(() -> 520D * this.x).y(() -> 320D * this.y).attach(area);
+			RectNode.create(0, 0, 80, 80).color(TweenUI.ACCENT).x(() -> 520D * this.x).y(() -> 320D * this.y).attach(area);
 		})
 		.attach(this);
 		// #endregion

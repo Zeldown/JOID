@@ -1,7 +1,7 @@
 # crop reference-signals-counter 60 60 260 160
 # still reference-signals-counter 60
 ui com.example.reference.signals.CounterUI
-move 300 212
+move 291 180
 # film reference-signals-counter
 wait 300
 moveto 200 180 400
@@ -15,5 +15,5 @@ wait 600
 press LEFT
 release LEFT
 wait 700
-moveto 300 212 400
+moveto 291 180 400
 wait 300

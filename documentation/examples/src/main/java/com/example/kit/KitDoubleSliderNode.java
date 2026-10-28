@@ -7,8 +7,8 @@ public class KitDoubleSliderNode extends DoubleSliderNode {
 
 	protected KitDoubleSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.track(RectNode.create(0, 0, 0, 0).color(KitColors.SURFACE));
-		super.thumb(RectNode.create(0, 0, 0, 0).color(() -> super.isSliding() ? KitColors.DARK : KitColors.INK));
+		super.track(RectNode.create(0, 0, 0, 0).color(KitColors.ELEMENT));
+		super.thumb(RectNode.create(0, 0, 0, 0).color(() -> super.isSliding() ? KitColors.ACTIVE : KitColors.ACCENT));
 	}
 
 	public static KitDoubleSliderNode create(final double x, final double y, final double width, final double height) {

@@ -23,7 +23,7 @@ public class TreeDiagramUI extends DiagramUI {
 			.color(DiagramUI.SURFACE)
 			.body(canvas -> RectNode
 				.create(266, 119, 140, 140)
-				.color(DiagramUI.BACKDROP)
+				.color(DiagramUI.ELEMENT)
 				.body(card -> {
 					RectNode.create(17.5, 45.5, 105, 24.5).color(DiagramUI.ACCENT).attach(card);
 					super.label(17.5, 80, 105, 28, "Text", 18F, DiagramUI.LABEL).attach(card);

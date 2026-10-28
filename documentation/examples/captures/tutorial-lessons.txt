@@ -1,13 +1,13 @@
 # crop tutorial-setup 600 430 720 220
 # crop tutorial-menu 130 130 600 610
 # crop tutorial-layout 740 140 1040 800
-# crop tutorial-interaction-popup 380 254 1160 572
+# crop tutorial-interaction-popup 130 150 1160 670
 # still tutorial-interaction-popup 90
-# crop tutorial-interaction-hover 740 140 1040 330
+# crop tutorial-interaction-hover 740 140 1040 800
 # still tutorial-interaction-hover 40
-# crop tutorial-state 380 254 1160 572
+# crop tutorial-state 730 130 1060 820
 # still tutorial-state 110
-# crop tutorial-settings 380 254 1160 572
+# crop tutorial-settings 130 150 1160 670
 # still tutorial-settings 50
 # crop tutorial-polish 700 120 1120 950
 # hold tutorial-polish 1500
@@ -22,21 +22,20 @@ ui com.example.tutorial.layout.MenuUI
 wait 300
 shot tutorial-layout
 ui com.example.tutorial.interaction.MenuUI
-zoom 0.7
-move 700 760
+move 600 780
 # film tutorial-interaction-popup 60
 wait 300
-moveto 526 556 600
+moveto 340 560 600
 wait 400
 press LEFT
 release LEFT
 wait 1000
-moveto 980 722 700
+moveto 960 710 700
 wait 300
 press LEFT
 release LEFT
 wait 600
-moveto 700 760 500
+moveto 600 780 500
 wait 300
 cut
 ui com.example.tutorial.interaction.MenuUI
@@ -53,12 +52,9 @@ moveto 1000 520 400
 wait 300
 cut
 ui com.example.tutorial.state.MenuUI
-zoom 0.7
-move 720 760
+move 340 460
 # film tutorial-state
-wait 300
-moveto 526 486 600
-wait 300
+wait 600
 press LEFT
 release LEFT
 wait 900
@@ -67,42 +63,38 @@ release LEFT
 wait 900
 press LEFT
 release LEFT
-wait 1000
-moveto 720 760 500
-wait 300
+wait 1600
 cut
 ui com.example.tutorial.settings.MenuUI
-zoom 0.7
-move 526 556
+move 340 560
 press LEFT
 release LEFT
 wait 300
-zoom 0.7
-move 1290 800
+move 600 700
 wait 300
 # film tutorial-settings
 wait 300
-moveto 1093 488 480
+moveto 1132 455 480
 wait 200
 press LEFT
 release LEFT
 wait 533
-moveto 1121 565 400
+moveto 1177 565 400
 wait 200
 press LEFT
 release LEFT
 wait 533
-moveto 1002 565 400
+moveto 1007 565 400
 wait 200
 press LEFT
 release LEFT
 wait 533
-moveto 1093 488 400
+moveto 1132 455 400
 wait 200
 press LEFT
 release LEFT
 wait 533
-moveto 1290 800 400
+moveto 600 700 400
 wait 300
 cut
 ui com.example.tutorial.polish.MenuUI

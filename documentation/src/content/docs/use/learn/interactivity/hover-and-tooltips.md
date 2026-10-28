@@ -26,7 +26,7 @@ JOID blends the two colors over [[Node#hoverDuration]] milliseconds, along the c
 
 <figure>
 
-![The pointer moves onto a white "Shop" button, which turns grey, then leaves it, and the button turns white again](/captures/interactivity-hover.webp)
+![The pointer moves onto a dark grey "Shop" button, which turns a lighter grey while its label stays readable, then leaves it, and the button turns dark grey again](/captures/interactivity-hover.webp)
 
 <figcaption>
 The color follows the hover progress, both when the pointer enters and when it leaves.
@@ -41,7 +41,7 @@ The hover progress runs from `0F` (not hovered) to `1F` (hovered).
 
 <figure>
 
-![A grey "Settings" button with a grey line under it that grows from the left while the pointer stays on the button, and shrinks back once the pointer leaves](/captures/interactivity-underline.webp)
+![A blue "Settings" button with a blue line under it that grows from the left while the pointer stays on the button, and shrinks back once the pointer leaves](/captures/interactivity-underline.webp)
 
 <figcaption>
 The underline is `0` px wide at rest and `220` px wide once the button is hovered.
@@ -67,7 +67,7 @@ The pointer hovers the frontmost node under it that is interactive, and every pa
 
 <figure>
 
-![The pointer moves across a white area and a grey dot follows it; the text under the area reads "Entries: 1"](/captures/interactivity-enter.webp)
+![The pointer moves across a dark grey area and a blue dot follows it; the text under the area reads "Entries: 1"](/captures/interactivity-enter.webp)
 
 <figcaption>
 The dot follows the pointer through `onHover`, and goes back to the center through `onHoverEnd`.
@@ -91,7 +91,7 @@ A tooltip appears next to the pointer while the node is hovered.
 
 <figure>
 
-![The pointer rests on a white "Wallet" button, and a dark tooltip "Coins: 120" shows next to it; two clicks bring the tooltip to "Coins: 140"; then the pointer moves to the "Shop" button, whose tooltip has two lines](/captures/interactivity-tooltip-text.webp)
+![The pointer rests on a dark grey "Wallet" button, and a dark tooltip "Coins: 120" shows next to it; two clicks bring the tooltip to "Coins: 140"; then the pointer moves to the "Shop" button, whose tooltip has two lines](/captures/interactivity-tooltip-text.webp)
 
 <figcaption>
 The supplier of a tooltip runs on every frame the tooltip shows, so the line is always up to date.
@@ -115,7 +115,7 @@ A tooltip can also be made of nodes, or of your own drawing.
 
 <figure>
 
-![The pointer moves along a white "Profile" button, and a grey "Up" label stays right above the button](/captures/interactivity-tooltip-node.webp)
+![The pointer moves along a dark grey "Profile" button, and a blue "Up" label stays right above the button](/captures/interactivity-tooltip-node.webp)
 
 <figcaption>
 A relative tooltip stays at the same place over the node, wherever the pointer is on it.
@@ -129,7 +129,7 @@ A relative tooltip stays at the same place over the node, wherever the pointer i
 
 <figure>
 
-![The pointer moves along a white "Target" button, circled by a grey ring that follows it](/captures/interactivity-tooltip-custom.webp)
+![The pointer moves along a dark grey "Target" button, circled by a blue ring that follows it](/captures/interactivity-tooltip-custom.webp)
 
 <figcaption>
 A custom tooltip draws with the [drawing API](/use/learn/going-further/drawing/), centered on the pointer.

@@ -3,22 +3,26 @@ package com.example.reference.effects;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 // #region underline
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class UnderlineUI extends UI {
 
-	private static final Color BAR = new Color(85, 85, 85).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
 		RectNode.create(80, 80, 240, 140)
-		.color(Color.WHITE)
-		.effect(UnderlineNodeEffect.create(UnderlineUI.BAR))
+		.color(UnderlineUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(UnderlineUI.ELEMENT, 1.5F))
+		.effect(UnderlineNodeEffect.create(UnderlineUI.ACCENT))
 		.attach(this);
 	}
 

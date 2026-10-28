@@ -42,7 +42,7 @@ Nothing uses the store yet, so the menu looks the same.
 
 `SettingsUI` gets the store with `useStore(...)`, and replaces the two fixed lines with buttons:
 
-```java file="com/example/tutorial/settings/SettingsUI.java" title="SettingsUI.java" ins={8-9,15,26-28,35-62}
+```java file="com/example/tutorial/settings/SettingsUI.java" title="SettingsUI.java" ins={7-8,14,25-27,34-61}
 ```
 
 - `useStore(SettingsStore.class, SettingsStore::new)` returns the store, and creates it with the factory the first time.
@@ -77,7 +77,7 @@ JOID saves the store when a UI that uses it closes, and again when the program e
 When the player closes the window, the menu is still open when the loop ends.
 Close every open UI after the loop, before the window is destroyed: their close listeners run and the store reaches the disk at that moment, while a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 
-```java file="com/example/tutorial/settings/Main.java" title="Main.java" ins={44}
+```java file="com/example/tutorial/settings/Main.java" title="Main.java" ins={43}
 ```
 
 **Run it.**

@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws a filled disc in its bounds, with a color that fades on hover.
 
-![A grey disc on a light card](/captures/catalog-nodes-circlenode.webp)
+![A blue disc on a dark card](/captures/catalog-nodes-circlenode.webp)
 
 ## Description
 

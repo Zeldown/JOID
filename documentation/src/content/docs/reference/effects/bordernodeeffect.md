@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Outlines the pixels that a node draws, outside or inside their edge.
 
-![A white rectangle with a thick grey border](/captures/catalog-effects-bordernodeeffect.webp)
+![A dark grey rectangle with a thick blue border](/captures/catalog-effects-bordernodeeffect.webp)
 
 ## Description
 

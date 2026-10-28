@@ -26,7 +26,7 @@ This page shows how to add effects, drive them with changing values, and predict
 
 <figure>
 
-![A white card with rounded corners, a thin grey border and a soft grey shadow under it](/captures/style-stack.webp)
+![A dark card with rounded corners, a thin blue border and a soft blue glow under it, the shadow of the card](/captures/style-stack.webp)
 
 <figcaption>Three effects on one rectangle: the border and the shadow follow the rounded corners.</figcaption>
 </figure>
@@ -78,7 +78,7 @@ Build the suppliers that read the node inside [[Node#self]], which hands you the
 
 <figure>
 
-![The pointer enters a white rectangle: its corners round strongly and its grey border thickens, then go back as the pointer leaves](/captures/style-effect-hover.webp)
+![The pointer enters a dark rectangle: its corners round strongly and its blue border thickens, then go back as the pointer leaves](/captures/style-effect-hover.webp)
 
 <figcaption>The radius goes from 8 to 48 design pixels and the border from 1 to 6 with the hover progress.</figcaption>
 </figure>
@@ -96,7 +96,7 @@ By default, an effect applies to the node alone, and its children draw on top of
 
 <figure>
 
-![Two white cards with rounded corners and a grey header: on the left the header keeps its square top corners, on the right it is rounded with the card](/captures/style-scope.webp)
+![Two dark cards with rounded corners and a blue header: on the left the header keeps its square top corners, on the right it is rounded with the card](/captures/style-scope.webp)
 
 <figcaption>`SELF`, the default, on the left; `CHILDREN` on the right.</figcaption>
 </figure>
@@ -110,7 +110,7 @@ Each effect has a priority, and JOID applies the effects of a node in a fixed fr
 
 <figure>
 
-![Diagram of nested boxes. The outer box: 1, the wrapping effects start, lowest priority first: transform (-100), shadow (-50), mask (0), yours (0). Inside it, a second box holds a violet box: 2, the node draws itself, 3, its SELF passes by priority: rounded or circle (100), blur (150), border (200); and a white box: 4, the children draw on top. Under them: 5, the CHILDREN passes run over the node and its children. At the bottom of the outer box: 6, the wrapping effects end, in reverse order.](/captures/style-effect-order.webp)
+![Diagram of nested boxes. The outer box: 1, the wrapping effects start, lowest priority first: transform (-100), shadow (-50), mask (0), yours (0). Inside it, a second box holds a blue box: 2, the node draws itself, 3, its SELF passes by priority: rounded or circle (100), blur (150), border (200); and a dark grey box: 4, the children draw on top. Under them: 5, the CHILDREN passes run over the node and its children. At the bottom of the outer box: 6, the wrapping effects end, in reverse order.](/captures/style-effect-order.webp)
 
 <figcaption>
 The priorities decide what a border outlines, what a mask cuts and what a transform moves.
@@ -134,7 +134,7 @@ A transform, at `-100`, wraps the mask, at `0`, so the mask turns with the node;
 
 <figure>
 
-![Two faint rectangles turned by 20 degrees, each crossed by the solid dark band that its mask keeps. On the left, the band turns with the rectangle. On the right, the band stays horizontal.](/captures/style-priority.webp)
+![Two faint blue rectangles turned by 20 degrees, each crossed by the solid light blue band that its mask keeps. On the left, the band turns with the rectangle. On the right, the band stays horizontal.](/captures/style-priority.webp)
 
 <figcaption>
 Left: the mask runs inside the transform and turns with the node.
@@ -155,7 +155,7 @@ The same rule places a shadow: at its own `-50`, it turns and moves with the nod
 
 <figure>
 
-![The top half of a grey disc, cut flat by the mask](/captures/style-clip.webp)
+![The top half of a blue disc, cut flat by the mask](/captures/style-clip.webp)
 
 <figcaption>The circle is drawn whole, and the mask keeps the top half of the node.</figcaption>
 </figure>

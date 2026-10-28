@@ -8,8 +8,9 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class CardUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
@@ -18,10 +19,10 @@ public class CardUI extends UI {
 		// #region node
 		RectNode
 		.create(760, 390, 400, 300)
-		.color(selected.map(value -> value ? Color.WHITE : CardUI.PLACEHOLDER))
+		.color(selected.map(value -> value ? CardUI.ELEMENT : CardUI.SURFACE))
 		.body(card -> {
-			CircleNode.create(40, 40, 120).color(CardUI.INK).attach(card);
-			RectNode.create(190, 70, 170, 30).color(CardUI.INK).attach(card);
+			CircleNode.create(40, 40, 120).color(CardUI.ACCENT).attach(card);
+			RectNode.create(190, 70, 170, 30).color(CardUI.ACCENT).attach(card);
 		})
 		.onClick(event -> selected.toggle())
 		.attach(this);

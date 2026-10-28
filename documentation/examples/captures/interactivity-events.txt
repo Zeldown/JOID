@@ -1,13 +1,13 @@
-# crop interactivity-click 760 390 400 300
+# crop interactivity-click 740 370 440 340
 # still interactivity-click 60
-# crop interactivity-through 520 390 880 300
+# crop interactivity-through 500 370 920 340
 # still interactivity-through 100
 # crop interactivity-press 560 300 840 480
 # still interactivity-press 135
-# crop interactivity-consume 760 440 400 200
+# crop interactivity-consume 740 420 440 240
 # still interactivity-consume 90
 # crop interactivity-dispatch 360 170 1200 740
-# crop interactivity-before 660 390 600 300
+# crop interactivity-before 640 370 640 340
 # still interactivity-before 100
 ui com.example.interactivity.events.ClickUI
 move 1090 640
@@ -73,7 +73,7 @@ moveto 1280 700 600
 wait 300
 cut
 ui com.example.interactivity.events.NoDigitsUI
-move 1110 610
+move 1110 600
 # film interactivity-consume
 wait 300
 moveto 1060 548 400
@@ -89,7 +89,7 @@ type D
 wait 400
 type 2
 wait 1000
-moveto 1110 610 400
+moveto 1110 600 400
 wait 300
 cut
 ui com.example.interactivity.events.DispatchDiagramUI

@@ -6,7 +6,7 @@ import dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNode;
 
 public class PlainGuideKit implements IGuideKit {
 
-	private static final Color SURFACE = new Color(238, 238, 238).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	@Override
 	public CheckboxNode checkbox(final double x, final double y) {

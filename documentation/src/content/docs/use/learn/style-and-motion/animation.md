@@ -40,7 +40,7 @@ A `TweenAnimator` moves one `float` over time:
 
 <figure>
 
-![A white card fades in while it slides up into place](/captures/style-appear.webp)
+![A dark grey card fades in while it slides up into place](/captures/style-appear.webp)
 
 <figcaption>The value goes from 0 to 1 in 600 ms; the opacity and the position read it.</figcaption>
 </figure>
@@ -75,7 +75,7 @@ This square overshoots its target on each trip, further than the default `BACK_O
 
 <figure>
 
-![A grey square on a white track goes right, passes its target and settles back on it, then returns left, passes its start and settles there, and starts again](/captures/style-easing.webp)
+![A blue square on a dark track goes right, passes its target and settles back on it, then returns left, passes its start and settles there, and starts again](/captures/style-easing.webp)
 
 <figcaption>
 `BACK_OUT.overshoot(3F)` carries the square a quarter of the trip beyond each end before it settles.
@@ -96,7 +96,7 @@ For any other curve, extend [[TweenEquation]] and return the eased progress from
 
 <figure>
 
-![A grey square glides from the left end of a white track to the right end and back, pauses, and starts again](/captures/style-loop.webp)
+![A blue square glides from the left end of a dark track to the right end and back, pauses, and starts again](/captures/style-loop.webp)
 
 <figcaption>Two steps, then a pause of 200 ms, forever.</figcaption>
 </figure>
@@ -118,7 +118,7 @@ To play an animation on demand, call `sequence(...)` again: it replaces the runn
 
 <figure>
 
-![A click on the grey Toggle button slides a grey square to the right end of its track, and the next click slides it back; the counter goes from "Plays: 0" to "Plays: 2"](/captures/style-click.webp)
+![A click on the blue Toggle button slides a blue square to the right end of its track, and the next click slides it back; the counter goes from "Plays: 0" to "Plays: 2"](/captures/style-click.webp)
 
 <figcaption>Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.</figcaption>
 </figure>
@@ -150,7 +150,7 @@ When the target keeps moving, move the value a share of the remaining distance o
 
 <figure>
 
-![A grey disc follows the pointer from left to right along a white band and back, with a smooth delay](/captures/style-follow.webp)
+![A blue disc follows the pointer from left to right along a dark grey band and back, with a smooth delay](/captures/style-follow.webp)
 
 <figcaption>The disc covers a share of the distance to the pointer on every frame, so it slows down as it arrives.</figcaption>
 </figure>
@@ -178,7 +178,7 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 
 <figure>
 
-![A grey square moves right, pauses, drops down with a small overshoot, then plays the same path backward](/captures/style-tween.webp)
+![A blue square moves right, pauses, drops down with a small overshoot, then plays the same path backward](/captures/style-tween.webp)
 
 <figcaption>A sequence of two tweens with a pause, played back and forth.</figcaption>
 </figure>

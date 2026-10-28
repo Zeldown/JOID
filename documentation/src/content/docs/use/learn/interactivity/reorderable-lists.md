@@ -22,7 +22,7 @@ A [[ReorderableFlexNode]] is a [flex layout](/use/learn/describing-the-ui/flex-l
 
 <figure>
 
-![The pointer drags "Ocean" down a column of five white items; the items below it slide up to make room, and at the release "Ocean" lands in fourth place and the text reads "Moved: Ocean from 1 to 3"; a second drag puts it back in second place, and the text reads "Moved: Ocean from 3 to 1"](/captures/interactivity-reorder.webp)
+![The pointer drags "Ocean" down a column of five dark grey items, the dragged one lighter; the items below it slide up to make room, and at the release "Ocean" lands in fourth place and the text reads "Moved: Ocean from 1 to 3"; a second drag puts it back in second place, and the text reads "Moved: Ocean from 3 to 1"](/captures/interactivity-reorder.webp)
 
 <figcaption>
 The other items slide as soon as the dragged one passes half of a neighbor; the order changes for good at the release.
@@ -68,7 +68,7 @@ With `autoDrag(false)`, a handle starts the drag with [[ReorderableFlexNode#star
 
 <figure>
 
-![A column with a grey "To do" header and three white tasks, each with a grey handle on its right; a drag that starts on the "Write" task moves nothing, a drag on the handle of "Ship" moves it above "Review", and a second drag puts it back](/captures/interactivity-reorder-handle.webp)
+![A column with a blue "To do" header and three dark grey tasks, each with a blue handle on its right; a drag that starts on the "Write" task moves nothing, a drag on the handle of "Ship" moves it above "Review", and a second drag puts it back](/captures/interactivity-reorder-handle.webp)
 
 <figcaption>
 A press on a handle drags its task; a press anywhere else on the task does nothing, and the header never moves.

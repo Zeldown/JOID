@@ -6,12 +6,16 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class EditorUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
+	private static final Color SURFACE   = new Color(23, 26, 33).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	// #region class
 	private boolean saved;
@@ -25,14 +29,16 @@ public class EditorUI extends UI {
 			}
 		});
 
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(EditorUI.ON_ACCENT);
 
 		RectNode
 		.create(760, 340, 400, 400)
-		.color(EditorUI.PLACEHOLDER)
+		.color(EditorUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(EditorUI.ELEMENT, 1.5F))
 		.body(card -> RectNode
 			.create(100, 300, 200, 60)
-			.color(EditorUI.INK)
+			.color(EditorUI.ACCENT)
 			.label(Text.create("Save", info))
 			.onClick(event -> this.saved = true)
 			.attach(card))

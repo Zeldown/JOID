@@ -26,7 +26,7 @@ A layer is the shortest way to draw: a lambda that a node runs on every frame, a
 
 <figure>
 
-![A white card with rounded corners on a light grey background, a grey disc on its left and a light grey bar on its right](/captures/further-drawing-layer.webp)
+![A dark card with rounded corners, a blue disc on its left and a dark grey bar on its right](/captures/further-drawing-layer.webp)
 
 <figcaption>
 Three `DrawUtils` calls in the layer of an empty [[ContainerNode]].
@@ -60,7 +60,7 @@ Rectangles take a position and a size, circles a center and a radius, polygons t
 
 <figure>
 
-![From left to right on a light grey background: a white rounded square with a soft dark shadow, a grey rounded outline, a square grey outline, a grey disc and a white triangle](/captures/further-drawing-shapes.webp)
+![From left to right: a dark grey rounded square with a soft blue glow, a blue rounded outline, a square blue outline, a blue disc and a grey triangle](/captures/further-drawing-shapes.webp)
 
 <figcaption>
 `drawShadow` then `drawRoundedRect`, `drawRoundedBorder`, `drawBorder`, `drawCircle` and `drawPolygon`.
@@ -91,7 +91,7 @@ Lines and curves go through points, given as [[Point]] in design pixels:
 
 <figure>
 
-![On a light grey background: a grey zigzag line, a grey dashed diagonal and a white S-shaped curve](/captures/further-drawing-lines.webp)
+![A blue zigzag line, a blue dashed diagonal and a grey S-shaped curve](/captures/further-drawing-lines.webp)
 
 <figcaption>
 `drawLine` through three points, `drawDashedLine` and a cubic `drawCurvedLine`.
@@ -116,7 +116,7 @@ Lines and curves go through points, given as [[Point]] in design pixels:
 
 <figure>
 
-![The word Paused centered at the top, and below it a sentence wrapped on three centered lines](/captures/further-drawing-text.webp)
+![The word Paused centered at the top, and below it a sentence wrapped on two centered lines](/captures/further-drawing-text.webp)
 
 <figcaption>
 A word centered on a point, then a sentence wrapped in a box 400 design pixels wide.

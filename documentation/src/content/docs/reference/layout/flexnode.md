@@ -17,7 +17,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Places its visible children one after the other in a column or a row, and takes the size of its content.
 
-![Four grey rectangles in a row, evenly spaced](/captures/catalog-nodes-flexnode.webp)
+![Four blue rectangles in a row, evenly spaced](/captures/catalog-nodes-flexnode.webp)
 
 ## Description
 

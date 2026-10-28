@@ -10,15 +10,19 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class AnimationUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT      = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
+	private static final Color SURFACE   = new Color(23, 26, 33).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	// #region follow-field
 	private double followX = 160D;
@@ -26,15 +30,15 @@ public class AnimationUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(AnimationUI.INK);
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(AnimationUI.TEXT);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(AnimationUI.ON_ACCENT);
 
 		// #region appear
 		final TweenAnimator appear = TweenAnimator.create(0F).sequence(600F, 1F, TweenEquations.CUBIC_OUT).start();
 
 		RectNode
 		.create(160, 0, 300, 180)
-		.color(() -> Color.WHITE.withAlpha(appear.get()))
+		.color(() -> AnimationUI.ELEMENT.withAlpha(appear.get()))
 		.y(() -> 140D - 60D * appear.get())
 		.attach(this);
 		// #endregion
@@ -49,9 +53,11 @@ public class AnimationUI extends UI {
 
 		RectNode
 		.create(620, 120, 320, 60)
-		.color(Color.WHITE)
+		.color(AnimationUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.INK).x(() -> 260D * loop.get()).attach(track);
+			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(() -> 260D * loop.get()).attach(track);
 		})
 		.onDetach(event -> loop.clear())
 		.attach(this);
@@ -67,9 +73,11 @@ public class AnimationUI extends UI {
 
 		RectNode
 		.create(160, 760, 520, 60)
-		.color(Color.WHITE)
+		.color(AnimationUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.INK).x(() -> 100D + 260D * pop.get()).attach(track);
+			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(() -> 100D + 260D * pop.get()).attach(track);
 		})
 		.onDetach(event -> pop.clear())
 		.attach(this);
@@ -81,15 +89,17 @@ public class AnimationUI extends UI {
 
 		RectNode
 		.create(1100, 120, 320, 60)
-		.color(Color.WHITE)
+		.color(AnimationUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(AnimationUI.ELEMENT, 1.5F))
 		.body(track -> {
-			RectNode.create(0, 0, 60, 60).color(AnimationUI.INK).x(() -> 260D * toggle.get()).attach(track);
+			RectNode.create(0, 0, 60, 60).color(AnimationUI.ACCENT).x(() -> 260D * toggle.get()).attach(track);
 		})
 		.attach(this);
 
 		RectNode
 		.create(1100, 220, 200, 60)
-		.color(AnimationUI.INK)
+		.color(AnimationUI.ACCENT)
 		.onClick(event -> {
 			final float target = toggle.peek() < 0.5F ? 1F : 0F;
 			toggle.sequence(400F, target, TweenEquations.QUART_OUT).start();
@@ -100,10 +110,10 @@ public class AnimationUI extends UI {
 
 		TextNode.create(1330, 232).text(Text.create(plays.map(count -> "Plays: " + count), info)).attach(this);
 
-		RectNode.create(160, 500, 840, 120).color(Color.WHITE).attach(this);
+		RectNode.create(160, 500, 840, 120).color(AnimationUI.ELEMENT).attach(this);
 
 		// #region follow-node
-		CircleNode.create(0, 520, 80).color(AnimationUI.INK).x(() -> this.followX).attach(this);
+		CircleNode.create(0, 520, 80).color(AnimationUI.ACCENT).x(() -> this.followX).attach(this);
 		// #endregion
 	}
 

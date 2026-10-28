@@ -9,7 +9,7 @@ const SCENARIOS = join(DOCUMENTATION, 'examples', 'captures');
 const EXPANDED = join(DOCUMENTATION, 'examples', 'build', 'captures', 'scenarios');
 const RAW = join(DOCUMENTATION, 'examples', 'build', 'captures', 'raw');
 const OUTPUT = join(DOCUMENTATION, 'public', 'captures');
-const DIRECTIVE = /^#\s*(crop|pad|still|hold|quality)\s+(\S+)\s+(.*)$/;
+const DIRECTIVE = /^#\s*(crop|pad|still|hold|quality|keys)\s+(\S+)\s+(.*)$/;
 const FILM = /^#\s*film\s+(\S+)(?:\s+(\d+))?\s*$/;
 
 const args = process.argv.slice(2);
@@ -19,14 +19,51 @@ function coordinate(value) {
 	return String(Number(value.toFixed(3)));
 }
 
+const KEY_NAMES = {
+	LEFT_CONTROL: 'Ctrl',
+	RIGHT_CONTROL: 'Ctrl',
+	LEFT_SHIFT: 'Shift',
+	RIGHT_SHIFT: 'Shift',
+	LEFT_ALT: 'Alt',
+	RIGHT_ALT: 'Alt',
+	ENTER: 'Enter',
+	ESCAPE: 'Esc',
+	BACKSPACE: 'Backspace',
+	DELETE: 'Delete',
+	TAB: 'Tab',
+	SPACE: 'Space',
+	UP: '↑',
+	DOWN: '↓',
+	LEFT: '←',
+	RIGHT: '→',
+	HOME: 'Home',
+	END: 'End',
+};
+
+function keyName(combination) {
+	return combination
+		.split('+')
+		.map((key) => KEY_NAMES[key] ?? (key.length === 1 ? key : key.charAt(0) + key.slice(1).toLowerCase().replaceAll('_', ' ')))
+		.join(' + ');
+}
+
+function typedName(text) {
+	return text === ' ' ? 'Space' : text;
+}
+
 function expand(file, films) {
 	const output = [];
 	const mouse = { x: -5000, y: -5000 };
 	let film = null;
 
+	const label = () => {
+		const shown = film.keys.filter((key) => key.start <= film.time && (key.end === null || film.time < key.end));
+		return shown.length === 0 ? null : shown[shown.length - 1].label;
+	};
 	const capture = () => {
 		output.push(`shot ${film.name}@${String(film.times.length).padStart(4, '0')}`);
 		film.times.push(film.time);
+		film.labels.push(label());
 	};
 	const advance = (duration, command) => {
 		const start = film.time;
@@ -48,7 +85,7 @@ function expand(file, films) {
 		if (film.time > film.times[film.times.length - 1]) {
 			advance(Math.round((film.times.length * 1000) / film.fps) - film.time, (duration) => `wait ${duration}`);
 		}
-		films[film.name] = { fps: film.fps, times: film.times };
+		films[film.name] = { fps: film.fps, times: film.times, labels: film.labels };
 		film = null;
 	};
 
@@ -57,7 +94,7 @@ function expand(file, films) {
 		const start = command.match(FILM);
 		if (start) {
 			cut();
-			film = { name: start[1], fps: Number(start[2] ?? 30), time: 0, times: [] };
+			film = { name: start[1], fps: Number(start[2] ?? 30), time: 0, times: [], labels: [], keys: [] };
 			output.push(line);
 			capture();
 			continue;
@@ -78,6 +115,18 @@ function expand(file, films) {
 		if (parts[0] === 'ui') {
 			mouse.x = -5000;
 			mouse.y = -5000;
+		}
+		if (film !== null && parts[0] === 'type') {
+			film.keys.push({ label: typedName(line.trim().slice(5)), start: film.time, end: film.time + 400 });
+		} else if (film !== null && parts[0] === 'key') {
+			film.keys.push({ label: keyName(parts[1]), start: film.time, end: film.time + 400 });
+		} else if (film !== null && parts[0] === 'down') {
+			film.keys.push({ label: keyName(parts[1]), start: film.time, end: null, key: parts[1] });
+		} else if (film !== null && parts[0] === 'up') {
+			const held = film.keys.findLast((key) => key.key === parts[1] && key.end === null);
+			if (held) {
+				held.end = Math.max(film.time, held.start + 400);
+			}
 		}
 		if (film !== null && parts[0] === 'wait') {
 			advance(Number(parts[1]), (duration) => `wait ${duration}`);
@@ -144,6 +193,9 @@ async function bounds(file, pad) {
 	let bottom = -1;
 	for (let y = 0; y < info.height; y++) {
 		for (let x = 0; x < info.width; x++) {
+			if (Math.abs((x % 20) - 10) <= 2 && Math.abs((y % 20) - 10) <= 2) {
+				continue;
+			}
 			const index = (y * info.width + x) * channels;
 			const distance = Math.abs(data[index] - background[0]) + Math.abs(data[index + 1] - background[1]) + Math.abs(data[index + 2] - background[2]);
 			if (distance > 18) {
@@ -158,6 +210,27 @@ async function bounds(file, pad) {
 		return { left: 0, top: 0, right: info.width - 1, bottom: info.height - 1 };
 	}
 	return { left: Math.max(0, left - pad), top: Math.max(0, top - pad), right: Math.min(info.width - 1, right + pad), bottom: Math.min(info.height - 1, bottom + pad) };
+}
+
+function escape(text) {
+	return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+}
+
+async function keyed(image, label, region, position) {
+	if (!label) {
+		return image.png().toBuffer();
+	}
+	const width = Math.max(34, Math.round(label.length * 9.5 + 24));
+	const height = 32;
+	const left = position ? position[0] : region.width - width - 14;
+	const top = position ? position[1] : region.height - height - 14;
+	const badge = `<svg xmlns="http://www.w3.org/2000/svg" width="${width + 4}" height="${height + 6}">`
+		+ `<rect x="2" y="5" width="${width}" height="${height}" rx="9" fill="#262B35"/>`
+		+ `<rect x="2" y="2" width="${width}" height="${height}" rx="9" fill="#171A21" stroke="#3A4150" stroke-width="1.5"/>`
+		+ `<text x="${2 + width / 2}" y="${2 + height / 2 + 5.5}" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="16" fill="#E7E9EE" text-anchor="middle">${escape(label)}</text>`
+		+ '</svg>';
+	const base = await image.png().toBuffer();
+	return sharp(base).composite([{ input: Buffer.from(badge), left: Math.max(0, left - 2), top: Math.max(0, top - 2) }]).png().toBuffer();
 }
 
 async function main() {
@@ -201,7 +274,7 @@ async function main() {
 				throw new Error(`${name} has ${frames.length} raw frames instead of ${film.times.length}, render its scenario again`);
 			}
 			const delay = film.times.map((time, index) => (index + 1 < film.times.length ? film.times[index + 1] - time : setting.hold?.[0] ?? Math.round(1000 / film.fps)));
-			const buffers = await Promise.all(frames.map((frame) => sharp(frame).extract(region).png().toBuffer()));
+			const buffers = await Promise.all(frames.map((frame, index) => keyed(sharp(frame).extract(region), film.labels[index], region, setting.keys)));
 			const encoding = setting.quality ? { quality: setting.quality[0], smartSubsample: true } : { lossless: true };
 			await sharp(buffers, { join: { animated: true } }).webp({ ...encoding, loop: 0, delay }).toFile(target);
 			const still = Math.min(setting.still?.[0] ?? buffers.length - 1, buffers.length - 1);

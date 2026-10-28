@@ -10,13 +10,16 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class TypesUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153).lock();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	// #region types
 	private final BooleanSignal      details = new BooleanSignal(true);
@@ -25,28 +28,30 @@ public class TypesUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(TypesUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(TypesUI.TEXT);
 
 		RectNode
 		.create(560, 340, 800, 400)
-		.color(TypesUI.PLACEHOLDER)
+		.color(TypesUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(TypesUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region use
 			RectNode
 			.create(60, 40, 200, 60)
-			.color(Color.WHITE)
+			.color(TypesUI.ELEMENT)
 			.onClick(event -> this.names.add("Linus"))
 			.label(Text.create("Add Linus", info))
 			.attach(card);
 			RectNode
 			.create(300, 40, 200, 60)
-			.color(Color.WHITE)
+			.color(TypesUI.ELEMENT)
 			.onClick(event -> this.names.remove("Ada"))
 			.label(Text.create("Remove Ada", info))
 			.attach(card);
 			RectNode
 			.create(540, 40, 200, 60)
-			.color(Color.WHITE)
+			.color(TypesUI.ELEMENT)
 			.onClick(event -> this.details.toggle())
 			.label(Text.create("Details", info))
 			.attach(card);

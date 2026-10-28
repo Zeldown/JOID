@@ -1,16 +1,16 @@
-# crop describing-text-styles 610 390 700 300
+# crop describing-text-styles 590 370 740 340
 ui com.example.describing.text.GreetingUI
 wait 100
 shot describing-text-styles
-# crop describing-text-align 660 390 600 300
+# crop describing-text-align 640 370 640 340
 ui com.example.describing.text.AlignUI
 wait 100
 shot describing-text-align
-# crop describing-text-modes 460 290 1000 500
+# crop describing-text-modes 440 270 1040 540
 ui com.example.describing.text.ModesUI
 wait 100
 shot describing-text-modes
-# crop describing-text-runs 610 340 700 400
+# crop describing-text-runs 590 320 740 440
 # still describing-text-runs 70
 ui com.example.describing.text.RunsUI
 move 1200 700

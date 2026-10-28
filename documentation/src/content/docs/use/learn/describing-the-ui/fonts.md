@@ -46,7 +46,7 @@ A style asks for a weight and a slant, and the family draws the face that matche
 
 <figure>
 
-![A light grey card with three grey lines: Regular 400 in regular weight, Bold 700 in bold, and Italic, slanted in a slanted regular face](/captures/describing-fonts-weights.webp)
+![A dark card with three light lines: Regular 400 in regular weight, Bold 700 in bold, and Italic, slanted in a slanted regular face](/captures/describing-fonts-weights.webp)
 
 <figcaption>
 One family loaded with a Regular and a Bold face.

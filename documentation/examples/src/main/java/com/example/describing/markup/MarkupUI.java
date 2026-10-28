@@ -10,13 +10,16 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.font.modifier.TextModifier;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class MarkupUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	private static final TagTextMarkup         MARKUP   = new TagTextMarkup();
 	private static final DurationTextConverter DURATION = new DurationTextConverter();
@@ -27,11 +30,13 @@ public class MarkupUI extends UI {
 		TextConverter.register(MarkupUI.DURATION);
 		// #endregion
 
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(MarkupUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(MarkupUI.TEXT);
 
 		RectNode
 		.create(560, 315, 800, 450)
-		.color(MarkupUI.PLACEHOLDER)
+		.color(MarkupUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(MarkupUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region markup
 			final TextInfo tagged = info.withMarkups(MarkupUI.MARKUP);

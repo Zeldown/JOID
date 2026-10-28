@@ -7,8 +7,8 @@ public class KitScrollbarNode extends ScrollbarNode {
 
 	protected KitScrollbarNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.track(RectNode.create(0, 0, 0, 0).color(KitColors.SURFACE));
-		super.thumb(RectNode.create(0, 0, 0, 0).color(KitColors.INK));
+		super.track(RectNode.create(0, 0, 0, 0).color(KitColors.ELEMENT));
+		super.thumb(RectNode.create(0, 0, 0, 0).color(KitColors.ACCENT));
 	}
 
 	public static KitScrollbarNode create(final double x, final double y, final double width, final double height) {

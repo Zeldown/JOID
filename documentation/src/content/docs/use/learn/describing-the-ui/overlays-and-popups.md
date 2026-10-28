@@ -30,7 +30,7 @@ Open it like any UI, here from a button of the screen:
 
 <figure>
 
-![The pointer clicks a grey Quit button on a light grey screen: a dark veil dims the screen and a light grey card opens in its middle, reading Quit the game? above two grey buttons, Cancel and Quit; a click on Cancel closes it.](/captures/describing-overlays-popup.webp)
+![A settings screen with the title Settings and the lines Music: on and Volume: 80 %; the pointer clicks its blue Quit button: a dark veil dims the screen, which stays visible around a dark card that opens in its middle, reading Quit the game? above a dark grey Cancel button and a blue Quit button; a click on Cancel closes it.](/captures/describing-overlays-popup.webp)
 
 <figcaption>
 The popup opens above `SettingsUI` without closing it, and its UI backdrop dims the screen.
@@ -68,7 +68,7 @@ A UI cannot be both a popup and an overlay: JOID refuses to create it.
 
 <figure>
 
-![The top-right corner of a light grey screen, under a white square with a grey disc in its middle; the pointer clicks the square twice: the disc doubles in size, then shrinks back.](/captures/describing-overlays-minimap.webp)
+![The top-right corner of the screen, under a dark square with a blue disc in its middle; the pointer clicks the square twice: the disc doubles in size, then shrinks back.](/captures/describing-overlays-minimap.webp)
 
 <figcaption>
 The minimap overlay is drawn above the screen and takes the clicks on it.

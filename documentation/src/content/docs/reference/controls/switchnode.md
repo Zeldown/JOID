@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A choice that shows every option side by side, one node per option, and selects the option under a left press.
 
-![A switch with three states, Two selected; the pointer selects Three, One, then Two](/captures/catalog-controls-switchnode.webp)
+![A switch with three states, Two selected in blue; the pointer selects Three, One, then Two](/captures/catalog-controls-switchnode.webp)
 
 ## Description
 

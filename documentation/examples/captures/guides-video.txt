@@ -1,4 +1,4 @@
-# crop guides-video 550 190 820 600
+# crop guides-video 550 190 820 620
 # still guides-video 0
 # quality guides-video 82
 ui com.example.guides.VideoGuideUI

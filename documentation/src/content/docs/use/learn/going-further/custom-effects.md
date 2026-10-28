@@ -28,10 +28,10 @@ This one draws a flat shadow under the node:
 
 <figure>
 
-![A white rectangle with a dark grey rectangle of the same size offset to its bottom right, on a light grey background](/captures/further-effects-shadow.webp)
+![A dark grey rectangle with a blue rectangle of the same size offset to its bottom right](/captures/further-effects-shadow.webp)
 
 <figcaption>
-The effect draws the dark rectangle, then runs `body`, which draws the node over it.
+The effect draws the blue rectangle, then runs `body`, which draws the node over it.
 </figcaption>
 </figure>
 
@@ -54,7 +54,7 @@ This effect lifts the node while the pointer is over it, by moving the matrix:
 
 <figure>
 
-![The pointer moves onto a grey rectangle, which rises by a few pixels, then leaves it, and the rectangle comes back down](/captures/further-effects-lift.webp)
+![The pointer moves onto a blue rectangle, which rises by a few pixels, then leaves it, and the rectangle comes back down](/captures/further-effects-lift.webp)
 
 <figcaption>
 `hoverValue` follows the hover progress of the node, so the lift eases in and out.
@@ -79,10 +79,10 @@ An effect that changes the pixels returns a [shader pass](/use/learn/going-furth
 
 <figure>
 
-![On a light grey background, two light grey rectangles side by side: the first holds a white disc, the second a black disc](/captures/further-effects-invert.webp)
+![Two light beige rectangles side by side, the inverse of their dark grey: the first holds a blue disc, the second an ochre disc, the inverse of the blue](/captures/further-effects-invert.webp)
 
 <figcaption>
-Both rectangles are drawn dark grey with a white disc: `SELF` inverts the rectangle alone and its disc stays white, `CHILDREN` inverts the disc too, which turns black.
+Both rectangles are drawn dark grey with a blue disc: `SELF` inverts the rectangle alone and its disc stays blue, `CHILDREN` inverts the disc too, which turns ochre.
 </figcaption>
 </figure>
 
@@ -130,7 +130,7 @@ The type parameter limits the nodes that take the effect: an effect for [[RectNo
 ## Try it
 
 **A colored shadow.**
-Give the hard shadow the violet [[Color]] `new Color(124, 92, 255)` and an offset of 6 design pixels.
+Give the hard shadow the blue [[Color]] `new Color(91, 140, 255)` and an offset of 6 design pixels.
 
 <details>
 <summary>Solution</summary>

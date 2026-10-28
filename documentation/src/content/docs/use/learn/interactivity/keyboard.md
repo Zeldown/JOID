@@ -25,7 +25,7 @@ The keyboard uses the `handle` events of [Events](/use/learn/interactivity/event
 
 <figure>
 
-![A grey card that reads "Key: none" and "Typed: "; the user types hello: "Key" names each key as it goes down, and each letter joins "Typed"](/captures/interactivity-keys.webp)
+![A dark card that reads "Key: none" and "Typed: "; the user types hello, each letter showing in a badge at the bottom right: "Key" names each key as it goes down, and each letter joins "Typed"](/captures/interactivity-keys.webp)
 
 <figcaption>
 The user types `hello`: each key goes down once, and each character arrives as a code point.
@@ -80,7 +80,7 @@ To act on every frame while it is held, read its state in an update:
 
 <figure>
 
-![A grey square that slides to the right of a card while D is held and stops when it is released, then slides back to its place while A is held](/captures/interactivity-walk.webp)
+![A blue square that slides to the right of a dark card while D is held, shown in a badge, and stops when it is released, then slides back to its place while A is held](/captures/interactivity-walk.webp)
 
 <figcaption>
 The square moves 300 design pixels per second while D is held, at any frame rate.
@@ -102,7 +102,7 @@ A [[Shortcut]] runs a listener when its key goes down with its modifiers:
 
 <figure>
 
-![A card with a white "Notes" field and the texts "Ctrl + S: 0" and "F1: 0"; Ctrl + S and F1 count once each, then the pointer clicks the field, the user types, and of the same two shortcuts only F1 counts again](/captures/interactivity-shortcut.webp)
+![A dark card with a dark grey "Notes" field and the texts "Ctrl + S: 0" and "F1: 0"; each shortcut shows in a badge at the bottom right; Ctrl + S and F1 count once each, then the pointer clicks the field, the user types, and of the same two shortcuts only F1 counts again](/captures/interactivity-shortcut.webp)
 
 <figcaption>
 Ctrl + S counts once before the field takes the focus; F1 counts twice, the second time while the user types in the field.

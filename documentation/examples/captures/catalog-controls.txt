@@ -4,7 +4,7 @@ wait 100
 # crop catalog-controls-textfieldnode 40 40 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 340 310
+move 330 295
 # film catalog-controls-textfieldnode
 wait 300
 moveto 310 192 500
@@ -20,7 +20,7 @@ key BACKSPACE
 wait 250
 key BACKSPACE
 wait 500
-moveto 340 310 500
+moveto 330 295 500
 wait 200
 press LEFT
 release LEFT
@@ -29,7 +29,7 @@ cut
 # crop catalog-controls-multilinetextfieldnode 410 40 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 710 310
+move 700 295
 # film catalog-controls-multilinetextfieldnode
 wait 300
 moveto 610 190 500
@@ -51,7 +51,7 @@ key BACKSPACE
 wait 200
 key BACKSPACE
 wait 500
-moveto 710 310 500
+moveto 700 295 500
 wait 200
 press LEFT
 release LEFT
@@ -60,7 +60,7 @@ cut
 # crop catalog-controls-integerfieldnode 780 40 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1080 310
+move 1070 295
 # film catalog-controls-integerfieldnode
 wait 300
 moveto 1020 192 500
@@ -76,7 +76,7 @@ key DOWN
 wait 500
 key DOWN
 wait 500
-moveto 1080 310 500
+moveto 1070 295 500
 wait 200
 press LEFT
 release LEFT
@@ -85,7 +85,7 @@ cut
 # crop catalog-controls-checkboxnode 1150 40 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1450 310
+move 1440 295
 # film catalog-controls-checkboxnode
 wait 300
 moveto 1254 184 500
@@ -108,13 +108,13 @@ wait 200
 press LEFT
 release LEFT
 wait 466
-moveto 1450 310 500
+moveto 1440 295 500
 wait 300
 cut
 # crop catalog-controls-togglenode 1520 40 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1820 310
+move 1810 295
 # film catalog-controls-togglenode
 wait 300
 moveto 1720 157 500
@@ -137,13 +137,13 @@ wait 200
 press LEFT
 release LEFT
 wait 466
-moveto 1820 310 500
+moveto 1810 295 500
 wait 300
 cut
 # crop catalog-controls-switchnode 40 380 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 340 650
+move 330 635
 # film catalog-controls-switchnode
 wait 300
 moveto 310 532 500
@@ -161,13 +161,13 @@ wait 200
 press LEFT
 release LEFT
 wait 700
-moveto 340 650 500
+moveto 330 635 500
 wait 300
 cut
 # crop catalog-controls-selectornode 410 380 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 710 650
+move 700 635
 # film catalog-controls-selectornode
 wait 300
 moveto 600 532 500
@@ -190,13 +190,13 @@ wait 300
 press LEFT
 release LEFT
 wait 466
-moveto 710 650 500
+moveto 700 635 500
 wait 300
 cut
 # crop catalog-controls-integerslidernode 780 380 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1080 650
+move 1070 635
 # film catalog-controls-integerslidernode 60
 wait 300
 moveto 930 532 500
@@ -209,13 +209,13 @@ wait 200
 moveto 930 532 500
 release LEFT
 wait 400
-moveto 1080 650 500
+moveto 1070 635 500
 wait 300
 cut
 # crop catalog-controls-doubleslidernode 1150 380 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1450 650
+move 1440 635
 # film catalog-controls-doubleslidernode 60
 wait 300
 moveto 1375 532 500
@@ -226,13 +226,13 @@ wait 300
 moveto 1375 532 800
 release LEFT
 wait 400
-moveto 1450 650 500
+moveto 1440 635 500
 wait 300
 cut
 # crop catalog-controls-stringslidernode 1520 380 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 1820 650
+move 1810 635
 # film catalog-controls-stringslidernode 60
 wait 300
 moveto 1800 512 500
@@ -249,13 +249,13 @@ press LEFT
 moveto 1690 512 500
 release LEFT
 wait 500
-moveto 1820 650 500
+moveto 1810 635 500
 wait 300
 cut
 # crop catalog-controls-scrollbarnode 40 720 340 300
 ui com.example.catalog.ControlsCatalogUI
 wait 100
-move 340 990
+move 330 975
 # film catalog-controls-scrollbarnode 60
 wait 300
 moveto 210 870 500
@@ -268,6 +268,6 @@ press LEFT
 moveto 334 780 700
 release LEFT
 wait 500
-moveto 340 990 400
+moveto 330 975 400
 wait 300
 cut

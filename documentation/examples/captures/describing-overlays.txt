@@ -1,5 +1,5 @@
 # crop describing-overlays-stack 410 190 1100 700
-# crop describing-overlays-popup 660 340 600 400
+# crop describing-overlays-popup 440 220 1040 640
 # still describing-overlays-popup 90
 # crop describing-overlays-minimap 1300 0 620 420
 ui com.example.describing.overlays.StackDiagramUI

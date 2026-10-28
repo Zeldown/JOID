@@ -5,6 +5,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataPopup;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 // #region popup
@@ -12,11 +14,16 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 @UIDataPopup(active = true)
 public class NoticeUI extends UI {
 
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+
 	@Override
 	public void init() {
 		RectNode
 		.create(760, 390, 400, 300)
-		.color(Color.WHITE)
+		.color(NoticeUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(NoticeUI.ELEMENT, 1.5F))
 		.onClick(event -> JOID.close(this))
 		.attach(this);
 	}

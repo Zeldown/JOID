@@ -8,7 +8,7 @@ import dev.joid.lib.font.markup.ITextMarkup;
 // #region class
 public final class TagTextMarkup implements ITextMarkup {
 
-	private static final Color ACCENT = new Color(85, 85, 85);
+	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	@Override
 	public int parse(final String text, final int index, final TextStyle style) {

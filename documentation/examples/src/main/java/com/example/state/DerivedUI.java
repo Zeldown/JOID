@@ -9,19 +9,23 @@ import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class DerivedUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT      = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
+	private static final Color SURFACE   = new Color(23, 26, 33).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(DerivedUI.INK);
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(DerivedUI.TEXT);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(DerivedUI.ON_ACCENT);
 		// #region sources
 		final IntegerSignal price = new IntegerSignal(12);
 		final IntegerSignal quantity = new IntegerSignal(1);
@@ -36,14 +40,16 @@ public class DerivedUI extends UI {
 
 		RectNode
 		.create(560, 290, 800, 500)
-		.color(Color.WHITE)
+		.color(DerivedUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(DerivedUI.ELEMENT, 1.5F))
 		.body(card -> {
-			RectNode.create(60, 60, 200, 60).color(DerivedUI.INK).onClick(event -> price.increment()).label(Text.create("Price +1", label)).attach(card);
-			RectNode.create(300, 60, 200, 60).color(DerivedUI.INK).onClick(event -> quantity.increment()).label(Text.create("Quantity +1", label)).attach(card);
+			RectNode.create(60, 60, 200, 60).color(DerivedUI.ACCENT).onClick(event -> price.increment()).label(Text.create("Price +1", label)).attach(card);
+			RectNode.create(300, 60, 200, 60).color(DerivedUI.ACCENT).onClick(event -> quantity.increment()).label(Text.create("Quantity +1", label)).attach(card);
 			// #region batch
 			RectNode
 			.create(540, 60, 200, 60)
-			.color(DerivedUI.INK)
+			.color(DerivedUI.ACCENT)
 			.onClick(event -> Signal.batch(() -> {
 				price.increment();
 				quantity.increment();

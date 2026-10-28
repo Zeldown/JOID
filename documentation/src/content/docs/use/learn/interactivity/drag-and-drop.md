@@ -25,7 +25,7 @@ This page shows where the node may go, how it lands on a target, and how to drag
 
 <figure>
 
-![The pointer presses a grey square at the top left of a card, drags it to the bottom right corner and releases it, then drags it back to its place; the text goes from "Drops: 0" to "Drops: 2"](/captures/interactivity-drag.webp)
+![The pointer presses a blue square at the top left of a dark card, drags it to the bottom right corner and releases it, then drags it back to its place; the text goes from "Drops: 0" to "Drops: 2"](/captures/interactivity-drag.webp)
 
 <figcaption>
 The square follows the pointer with a short easing, and never leaves its parent.
@@ -84,7 +84,7 @@ At the drop, the node slides onto the nearest target, centered on it:
 
 <figure>
 
-![The pointer drags a grey square from the top of a card and releases it between the slots B and C, closer to C; the square slides into the slot C and the text reads "Slot: C"](/captures/interactivity-snap.webp)
+![The pointer drags a blue square from the top of a dark card and releases it between the dark grey slots B and C, closer to C; the square slides into the slot C and the text reads "Slot: C"](/captures/interactivity-snap.webp)
 
 <figcaption>
 The square lands on the slot whose center is the nearest to its own.
@@ -109,7 +109,7 @@ With [[DraggableProperty.DraggableType]]`.COPY`, the user drags a copy and the o
 
 <figure>
 
-![The pointer drags a copy of a grey "Sword" chip into a white slot; at the release, the copy disappears and a "Sword" chip stays in the slot, while the original is still on the left](/captures/interactivity-copy.webp)
+![The pointer drags a copy of a blue "Sword" chip into a dark grey slot; at the release, the copy disappears and a "Sword" chip stays in the slot, while the original is still on the left](/captures/interactivity-copy.webp)
 
 <figcaption>
 The copy disappears at the drop: the listener of `onDragSnap` puts a chip of its own in the slot.
@@ -123,7 +123,7 @@ The events run on the original node.
 ## Drag from a handle only
 
 [[DraggableProperty#enabled]] takes a predicate that JOID tests when a drag would start.
-This window moves only from its grey bar:
+This window moves only from its blue bar:
 
 ```java file="com/example/interactivity/drag/HandleUI.java" region="handle"
 ```

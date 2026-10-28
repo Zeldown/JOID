@@ -544,7 +544,7 @@ Pass the height of a glyph cell in texels, above `0`: [Write a pixel-art font](/
 
 [[FontFamily#of]] received no face.
 
-Pass at least one face: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
+Pass at least one face: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
 
 ## IllegalArgumentException Two faces share the weight …, keep one face per weight and style
 
@@ -556,7 +556,7 @@ Keep one face per weight and style, or set the weight of a file: [Set the weight
 
 Code of your own called a text renderer with a [[TextInfo]] whose font belongs to another renderer.
 
-Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
+Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
 
 ## IllegalArgumentException A font face needs a name, got an empty one: give the face the name of its font
 

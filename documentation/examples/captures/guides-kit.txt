@@ -1,7 +1,7 @@
 # crop guides-kit 580 310 760 490
 # still guides-kit 150
 ui com.example.guides.KitGuideUI
-move 1290 780
+move 1290 760
 # film guides-kit 60
 wait 200
 moveto 1015 550 400
@@ -26,5 +26,5 @@ wait 200
 press LEFT
 release LEFT
 wait 366
-moveto 1290 780 400
+moveto 1290 760 400
 wait 200

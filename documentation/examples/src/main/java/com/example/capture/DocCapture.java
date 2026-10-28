@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +31,10 @@ public final class DocCapture {
 
 	private static final int[] POINTER_X = {0, 0, 6, 10, 14, 11, 18};
 	private static final int[] POINTER_Y = {0, 25, 19, 29, 27, 18, 18};
+
+	private static final Color POINTER_FILL    = new Color(231, 233, 238);
+	private static final Color POINTER_RING    = new Color(91, 140, 255);
+	private static final Color POINTER_OUTLINE = new Color(14, 16, 20);
 
 	private static final int MASK = 0xFFFF00FF;
 
@@ -73,8 +78,8 @@ public final class DocCapture {
 	}
 
 	private static void capture(final SnapshotRunner runner, final File file, final File output, final double[] mouse) throws IOException {
-		final List<String> commands = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-		final Map<String, double[]> pointers = DocCapture.trackPointer(commands, mouse);
+		final List<String> commands = DocCapture.stage(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+		final Map<String, Pointer> pointers = DocCapture.trackPointer(commands, mouse);
 		final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
 		final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
 		output.mkdirs();
@@ -85,6 +90,25 @@ public final class DocCapture {
 			count += shots.size();
 		}
 		System.out.println(file.getName() + " -> " + count + " shots");
+	}
+
+	private static List<String> stage(final List<String> commands) {
+		if (DocCapture.isBare(commands)) {
+			return commands;
+		}
+
+		final List<String> staged = new ArrayList<>();
+		for (final String line : commands) {
+			staged.add(line);
+			if (line.trim().startsWith("ui ")) {
+				staged.add("open " + StageUI.class.getName());
+			}
+		}
+		return staged;
+	}
+
+	private static boolean isBare(final List<String> commands) {
+		return commands.stream().anyMatch(line -> line.trim().equals("# bare"));
 	}
 
 	private static List<List<String>> split(final List<String> commands) {
@@ -112,7 +136,7 @@ public final class DocCapture {
 		return parts;
 	}
 
-	private static void write(final Map<String, SnapshotImage> shots, final File output, final Map<String, double[]> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
+	private static void write(final Map<String, SnapshotImage> shots, final File output, final Map<String, Pointer> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
 		shots.entrySet().parallelStream().forEach(shot -> {
 			final SnapshotImage snapshot = shot.getValue();
 			final BufferedImage image = new BufferedImage(snapshot.getWidth(), snapshot.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -128,22 +152,42 @@ public final class DocCapture {
 		});
 	}
 
-	private static Map<String, double[]> trackPointer(final List<String> commands, final double[] mouse) {
-		final Map<String, double[]> pointers = new HashMap<>();
+	private static Map<String, Pointer> trackPointer(final List<String> commands, final double[] mouse) {
+		final Map<String, Pointer> pointers = new HashMap<>();
+		final boolean bare = DocCapture.isBare(commands);
+		double time = 0D;
+		double pressed = Double.NEGATIVE_INFINITY;
+		boolean held = false;
 		for (final String line : commands) {
 			final String[] arguments = line.trim().split("\\s+");
 			switch (arguments[0]) {
 			case "ui":
 				mouse[0] = -5000D;
 				mouse[1] = -5000D;
+				pressed = Double.NEGATIVE_INFINITY;
+				held = false;
+				break;
+			case "wait":
+				time += Double.parseDouble(arguments[1]);
 				break;
 			case "move":
-			case "moveto":
 				mouse[0] = Double.parseDouble(arguments[1]);
 				mouse[1] = Double.parseDouble(arguments[2]);
 				break;
+			case "moveto":
+				mouse[0] = Double.parseDouble(arguments[1]);
+				mouse[1] = Double.parseDouble(arguments[2]);
+				time += Double.parseDouble(arguments[3]);
+				break;
+			case "press":
+				pressed = time;
+				held = true;
+				break;
+			case "release":
+				held = false;
+				break;
 			case "shot":
-				pointers.put(arguments[1], new double[] {mouse[0], mouse[1]});
+				pointers.put(arguments[1], bare ? null : new Pointer(mouse[0], mouse[1], time - pressed, held));
 				break;
 			default:
 				break;
@@ -200,12 +244,16 @@ public final class DocCapture {
 				}
 			}
 		}
-		return counts.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0xFFDDDDDD);
+		return counts.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0xFF0E1014);
 	}
 
-	private static void drawPointer(final BufferedImage image, final double[] pointer) {
-		final int x = (int) Math.round(pointer[0]);
-		final int y = (int) Math.round(pointer[1]);
+	private static void drawPointer(final BufferedImage image, final Pointer pointer) {
+		if (pointer == null) {
+			return;
+		}
+
+		final int x = (int) Math.round(pointer.x);
+		final int y = (int) Math.round(pointer.y);
 		if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight()) {
 			return;
 		}
@@ -218,14 +266,63 @@ public final class DocCapture {
 		final Graphics2D graphics = image.createGraphics();
 		try {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			graphics.setColor(Color.BLACK);
+			DocCapture.drawPress(graphics, pointer);
+			graphics.setColor(DocCapture.POINTER_FILL);
 			graphics.fillPolygon(arrow);
-			graphics.setColor(Color.WHITE);
+			graphics.setColor(DocCapture.POINTER_OUTLINE);
 			graphics.setStroke(new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 			graphics.drawPolygon(arrow);
 		} finally {
 			graphics.dispose();
 		}
+	}
+
+	private static void drawPress(final Graphics2D graphics, final Pointer pointer) {
+		if (pointer.held) {
+			graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_RING, 0.3D));
+			graphics.fill(new Ellipse2D.Double(pointer.x - 14D, pointer.y - 14D, 28D, 28D));
+			DocCapture.drawRing(graphics, pointer.x, pointer.y, 14D, 1D);
+			return;
+		}
+		if (pointer.pressAge < 0D || pointer.pressAge >= 450D) {
+			return;
+		}
+
+		final double progress = pointer.pressAge / 450D;
+		final double radius = 14D + 12D * (1D - Math.pow(1D - progress, 3D));
+		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_RING, 0.3D * (1D - progress)));
+		graphics.fill(new Ellipse2D.Double(pointer.x - 14D, pointer.y - 14D, 28D, 28D));
+		DocCapture.drawRing(graphics, pointer.x, pointer.y, radius, 1D - progress);
+	}
+
+	private static void drawRing(final Graphics2D graphics, final double x, final double y, final double radius, final double alpha) {
+		final Ellipse2D ring = new Ellipse2D.Double(x - radius, y - radius, radius * 2D, radius * 2D);
+		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_OUTLINE, alpha * 0.9D));
+		graphics.setStroke(new BasicStroke(6F));
+		graphics.draw(ring);
+		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_RING, alpha));
+		graphics.setStroke(new BasicStroke(3F));
+		graphics.draw(ring);
+	}
+
+	private static Color withAlpha(final Color color, final double alpha) {
+		return new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) Math.round(Math.max(0D, Math.min(1D, alpha)) * 255D));
+	}
+
+	private static final class Pointer {
+
+		private final double x;
+		private final double y;
+		private final double pressAge;
+		private final boolean held;
+
+		private Pointer(final double x, final double y, final double pressAge, final boolean held) {
+			this.x = x;
+			this.y = y;
+			this.pressAge = pressAge;
+			this.held = held;
+		}
+
 	}
 
 }

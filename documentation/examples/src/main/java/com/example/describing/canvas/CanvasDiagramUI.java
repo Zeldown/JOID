@@ -11,7 +11,7 @@ public class CanvasDiagramUI extends DiagramUI {
 		super.backdrop(360, 290, 1200, 500).body(backdrop -> {
 			RectNode
 			.create(40, 80, 640, 270)
-			.color(DiagramUI.LABEL)
+			.color(DiagramUI.ELEMENT)
 			.body(window -> RectNode
 				.create(80, 0, 480, 270)
 				.color(DiagramUI.SURFACE)
@@ -21,7 +21,7 @@ public class CanvasDiagramUI extends DiagramUI {
 
 			RectNode
 			.create(760, 40, 400, 360)
-			.color(DiagramUI.LABEL)
+			.color(DiagramUI.ELEMENT)
 			.body(window -> RectNode
 				.create(0, 67.5, 400, 225)
 				.color(DiagramUI.SURFACE)

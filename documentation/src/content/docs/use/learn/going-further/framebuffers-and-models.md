@@ -29,7 +29,7 @@ This node fills one on its first frame, draws it, and deletes it when it leaves 
 
 <figure>
 
-![The same white disc with a grey center twice on a light grey background: a large one and a small one to its right](/captures/further-framebuffers-stamp.webp)
+![The same dark grey disc with a blue center twice: a large one and a small one to its right](/captures/further-framebuffers-stamp.webp)
 
 <figcaption>
 One framebuffer per node, filled once, drawn at 128 and 64 design pixels.
@@ -59,7 +59,7 @@ A drawing that needs a fresh target on every frame, such as a group of shapes dr
 
 <figure>
 
-![Two overlapping white discs at half transparency on a light grey background, with no darker area where they overlap](/captures/further-framebuffers-pool.webp)
+![Two overlapping light discs at half transparency, grey on the dark stage, with no lighter area where they overlap](/captures/further-framebuffers-pool.webp)
 
 <figcaption>
 Drawn into a borrowed target, then drawn at 50 %, the two discs share one transparency.
@@ -87,7 +87,7 @@ Here, a triangle with one color per vertex:
 
 <figure>
 
-![A triangle whose corners are white, grey and dark grey, the colors blending across it, on a light grey background](/captures/further-framebuffers-triangle.webp)
+![A triangle whose corners are light grey, blue and dark grey, the colors blending across it](/captures/further-framebuffers-triangle.webp)
 
 <figcaption>
 The colors of the three vertices blend across the triangle.
@@ -130,7 +130,7 @@ To get it without `bind` or a node that draws the resource, call [[Resource#prep
 
 <figure>
 
-![A light grey pyramid seen from the front, its faces lit from the viewer, on a light grey background](/captures/further-framebuffers-model.webp)
+![A light grey pyramid turned to show two of its faces, one lit in white and the other in a slightly darker grey, the light coming from the viewer](/captures/further-framebuffers-model.webp)
 
 <figcaption>
 `PyramidModel` sends four triangles with their normals, around the origin, in model units.

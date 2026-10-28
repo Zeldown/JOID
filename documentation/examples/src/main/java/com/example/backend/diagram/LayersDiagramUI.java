@@ -27,15 +27,7 @@ public class LayersDiagramUI extends BuildDiagramUI {
 
 		super.arrow(backdrop, 381D, 305D, 409D, 305D);
 
-		super.line(backdrop, 167D, 425D, 992D, 425D);
-		for (final double x : new double[] {167D, 442D, 717D, 992D}) {
-			super.line(backdrop, x, 470D, x, 425D);
-		}
-		super.line(backdrop, 580D, 425D, 580D, 395D);
-		super.line(backdrop, 210D, 395D, 950D, 395D);
-		for (final double x : new double[] {210D, 580D, 950D}) {
-			super.arrow(backdrop, x, 395D, x, 365D);
-		}
+		super.note(40, 385, 1080, 40, "Each backend uses the base modules named in its box").attach(backdrop);
 	}
 
 }

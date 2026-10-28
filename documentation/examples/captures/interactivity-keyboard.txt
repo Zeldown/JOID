@@ -1,7 +1,7 @@
-# crop interactivity-keys 660 440 600 200
+# crop interactivity-keys 640 420 640 240
 # still interactivity-keys 60
-# crop interactivity-walk 660 390 600 300
-# crop interactivity-shortcut 660 390 600 300
+# crop interactivity-walk 640 370 640 340
+# crop interactivity-shortcut 640 370 640 340
 # still interactivity-shortcut 140
 ui com.example.interactivity.keyboard.KeysUI
 # film interactivity-keys

@@ -39,7 +39,7 @@ Its three buttons are Inspect, Reload and Grid, next to the frame rate of the UI
 
 <figure>
 
-![A light grey UI with a grey Clicks button at its center and the dark dev panel in the bottom-right corner, with its Inspect, Reload and Grid icons and a frame rate; while the pointer is on the button, the button is outlined with a dashed blue frame under a dark label that reads RectNode](/captures/start-dev-inspect.webp)
+![The counter, a blue Clicks button at its center, and the dark dev panel in the bottom-right corner, with its Inspect, Reload and Grid icons and a frame rate; while the pointer is on the button, the button is outlined with a dashed blue frame under a dark label that reads RectNode](/captures/start-dev-inspect.webp)
 
 <figcaption>
 With Inspect on, the node under the pointer is outlined and named.
@@ -58,7 +58,7 @@ The label also gives its render time in milliseconds.
 
 <figure>
 
-![The middle of the light grey window of the counter, drawn large, crossed by two blue lines through the center of the canvas and by two blue lines through the pointer, labelled with the distances in pixels from the pointer to the edges of the canvas; as the pointer moves, the lines and the lengths follow it; the dev panel sits in the bottom-right corner](/captures/start-dev-grid.webp)
+![The middle of the window of the counter, drawn large, crossed by two blue lines through the center of the canvas and by two blue lines through the pointer, labelled with the distances in pixels from the pointer to the edges of the canvas; as the pointer moves, the lines and the lengths follow it; the dev panel sits in the bottom-right corner](/captures/start-dev-grid.webp)
 
 <figcaption>
 The grid measures the canvas from the pointer: copy a position from a mockup and check it here.

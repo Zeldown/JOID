@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A node that draws nothing and groups its children, to move, clip or scroll them together.
 
-![A white container holding two grey squares at fixed positions](/captures/catalog-nodes-containernode.webp)
+![A dark grey container holding two blue squares at fixed positions](/captures/catalog-nodes-containernode.webp)
 
 ## Learn more
 

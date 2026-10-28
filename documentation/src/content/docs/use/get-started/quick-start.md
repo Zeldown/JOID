@@ -11,7 +11,7 @@ Then it tours what you use every day, one short section per topic, each with a l
 
 <figure>
 
-![A light grey window with a grey button at its center; the button darkens under the pointer, which clicks it three times, and its label goes from Clicks: 0 to Clicks: 3](/captures/quick-start-counter.webp)
+![A blue button with rounded corners at the center of the window; the button lightens under the pointer, which clicks it three times, and its label goes from Clicks: 0 to Clicks: 3](/captures/quick-start-counter.webp)
 
 <figcaption>
 The program of this page: at each click, the label follows the counter by itself.
@@ -32,7 +32,6 @@ A UI is a class that extends [[UI]] and creates its nodes in `init()`:
 ```java file="com/example/start/CounterUI.java" title="CounterUI.java"
 ```
 
-- The annotation [[UIData]], `@UIData(background = true, backgroundColor = "#DDDDDD")`, fills the window behind the UI with a light grey ([UIs](/use/learn/describing-the-ui/uis/#configure-a-ui)).
 - [[MsdfFontLoader]] loads the font; the first run on a machine takes a few seconds, and later runs read a [cache](/use/in-depth/msdf-text/#what-happens-when-a-font-loads).
 - [[RectNode]]`.create(760, 480, 400, 120)` is a 400 × 120 rectangle at the center of the 1920 × 1080 canvas, and `attach(this)` adds it to the UI.
 - `onClick(...)` increments the signal `clicks`, and the label that reads `this.clicks.get()` follows it: [Signals](/use/learn/interactivity/signals/) explains how.
@@ -89,8 +88,7 @@ An example that reads a file reads it from the resources, under the path that it
 The [resources of the examples](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/resources) hold every one of them: fonts, images, a video and 3D models.
 Copy the folders you need into your `src/main/resources`, under the same paths.
 
-JOID draws no control by itself: the examples of controls, text fields, events and shortcuts use the skins of the example kit.
-Copy the [package `com.example.kit`](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/java/com/example/kit) next to `ExampleFont` to run them.
+JOID draws no control by itself: each example of a control gives it its parts, the nodes that draw it, where it creates it.
 
 ## Place nodes on the design canvas
 
@@ -117,7 +115,7 @@ A [[FlexNode]] places its children one after the other, so you compute no positi
 
 <figure>
 
-![Three grey squares in a row on a white card, 20 design pixels apart](/captures/quick-start-flex.webp)
+![Three blue squares in a row on a dark card, 20 design pixels apart](/captures/quick-start-flex.webp)
 
 <figcaption>
 The row places each square after the previous one.
@@ -142,7 +140,7 @@ A [[ResourceNode]] draws an image, an animated GIF or WebP, or an SVG, loaded wi
 
 <figure>
 
-![A grey placeholder image crossed by two diagonals, on a white card](/captures/quick-start-image.webp)
+![A grey placeholder image crossed by two diagonals, on a dark card](/captures/quick-start-image.webp)
 
 <figcaption>
 The image fills the size of the node.
@@ -172,7 +170,7 @@ A node set from an expression that reads a signal follows that signal.
 
 <figure>
 
-![The pointer clicks a grey rectangle on a white card three times; at the third click, the rectangle turns dark grey](/captures/quick-start-click.webp)
+![The pointer clicks a dark grey rectangle on a dark card three times; at the third click, the rectangle turns blue](/captures/quick-start-click.webp)
 
 <figcaption>
 At the third click, the derived signal turns `true` and the color follows.
@@ -203,7 +201,7 @@ An effect changes how a node is drawn, never where it sits:
 
 <figure>
 
-![A grey rectangle with rounded corners and a soft shadow below it, on a white card](/captures/quick-start-effects.webp)
+![A blue rectangle with rounded corners and a soft shadow below it, on a dark card](/captures/quick-start-effects.webp)
 
 <figcaption>
 Two effects on one rectangle: the shadow follows the rounded shape.
@@ -224,7 +222,7 @@ A [[TweenAnimator]] moves a value over time, and a node that reads it in a lambd
 
 <figure>
 
-![A grey square slides from left to right and back on a white card](/captures/quick-start-animation.webp)
+![A blue square slides from left to right and back on a dark card](/captures/quick-start-animation.webp)
 
 <figcaption>
 The animator goes from 0 to 1 in 800 ms, then plays back and forth forever.

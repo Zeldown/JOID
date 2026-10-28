@@ -12,15 +12,24 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
+import dev.joid.lib.render.transform.Rotation;
+import dev.joid.lib.render.transform.Transformation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class FramebuffersUI extends UI {
 
 	// #region model
+	private static final Color TEXT = new Color(231, 233, 238).lock();
+
 	private final PyramidModel pyramid = new PyramidModel();
+
+	private final Transformation turn = Transformation
+	.create()
+	.translate(Vector.create(100D, 120D))
+	.rotate(20D, Rotation.YAW)
+	.rotate(-30D, Rotation.PITCH);
 	// #endregion
 
 	@Override
@@ -43,11 +52,11 @@ public class FramebuffersUI extends UI {
 			BridgeHandler.RENDER.get().withState(render -> {
 				render.getState().blend(BlendState.NORMAL).texture(null);
 				tessellator.start(DrawMode.TRIANGLES);
-				tessellator.setColor(255, 255, 255);
+				tessellator.setColor(231, 233, 238);
 				tessellator.addVertex(100D, 0D, 0D);
-				tessellator.setColor(153, 153, 153);
+				tessellator.setColor(91, 140, 255);
 				tessellator.addVertex(200D, 200D, 0D);
-				tessellator.setColor(85, 85, 85);
+				tessellator.setColor(38, 43, 53);
 				tessellator.addVertex(0D, 200D, 0D);
 				tessellator.draw();
 			});
@@ -69,8 +78,8 @@ public class FramebuffersUI extends UI {
 				projection.ortho(0D, node.getWidth(), node.getHeight(), 0D, -1000D, 1000D);
 				view.identity();
 				render.clearColor(0F, 0F, 0F, 0F);
-				DrawUtils.SHAPE.drawCircle(100D, 100D, Color.WHITE, 80D);
-				DrawUtils.SHAPE.drawCircle(200D, 100D, Color.WHITE, 80D);
+				DrawUtils.SHAPE.drawCircle(100D, 100D, FramebuffersUI.TEXT, 80D);
+				DrawUtils.SHAPE.drawCircle(200D, 100D, FramebuffersUI.TEXT, 80D);
 			})));
 
 			final double u = (double) width / target.getWidth();
@@ -89,7 +98,7 @@ public class FramebuffersUI extends UI {
 		// #region draw-model
 		ContainerNode
 		.create(1120, 80, 200, 200)
-		.layer((node, mouseX, mouseY) -> DrawUtils.MODEL.drawModel(100D, 120D, 120D, this.pyramid))
+		.layer((node, mouseX, mouseY) -> this.turn.apply(() -> DrawUtils.MODEL.drawModel(0D, 0D, 120D, this.pyramid)))
 		.attach(this);
 		// #endregion
 	}

@@ -7,19 +7,22 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class VideoGuideUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(VideoGuideUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(VideoGuideUI.TEXT);
 
 		// #region player
 		final ResourcePlayerNode player = ResourcePlayerNode
@@ -34,11 +37,13 @@ public class VideoGuideUI extends UI {
 		// #region progress
 		RectNode
 		.create(560, 670, 800, 8)
-		.color(Color.WHITE)
+		.color(VideoGuideUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(VideoGuideUI.ELEMENT, 1.5F))
 		.body(bar -> {
 			RectNode
 			.create(0, 0, 0, 8)
-			.color(VideoGuideUI.INK)
+			.color(VideoGuideUI.ACCENT)
 			.width(() -> 800D * player.getProgress())
 			.attach(bar);
 		})
@@ -48,7 +53,9 @@ public class VideoGuideUI extends UI {
 		// #region button
 		RectNode
 		.create(860, 710, 200, 70)
-		.color(Color.WHITE)
+		.color(VideoGuideUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(VideoGuideUI.ELEMENT, 1.5F))
 		.label(() -> Text.create(player.isPlaying() ? "Pause" : "Play", info))
 		.onClick(event -> player.toggle())
 		.attach(this);

@@ -1,13 +1,13 @@
-# crop running-backends-start 680 390 560 300
+# crop running-backends-start 660 370 600 340
 ui com.example.running.RunningStartUI
 wait 100
 shot running-backends-start
-# crop running-backends-tooltip 680 390 560 300
+# crop running-backends-tooltip 660 370 600 340
 # still running-backends-tooltip 45
-move 1180 670
+move 1180 650
 # film running-backends-tooltip
 wait 300
 moveto 975 550 500
 wait 1400
-moveto 1180 670 500
+moveto 1180 650 500
 wait 400

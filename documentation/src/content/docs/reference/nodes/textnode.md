@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws a Text in its bounds, and takes the size of the text when no size is declared.
 
-![The word Text in grey, centered on a light card](/captures/catalog-nodes-textnode.webp)
+![The word Text in light grey, centered on a dark card](/captures/catalog-nodes-textnode.webp)
 
 ## Description
 

@@ -25,7 +25,7 @@ A UI is a class that extends [[UI]] and builds its content in `init()`:
 
 <figure>
 
-![A light grey square card with the word Menu in grey at its top and three white bars stacked below it](/captures/describing-uis-menu.webp)
+![A dark square card with the word Menu in light letters at its top and three dark grey bars stacked below it](/captures/describing-uis-menu.webp)
 
 <figcaption>
 `MenuUI` on screen: everything a UI shows is a node that `init()` creates.
@@ -116,7 +116,7 @@ Overlays and popups open above the current screen instead of replacing it, so se
 
 <figure>
 
-![The text Builds: 1 above two grey buttons, Reload and Renew; the pointer clicks Reload twice and the text counts to 3, then clicks Renew and the text is back to Builds: 1](/captures/describing-uis-rebuild.webp)
+![The text Builds: 1 above two blue buttons, Reload and Renew; the pointer clicks Reload twice and the text counts to 3, then clicks Renew and the text is back to Builds: 1](/captures/describing-uis-rebuild.webp)
 
 <figcaption>
 Reload keeps the instance and its field, so the count goes on; Renew replaces the instance, so the count starts again from 1.

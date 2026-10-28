@@ -26,7 +26,7 @@ A button is a node with a listener on [[Node#onClick]]:
 
 <figure>
 
-![A grey card with a white "Click me" button and the text "Clicks: 0" under it; the pointer clicks the button three times, and the count goes up to 3](/captures/interactivity-click.webp)
+![A dark card with a dark grey "Click me" button and the text "Clicks: 0" under it; the pointer clicks the button three times, and the count goes up to 3](/captures/interactivity-click.webp)
 
 <figcaption>
 Each press on the button runs its listener once.
@@ -54,7 +54,7 @@ The badge on the left blocks the button; the badge on the right is set with [[No
 
 <figure>
 
-![Two white "Order" buttons with a grey badge on their top right corner; the pointer presses each badge twice: the count under the left button stays at "Clicks: 0", the one under the right button goes to "Clicks: 2"](/captures/interactivity-through.webp)
+![Two dark grey "Order" buttons with a blue badge on their top right corner; the pointer presses each badge twice: the count under the left button stays at "Clicks: 0", the one under the right button goes to "Clicks: 2"](/captures/interactivity-through.webp)
 
 <figcaption>
 Two presses on each badge: only the badge set with `interactive(false)` lets the press reach its button.
@@ -85,7 +85,7 @@ Every node of the UI receives every press, wherever the pointer is: a listener t
 
 <figure>
 
-![A white card with a grey "Button" and four counts at 0 on a light grey background; the pointer presses the button, the card, then leaves the card to press outside it, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
+![A dark grey card with a blue "Button" and four counts at 0; the pointer presses the button, the card, then leaves the card to press outside it, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
 
 <figcaption>
 Three presses: on the button, on the card, then outside the card.
@@ -106,20 +106,19 @@ This field never receives a digit:
 
 <figure>
 
-![A white text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, and only "RD" appears](/captures/interactivity-consume.webp)
+![A dark grey text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, each key showing in a badge at the bottom right, and only "RD" appears](/captures/interactivity-consume.webp)
 
 <figcaption>
 The user types `R2D2`: the listener consumes both digits before they reach the field.
 </figcaption>
 </figure>
 
-`KitTextFieldNode` is the text field of the example kit ([Text fields](/use/learn/interactivity/text-fields/)).
 
 ### Follow an input through the tree
 
 <figure>
 
-![A diagram: on the left, a white card holds a violet button; on the right, eight numbered steps follow a press on the button, from the listeners of the button to the UIs below, with step 2, "Button: onClick runs and consumes the press", in violet](/captures/interactivity-dispatch.webp)
+![A diagram: on the left, a dark card holds a blue button; on the right, eight numbered steps follow a press on the button, from the listeners of the button to the UIs below, with step 2, "Button: onClick runs and consumes the press", in blue](/captures/interactivity-dispatch.webp)
 
 <figcaption>
 The front child receives the press first, then its parent, up to the UI.
@@ -151,7 +150,7 @@ This square refuses to move past `x = 400`:
 
 <figure>
 
-![A grey square at the left of a card, a white "Move right" button and the text "Refused: 0"; the pointer presses the button four times: the square moves right three times, and the fourth press leaves it in place and shows "Refused: 1"](/captures/interactivity-before.webp)
+![A blue square at the left of a dark card, a dark grey "Move right" button and the text "Refused: 0"; the pointer presses the button four times: the square moves right three times, and the fourth press leaves it in place and shows "Refused: 1"](/captures/interactivity-before.webp)
 
 <figcaption>
 Four presses on the button: the fourth move, to `x = 440`, is refused.

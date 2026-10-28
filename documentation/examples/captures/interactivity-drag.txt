@@ -1,6 +1,6 @@
-# crop interactivity-drag 660 340 600 400
-# crop interactivity-snap 560 340 800 400
-# crop interactivity-copy 560 340 800 400
+# crop interactivity-drag 640 320 640 440
+# crop interactivity-snap 540 320 840 440
+# crop interactivity-copy 540 320 840 440
 ui com.example.interactivity.drag.DragUI
 move 740 420
 # film interactivity-drag 60

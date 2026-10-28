@@ -1,7 +1,7 @@
 # crop guides-effect-badge 790 470 340 130
 # still guides-effect-badge 0
 ui com.example.guides.EffectGuideUI
-move 1100 590
+move 1100 560
 # film guides-effect-badge
 wait 600
 moveto 900 552 600
@@ -9,5 +9,5 @@ wait 300
 press LEFT
 release LEFT
 wait 900
-moveto 1100 590 500
+moveto 1100 560 500
 wait 600

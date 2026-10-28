@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Easing curves that oscillate like a spring at the start or at the end.
 
-![The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white, with one dot per curve that runs along it from the start to the end](/captures/catalog-easing-elastictweenequation.webp)
+![The Elastic easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end](/captures/catalog-easing-elastictweenequation.webp)
 
 ## Description
 

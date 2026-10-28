@@ -7,29 +7,30 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class CounterUI extends UI {
 
 	private static final MsdfFont FONT = MsdfFontLoader.load(
 		"fonts/Montserrat/Montserrat-Regular.ttf"
 	).join();
 
-	private static final Color INK  = new Color(153, 153, 153).lock();
-	private static final Color DARK = new Color(85, 85, 85).lock();
+	private static final Color HOVER     = new Color(125, 164, 255).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	private final IntegerSignal clicks = new IntegerSignal(0);
 
 	@Override
 	public void init() {
-		final TextInfo label = TextInfo.create(CounterUI.FONT, 40F).color(Color.WHITE);
+		final TextInfo label = TextInfo.create(CounterUI.FONT, 40F).color(CounterUI.ON_ACCENT);
 
 		RectNode
 		.create(760, 480, 400, 120)
-		.color(CounterUI.INK)
-		.hoveredColor(CounterUI.DARK)
+		.color(CounterUI.ACCENT)
+		.hoveredColor(CounterUI.HOVER)
+		.effect(RoundedNodeEffect.create(12F))
 		.onClick(event -> this.clicks.increment())
 		.label(Text.create("Clicks: " + this.clicks.get(), label))
 		.attach(this);

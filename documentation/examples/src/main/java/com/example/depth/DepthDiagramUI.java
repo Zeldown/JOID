@@ -1,6 +1,7 @@
 package com.example.depth;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -9,6 +10,7 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
@@ -17,11 +19,13 @@ import dev.joid.lib.utils.geom.Point;
 
 public abstract class DepthDiagramUI extends UI {
 
-	public static final Color INK      = new Color(153, 153, 153).lock();
-	public static final Color LABEL    = new Color(85, 85, 85).lock();
-	public static final Color ACCENT   = new Color(124, 92, 255).lock();
-	public static final Color SURFACE  = Color.WHITE;
-	public static final Color BACKDROP = new Color(221, 221, 221).lock();
+	public static final Color INK      = CaptureStyle.LINE;
+	public static final Color NOTE     = CaptureStyle.MUTED;
+	public static final Color LABEL    = CaptureStyle.TEXT;
+	public static final Color ACCENT   = CaptureStyle.ACCENT;
+	public static final Color ELEMENT  = CaptureStyle.STROKE;
+	public static final Color SURFACE  = CaptureStyle.SURFACE;
+	public static final Color BACKDROP = Color.TRANSPARENT;
 
 	protected final RectNode backdrop(final double x, final double y, final double width, final double height) {
 		return RectNode.create(x, y, width, height).color(DepthDiagramUI.BACKDROP);
@@ -33,11 +37,11 @@ public abstract class DepthDiagramUI extends UI {
 	}
 
 	protected final RectNode box(final double x, final double y, final double width, final double height, final String title, final String detail) {
-		return DepthDiagramUI.block(x, y, width, height, title, detail, DepthDiagramUI.SURFACE, DepthDiagramUI.LABEL);
+		return DepthDiagramUI.block(x, y, width, height, title, detail, DepthDiagramUI.SURFACE, DepthDiagramUI.LABEL, DepthDiagramUI.NOTE);
 	}
 
 	protected final RectNode subject(final double x, final double y, final double width, final double height, final String title, final String detail) {
-		return DepthDiagramUI.block(x, y, width, height, title, detail, DepthDiagramUI.ACCENT, DepthDiagramUI.SURFACE);
+		return DepthDiagramUI.block(x, y, width, height, title, detail, DepthDiagramUI.ACCENT, CaptureStyle.ON_ACCENT, CaptureStyle.ON_ACCENT);
 	}
 
 	protected final void arrow(final Node node, final double fromX, final double fromY, final double toX, final double toY) {
@@ -53,13 +57,14 @@ public abstract class DepthDiagramUI extends UI {
 		});
 	}
 
-	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color) {
+	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color, final Color note) {
 		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 20F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 17F).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 17F).color(note);
 		return RectNode
 		.create(x, y, width, height)
 		.color(fill)
-		.effect(RoundedNodeEffect.create(10F))
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(fill == DepthDiagramUI.ACCENT ? DepthDiagramUI.ACCENT : DepthDiagramUI.ELEMENT, 1.5F))
 		.body(rect -> {
 			if (detail.isEmpty()) {
 				TextNode.create(0, 0, width, height).text(Text.create(title, bold).align(Align.CENTER)).attach(rect);

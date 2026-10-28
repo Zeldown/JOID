@@ -8,10 +8,8 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class FormatsUI extends UI {
 
 	static {

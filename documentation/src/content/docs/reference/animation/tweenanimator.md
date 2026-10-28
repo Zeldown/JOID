@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Read-only `float` signal that a timeline of tweens moves over time, the usual way to animate a node.
 
-![A grey square slides to the right end of a white bar, then back to its left end, after a click on the bar.](/captures/reference-animation-slide.webp)
+![The pointer clicks a dark bar with rounded corners; a blue square slides to its right end, then back to its left end.](/captures/reference-animation-slide.webp)
 
 ## Description
 

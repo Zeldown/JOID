@@ -10,7 +10,7 @@ In this last lesson you give Starfall its finish: rounded corners, a soft shadow
 
 <figure>
 
-![The profile panel of Starfall rises into place: a white panel with rounded corners and a soft shadow, with rounded statistic cards and the hint Press Play to start a round](/captures/tutorial-polish.webp)
+![The profile panel of Starfall rises into place: a dark panel with rounded corners and a soft shadow, with rounded statistic cards and the hint Press Play to start a round](/captures/tutorial-polish.webp)
 
 <figcaption>
 The result of this lesson: the same tree of nodes, drawn with effects and moved by an animator.
@@ -25,9 +25,9 @@ Every shape is a sharp rectangle, the panel appears at once, and nothing tells t
 ## 1. Round the corners and add a shadow
 
 An effect changes how a node is drawn, never where it sits or how it reacts.
-Add a shade to `Theme`, the grey of the palette at 40 % opacity:
+Add a shadow color to `Theme`, black at 60 % opacity:
 
-```java file="com/example/tutorial/polish/Theme.java" title="Theme.java" ins={17}
+```java file="com/example/tutorial/polish/Theme.java" title="Theme.java" ins={18}
 ```
 
 Then round the panel, and draw its shadow 12 design pixels lower, blurred over 40.

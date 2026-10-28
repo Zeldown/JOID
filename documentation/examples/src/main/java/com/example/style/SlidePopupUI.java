@@ -8,13 +8,17 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataPopup;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 @UIData(background = true)
 @UIDataPopup(active = true)
 public class SlidePopupUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	// #region set
 	public SlidePopupUI() {
@@ -24,9 +28,15 @@ public class SlidePopupUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(SlidePopupUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(SlidePopupUI.TEXT);
 
-		RectNode.create(710, 390, 500, 300).color(Color.WHITE).label(Text.create("Saved", info)).attach(this);
+		RectNode
+		.create(710, 390, 500, 300)
+		.color(SlidePopupUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(SlidePopupUI.ELEMENT, 1.5F))
+		.label(Text.create("Saved", info))
+		.attach(this);
 	}
 
 }

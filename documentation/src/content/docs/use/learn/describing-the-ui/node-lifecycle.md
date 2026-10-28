@@ -20,7 +20,7 @@ Listeners run your code at each of these moments: to start a counter when the no
 
 <figure>
 
-![A flow on two rows. The top row goes from left to right: attach to a UI, onInit once per attach, onUpdate before drawing, and onMount on the first drawn frame. An arrow goes down to onDraw and onRender while drawing, at the right of the bottom row; a loop arrow goes from there back up to onUpdate, labelled every frame while attached, and a last arrow goes left to onDetach after remove.](/captures/describing-lifecycle-flow.webp)
+![A flow on two rows. The top row goes from left to right: attach to a UI, onInit once per attach, onUpdate before drawing, then onDraw and onRender while drawing. A loop arrow goes from onDraw back to onUpdate, labelled every frame while attached. Below onDraw, a side box onMount, first drawn frame only, hangs from it; from the loop, a last arrow goes left to onDetach after remove, at the start of the bottom row.](/captures/describing-lifecycle-flow.webp)
 
 <figcaption>
 `onInit` and `onDetach` frame the life of a node; the listeners in between run on every frame.
@@ -49,7 +49,7 @@ A node that is not visible skips its drawing listeners (`onMount`, `onDraw`, `on
 
 <figure>
 
-![A light grey card that shows in grey how long it has been in the UI, in seconds; the time grows, then starts again at 0 when the UI opens again](/captures/describing-lifecycle-frames.webp)
+![A dark card that shows in light letters how long it has been in the UI, in seconds; the time grows, then starts again at 0 when the UI opens again](/captures/describing-lifecycle-frames.webp)
 
 <figcaption>
 The time starts again at 0 each time the card joins the UI, here when the UI opens again.
@@ -83,7 +83,7 @@ It comes after `onInit`, and it waits for the conditions of [[Node#wait]]: an im
 
 <figure>
 
-![A light grey card with the word Underlined in grey and a grey line right under the word](/captures/describing-lifecycle-draw.webp)
+![A dark card with the word Underlined in light letters and a blue line right under the word](/captures/describing-lifecycle-draw.webp)
 
 <figcaption>
 `onDraw` adds a line under the text, in the same coordinates as the text.

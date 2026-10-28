@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A one-line field that holds an `Integer` between a minimum and a maximum, stepped by Up, Down and the wheel.
 
-![A number field holding 42; the pointer clicks it, the Up arrow brings it to 44, the Down arrow back to 42](/captures/catalog-controls-integerfieldnode.webp)
+![A number field holding 42; the pointer clicks it, the Up arrow brings it to 44, the Down arrow back to 42, and each key shows in a key badge](/captures/catalog-controls-integerfieldnode.webp)
 
 ## Description
 

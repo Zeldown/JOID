@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Shows a progress from 0 to 1 by sizing its fill part over an optional track part.
 
-![A progress bar filled at 60 %](/captures/catalog-nodes-progressnode.webp)
+![A blue progress bar filled at 60 % of its dark grey track](/captures/catalog-nodes-progressnode.webp)
 
 ## Description
 

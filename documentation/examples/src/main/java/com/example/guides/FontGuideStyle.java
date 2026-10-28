@@ -16,11 +16,11 @@ public final class FontGuideStyle {
 	// #endregion
 
 	// #region styles
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT = new Color(231, 233, 238).lock();
 
-	public static final TextInfo BODY    = TextInfo.create(FontGuideStyle.FONT, 24F).color(FontGuideStyle.INK).lock();
+	public static final TextInfo BODY    = TextInfo.create(FontGuideStyle.FONT, 24F).color(FontGuideStyle.TEXT).lock();
 	public static final TextInfo TITLE   = FontGuideStyle.BODY.withFontSize(40F).withWeight(FontWeight.BOLD).lock();
-	public static final TextInfo TOOLTIP = FontGuideStyle.BODY.withFontSize(20F).withColor(Color.WHITE).lock();
+	public static final TextInfo TOOLTIP = FontGuideStyle.BODY.withFontSize(20F).withColor(FontGuideStyle.TEXT).lock();
 	// #endregion
 
 	private FontGuideStyle() {}

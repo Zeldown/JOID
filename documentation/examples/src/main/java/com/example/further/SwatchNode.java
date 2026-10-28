@@ -16,6 +16,8 @@ import dev.joid.lib.ui.node.Node;
 // #region class
 public class SwatchNode extends Node {
 
+	private static final Color TEXT = new Color(231, 233, 238).lock();
+
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_SELECT = EventType.create("beforeSelect");
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> SELECT        = EventType.create("onSelect");
 	private static final EventType<NodeEvent<SwatchNode>>            RESET         = EventType.create("onReset");
@@ -30,7 +32,7 @@ public class SwatchNode extends Node {
 	protected SwatchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.color = Color.WHITE;
+		this.color = SwatchNode.TEXT;
 		this.selectedValue = InteractiveValue
 		.create(super.getBindings(), "selected", () -> this.selected, value -> this.selected = value)
 		.events(
@@ -49,7 +51,7 @@ public class SwatchNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.w(), super.h(), this.color);
 		if (this.selected) {
-			DrawUtils.SHAPE.drawBorder(super.getX(), super.getY(), super.w(), super.h(), Color.WHITE, 8D);
+			DrawUtils.SHAPE.drawBorder(super.getX(), super.getY(), super.w(), super.h(), SwatchNode.TEXT, 8D);
 		}
 	}
 	// #endregion

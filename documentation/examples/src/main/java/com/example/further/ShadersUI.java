@@ -13,14 +13,12 @@ import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.shader.pipeline.pass.BlurShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class ShadersUI extends UI {
 
-	private static final Color INK  = new Color(153, 153, 153).lock();
-	private static final Color DARK = new Color(85, 85, 85).lock();
+	private static final Color MUTED  = new Color(139, 147, 163).lock();
+	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	// #region tint-source
 	private static final String TINT = "in vec4 vColor;\n"
@@ -40,7 +38,7 @@ public class ShadersUI extends UI {
 			final Tessellator tessellator = Tessellator.inst();
 			WaveShader.use(time, () -> {
 				tessellator.start(DrawMode.QUADS);
-				tessellator.setColor(153, 153, 153);
+				tessellator.setColor(91, 140, 255);
 				tessellator.addVertexWithUV(0D, node.h(), 0D, 0D, 1D);
 				tessellator.addVertexWithUV(node.w(), node.h(), 0D, 1D, 1D);
 				tessellator.addVertexWithUV(node.w(), 0D, 0D, 1D, 0D);
@@ -77,12 +75,12 @@ public class ShadersUI extends UI {
 		// #region pipeline
 		final BlurShaderPass blurX = BlurShaderPass.create(12F, true);
 		final BlurShaderPass blurY = BlurShaderPass.create(12F, false);
-		final BorderShaderPass border = BorderShaderPass.create(ShadersUI.DARK, 4F);
+		final BorderShaderPass border = BorderShaderPass.create(ShadersUI.MUTED, 4F);
 
 		ContainerNode
 		.create(80, 280, 400, 240)
 		.layer((node, mouseX, mouseY) -> {
-			final Runnable rect = () -> DrawUtils.SHAPE.drawRect(80D, 60D, 240D, 120D, ShadersUI.INK);
+			final Runnable rect = () -> DrawUtils.SHAPE.drawRect(80D, 60D, 240D, 120D, ShadersUI.ACCENT);
 			ShaderPipeline.render(80D, 60D, 240D, 120D, rect, blurX, blurY, border);
 		})
 		.attach(this);
@@ -92,8 +90,8 @@ public class ShadersUI extends UI {
 		ContainerNode
 		.create(560, 280, 400, 240)
 		.layer((node, mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawRect(20D, 60D, 160D, 120D, ShadersUI.DARK);
-			final Runnable square = () -> DrawUtils.SHAPE.drawRect(220D, 60D, 160D, 120D, ShadersUI.DARK);
+			DrawUtils.SHAPE.drawRect(20D, 60D, 160D, 120D, ShadersUI.MUTED);
+			final Runnable square = () -> DrawUtils.SHAPE.drawRect(220D, 60D, 160D, 120D, ShadersUI.MUTED);
 			ShaderPipeline.render(220D, 60D, 160D, 120D, square, InvertShaderPass.create(1F));
 		})
 		.attach(this);

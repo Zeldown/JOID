@@ -916,7 +916,7 @@ Emitted by [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of).
 
 [`FontFamily.of`](/reference/text/fontfamily/#FontFamily-factory-of) received no face.
 
-Pass at least one face: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
+Pass at least one face: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
 
 ### Two faces share the weight …, keep one face per weight and style {#two-faces-share-weight}
 
@@ -936,7 +936,7 @@ Emitted by [`GlyphTextRenderer.layout`](/reference/text/glyphtextrenderer/#Glyph
 
 Code of your own called a text renderer with a [`TextInfo`](/reference/text/textinfo/) whose font belongs to another renderer.
 
-Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Draw glyphs your own way](/use/learn/going-further/fonts/#draw-glyphs-your-own-way).
+Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
 
 ### A font face needs a name, got an empty one {#font-face-needs-name}
 

@@ -1,5 +1,5 @@
-# crop interactivity-reorder 660 240 600 600
-# crop interactivity-reorder-handle 660 290 600 500
+# crop interactivity-reorder 640 220 640 640
+# crop interactivity-reorder-handle 640 270 640 540
 # still interactivity-reorder-handle 200
 ui com.example.interactivity.reorder.PlaylistUI
 move 960 395

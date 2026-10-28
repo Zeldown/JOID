@@ -10,7 +10,8 @@ import dev.joid.lib.ui.node.Node;
 // #region node
 public class StampNode extends Node {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	private transient FrameBuffer frameBuffer;
 
@@ -28,8 +29,8 @@ public class StampNode extends Node {
 		if (this.frameBuffer == null) {
 			this.frameBuffer = FrameBuffer.create(128, 128, TextureFilter.LINEAR).fill(() -> {
 				BridgeHandler.RENDER.get().clearColor(0F, 0F, 0F, 0F);
-				DrawUtils.SHAPE.drawCircle(64D, 64D, Color.WHITE, 64D);
-				DrawUtils.SHAPE.drawCircle(64D, 64D, StampNode.INK, 40D);
+				DrawUtils.SHAPE.drawCircle(64D, 64D, StampNode.ELEMENT, 64D);
+				DrawUtils.SHAPE.drawCircle(64D, 64D, StampNode.ACCENT, 40D);
 			});
 		}
 

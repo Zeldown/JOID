@@ -8,10 +8,12 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 // #region field
 public class HexColorFieldNode extends LineFieldNode<Color> {
 
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+
 	protected HexColorFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.marginHorizontal(12D);
-		super.background(RectNode.create(0, 0, 0, 0).color(Color.WHITE));
+		super.background(RectNode.create(0, 0, 0, 0).color(HexColorFieldNode.ELEMENT));
 	}
 
 	public static HexColorFieldNode create(final double x, final double y, final double width, final double height) {

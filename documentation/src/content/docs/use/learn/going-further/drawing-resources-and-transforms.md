@@ -28,7 +28,7 @@ The `RESOURCE` drawer of [[DrawUtils]], a [[DrawResource]], draws a [[Resource]]
 
 <figure>
 
-![The same grey placeholder image four times on a light grey background: in a 320 by 180 box, stretched into a wide band, a small square cut from its middle, and tinted darker](/captures/further-transforms-resource.webp)
+![The same grey placeholder image four times: in a 320 by 180 box, stretched into a wide band, a small square cut from its middle, and tinted blue](/captures/further-transforms-resource.webp)
 
 <figcaption>
 A box, a stretched band, a region of the source, and the image tinted by a bound color.
@@ -55,7 +55,7 @@ A [[Transformation]] is a list of operations that apply to everything you draw i
 
 <figure>
 
-![On a light grey background, two white outlines mark where two grey rectangles start; each rectangle is turned by 20 degrees around a dark dot, the first at its center, the second at its top-left corner](/captures/further-transforms-pivot.webp)
+![Two grey outlines mark where two blue rectangles start; each rectangle is turned by 20 degrees around a light dot, the first at its center, the second at its top-left corner](/captures/further-transforms-pivot.webp)
 
 <figcaption>
 The same rotation around two pivots, marked by the dots: the pivot is the point that stays in place.
@@ -95,7 +95,7 @@ A transformation is a shortcut for the model-view [[MatrixStack]] of the render 
 
 <figure>
 
-![On a light grey background, a white rectangle turned by a few degrees counterclockwise and 1.5 times larger than the grey outline of its node](/captures/further-transforms-matrix.webp)
+![A dark grey rectangle turned by a few degrees counterclockwise and 1.5 times larger than the blue outline of its node](/captures/further-transforms-matrix.webp)
 
 <figcaption>
 Translate to the center, rotate, scale, then draw around the origin.
@@ -126,7 +126,7 @@ Change it inside `withState(...)`, so that what follows draws as before:
 
 <figure>
 
-![A grey triangle outlined by a thick line with smooth edges, on a light grey background](/captures/further-transforms-state.webp)
+![A blue triangle outlined by a thick line with smooth edges](/captures/further-transforms-state.webp)
 
 <figcaption>
 `lineSmooth` and `lineWidth` apply to the next lines, until `withState` ends.
@@ -150,7 +150,7 @@ A multiply blend darkens what is under it, like ink on paper:
 
 <figure>
 
-![Two grey squares overlap on a light grey background; where they overlap, the grey is darker](/captures/further-transforms-blend.webp)
+![Two grey squares overlap on a light panel; where they overlap, the grey is darker](/captures/further-transforms-blend.webp)
 
 <figcaption>
 With a multiply blend, the second square darkens the first where they overlap.
