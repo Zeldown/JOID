@@ -38,8 +38,8 @@ public class MenuUI extends UI {
 		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.TEXT);
 		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.TEXT);
 		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.TEXT);
-		final TextInfo status = TextInfo.create(Theme.FONT, 32F).weight(FontWeight.BOLD).color(Theme.TEXT);
 		// #region store
+		final TextInfo status = TextInfo.create(Theme.FONT, 32F).weight(FontWeight.BOLD).color(Theme.TEXT);
 		final SettingsStore settings = super.useStore(SettingsStore.class, SettingsStore::new);
 		// #endregion
 

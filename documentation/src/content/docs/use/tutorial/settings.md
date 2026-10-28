@@ -56,7 +56,8 @@ Close the popup and open it again: it shows the values you left.
 
 ## 3. Show the settings in the menu
 
-`MenuUI` asks for the same store; a `PERMANENT` store exists once, so both UIs share the same signals:
+`MenuUI` asks for the same store; a `PERMANENT` store exists once, so both UIs share the same signals.
+Add these two lines at the top of `init()`, under the other styles: a style for the line of the settings, then the store:
 
 ```java file="com/example/tutorial/settings/MenuUI.java" region="store" title="MenuUI.java"
 ```
@@ -74,8 +75,8 @@ Open the settings and change the music and the volume: the line under the button
 ## 4. Close the UIs when the program stops
 
 JOID saves the store when a UI that uses it closes, and again when the program exits normally.
-When the player closes the window, the menu is still open when the loop ends.
-Close every open UI after the loop, before the window is destroyed: their close listeners run and the store reaches the disk at that moment, while a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+When the player closes the window, the menu is still open when the loop ends: without one more line, the store still reaches the disk when the JVM exits, but the close listeners of the open UIs never run.
+Close every open UI after the loop, before the window is destroyed ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
 
 ```java file="com/example/tutorial/settings/Main.java" title="Main.java" ins={43}
 ```
