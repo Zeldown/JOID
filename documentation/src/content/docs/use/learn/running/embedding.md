@@ -36,7 +36,7 @@ Outside a UI, `BridgeHandler.WINDOW.get()` returns the window as JOID reads it, 
 
 ## Keep your own input handlers
 
-On LWJGL 3 and Vulkan, [`register()` attaches](/use/learn/running/backends/#what-register-does) a [[GlfwInputForwarder]] to the window, which installs the GLFW callbacks.
+On LWJGL 3 and Vulkan, [`register()` attaches](/use/learn/running/backends/#know-what-happens-at-register) a [[GlfwInputForwarder]] to the window, which installs the GLFW callbacks.
 Each event goes to the UIs first; an event that no UI [consumes](/use/learn/interactivity/events/) goes on to the callback your application set before `register()`:
 
 ```java file="com/example/running/HostApp.java" region="callbacks"
