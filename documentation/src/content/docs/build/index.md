@@ -19,9 +19,12 @@ If you do not, start with [Use JOID](/use/): every notion of the user API (UIs, 
 | Understand how the modules depend on each other | [Architecture and layers](/build/architecture/) |
 | Know what JOID asks from a backend, bridge by bridge | [The bridges](/build/bridges/) |
 | Run JOID on your own engine | [Writing a backend](/build/writing-a-backend/), then [Testing a backend](/build/testing-a-backend/) |
+| Forward the mouse and the keyboard of your window | [Input forwarding](/build/input/) |
 | Draw JOID inside an engine that owns the window and the loop | [Embedding in a host](/build/embedding-in-a-host/) |
 | Reuse the GLFW, OpenAL or OpenGL code of the official backends | [Base modules](/build/base-modules/) |
 | Know what reaches your render bridge | [Render pipeline](/build/pipeline/), [Shader translation](/build/shader-translation/), [Framebuffers and depth](/build/framebuffers-and-depth/) |
+| Let [[Resource#of]] take the images and textures of your engine | [Resource resolvers](/build/resource-resolvers/) |
+| See how an official backend is put together | [LWJGL 3](/build/backends/lwjgl3/), [Vulkan](/build/backends/vulkan/), [LWJGL 2](/build/backends/lwjgl2/) |
 | See every feature of JOID running on a backend | [Demos](/build/demos/) |
 
 The [reference](/reference/) lists every public type of JOID, member by member, the bridges and the testkit included.

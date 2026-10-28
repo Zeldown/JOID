@@ -44,7 +44,7 @@ The first pass of the frame on the screen clears the depth and the stencil and k
 
 The renderer reproduces the OpenGL conventions of the [render contract](/build/bridges/render/#guarantees):
 
-- on the screen, the viewport is flipped; on a framebuffer, nothing is flipped, so the rows land bottom-up as on OpenGL;
+- on the screen, the viewport is flipped; on a framebuffer, nothing is flipped, so the rows land bottom-up as on OpenGL, and the front faces are the clockwise ones to keep the culling of OpenGL;
 - the projection goes through [[DepthRange#toZeroToOne]] before it reaches the shaders;
 - missing vertex attributes are filled by [[VertexFill#complete]];
 - the stencil test applies to the screen only, and offscreen targets have no stencil ([Framebuffers and depth](/build/framebuffers-and-depth/)).

@@ -38,7 +38,8 @@ A backend whose API pairs depth and stencil in one image turns the stencil test 
 A framebuffer stores its rows as OpenGL does: row 0 is the bottom of what was drawn, and texture coordinate `v = 0` samples it.
 JOID draws a framebuffer back with `v = 0` at the bottom of the quad, so the content comes out upright.
 
-On an API whose framebuffer coordinates go down (Vulkan), flip the viewport when drawing to the screen and leave it unflipped for a framebuffer: the image lands in memory with the same orientation as on OpenGL, and the faces keep their winding.
+On an API whose framebuffer coordinates go down (Vulkan), flip the viewport when drawing to the screen and leave it unflipped for a framebuffer, so that the image lands in memory with the same orientation as on OpenGL.
+An unflipped viewport mirrors the winding: make the clockwise faces the front faces there.
 The contract suite checks the horizontal orientation with `rendersIntoFrameBuffers`, the vertical one with `rastersADrawingUprightAtItsPixelSize`, and the winding with `cullsTheBackFacesInFrameBuffersLikeOpenGl`.
 
 ## Depth
