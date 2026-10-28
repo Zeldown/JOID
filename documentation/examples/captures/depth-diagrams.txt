@@ -18,3 +18,8 @@ shot depth-performance
 ui com.example.depth.PixelAlignmentUI
 wait 100
 shot depth-pixel-alignment
+# crop depth-pixel-motion 640 330 660 390
+ui com.example.depth.PixelMotionUI
+# film depth-pixel-motion 60
+wait 4000
+cut

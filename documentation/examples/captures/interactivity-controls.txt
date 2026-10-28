@@ -155,3 +155,35 @@ release LEFT
 wait 500
 moveto 1120 650 400
 wait 300
+# crop interactivity-checkbox 540 320 840 440
+ui com.example.interactivity.controls.SettingsUI
+move 1200 690
+# film interactivity-checkbox
+wait 300
+moveto 825 405 500
+wait 200
+press LEFT
+release LEFT
+wait 800
+press LEFT
+release LEFT
+wait 800
+moveto 1200 690 500
+wait 300
+cut
+# crop interactivity-toggle 80 120 860 290
+ui com.example.interactivity.controls.ChoicesUI
+move 620 330
+# film interactivity-toggle 60
+wait 300
+moveto 240 230 500
+wait 200
+press LEFT
+release LEFT
+wait 900
+press LEFT
+release LEFT
+wait 900
+moveto 620 330 500
+wait 300
+cut

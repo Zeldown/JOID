@@ -23,3 +23,20 @@ wait 900
 moveto 1120 550 400
 wait 300
 cut
+# crop describing-uis-replace 740 320 440 440
+ui com.example.describing.uis.MenuUI
+move 1140 730
+# film describing-uis-replace 60
+wait 800
+open com.example.describing.uis.EditorUI
+wait 800
+moveto 960 670 500
+wait 200
+press LEFT
+release LEFT
+wait 500
+open com.example.describing.uis.MenuUI
+wait 300
+moveto 1140 730 500
+wait 400
+cut

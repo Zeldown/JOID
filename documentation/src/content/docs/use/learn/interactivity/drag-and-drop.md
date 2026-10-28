@@ -50,6 +50,15 @@ The factory of the property names the area that holds the node:
 | `DraggableProperty.screen()` | The part of the window that shows the UI |
 | `DraggableProperty.free()` | Nothing: it goes anywhere |
 
+<figure>
+
+![The pointer drags the blue square of the first example past the right edge of the dark card, then past its bottom edge: the square stops against each edge while the pointer goes on, then follows the pointer back to its place](/captures/interactivity-drag-bounds.webp)
+
+<figcaption>
+With `parent()`, the pointer may leave the card, the square stays inside it.
+</figcaption>
+</figure>
+
 A node dragged with `parent()` must have a parent: on a node attached to the UI itself, the drag throws an `IllegalStateException`.
 The node moves through [[Node#move]], so [[Node#beforeMove]] can refuse a position ([Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)).
 
@@ -127,6 +136,15 @@ This window moves only from its blue bar:
 
 ```java file="com/example/interactivity/drag/HandleUI.java" region="handle"
 ```
+
+<figure>
+
+![The pointer presses the dark grey body of the Window card and moves: nothing moves; over the blue bar, the pointer becomes four arrows, and a drag from the bar moves the window down and to the right, then a second one brings it back](/captures/interactivity-handle.webp)
+
+<figcaption>
+Only a press on the bar starts a drag: JOID tests `enabled` at the press.
+</figcaption>
+</figure>
 
 A drag that started goes to its end, drop animation included, even when the pointer leaves the bar during a fast move.
 [[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property.

@@ -14,3 +14,27 @@ shot describing-flex-grow
 ui com.example.describing.flex.SettingsListUI
 wait 100
 shot describing-flex-list
+# crop describing-flex-flow 540 320 840 400
+ui com.example.describing.flex.FlexGrowUI
+move 1250 640
+# film describing-flex-flow
+wait 300
+moveto 1170 415 500
+wait 200
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 600
+moveto 1170 505 300
+wait 200
+press LEFT
+release LEFT
+wait 600
+press LEFT
+release LEFT
+wait 600
+moveto 1250 640 400
+wait 300
+cut

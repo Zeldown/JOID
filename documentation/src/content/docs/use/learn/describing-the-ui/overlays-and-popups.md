@@ -57,6 +57,15 @@ An overlay is a UI annotated with [[UIDataOverlay]] and `active = true`, which t
 An overlay stays open when screens open and close, and Escape never closes it: [[JOID#close]] does.
 By default, an overlay is drawn below the screens, as a layer of information under the menus, and receives no input: clicks and keys go to the screens.
 
+<figure>
+
+![The blue bar of StatusOverlay in the top-left corner of the window; beside it, the Settings screen gives way to the Menu screen, a dark card with three grey buttons, then comes back, while the bar stays where it is](/captures/describing-overlays-status.webp)
+
+<figcaption>
+`StatusOverlay` stays open while `SettingsUI` and `MenuUI` replace each other.
+</figcaption>
+</figure>
+
 A UI cannot be both a popup and an overlay: JOID refuses to create it.
 
 ## Draw an overlay above the screens and let it take input

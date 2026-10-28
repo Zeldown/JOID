@@ -93,6 +93,16 @@ The blue cell sets the height of the first row; the cells of a row are aligned a
 ## Let the grid take its height
 
 A grid created with a height of 0 takes the height of its rows, gaps included, and keeps the width you gave it.
+
+<figure>
+
+![A dark card wraps a grid of seven blue squares whose width changes: the squares go from three rows (three, three and one) to a single row of seven and back, and the card grows and shrinks in height with the rows](/captures/describing-grid-flow.webp)
+
+<figcaption>
+The width of this grid changes over time: each square moves to the row where it fits, and the height of the grid follows its rows.
+</figcaption>
+</figure>
+
 A height that you give follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node): with an overflow other than `NONE`, it stays fixed and the rows scroll inside it.
 
 ## Recap

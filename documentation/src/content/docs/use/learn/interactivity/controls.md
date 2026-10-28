@@ -127,12 +127,30 @@ Inside your own [[Signal#batch]], `onChange` runs at once, and the nodes bound t
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="checkbox"
 ```
 
+<figure>
+
+![On the settings card, the pointer clicks the box next to Subtitles twice: its blue mark disappears and the line below goes from Subtitles: true to Subtitles: false, then both come back](/captures/interactivity-checkbox.webp)
+
+<figcaption>
+Each press toggles the box, and the bound signal `subtitles` follows it.
+</figcaption>
+</figure>
+
 [[BaseCheckboxNode]] holds a `boolean`: `checked(...)` gives it, `isChecked()` reads it, and a press toggles it.
 
 ## Choose between two values
 
 ```java file="com/example/interactivity/controls/ChoicesUI.java" region="toggle"
 ```
+
+<figure>
+
+![On a dark card, the pointer clicks a dark grey track with a blue knob twice: the knob moves to the other half of the track and the line below goes from Night: false to Night: true, then both come back](/captures/interactivity-toggle.webp)
+
+<figcaption>
+Each press moves the knob to the other half, and the bound signal `night` holds the new state.
+</figcaption>
+</figure>
 
 [[BaseToggleNode]] holds a `boolean` with `toggle(...)`, and a press switches it.
 `state(onValue, offValue)` gives the two values that `getValue()` returns, here `"Night"` and `"Day"`.

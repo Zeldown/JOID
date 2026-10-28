@@ -114,6 +114,15 @@ The same sentence in four boxes of the same size: cut, wrapped onto a second lin
 | `SPLIT` | As many lines as needed, broken at spaces, at `\n` or at `<br>`, and inside a word longer than the width; the height of the node follows the lines. |
 | `BOX` | Like `SPLIT`, but only the lines that fit in the height of the node. |
 
+<figure>
+
+![The same four boxes and sentence, whose width shrinks to about half and grows back: the ellipsis of OVERFLOW follows the edge of its box, SPLIT wraps onto more lines below its box, BOX keeps only its first line, and NORMAL stays on one line beyond its box](/captures/describing-text-flow.webp)
+
+<figcaption>
+Each mode works from the current width of the node: a box that changes width cuts or wraps its text again.
+</figcaption>
+</figure>
+
 The mark of a cut text is a [[TextOverflow]], given to [[Text#overflow]]: `NONE` (no mark), `ELLIPSIS` (`...`), `DOT` (`.`) or `HYPHEN` (`-`).
 
 ## Mix styles on one line
