@@ -88,6 +88,8 @@ public class ScrollbarNodeTest {
 		this.press(content, 515D, 110D);
 		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
+		Assert.assertEquals(0D, bar.getProgress(), 0D);
+		Assert.assertEquals(0D, bar.getThumb().getY(), 0D);
 	}
 
 	@Test

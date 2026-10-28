@@ -1,15 +1,21 @@
 package dev.joid.lib.bridge.clock;
 
-import lombok.AllArgsConstructor;
+import dev.joid.lib.bridge.BridgeHandler;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@AllArgsConstructor
 public final class ManualClockBridge implements IClockBridge {
+
+	private final long origin;
 
 	@Setter
 	@Accessors(fluent = true, chain = true)
 	private long time;
+
+	public ManualClockBridge(final long time) {
+		this.origin = BridgeHandler.CLOCK.get().nanoTime() - time * 1_000_000L;
+		this.time   = time;
+	}
 
 	public void advance(final long milliseconds) {
 		this.time += milliseconds;
@@ -17,7 +23,7 @@ public final class ManualClockBridge implements IClockBridge {
 
 	@Override
 	public long nanoTime() {
-		return this.time * 1_000_000L;
+		return this.origin + this.time * 1_000_000L;
 	}
 
 	@Override

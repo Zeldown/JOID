@@ -64,14 +64,13 @@ public final class UIPropertyHook {
 			final String key = UIPropertyHook.getKey(field);
 			try {
 				final Object value = field.get(ui);
-				json.remove(key);
 				if (value == null) {
-					continue;
+					json.remove(key);
+				} else {
+					json.add(key, UIPropertyHook.GSON.toJsonTree(value, field.getGenericType()));
 				}
-
-				json.add(key, UIPropertyHook.GSON.toJsonTree(value, field.getGenericType()));
-			} catch (final Exception exception) {
-				JOIDLog.warn("The field " + field.getName() + " of " + JOIDLog.nameOf(ui.getClass()) + " cannot be saved as the property " + key + " (" + exception + "), the property is not saved");
+			} catch (final Exception | StackOverflowError exception) {
+				JOIDLog.warn("The field " + field.getName() + " of " + JOIDLog.nameOf(ui.getClass()) + " cannot be saved as the property " + key + " (" + exception + "), its previous value is kept");
 			}
 		}
 

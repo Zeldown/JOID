@@ -52,8 +52,8 @@ public class UIDemoEvent extends UIDemo {
 		final BooleanSignal running = new BooleanSignal(true);
 		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
 		final Shortcut space = Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment());
+		final ContainerNode ticker = ContainerNode.create(0, 0, 0, 0).addTask(timer);
 
-		super.addTask(timer);
 		super.addShortcut(space);
 
 		RectNode
@@ -287,14 +287,15 @@ public class UIDemoEvent extends UIDemo {
 		.create(1520, 720, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
+			ticker.attach(rect);
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
 			.onClick(event -> {
 				if (running.peek()) {
-					super.removeTask(timer);
+					rect.remove(ticker);
 				} else {
-					super.addTask(timer);
+					ticker.attach(rect);
 				}
 				running.toggle();
 			})

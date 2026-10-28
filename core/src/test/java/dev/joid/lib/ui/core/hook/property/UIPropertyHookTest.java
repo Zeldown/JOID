@@ -86,6 +86,40 @@ public class UIPropertyHookTest {
 	}
 
 	@Test
+	public void keepsThePreviousValueOfAPropertyThatCannotBeSaved() {
+		final PropertyUI saved = new PropertyUI();
+		saved.zoom = 1.5D;
+		UIPropertyHook.save(saved);
+		saved.zoom = Double.NaN;
+		saved.title = "Shop";
+		final String error = TestUtils.captureErr(() -> UIPropertyHook.save(saved));
+		Assert.assertTrue(error, error.startsWith("[JOID] The field zoom of PropertyUI cannot be saved as the property zoomLevel ("));
+		Assert.assertTrue(error, error.endsWith("), its previous value is kept" + System.lineSeparator()));
+
+		final PropertyUI loaded = new PropertyUI();
+		UIPropertyHook.load(loaded);
+		Assert.assertEquals(1.5D, loaded.zoom, 0D);
+		Assert.assertEquals("Shop", loaded.title);
+	}
+
+	@Test
+	public void keepsThePreviousValueOfAPropertyThatRefersToItself() {
+		final LinkUI saved = new LinkUI();
+		UIPropertyHook.save(saved);
+		saved.link = new Link();
+		saved.link.next = new Link();
+		saved.link.next.next = saved.link;
+		saved.title = "Shop";
+		final String error = TestUtils.captureErr(() -> UIPropertyHook.save(saved));
+		Assert.assertTrue(error, error.startsWith("[JOID] The field link of LinkUI cannot be saved as the property link (java.lang.StackOverflowError"));
+
+		final LinkUI loaded = new LinkUI();
+		UIPropertyHook.load(loaded);
+		Assert.assertEquals("Shop", loaded.title);
+		Assert.assertNull(loaded.link);
+	}
+
+	@Test
 	public void startsOverFromACorruptedFile() throws Exception {
 		final File file = new File(new File(this.folder.getRoot(), "property"), PropertyUI.class.getName() + ".property");
 		Assert.assertTrue(file.getParentFile().mkdirs());
@@ -152,6 +186,23 @@ public class UIPropertyHookTest {
 
 		private final int x;
 		private final int y;
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static class LinkUI extends UI {
+
+		@UIProperty
+		private Link link;
+
+		@UIProperty
+		private String title = "Home";
+
+	}
+
+	public static class Link {
+
+		private Link next;
 
 	}
 

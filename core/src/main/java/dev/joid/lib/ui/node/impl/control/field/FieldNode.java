@@ -686,7 +686,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private void repeatInput() {
-		if (!this.inputting || BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput < (this.firstInput ? 500 : 100)) {
+		if (!this.inputting || (BridgeHandler.CLOCK.get().nanoTime() - this.lastInput) / 1_000_000L < (this.firstInput ? 500 : 100)) {
 			return;
 		}
 
@@ -696,7 +696,7 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.lastInput = BridgeHandler.CLOCK.get().nanoTime();
 	}
 
 	private boolean repeatKey(final Key key) {
@@ -953,13 +953,13 @@ public abstract class FieldNode<V> extends Node {
 	private void holdInput(final Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
-		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.lastInput  = BridgeHandler.CLOCK.get().nanoTime();
 		this.inputType  = key;
 	}
 
 	private void press(final double mouseX, final double mouseY, final boolean left) {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final boolean repeated = left && this.pressCount > 0 && now - this.lastPress <= 500L && Math.abs(mouseX - this.lastPressX) <= 4D && Math.abs(mouseY - this.lastPressY) <= 4D;
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
+		final boolean repeated = left && this.pressCount > 0 && (now - this.lastPress) / 1_000_000L <= 500L && Math.abs(mouseX - this.lastPressX) <= 4D && Math.abs(mouseY - this.lastPressY) <= 4D;
 		this.pressCount = repeated ? Math.min(this.pressCount + 1, 3) : 1;
 		this.lastPress  = now;
 		this.lastPressX = mouseX;

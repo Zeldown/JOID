@@ -3,7 +3,6 @@ package com.example.joid.backend.demo;
 import com.example.joid.backend.ExampleBackend;
 
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
 public class DemoWindow extends DemoUIBridge {
@@ -24,7 +23,7 @@ public class DemoWindow extends DemoUIBridge {
 
 	public static void main(final String[] args) {
 		final DemoWindow window = DemoWindow.create();
-		JOID.onReady(() -> BridgeHandler.UI.register(window));
+		BridgeHandler.UI.register(window);
 		window.run(ExampleBackend.create().register());
 	}
 
