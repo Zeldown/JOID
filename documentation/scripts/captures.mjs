@@ -258,16 +258,26 @@ function badge(label, left, top) {
 		+ `<text x="${left + width / 2}" y="${top + 21.5}" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="16" fill="#E7E9EE" text-anchor="middle">${escape(label)}</text>`;
 }
 
-async function keyed(image, label, region, position) {
-	if (!label) {
-		return image.png().toBuffer();
+function badgeLayer(label, left, top) {
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${badgeWidth(label) + 4}" height="38">${badge(label, 2, 2)}</svg>`;
+	return { input: Buffer.from(svg), left: Math.max(0, left - 2), top: Math.max(0, top - 2) };
+}
+
+async function keyed(image, label, region, position, readout) {
+	const layers = [];
+	if (label) {
+		layers.push(badgeLayer(label, position ? position[0] : region.width - badgeWidth(label) - 14, position ? position[1] : region.height - 32 - 14));
 	}
-	const width = badgeWidth(label);
-	const left = position ? position[0] : region.width - width - 14;
-	const top = position ? position[1] : region.height - 32 - 14;
-	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width + 4}" height="38">${badge(label, 2, 2)}</svg>`;
+	if (readout) {
+		layers.push(badgeLayer(readout, 14, region.height - 32 - 14));
+	}
 	const base = await image.png().toBuffer();
-	return sharp(base).composite([{ input: Buffer.from(svg), left: Math.max(0, left - 2), top: Math.max(0, top - 2) }]).png().toBuffer();
+	return layers.length === 0 ? base : sharp(base).composite(layers).png().toBuffer();
+}
+
+function readoutOf(file) {
+	const sidecar = file.replace(/\.png$/, '.txt');
+	return existsSync(sidecar) ? readFileSync(sidecar, 'utf-8').trim() : null;
 }
 
 async function framed(frames) {
@@ -335,7 +345,7 @@ async function main() {
 				throw new Error(`${name} has ${frames.length} raw frames instead of ${film.times.length}, render its scenario again`);
 			}
 			const delay = film.times.map((time, index) => (index + 1 < film.times.length ? film.times[index + 1] - time : setting.hold?.[0] ?? Math.round(1000 / film.fps)));
-			const buffers = await Promise.all(frames.map((frame, index) => keyed(sharp(frame).extract(region), film.labels[index], region, setting.keys)));
+			const buffers = await Promise.all(frames.map((frame, index) => keyed(sharp(frame).extract(region), film.labels[index], region, setting.keys, readoutOf(files[index]))));
 			const encoding = setting.quality ? { quality: setting.quality[0], smartSubsample: true } : { lossless: true, effort: 6 };
 			await sharp(buffers, { join: { animated: true } }).webp({ ...encoding, minSize: true, loop: 0, delay }).toFile(target);
 			const still = Math.min(setting.still?.[0] ?? buffers.length - 1, buffers.length - 1);

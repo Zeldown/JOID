@@ -154,7 +154,9 @@ public final class DocCapture {
 
 	private static void write(final Map<String, SnapshotImage> shots, final CursorBackend backend, final File output, final Map<String, Pointer> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
 		final Map<String, Cursor> cursors = new HashMap<>();
+		final Map<String, String> readouts = new HashMap<>();
 		shots.forEach((name, snapshot) -> cursors.put(name, backend.getCursor(snapshot)));
+		shots.forEach((name, snapshot) -> readouts.put(name, backend.getReadout(snapshot)));
 		shots.entrySet().parallelStream().forEach(shot -> {
 			final SnapshotImage snapshot = shot.getValue();
 			final BufferedImage image = new BufferedImage(snapshot.getWidth(), snapshot.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -164,6 +166,9 @@ public final class DocCapture {
 			DocCapture.drawPointer(image, pointers.get(shot.getKey()), cursors.get(shot.getKey()));
 			try {
 				ImageIO.write(image, "png", new File(output, shot.getKey() + ".png"));
+				if (readouts.get(shot.getKey()) != null) {
+					Files.write(new File(output, shot.getKey() + ".txt").toPath(), readouts.get(shot.getKey()).getBytes(StandardCharsets.UTF_8));
+				}
 			} catch (final IOException exception) {
 				throw new UncheckedIOException(exception);
 			}
@@ -406,7 +411,8 @@ public final class DocCapture {
 	private static final class CursorBackend implements ISnapshotBackend {
 
 		private final ISnapshotBackend           backend;
-		private final Map<SnapshotImage, Cursor> cursors = new WeakHashMap<>();
+		private final Map<SnapshotImage, Cursor> cursors  = new WeakHashMap<>();
+		private final Map<SnapshotImage, String> readouts = new WeakHashMap<>();
 
 		private CursorBackend(final ISnapshotBackend backend) {
 			this.backend = backend;
@@ -431,6 +437,7 @@ public final class DocCapture {
 		public SnapshotImage capture(final int width, final int height) {
 			final SnapshotImage image = this.backend.capture(width, height);
 			this.cursors.put(image, ((SnapshotWindowBridge) BridgeHandler.WINDOW.get()).getCursor());
+			BridgeHandler.UI.getBridge(WindowUIBridge.class).getUiList().stream().filter(ICaptureReadout.class::isInstance).findFirst().ifPresent(ui -> this.readouts.put(image, ((ICaptureReadout) ui).getReadout()));
 			return image;
 		}
 
@@ -441,6 +448,10 @@ public final class DocCapture {
 
 		private Cursor getCursor(final SnapshotImage image) {
 			return this.cursors.get(image);
+		}
+
+		private String getReadout(final SnapshotImage image) {
+			return this.readouts.get(image);
 		}
 
 	}
