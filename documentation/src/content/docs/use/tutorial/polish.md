@@ -78,7 +78,7 @@ Add this setter to the panel, after its effects:
 ```java file="com/example/tutorial/polish/MenuUI.java" region="slide"
 ```
 
-The lambda runs on every frame, so the panel starts 80 design pixels lower and rises to its place as the value reaches 1.
+The animator is a signal, so the setter follows it: the panel starts 80 design pixels lower and rises to its place as the value reaches 1.
 `init()` creates a new animator each time it runs, so the panel slides in again at each opening of the menu, and at each [reload](/use/get-started/dev-tools/#reload-a-ui-while-you-work).
 
 **Run it.**
@@ -123,7 +123,7 @@ At 0 the column sits 520 design pixels to the left of its place, outside the can
 - An [effect](/use/learn/style-and-motion/effects/) changes how a node is drawn: rounded corners, shadows, and more.
 - A [color](/use/learn/style-and-motion/styling/) carries its own opacity.
 - `cursor(...)` sets the pointer over a node ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node)).
-- A `TweenAnimator` moves a value over time, and a setter that reads it in a lambda follows it on every frame ([Animation](/use/learn/style-and-motion/animation/)).
+- A `TweenAnimator` moves a value over time, and a setter that reads it in an expression follows it ([Animation](/use/learn/style-and-motion/animation/)).
 - Popups play an opening and a closing [transition](/use/learn/style-and-motion/transitions/).
 
 ## Where to go next

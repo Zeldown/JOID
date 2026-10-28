@@ -19,7 +19,7 @@ public class ChallengeUI extends UI {
 		FlexNode
 		.vertical(160, 420, 360)
 		.margin(20D)
-		.x(() -> 160D - 520D * (1D - intro.get()))
+		.x(160D - 520D * (1D - intro.get()))
 		// #endregion
 		.body(flex -> {
 			RectNode.create(0, 0, 360, 80).color(Theme.ELEMENT).label(Text.create("Play", label)).attach(flex);

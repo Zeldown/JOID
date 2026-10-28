@@ -26,10 +26,10 @@ import dev.joid.lib.utils.align.Align;
 public class TourUI extends UI {
 
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
-	private static final Color ACCENT  = new Color(91, 140, 255).lock();
-	private static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
+	private static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 
 	// #region signals
 	private final IntegerSignal           clicks = new IntegerSignal(0);
@@ -117,7 +117,7 @@ public class TourUI extends UI {
 			RectNode
 			.create(60, 110, 80, 80)
 			.color(TourUI.ACCENT)
-			.x(() -> 60D + 220D * slide.get())
+			.x(60D + 220D * slide.get())
 			.attach(card);
 			// #endregion
 		})

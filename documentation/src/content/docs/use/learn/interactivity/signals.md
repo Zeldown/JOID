@@ -86,7 +86,7 @@ A lambda or a method reference runs its code each time: `visible(shown::get)` is
 
 The rule follows from the question.
 A value that depends on signals is an expression that reads them, or the signal itself.
-A value that changes without any signal (the time, an animation, the position of the pointer) is a lambda.
+A value that changes without any signal (the time, the position of the pointer) is a lambda; an [animator](/use/learn/style-and-motion/animation/#animate-a-value) is a signal.
 A value that never changes is a plain value.
 
 The factories (`create(...)`) take plain values: their arguments follow nothing.
@@ -104,6 +104,7 @@ An expression is computed only when a signal changes, a lambda on every frame of
 
 An expression passed to a setter is ordinary Java.
 JOID follows it by replaying it when one of the signals that it read changes; [How signals work](/use/in-depth/how-signals-work/) explains the mechanism.
+
 The safe form: read each signal with `get()` on a field or on a local variable that holds the signal itself.
 For anything else, derive a value with `map(...)` or pass a lambda.
 The table below says what happens outside that form; some code cannot be replayed, and then the value stays fixed:
@@ -134,7 +135,7 @@ In [dev mode](/use/get-started/dev-tools/), JOID prints a warning once per call,
 [JOID] FollowUI.java:33 width(...) reads clicks but cannot follow it: <reason>. The value stays "40.0". <advice>
 ```
 
-[Warnings and errors](/reference/errors/) lists every reason and its fix.
+[Warnings and errors](/reference/errors/#but-cannot-follow-value) explains this warning.
 
 The usual case is a loop that offsets each row:
 
