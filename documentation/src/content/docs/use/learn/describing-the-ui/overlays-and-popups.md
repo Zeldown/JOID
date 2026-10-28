@@ -62,7 +62,7 @@ By default, an overlay is drawn below the screens, as a layer of information und
 
 <figure>
 
-![The blue bar of StatusOverlay in the top-left corner of the window; beside it, the Settings screen gives way to the Menu screen, a dark card with three grey buttons, then comes back, while the bar stays where it is](/captures/describing-overlays-status.webp)
+![The blue bar of StatusOverlay above the Settings screen; the Settings screen gives way to the Menu screen, a dark card with three grey buttons, then comes back, while the bar stays where it is](/captures/describing-overlays-status.webp)
 
 <figcaption>
 `StatusOverlay` stays open while `SettingsUI` and `MenuUI` replace each other.

@@ -10,7 +10,7 @@ You need this page only if your interface drops frames, if its memory keeps grow
 
 <figure>
 
-![Two columns of boxes. Every frame: Visible nodes (layout, hover test, draw), highlighted; Every node (followed values, animators, update()); Off-screen effects (one pass per effect, over the node area). Once: Decode a resource (on its first draw); Generate a font atlas (on the first load on a machine); Compile a shader (on its first draw). Below, under GPU memory: Released by JOID (resources, fonts, effect images) and Released by you (the framebuffers you create), highlighted.](/captures/depth-performance.webp)
+![Two columns of boxes. Every frame: Visible nodes (layout, hover test, draw), highlighted; Every node (followed values, onAnimate, update()); Started animators (until their steps end); Off-screen effects (one pass per effect, over the node area). Once: Decode a resource (on its first draw); Generate a font atlas (on the first load on a machine); Compile a shader (on its first draw). Below, under GPU memory: Released by JOID (resources, fonts, effect images) and Released by you (the framebuffers you create), highlighted.](/captures/depth-performance.webp)
 
 <figcaption>
 The cost of a frame grows with the nodes; the rest costs once.

@@ -187,10 +187,11 @@ The reads of a collection signal (`size()`, `get(index)`, `contains(...)`, `isEm
 
 <figure>
 
-![A card with three buttons, "Add Linus", "Remove Ada" and "Details", and the texts "Count: 2", "First: Ada" and "Has Linus: false"; the pointer clicks "Add Linus", then "Remove Ada" twice, and the texts change at the first two clicks only, ending at "Count: 2", "First: Grace" and "Has Linus: true"](/captures/interactivity-types.webp)
+![A card with three buttons, "Add Linus", "Remove Ada" and "Details", and the texts "Count: 2", "First: Ada" and "Has Linus: false"; the pointer clicks "Add Linus", then "Remove Ada" twice, and the texts change at the first two clicks only, ending at "Count: 2", "First: Grace" and "Has Linus: true"; then it clicks "Details" twice: the First and Has Linus lines disappear, then come back](/captures/interactivity-types.webp)
 
 <figcaption>
 "Add Linus", then "Remove Ada" twice: the second removal changes nothing, so nothing is computed again.
+"Details" toggles the `BooleanSignal`, which hides and shows the last two lines.
 </figcaption>
 </figure>
 

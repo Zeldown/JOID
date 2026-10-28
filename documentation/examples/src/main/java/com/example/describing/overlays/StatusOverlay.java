@@ -13,7 +13,7 @@ public class StatusOverlay extends UI {
 
 	@Override
 	public void init() {
-		RectNode.create(40, 40, 400, 40).color(StatusOverlay.ACCENT).attach(this);
+		RectNode.create(480, 160, 400, 40).color(StatusOverlay.ACCENT).attach(this);
 	}
 
 }

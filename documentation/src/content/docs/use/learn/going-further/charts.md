@@ -31,10 +31,10 @@ Give the chart its axes, then its series:
 
 <figure>
 
-![A dark grey line chart with a blue and a grey series over Mon to Fri, labeled 8 k and 1 k on the left, next to a radar chart with five axes](/captures/further-charts-start.webp)
+![A dark grey line chart with a blue and a grey series over Mon to Fri, labeled 8 k and 1 k on the left](/captures/further-charts-start.webp)
 
 <figcaption>
-The line chart draws one line per series, in the order they were added; the radar chart draws one axis per data.
+The line chart draws one line per series, in the order they were added.
 </figcaption>
 </figure>
 
@@ -83,6 +83,15 @@ A [[RadarChartNode]] holds a list of values, each with its label, drawn as the a
 
 ```java file="com/example/further/ChartsUI.java" region="radar"
 ```
+
+<figure>
+
+![A radar chart on a dark grey pentagon, with the axes Speed, Power, Range, Grip and Armor, and a blue area that reaches furthest toward Grip and Speed](/captures/further-charts-radar.webp)
+
+<figcaption>
+This skin draws one axis per data, in the order they were added, clockwise from the top.
+</figcaption>
+</figure>
 
 `data(...)` adds an axis, `removeData(...)` removes one and `clear()` removes them all; `getMin()`, `getMax()` and `getAverage()` cover every value.
 A [[RadarChartNode.RadarChartData]] takes its label and its value as a value or as a `Supplier`, read each time the skin calls `getValue()` and `getLabel()`.
