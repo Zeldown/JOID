@@ -6,7 +6,6 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
@@ -33,7 +32,7 @@ public class HoverUI extends UI {
 		.effect(BorderNodeEffect.create(HoverUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region color
-			final RectNode shop = RectNode
+			RectNode
 			.create(60, 100, 220, 60)
 			.color(HoverUI.ELEMENT)
 			.hoveredColor(HoverUI.HOVER)
@@ -42,7 +41,6 @@ public class HoverUI extends UI {
 			.label(Text.create("Shop", info))
 			.attach(card);
 			// #endregion
-			shop.cursor(Cursor.POINTER);
 			// #region value
 			final RectNode link = RectNode
 			.create(320, 100, 220, 60)

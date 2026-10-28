@@ -37,7 +37,7 @@ Give the markup to a style with [[TextInfo#markups]] or [[TextInfo#withMarkups]]
 ![A dark card with four light lines: Read the terms, then accept them, with terms in bold and accept in blue and underlined; A wave moves every glyph, its letters rising and falling along a wave; LOUD AND CLEAR in capitals with LOUD in bold; 1 min 35 s](/captures/describing-markup-lines.webp)
 
 <figcaption>
-A markup, an effect, a modifier and a converter, one per line.
+Each hook works on one stage of the text: the tags, the glyphs, the string, then your own objects.
 The tags of the first line and of the third line are not drawn.
 </figcaption>
 </figure>

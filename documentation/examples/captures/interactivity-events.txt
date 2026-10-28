@@ -90,7 +90,7 @@ wait 400
 type 2
 wait 1000
 moveto 1110 600 400
-wait 300
+wait 600
 cut
 ui com.example.interactivity.events.DispatchDiagramUI
 wait 100

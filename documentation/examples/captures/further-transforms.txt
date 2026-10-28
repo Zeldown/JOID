@@ -2,7 +2,7 @@ ui com.example.further.TransformsUI
 wait 100
 # crop further-transforms-resource 60 60 1040 220
 shot further-transforms-resource
-# crop further-transforms-pivot 1220 120 500 220
+# crop further-transforms-pivot 1210 120 510 220
 shot further-transforms-pivot
 # crop further-transforms-matrix 140 440 380 220
 shot further-transforms-matrix

@@ -31,7 +31,7 @@ The `RESOURCE` drawer of [[DrawUtils]], a [[DrawResource]], draws a [[Resource]]
 ![The same grey placeholder image four times: in a 320 by 180 box, stretched into a wide band, a small square cut from its middle, and tinted blue](/captures/further-transforms-resource.webp)
 
 <figcaption>
-A box, a stretched band, a region of the source, and the image tinted by a bound color.
+One call per form: the same resource drawn in a box, stretched, cropped to a region, or tinted inside `color.bind(...)`.
 </figcaption>
 </figure>
 

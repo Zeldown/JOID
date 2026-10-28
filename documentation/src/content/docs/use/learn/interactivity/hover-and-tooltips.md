@@ -142,11 +142,19 @@ A node tooltip stays inside the window.
 
 ## Change the cursor over a node
 
-The Shop button of `HoverUI` shows the hand of the system while the pointer is over it:
+Each node of `CursorUI` gives the window its own cursor:
 
-```java fragment
-RectNode.create(60, 100, 220, 60).cursor(Cursor.POINTER).label(Text.create("Shop", info)).attach(card);
+```java file="com/example/interactivity/hover/CursorUI.java" region="cursor"
 ```
+
+<figure>
+
+![The pointer moves over a dark card: on the Shop button it becomes a hand, on the Name field a text cursor, on the Drag me bar four arrows, and back to an arrow on the card.](/captures/interactivity-cursor.webp)
+
+<figcaption>
+The cursor tells the user what a node does before any click: press, type or drag.
+</figcaption>
+</figure>
 
 [[Node#cursor]] sets the [[Cursor]] of the window over the node.
 A node without a cursor shows the cursor of its parent, and the cursor of the node under a press stays until the release.

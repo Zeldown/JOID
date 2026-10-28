@@ -1,8 +1,13 @@
 # crop style-create 340 40 1240 300
 # crop style-derive 340 390 1240 300
 # crop style-gradient 340 740 1240 300
+# crop style-live 540 380 840 320
 ui com.example.style.ColorsUI
 wait 100
 shot style-create
 shot style-derive
 shot style-gradient
+ui com.example.style.LiveColorsUI
+# film style-live
+wait 6000
+cut

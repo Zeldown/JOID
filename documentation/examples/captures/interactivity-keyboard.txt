@@ -53,4 +53,4 @@ wait 500
 key F1
 wait 700
 moveto 1120 650 400
-wait 300
+wait 600

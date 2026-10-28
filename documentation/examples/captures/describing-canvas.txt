@@ -1,23 +1,37 @@
 # crop describing-canvas-diagram 360 290 1200 500
-# crop describing-canvas-wide 0 0 1200 514
-# crop describing-canvas-tall 0 0 900 675
-# crop describing-canvas-pinned 0 0 1200 514
+# crop describing-canvas-scale 0 0 960 540
 # crop describing-canvas-zoom 0 0 960 540
 ui com.example.describing.canvas.CanvasDiagramUI
 wait 100
 shot describing-canvas-diagram
-resize 1200 514
-ui com.example.describing.canvas.EdgesUI
-wait 100
-shot describing-canvas-wide
-resize 900 675
-wait 100
-shot describing-canvas-tall
-resize 1200 514
-ui com.example.describing.canvas.MinimapUI
-wait 100
-shot describing-canvas-pinned
 resize 960 540
+ui com.example.describing.canvas.EdgesUI
+# film describing-canvas-resize 60
+wait 500
+resizeto 1200 514 1200
+wait 600
+resizeto 900 675 1400
+wait 600
+resizeto 960 540 900
+wait 400
+cut
+ui com.example.describing.canvas.MinimapUI
+# film describing-canvas-pinned 60
+wait 500
+resizeto 1200 400 1200
+wait 700
+resizeto 960 540 1000
+wait 400
+cut
+ui com.example.describing.canvas.ScaleUI
+open com.example.describing.canvas.GaugeUI
+# film describing-canvas-scale 60
+wait 500
+scaleto 2 1500
+wait 800
+scaleto 1 1200
+wait 300
+cut
 ui com.example.describing.canvas.ZoomUI
 move 700 470
 # film describing-canvas-zoom 60

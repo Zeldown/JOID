@@ -6,6 +6,11 @@ shot describing-position-panel
 ui com.example.describing.position.AnchorUI
 wait 100
 shot describing-position-anchors
+# crop describing-position-grow 640 320 640 440
+ui com.example.describing.position.AnchorGrowUI
+# film describing-position-grow 60
+wait 4000
+cut
 # crop describing-position-order 640 320 640 440
 ui com.example.describing.position.OrderUI
 wait 100

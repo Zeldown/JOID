@@ -61,19 +61,10 @@ The nodes that follow the view reach the edges:
 
 <figure>
 
-![A wide window: a dark grey area fills it, a darker canvas sits in its middle with a blue card in the center, a grey bar runs along the whole top edge of the window, and a blue square sits in its top-right corner.](/captures/describing-canvas-wide.webp)
+![A window that widens, then narrows and grows taller, then returns to 16:9: a dark grey area fills it, a darker canvas stays in its middle with a blue card in the center, a grey bar runs along the whole top edge of the window and a blue square stays in its top-right corner.](/captures/describing-canvas-resize.webp)
 
 <figcaption>
-On a wide window, the bar and the square follow the view, while the card stays in the middle of the canvas.
-</figcaption>
-</figure>
-
-<figure>
-
-![A tall window: the darker canvas is in its middle with the blue card, dark grey areas above and below it, the grey bar along the top edge of the window, above the canvas, and the blue square in the top-right corner.](/captures/describing-canvas-tall.webp)
-
-<figcaption>
-The same UI on a tall window: the bar and the square still reach the top edge.
+At every size of the window, the bar and the square follow the view, while the card stays in the middle of the canvas.
 </figcaption>
 </figure>
 
@@ -90,10 +81,10 @@ By default, the canvas sits in the middle of the window.
 
 <figure>
 
-![A wide window filled with dark grey, with a darker square holding a blue disc in its top-right corner.](/captures/describing-canvas-pinned.webp)
+![A window filled with dark grey widens from 16:9 to three times as wide as it is high, then narrows back; a darker square holding a blue disc stays in its top-right corner, smaller while the window is lower.](/captures/describing-canvas-pinned.webp)
 
 <figcaption>
-Pinned to the top-right corner, the canvas keeps the minimap against the right edge of a wide window.
+Pinned to the top-right corner, the canvas keeps the minimap against the right edge, however wide the window gets.
 </figcaption>
 </figure>
 
@@ -107,10 +98,17 @@ The default window bridge gives 1; a UI bridge of your own gives another value (
 
 [[UIDataScale]] tells how a UI follows it:
 
-```java fragment
-@UIDataScale(limited = true, limit = 1.5D)
-public class GaugeUI extends UI {
+```java file="com/example/describing/canvas/GaugeUI.java" region="class"
 ```
+
+<figure>
+
+![Two cards in the top corners of a window, Default on the left and Limit 1.5 on the right. The interface scale goes from 1 to 2 and back: the left card grows to twice its size, the right card stops at one and a half times its size, then both shrink back.](/captures/describing-canvas-scale.webp)
+
+<figcaption>
+A limit caps the size of a UI, whatever scale the application asks for: `GaugeUI` stops at 1.5, while the UI without `@UIDataScale` reaches 2.
+</figcaption>
+</figure>
 
 - By default, the UI follows the interface scale.
 - `limited = true` follows it up to `limit`: here, a scale of 2 draws the UI at 1.5.
