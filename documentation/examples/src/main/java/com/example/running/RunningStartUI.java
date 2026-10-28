@@ -1,8 +1,8 @@
 package com.example.running;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -14,23 +14,19 @@ import dev.joid.lib.utils.align.Align;
 
 public class RunningStartUI extends UI {
 
-	private static final Color TEXT    = new Color(231, 233, 238).lock();
-	private static final Color ELEMENT = new Color(38, 43, 53).lock();
-	private static final Color SURFACE = new Color(23, 26, 33).lock();
-
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(RunningStartUI.TEXT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CaptureStyle.TEXT);
 
 		RectNode
 		.create(680, 390, 560, 300)
-		.color(RunningStartUI.SURFACE)
+		.color(CaptureStyle.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
-		.effect(BorderNodeEffect.create(RunningStartUI.ELEMENT, 1.5F))
+		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
 		.body(card -> {
 			RectNode
 			.create(180, 110, 200, 80)
-			.color(RunningStartUI.ELEMENT)
+			.color(CaptureStyle.STROKE)
 			.hover(() -> "Opens the settings")
 			.body(rect -> TextNode.create(0, 0, 200, 80).text(Text.create("Settings", info).align(Align.CENTER)).attach(rect))
 			.attach(card);

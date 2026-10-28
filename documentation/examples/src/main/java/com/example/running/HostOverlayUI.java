@@ -1,8 +1,8 @@
 package com.example.running;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -15,16 +15,13 @@ import dev.joid.lib.utils.align.Align;
 @UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true))
 public class HostOverlayUI extends UI {
 
-	private static final Color TEXT    = new Color(231, 233, 238).lock();
-	private static final Color ELEMENT = new Color(38, 43, 53).lock();
-
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(HostOverlayUI.TEXT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CaptureStyle.TEXT);
 
 		RectNode
 		.create(40, 40, 200, 80)
-		.color(HostOverlayUI.ELEMENT)
+		.color(CaptureStyle.STROKE)
 		.onClick(event -> HostApp.togglePause())
 		.body(rect -> TextNode.create(0, 0, 200, 80).text(Text.create("Pause", info).align(Align.CENTER)).attach(rect))
 		.attach(this);
