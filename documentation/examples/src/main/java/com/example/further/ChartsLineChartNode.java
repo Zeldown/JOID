@@ -12,8 +12,9 @@ import dev.joid.lib.utils.geom.Point;
 // #region node
 public class ChartsLineChartNode extends ChartNode {
 
-	private static final Color INK  = new Color(153, 153, 153).lock();
-	private static final Color DARK = new Color(85, 85, 85).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	protected ChartsLineChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -25,7 +26,7 @@ public class ChartsLineChartNode extends ChartNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsLineChartNode.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsLineChartNode.MUTED);
 		final double min = super.getMin().doubleValue();
 		final double max = super.getMax().doubleValue();
 		final double left = super.getX() + 50D;
@@ -37,7 +38,8 @@ public class ChartsLineChartNode extends ChartNode {
 		final String high = super.getYAxis().format(Math.round(max));
 		final String low = super.getYAxis().format(Math.round(min));
 
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		final Color background = ChartsLineChartNode.ELEMENT;
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), background);
 		DrawUtils.TEXT.drawText(super.getX() + 8D, top, high, info, Align.START, Align.CENTER);
 		DrawUtils.TEXT.drawText(super.getX() + 8D, top + height, low, info, Align.START, Align.CENTER);
 
@@ -49,7 +51,7 @@ public class ChartsLineChartNode extends ChartNode {
 
 		int series = 0;
 		for (final ChartData data : super.getDataMap().values()) {
-			final Color color = series % 2 == 0 ? ChartsLineChartNode.INK : ChartsLineChartNode.DARK;
+			final Color color = series % 2 == 0 ? ChartsLineChartNode.ACCENT : ChartsLineChartNode.MUTED;
 			Point previous = null;
 			column = 0;
 			for (final String label : super.getLabels()) {

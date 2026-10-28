@@ -7,20 +7,19 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartData;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class ChartsUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	@Override
 	public void init() {
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 22F).color(Color.WHITE);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 22F).color(ChartsUI.ON_ACCENT);
 		final IntegerSignal week = new IntegerSignal(0);
 
 		// #region line
@@ -47,7 +46,7 @@ public class ChartsUI extends UI {
 		// #region update
 		RectNode
 		.create(100, 380, 200, 50)
-		.color(ChartsUI.INK)
+		.color(ChartsUI.ACCENT)
 		.label(Text.create("Next week", label))
 		.onClick(event -> {
 			week.increment();

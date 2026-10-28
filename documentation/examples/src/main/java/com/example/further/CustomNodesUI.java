@@ -8,20 +8,19 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class CustomNodesUI extends UI {
 
-	private static final Color INK  = new Color(153, 153, 153).lock();
-	private static final Color DARK = new Color(85, 85, 85).lock();
+	private static final Color TEXT   = new Color(231, 233, 238).lock();
+	private static final Color MUTED  = new Color(139, 147, 163).lock();
+	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CustomNodesUI.DARK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CustomNodesUI.TEXT);
 		// #region signal
 		final BooleanSignal favorite = new BooleanSignal(false);
 		final IntegerSignal changes = new IntegerSignal(0);
@@ -44,7 +43,7 @@ public class CustomNodesUI extends UI {
 		.body(container -> {
 			SwatchNode
 			.create(20, 20, 100)
-			.color(CustomNodesUI.INK)
+			.color(CustomNodesUI.ACCENT)
 			.selected(favorite)
 			.onSelect(event -> changes.set(changes.get() + 1))
 			.attach(container);
@@ -61,9 +60,9 @@ public class CustomNodesUI extends UI {
 		SplitNode
 		.create(120, 400, 520, 120)
 		.body(split -> {
-			RectNode.create(0, 0, 0, 0).color(Color.WHITE).attach(split);
-			RectNode.create(0, 20, 0, 80).color(Color.WHITE).attach(split);
-			RectNode.create(0, 0, 0, 0).color(Color.WHITE).attach(split);
+			RectNode.create(0, 0, 0, 0).color(CustomNodesUI.MUTED).attach(split);
+			RectNode.create(0, 20, 0, 80).color(CustomNodesUI.MUTED).attach(split);
+			RectNode.create(0, 0, 0, 0).color(CustomNodesUI.MUTED).attach(split);
 		})
 		.attach(this);
 		// #endregion

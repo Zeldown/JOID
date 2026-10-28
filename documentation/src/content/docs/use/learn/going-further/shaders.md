@@ -57,7 +57,7 @@ The layer sends a quad whose texture coordinates go from 0 to 1 across the band:
 
 <figure>
 
-![A grey band crossed by soft vertical stripes of lighter and darker grey that move to the left, on a light grey background](/captures/further-shaders-wave.webp)
+![A blue band crossed by soft vertical stripes of lighter and darker blue that move to the left](/captures/further-shaders-wave.webp)
 
 <figcaption>
 The wave shader colors each pixel from its texture coordinate and the time.
@@ -126,10 +126,10 @@ A name that the shader does not declare, or values that do not fit its type, thr
 
 <figure>
 
-![A grey rectangle with blurred edges, ringed by a soft dark grey halo that follows the blurred shape, on a light grey background](/captures/further-shaders-pipeline.webp)
+![A blue rectangle with blurred edges, ringed by a soft grey halo that follows the blurred shape](/captures/further-shaders-pipeline.webp)
 
 <figcaption>
-Blurred horizontally, then vertically, then outlined: around a blurred shape, the dark border of the last pass fades into a soft halo.
+Blurred horizontally, then vertically, then outlined: around a blurred shape, the grey border of the last pass fades into a soft halo.
 </figcaption>
 </figure>
 
@@ -178,7 +178,7 @@ The program and the pass:
 
 <figure>
 
-![Two dark grey rectangles side by side on a light grey background; the second one is drawn in light grey](/captures/further-shaders-invert.webp)
+![Two grey rectangles side by side; the second one is drawn in its inverse, a dark ochre](/captures/further-shaders-invert.webp)
 
 <figcaption>
 Without the pass, then with `InvertShaderPass` at `1F`.
@@ -207,7 +207,7 @@ For code built while the application runs, or for another blending, create the s
 
 <figure>
 
-![A grey rectangle on a light grey background](/captures/further-shaders-tint.webp)
+![A grey rectangle](/captures/further-shaders-tint.webp)
 
 <figcaption>
 The shader built at run time multiplies the white of the rectangle by the tint of `0.6F`, which gives grey.

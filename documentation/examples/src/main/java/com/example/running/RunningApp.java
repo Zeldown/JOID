@@ -33,7 +33,7 @@ public final class RunningApp {
 		// #region bridge
 		BridgeHandler.UI
 		.getBridge(WindowUIBridge.class)
-		.background(Color.decode("#DDDDDD"))
+		.background(Color.decode("#0E1014"))
 		.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Color.WHITE));
 		// #endregion
 

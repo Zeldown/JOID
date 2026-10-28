@@ -6,5 +6,5 @@ shot further-framebuffers-stamp
 shot further-framebuffers-triangle
 # crop further-framebuffers-pool 740 80 300 200
 shot further-framebuffers-pool
-# crop further-framebuffers-model 1120 80 200 200
+# crop further-framebuffers-model 1100 130 220 200
 shot further-framebuffers-model

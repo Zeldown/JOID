@@ -31,7 +31,7 @@ Give the chart its axes, then its series:
 
 <figure>
 
-![A white line chart with two series over Mon to Fri, labeled 8 k and 1 k on the left, next to a radar chart with five axes](/captures/further-charts-start.webp)
+![A dark grey line chart with a blue and a grey series over Mon to Fri, labeled 8 k and 1 k on the left, next to a radar chart with five axes](/captures/further-charts-start.webp)
 
 <figcaption>The line chart draws one line per series, in the order they were added; the radar chart draws one axis per data.</figcaption>
 </figure>

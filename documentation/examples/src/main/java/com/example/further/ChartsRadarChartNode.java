@@ -13,7 +13,9 @@ import dev.joid.lib.utils.geom.Point;
 // #region node
 public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	protected ChartsRadarChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -25,7 +27,7 @@ public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsRadarChartNode.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 18F).color(ChartsRadarChartNode.MUTED);
 		final int size = super.getDataList().size();
 		final Point[] outline = new Point[size];
 		final Point[] values = new Point[size];
@@ -36,8 +38,8 @@ public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 			values[i] = this.getPoint(i, super.dw(2D) * ratio);
 		}
 
-		DrawUtils.SHAPE.drawPolygon(Color.WHITE, outline);
-		DrawUtils.SHAPE.drawPolygon(ChartsRadarChartNode.INK.withAlpha(0.5F), values);
+		DrawUtils.SHAPE.drawPolygon(ChartsRadarChartNode.ELEMENT, outline);
+		DrawUtils.SHAPE.drawPolygon(ChartsRadarChartNode.ACCENT.withAlpha(0.5F), values);
 		for (int i = 0; i < size; i++) {
 			final Point label = this.getPoint(i, super.dw(2D) + 32D);
 			final String text = super.getDataList().get(i).getLabel();

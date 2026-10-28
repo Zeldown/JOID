@@ -21,13 +21,13 @@ public class ThreadsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#999999"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
 
 		final TextNode label = TextNode.create(0, 150, 400, 150).text(Text.create("...", info));
 
 		RectNode
 		.create(760, 390, 400, 300)
-		.color(Color.decode("#DDDDDD"))
+		.color(Color.decode("#171A21"))
 		.body(card -> {
 			TextNode.create(0, 0, 400, 150).text(Text.create(this.status::get, info).align(Align.CENTER)).attach(card);
 			label.attach(card);

@@ -14,11 +14,11 @@ public class RunningPanelUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#999999"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
 
 		RectNode
 		.create(1480, 40, 400, 200)
-		.color(Color.WHITE)
+		.color(Color.decode("#262B35"))
 		.hover(() -> "A panel of the library")
 		.body(rect -> TextNode.create(0, 0, 400, 200).text(Text.create("Panel", info).align(Align.CENTER)).attach(rect))
 		.attach(this);

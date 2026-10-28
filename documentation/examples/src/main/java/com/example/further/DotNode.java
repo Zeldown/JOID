@@ -7,7 +7,8 @@ import dev.joid.lib.ui.node.Node;
 // #region node
 public class DotNode extends Node {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	protected DotNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -21,8 +22,8 @@ public class DotNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		final double centerX = super.getX() + super.dw(2D);
 		final double centerY = super.getY() + super.dh(2D);
-		DrawUtils.SHAPE.drawCircle(centerX, centerY, Color.WHITE, super.dw(2D));
-		DrawUtils.SHAPE.drawCircle(centerX, centerY, DotNode.INK, super.dw(4D));
+		DrawUtils.SHAPE.drawCircle(centerX, centerY, DotNode.ELEMENT, super.dw(2D));
+		DrawUtils.SHAPE.drawCircle(centerX, centerY, DotNode.ACCENT, super.dw(4D));
 	}
 
 }

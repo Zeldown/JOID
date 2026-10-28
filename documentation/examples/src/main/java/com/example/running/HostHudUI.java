@@ -17,11 +17,11 @@ public class HostHudUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#999999"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
 
 		RectNode
 		.create(40, 40, 200, 80)
-		.color(Color.WHITE)
+		.color(Color.decode("#262B35"))
 		.onClick(event -> HostApp.togglePause())
 		.body(rect -> TextNode.create(0, 0, 200, 80).text(Text.create("Pause", info).align(Align.CENTER)).attach(rect))
 		.attach(this);

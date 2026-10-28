@@ -1,3 +1,4 @@
+# bare
 # crop running-testing-menu 760 390 400 300
 ui com.example.running.RunningMenuUI
 wait 100

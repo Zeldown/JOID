@@ -76,7 +76,7 @@ It follows the size of the window by itself, so you need no resize callback.
 
 <figure>
 
-![A white Settings button on a light grey card, in the middle of the window](/captures/running-backends-start.webp)
+![A dark grey Settings button on a dark card, in the middle of the window](/captures/running-backends-start.webp)
 
 <figcaption>The program above, with `RunningStartUI` open: the window shows the UI from the first frame.</figcaption>
 </figure>
@@ -188,7 +188,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 
 <figure>
 
-![The pointer moves onto the Settings button and rests there; a dark tooltip with the white text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
+![The pointer moves onto the Settings button and rests there; a dark tooltip with the light text Opens the settings appears below it to the right](/captures/running-backends-tooltip.webp)
 
 <figcaption>The tooltip of the window bridge with its default colors: the text style is the one setting it cannot guess.</figcaption>
 </figure>

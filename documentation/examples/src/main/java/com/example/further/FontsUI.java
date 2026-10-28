@@ -5,13 +5,11 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class FontsUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT = new Color(231, 233, 238).lock();
 
 	// #region load
 	private static final FontsPixelFont PIXEL = FontsPixelFont.load("/fonts/Pixel/pixel.png");
@@ -20,8 +18,8 @@ public class FontsUI extends UI {
 	@Override
 	public void init() {
 		// #region use
-		final TextInfo title = TextInfo.create(FontsUI.PIXEL, 64F).color(FontsUI.INK);
-		final TextInfo line = TextInfo.create(FontsUI.PIXEL, 24F).color(FontsUI.INK);
+		final TextInfo title = TextInfo.create(FontsUI.PIXEL, 64F).color(FontsUI.TEXT);
+		final TextInfo line = TextInfo.create(FontsUI.PIXEL, 24F).color(FontsUI.TEXT);
 
 		TextNode.create(100, 100).text(Text.create("GAME OVER", title)).attach(this);
 

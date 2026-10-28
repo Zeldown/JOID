@@ -38,7 +38,7 @@ Here a locator of your own reads the prefix `pack:`, and a format of your own re
 
 <figure>
 
-![A grey ring drawn in large square pixels, next to a dot that turns around a dark circle](/captures/further-custom-formats.webp)
+![A grey ring drawn in large square pixels on a light square, next to a dot that turns around a dark grey circle](/captures/further-custom-formats.webp)
 
 <figcaption>The ring is a PPM text file read by its own format; the turning dot is a sprite strip read as an animation.
 Both come through the `pack:` locator.</figcaption>

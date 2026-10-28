@@ -9,16 +9,16 @@ import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.model.ModelNode;
 import dev.joid.lib.ui.node.impl.model.ModelViewerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class ModelsUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT      = new Color(231, 233, 238).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	// #region load
 	private static final ObjModel CUBE = ObjModel.of("cube", "models/box.obj", Resource.of("models/box.png"));
@@ -26,8 +26,8 @@ public class ModelsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 22F).color(Color.WHITE);
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 22F).color(ModelsUI.INK);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 22F).color(ModelsUI.ON_ACCENT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 22F).color(ModelsUI.TEXT);
 		// #region signal
 		final DoubleSignal yaw = new DoubleSignal(30D);
 		// #endregion
@@ -39,7 +39,7 @@ public class ModelsUI extends UI {
 		// #region turn
 		RectNode
 		.create(100, 340, 200, 50)
-		.color(ModelsUI.INK)
+		.color(ModelsUI.ACCENT)
 		.label(Text.create("Turn", label))
 		.onClick(event -> yaw.set(yaw.get() + 45D))
 		.attach(this);

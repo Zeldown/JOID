@@ -15,16 +15,17 @@ import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.geom.Point;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class TransformsUI extends UI {
 
-	private static final Color INK  = new Color(153, 153, 153).lock();
-	private static final Color DARK = new Color(85, 85, 85).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	// #region multiply
 	private static final BlendState MULTIPLY = BlendState.of(Equation.ADD, Factor.DST_COLOR, Factor.ZERO);
@@ -52,7 +53,7 @@ public class TransformsUI extends UI {
 			DrawUtils.RESOURCE.drawResource(360D, 50D, 280D, 80D, this.image);
 			DrawUtils.RESOURCE.drawResource(680D, 50D, 80D, 80D, 120D, 50D, 80D, 80D, this.image);
 			final BoundingBox tint = BoundingBox.create(800D, 0D, 200D, 112D);
-			TransformsUI.INK.bind(() -> DrawUtils.RESOURCE.drawResource(800D, 0D, 200D, 112D, this.image), tint, true);
+			TransformsUI.ACCENT.bind(() -> DrawUtils.RESOURCE.drawResource(800D, 0D, 200D, 112D, this.image), tint, true);
 		})
 		.attach(this);
 		// #endregion
@@ -64,17 +65,17 @@ public class TransformsUI extends UI {
 			Transformation
 			.create()
 			.rotate(20D, Rotation.ROLL, Vector.create(150D, 120D))
-			.apply(() -> DrawUtils.SHAPE.drawRect(80D, 80D, 140D, 80D, TransformsUI.INK));
+			.apply(() -> DrawUtils.SHAPE.drawRect(80D, 80D, 140D, 80D, TransformsUI.ACCENT));
 
 			Transformation
 			.create()
 			.rotate(20D, Rotation.ROLL, Vector.create(380D, 80D))
-			.apply(() -> DrawUtils.SHAPE.drawRect(380D, 80D, 140D, 80D, TransformsUI.INK));
+			.apply(() -> DrawUtils.SHAPE.drawRect(380D, 80D, 140D, 80D, TransformsUI.ACCENT));
 
-			DrawUtils.SHAPE.drawBorder(80D, 80D, 140D, 80D, Color.WHITE, 2D);
-			DrawUtils.SHAPE.drawBorder(380D, 80D, 140D, 80D, Color.WHITE, 2D);
-			DrawUtils.SHAPE.drawCircle(150D, 120D, TransformsUI.DARK, 7D);
-			DrawUtils.SHAPE.drawCircle(380D, 80D, TransformsUI.DARK, 7D);
+			DrawUtils.SHAPE.drawBorder(80D, 80D, 140D, 80D, TransformsUI.MUTED, 2D);
+			DrawUtils.SHAPE.drawBorder(380D, 80D, 140D, 80D, TransformsUI.MUTED, 2D);
+			DrawUtils.SHAPE.drawCircle(150D, 120D, TransformsUI.TEXT, 7D);
+			DrawUtils.SHAPE.drawCircle(380D, 80D, TransformsUI.TEXT, 7D);
 		})
 		.attach(this);
 		// #endregion
@@ -83,7 +84,7 @@ public class TransformsUI extends UI {
 		ContainerNode
 		.create(1640, 840, 120, 120)
 		.layer((node, mouseX, mouseY) -> {
-			this.spin.apply(() -> DrawUtils.SHAPE.drawRect(20D, 20D, 80D, 80D, TransformsUI.INK));
+			this.spin.apply(() -> DrawUtils.SHAPE.drawRect(20D, 20D, 80D, 80D, TransformsUI.ACCENT));
 		})
 		.attach(this);
 		// #endregion
@@ -96,9 +97,9 @@ public class TransformsUI extends UI {
 				matrix.translate(node.dw(2D), node.dh(2D), 0D);
 				matrix.rotate(-10D, 0D, 0D, 1D);
 				matrix.scale(1.5D, 1.5D, 1D);
-				DrawUtils.SHAPE.drawRect(-node.dw(2D), -node.dh(2D), node.getWidth(), node.getHeight(), Color.WHITE);
+				DrawUtils.SHAPE.drawRect(-node.dw(2D), -node.dh(2D), node.getWidth(), node.getHeight(), TransformsUI.ELEMENT);
 			});
-			DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), TransformsUI.INK, 2D);
+			DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), TransformsUI.ACCENT, 2D);
 		})
 		.attach(this);
 		// #endregion
@@ -110,11 +111,13 @@ public class TransformsUI extends UI {
 			BridgeHandler.RENDER.get().withState(render -> {
 				render.getState().lineSmooth(true).lineWidth(6F);
 				final Point[] points = {Point.of(150D, 60D), Point.of(350D, 60D), Point.of(250D, 240D)};
-				DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, TransformsUI.INK, points);
+				DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, TransformsUI.ACCENT, points);
 			});
 		})
 		.attach(this);
 		// #endregion
+
+		RectNode.create(1300, 400, 500, 300).color(TransformsUI.TEXT).attach(this);
 
 		// #region blend
 		ContainerNode

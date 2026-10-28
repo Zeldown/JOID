@@ -4,6 +4,7 @@ wait 100
 shot further-custom-nodes-dots
 # crop further-custom-nodes-swatch 600 130 560 140
 # still further-custom-nodes-swatch 40
+move 1100 225
 # film further-custom-nodes-swatch
 wait 300
 moveto 670 200 400
@@ -11,7 +12,7 @@ wait 200
 press LEFT
 release LEFT
 wait 500
-moveto 1300 600 400
+moveto 1100 225 400
 wait 300
 cut
 # crop further-custom-nodes-split 100 380 560 160

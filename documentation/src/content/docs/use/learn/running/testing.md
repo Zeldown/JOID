@@ -53,7 +53,7 @@ A [[SnapshotImage]] holds the pixels as ARGB `int` values, row after row, from t
 
 <figure>
 
-![A white Play button on a light grey background](/captures/running-testing-menu.webp)
+![A dark grey Play button on a dark background](/captures/running-testing-menu.webp)
 
 <figcaption>The middle of `menu.png`.
 The test writes the whole 1920×1080 window.</figcaption>
@@ -68,7 +68,7 @@ Commands play the input of a user, one line each:
 
 <figure>
 
-![The Play button now reads Playing, with the pointer resting on it](/captures/running-testing-clicked.webp)
+![The Play button now reads Playing](/captures/running-testing-clicked.webp)
 
 <figcaption>The shot `clicked`: the pointer moved to the button, pressed and released, and the label changed.</figcaption>
 </figure>

@@ -4,7 +4,7 @@
 ui com.example.further.ChartsUI
 wait 100
 shot further-charts-start
-move 360 445
+move 360 420
 # film further-charts-next
 wait 300
 moveto 230 415 500
@@ -12,5 +12,5 @@ wait 300
 press LEFT
 release LEFT
 wait 1200
-moveto 360 445 400
+moveto 360 420 400
 wait 300

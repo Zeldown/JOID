@@ -109,7 +109,7 @@ Each bridge has a **priority**, an `int`: the highest priority receives the inpu
 
 <figure>
 
-![Three stacked white boxes on a light grey background: PanelUIBridge with priority 10 on top, your bridge with priority 0 in the middle, and WindowUIBridge, the default that clears the window, at the bottom. A violet arrow on the left goes down, labeled Input; a violet arrow on the right goes up, labeled Drawing.](/captures/running-embedding-bridges.webp)
+![Three stacked dark boxes: PanelUIBridge with priority 10 on top, your bridge with priority 0 in the middle, and WindowUIBridge, the default that clears the window, at the bottom. A blue arrow on the left goes down, labeled Input; a blue arrow on the right goes up, labeled Drawing.](/captures/running-embedding-bridges.webp)
 
 <figcaption>Input tries the highest bridge first; drawing starts from the lowest, so the highest is drawn on top.</figcaption>
 </figure>

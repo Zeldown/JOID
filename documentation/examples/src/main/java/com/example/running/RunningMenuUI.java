@@ -15,14 +15,14 @@ public class RunningMenuUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#999999"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
 		final BooleanSignal playing = new BooleanSignal(false);
 
-		RectNode.create(0, 0, 1920, 1080).color(Color.decode("#DDDDDD")).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(Color.decode("#0E1014")).attach(this);
 
 		RectNode
 		.create(860, 500, 200, 80)
-		.color(Color.WHITE)
+		.color(Color.decode("#262B35"))
 		.onClick(event -> playing.set(true))
 		.body(rect -> {
 			TextNode
