@@ -1448,12 +1448,23 @@ public class UITest {
 		this.bridges.getClock().advance(34L);
 		this.bridges.frame();
 		Assert.assertEquals(50D, ui.getFrameTime(), 0D);
+		JOID.forceClose(ui);
+		Assert.assertEquals(0D, ui.getFrameTime(), 0D);
+		this.bridges.getClock().advance(60000L);
+		this.bridges.open(ui);
+		Assert.assertEquals(1000D / 60D, ui.getFrameTime(), 0D);
 	}
 
 	@Test
 	public void countsItsFramesEverySecond() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui).rewindTheWallClock().frames(62);
+		Assert.assertEquals(0D, ui.getFps(), 0D);
+		this.bridges.frame();
+		Assert.assertEquals(62.5D, ui.getFps(), 0.0001D);
+		JOID.forceClose(ui);
+		this.bridges.getClock().advance(60000L);
+		this.bridges.open(ui).frames(62);
 		Assert.assertEquals(0D, ui.getFps(), 0D);
 		this.bridges.frame();
 		Assert.assertEquals(62.5D, ui.getFps(), 0.0001D);
@@ -1685,6 +1696,18 @@ public class UITest {
 		this.bridges.frame();
 		Assert.assertNotSame(path, ui.getHoveredPath());
 		Assert.assertEquals(path, ui.getHoveredPath());
+	}
+
+	@Test
+	public void hoversTheNodesOfItsNewTreeOnceOpenedAgain() {
+		final InitUI ui = new InitUI(current -> RectNode.create(100D, 100D, 200D, 200D).attach(current));
+		this.bridges.open(ui).move(150D, 150D).frames(2);
+		final Node hovered = ui.getHoveredNode();
+		Assert.assertNotNull(hovered);
+		JOID.forceClose(ui);
+		JOID.open(ui);
+		Assert.assertNotSame(hovered, ui.getHoveredNode());
+		Assert.assertSame(ui.getNodeAt(150D, 150D), ui.getHoveredNode());
 	}
 
 	@Test

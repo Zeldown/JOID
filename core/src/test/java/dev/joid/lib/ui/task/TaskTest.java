@@ -89,19 +89,21 @@ public class TaskTest {
 	}
 
 	@Test
-	public void pausesWhileItsNodeIsDetached() {
+	public void restartsItsDelayWhenItsNodeIsAttachedAgain() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final RectNode parent = RectNode.create(0, 0, 200, 200).append(node);
 		this.open(parent);
-		final Task task = Task.create(0L).every(0L).onRun(event -> this.runs.incrementAndGet()).attach(node);
+		final Task task = Task.create(100L).every(0L).onRun(event -> this.runs.incrementAndGet()).attach(node);
 		this.bridges.frames(2);
-		Assert.assertEquals(2, this.runs.get());
+		Assert.assertEquals(0, this.runs.get());
 		parent.remove(node);
-		this.bridges.frames(2);
-		Assert.assertEquals(2, this.runs.get());
+		this.bridges.frames(10);
+		Assert.assertEquals(0, this.runs.get());
 		parent.append(node);
-		this.bridges.frames(2);
-		Assert.assertEquals(4, this.runs.get());
+		this.bridges.frames(6);
+		Assert.assertEquals(0, this.runs.get());
+		this.bridges.frames(3);
+		Assert.assertEquals(3, this.runs.get());
 		Assert.assertTrue(task.isAttached());
 		Assert.assertEquals(Collections.singletonList(task), node.getTaskList());
 	}

@@ -199,6 +199,7 @@ public abstract class UI implements IIndexedElement {
 	public final void load(final double finalWidth, final double finalHeight) {
 		final long start = System.nanoTime();
 
+		this.lastHoveredFrame = -1L;
 		this.rescale();
 		this.bindings.subscribe(this.loaded);
 		this.view.resize(finalWidth, finalHeight);
@@ -277,6 +278,9 @@ public abstract class UI implements IIndexedElement {
 		this.closeTimeline = null;
 		this.closed = true;
 		this.initialized = false;
+		this.lastFrame = 0L;
+		this.frameTime = 0D;
+		this.lastFpsUpdate = 0L;
 
 		if (this.watched) {
 			this.watched = false;
