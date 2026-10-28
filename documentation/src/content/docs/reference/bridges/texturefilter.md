@@ -24,7 +24,7 @@ How a texture is sampled between its texels.
 
 | Value | Summary |
 |---|---|
-| [`NEAREST`](#TextureFilter-value-NEAREST) | The nearest texel, for pixel art and textures drawn at their size. |
+| [`NEAREST`](#TextureFilter-value-NEAREST) | The nearest texel, for pixel art and textures drawn at their size; it reads the first mipmap level only. |
 | [`LINEAR`](#TextureFilter-value-LINEAR) | A blend of the four nearest texels, and of two mipmap levels for a mipmapped texture. |
 
 ## Value details
@@ -35,7 +35,7 @@ How a texture is sampled between its texels.
 
 `NEAREST` 
 
-The nearest texel, for pixel art and textures drawn at their size.
+The nearest texel, for pixel art and textures drawn at their size; it reads the first mipmap level only.
 
 <a id="TextureFilter-value-LINEAR"></a>
 
