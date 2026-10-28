@@ -64,6 +64,7 @@ JOID still follows it:
 
 The rules of [What JOID follows](/use/learn/interactivity/signals/#what-joid-follows) come from this replay.
 The replay runs outside your method: a field of your class is read again each time, and a signal held by a local variable, or returned by a getter of one, is found from the reads.
+The same goes for a variable that the lambda of a `body` uses.
 Any other local variable has no value in the replay: inside a text, JOID finds it in the text it received, but in a calculation with a signal, in a condition, or after a condition on a signal, nothing gives it back, and the expression stays fixed.
 A lambda written inside the expression cannot be replayed, so such an expression stays fixed.
 

@@ -104,13 +104,15 @@ An expression is computed only when a signal changes, a lambda on every frame of
 
 An expression passed to a setter is ordinary Java.
 JOID follows it by replaying it when one of the signals that it read changes; [How signals work](/use/in-depth/how-signals-work/) explains the mechanism.
-Some code cannot be replayed, and then the value stays fixed:
+The safe form: read each signal with `get()` on a field or on a local variable that holds the signal itself.
+For anything else, derive a value with `map(...)` or pass a lambda.
+The table below says what happens outside that form; some code cannot be replayed, and then the value stays fixed:
 
 | In the expression | Result |
 |---|---|
 | `get()` on a signal held by a field or a local variable | Followed |
 | `get()` on a signal returned by a getter of a field, such as `this.settings.getMusic().get()` | Followed |
-| `get()` on a signal returned by a getter of a local variable that holds no signal, such as a store from `useStore(...)` or a variable that the lambda of a `body` uses | Followed, except after a condition on a signal in the same expression (`music.get() ? ... : ...`): frozen |
+| `get()` on a signal returned by a getter of a local variable, such as `settings.getMusic().get()` | Followed, except after a condition decided by a signal in the same expression: frozen |
 | A field of the class that is not a signal, such as `this.bonus` | Read again each time a signal of the expression changes, never on its own |
 | A local variable set before the call, from fields or signals | Followed |
 | The variable of a loop inside a text, such as `name + ": " + score.get()` | Followed |
@@ -244,7 +246,7 @@ A lambda runs on every frame, so it can read the local variable:
 ```java fragment
 RectNode
 .create(60, 140 + row * 70, 0, 40)
-.color(FollowUI.INK)
+.color(FollowUI.ACCENT)
 .width(() -> offset + this.clicks.get() * 40D)
 .attach(card);
 ```
