@@ -1,7 +1,7 @@
 # crop state-rebuild 640 220 640 360
 # still state-rebuild 40
 ui com.example.state.RebuildUI
-move 1200 560
+move 1200 540
 # film state-rebuild
 wait 300
 moveto 830 280 500
@@ -14,5 +14,5 @@ wait 200
 press LEFT
 release LEFT
 wait 900
-moveto 1200 560 400
+moveto 1200 540 400
 wait 300

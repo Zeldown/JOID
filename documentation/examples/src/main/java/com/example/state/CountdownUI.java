@@ -7,19 +7,17 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class CountdownUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT = new Color(231, 233, 238).lock();
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 48F).color(CountdownUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 48F).color(CountdownUI.TEXT);
 		final IntegerSignal left = new IntegerSignal(3);
 
 		// #region countdown

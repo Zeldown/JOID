@@ -45,7 +45,7 @@ A function given to `map` can hold any Java code: it is the way out for an expre
 
 <figure>
 
-![A white card with the grey buttons "Price +1", "Quantity +1" and "Both +1", then the lines "Price: 12", "Quantity: 1", "Total: 12" and "Changes: 0"; the pointer clicks "Quantity +1" twice and "Both +1" once, and the lines end at "Price: 13", "Quantity: 4", "Total: 52" and "Changes: 3"](/captures/state-derived.webp)
+![A dark card with the blue buttons "Price +1", "Quantity +1" and "Both +1", then the lines "Price: 12", "Quantity: 1", "Total: 12" and "Changes: 0"; the pointer clicks "Quantity +1" twice and "Both +1" once, and the lines end at "Price: 13", "Quantity: 4", "Total: 52" and "Changes: 3"](/captures/state-derived.webp)
 
 <figcaption>
 "Quantity +1" twice, then "Both +1": the total follows both signals.

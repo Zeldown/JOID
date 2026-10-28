@@ -24,7 +24,7 @@ A [[Task]] runs its [[Task#onRun]] listeners once its delay has passed, and agai
 
 <figure>
 
-![A white card reading "Open for 0 s" above a grey button "Save"; the count grows by one each second, a click on Save shows "Saved" next to the button, and "Saved" disappears three seconds later](/captures/state-tasks.webp)
+![A dark card reading "Open for 0 s" above a blue button "Save"; the count grows by one each second, a click on Save shows "Saved" next to the button, and "Saved" disappears three seconds later](/captures/state-tasks.webp)
 
 <figcaption>
 The periodic task counts the seconds since the opening.
@@ -73,7 +73,7 @@ A download or a long computation belongs on another thread, and its result comes
 
 <figure>
 
-![A white card with a grey button "Load" above the text "Not loaded"; the pointer clicks Load, and the text reads "Loading...", then "Loaded"](/captures/state-loader.webp)
+![A dark card with a blue button "Load" above the text "Not loaded"; the pointer clicks Load, and the text reads "Loading...", then "Loaded"](/captures/state-loader.webp)
 
 <figcaption>The future completes on a worker thread, and the text shows its result at the next frame.</figcaption>
 </figure>
