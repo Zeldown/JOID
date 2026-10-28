@@ -168,7 +168,7 @@ The node centered on the place of the value; required.
 **Default:** `1F`
 
 How fast the thumb reaches a value set from the code or a signal: the part of the remaining way that it covers in 1/60 s, at any frame rate.
-`1F` moves it at once; during a drag, the thumb always follows the pointer.
+`1F` moves it at once; during a drag, the thumb follows the pointer at once, up to half a step past the last accepted value.
 
 ## Method details
 

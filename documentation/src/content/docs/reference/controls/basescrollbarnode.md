@@ -60,7 +60,7 @@ Use [`ScrollbarNode`](/reference/controls/scrollbarnode/) for a look made of a t
 | `boolean` | [isHorizontal](#BaseScrollbarNode-method-isHorizontal)() | If `true`, the bar is wider than high: it then scrolls the node horizontally. |
 | `boolean` | [isOverflowing](#BaseScrollbarNode-method-isOverflowing)() | If `true`, the content of the node goes beyond it on the axis of the bar. |
 | `double` | [getRatio](#BaseScrollbarNode-method-getRatio)() | Returns the part of the content that the node shows on the axis of the bar, from `0D` to `1D`; `1D` while the content fits. |
-| `double` | [getProgress](#BaseScrollbarNode-method-getProgress)() | Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the place of the pointer. |
+| `double` | [getProgress](#BaseScrollbarNode-method-getProgress)() | Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the scroll that the drag asked for, so the thumb stays in place when `beforeScroll` refuses it. |
 | `double` | [getThumbLength](#BaseScrollbarNode-method-getThumbLength)() | Returns the length of the thumb, in design pixels: the length of the bar times `getRatio()`, at least `minThumb` and at most the bar. |
 | `boolean` | [isDragging](#BaseScrollbarNode-method-isDragging)() | If `true`, the user drags the bar. |
 
@@ -160,7 +160,7 @@ Returns the part of the content that the node shows on the axis of the bar, from
 
 `double getProgress()` 
 
-Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the place of the pointer.
+Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the scroll that the drag asked for, so the thumb stays in place when `beforeScroll` refuses it.
 
 <a id="BaseScrollbarNode-method-getThumbLength"></a>
 

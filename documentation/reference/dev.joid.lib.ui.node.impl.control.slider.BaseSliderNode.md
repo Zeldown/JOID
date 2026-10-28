@@ -20,7 +20,7 @@ A press inside that space picks the first or the last step.
 ## getProgress()
 
 Returns the place of the value along the track, from `0D` at the first option to `1D` at the last.
-During a drag, the place of the pointer, so that a thumb follows it between the steps.
+During a drag, the place of the pointer, so that a thumb follows it between the steps, kept within half a step of the value: past a refused value, the thumb stops half a step after the last accepted one.
 
 ## isSliding()
 

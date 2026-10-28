@@ -23,7 +23,7 @@ Result of matching one slice of bytecode against the value a setter received and
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`SignalReplayMatch`](/reference/signals/signalreplaymatch/) | [of](#SignalReplayMatch-factory-of)(SignalReplaySlice slice, SignalReplayRun run, Map<String,String> holeMap, boolean[] consumed) <span class="joid-qualifier">factory</span> | Returns the match of `slice` found by `run`, with the text of the local variables in `holeMap` and the reads it used in `consumed`. |
+| [`SignalReplayMatch`](/reference/signals/signalreplaymatch/) | [of](#SignalReplayMatch-factory-of)(SignalReplaySlice slice, SignalReplayRun run, Map<String,String> holeMap, boolean[] consumed, boolean followed) <span class="joid-qualifier">factory</span> | Returns the match of `slice` found by `run`, with the text of the local variables in `holeMap`, the reads it used in `consumed`, and `followed` when the reads only matched together with those of the arguments that the call evaluates after this one. |
 
 <a id="SignalReplayMatch-methods"></a>
 
@@ -32,13 +32,13 @@ Result of matching one slice of bytecode against the value a setter received and
 | Returns | Signature | Summary |
 |---|---|---|
 | `List<Signal<?>>` | [getReadList](#SignalReplayMatch-method-getReadList)(List<Signal<?>> readList) | Returns the reads of `readList` that the expression used. |
-| `List<Signal<?>>` | [getRemainingList](#SignalReplayMatch-method-getRemainingList)(List<Signal<?>> readList) | Returns the reads of `readList` that the expression did not use, left for the next setter. |
 | [`SignalReplaySlice`](/reference/signals/signalreplayslice/) | [getSlice](#SignalReplayMatch-method-getSlice)() | Returns the matched slice. |
 | `Object` | [getSelf](#SignalReplayMatch-method-getSelf)() | Returns the object that the bytecode calls `this`, or `null` in a static method. |
 | `boolean` | [isDefinitions](#SignalReplayMatch-method-isDefinitions)() | If `true`, the match runs the definitions of the local variables again. |
 | `Map<String,String>` | [getHoleMap](#SignalReplayMatch-method-getHoleMap)() | Returns the text deduced for each local variable that a concatenation uses. |
 | `Map<Object,Signal<?>>` | [getPositionalMap](#SignalReplayMatch-method-getPositionalMap)() | Returns the signals matched by their position in the reads. |
 | `boolean[]` | [getConsumed](#SignalReplayMatch-method-getConsumed)() | Returns, for each read, whether the expression used it. |
+| `boolean` | [isFollowed](#SignalReplayMatch-method-isFollowed)() | If `true`, the match needed the reads of the arguments evaluated after the slice; the replay keeps it only when no other match does without them. |
 
 ## Creation details
 
@@ -46,9 +46,9 @@ Result of matching one slice of bytecode against the value a setter received and
 
 ### of
 
-`SignalReplayMatch of(SignalReplaySlice slice, SignalReplayRun run, Map<String,String> holeMap, boolean[] consumed)` <span class="joid-qualifier">factory</span>
+`SignalReplayMatch of(SignalReplaySlice slice, SignalReplayRun run, Map<String,String> holeMap, boolean[] consumed, boolean followed)` <span class="joid-qualifier">factory</span>
 
-Returns the match of `slice` found by `run`, with the text of the local variables in `holeMap` and the reads it used in `consumed`.
+Returns the match of `slice` found by `run`, with the text of the local variables in `holeMap`, the reads it used in `consumed`, and `followed` when the reads only matched together with those of the arguments that the call evaluates after this one.
 
 ## Method details
 
@@ -59,14 +59,6 @@ Returns the match of `slice` found by `run`, with the text of the local variable
 `List<Signal<?>> getReadList(List<Signal<?>> readList)` 
 
 Returns the reads of `readList` that the expression used.
-
-<a id="SignalReplayMatch-method-getRemainingList"></a>
-
-### getRemainingList
-
-`List<Signal<?>> getRemainingList(List<Signal<?>> readList)` 
-
-Returns the reads of `readList` that the expression did not use, left for the next setter.
 
 <a id="SignalReplayMatch-method-getSlice"></a>
 
@@ -115,6 +107,14 @@ Returns the signals matched by their position in the reads.
 `boolean[] getConsumed()` 
 
 Returns, for each read, whether the expression used it.
+
+<a id="SignalReplayMatch-method-isFollowed"></a>
+
+### isFollowed
+
+`boolean isFollowed()` 
+
+If `true`, the match needed the reads of the arguments evaluated after the slice; the replay keeps it only when no other match does without them.
 
 ---
 

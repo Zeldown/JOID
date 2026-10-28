@@ -28,6 +28,7 @@ The border setters of a [`RectNode`](/reference/nodes/rectnode/) drive the `Bord
 ## Learn more
 
 - [Effects](/use/learn/style-and-motion/effects/)
+- [Signals](/use/learn/interactivity/signals/)
 
 ## Creation
 

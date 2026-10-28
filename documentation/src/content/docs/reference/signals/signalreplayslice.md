@@ -23,11 +23,13 @@ Instructions of the bytecode that compute one argument of a setter call.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`SignalReplaySlice`](/reference/signals/signalreplayslice/) | [of](#SignalReplaySlice-factory-of)(SignalReplayMethod method, int start, int end, Type type) <span class="joid-qualifier">factory</span> | Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`. |
+| [`SignalReplaySlice`](/reference/signals/signalreplayslice/) | [of](#SignalReplaySlice-factory-of)(SignalReplayMethod method, int start, int end, Type type, List<SignalReplaySlice> followingList) <span class="joid-qualifier">factory</span> | Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`; `followingList` holds the slices of the arguments that the same call evaluates after this one. |
 
 <a id="SignalReplaySlice-methods"></a>
 
 ## Methods
+
+### Queries
 
 | Returns | Signature | Summary |
 |---|---|---|
@@ -35,14 +37,21 @@ Instructions of the bytecode that compute one argument of a setter call.
 | `boolean` | [isEnclosed](#SignalReplaySlice-method-isEnclosed)() | If `true`, the slice is inside a larger expression that reads a signal before it. |
 | `boolean` | [isParameter](#SignalReplaySlice-method-isParameter)() | If `true`, the slice only loads a parameter of its method, boxed or not. |
 | `boolean` | [isEquivalent](#SignalReplaySlice-method-isEquivalent)(SignalReplaySlice slice) | If `true`, `slice` has the same type and the same instructions. |
-| `Object` | [convert](#SignalReplaySlice-method-convert)(Object value) | Converts an `int` result to the type of the slice. |
 | `int` | [getStart](#SignalReplaySlice-method-getStart)() | Returns the position of the first instruction. |
 | `int` | [getEnd](#SignalReplaySlice-method-getEnd)() | Returns the position after the last instruction. |
 | `Type` | [getType](#SignalReplaySlice-method-getType)() | Returns the type of the value. |
 | `String` | [getSignature](#SignalReplaySlice-method-getSignature)() | Returns the text that identifies the instructions; two slices with the same text are equivalent. |
 | [`SignalReplayMethod`](/reference/signals/signalreplaymethod/) | [getMethod](#SignalReplaySlice-method-getMethod)() | Returns the analysed method. |
 | `List<String>` | [getSignalNameList](#SignalReplaySlice-method-getSignalNameList)() | Returns the names of the signals read, for the warnings. |
+| `List<SignalReplaySlice>` | [getFollowingList](#SignalReplaySlice-method-getFollowingList)() | Returns the slices of the arguments that the call evaluates after this one. |
 | `int` | [getSignalCount](#SignalReplaySlice-method-getSignalCount)() | Returns the number of signal reads in the slice. |
+
+### Actions
+
+| Returns | Signature | Summary |
+|---|---|---|
+| `boolean` | [encloses](#SignalReplaySlice-method-encloses)(SignalReplaySlice slice) | If `true`, `slice` lies strictly inside this slice, in the same method. |
+| `Object` | [convert](#SignalReplaySlice-method-convert)(Object value) | Converts an `int` result to the type of the slice. |
 
 ## Creation details
 
@@ -50,9 +59,9 @@ Instructions of the bytecode that compute one argument of a setter call.
 
 ### of
 
-`SignalReplaySlice of(SignalReplayMethod method, int start, int end, Type type)` <span class="joid-qualifier">factory</span>
+`SignalReplaySlice of(SignalReplayMethod method, int start, int end, Type type, List<SignalReplaySlice> followingList)` <span class="joid-qualifier">factory</span>
 
-Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`.
+Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`; `followingList` holds the slices of the arguments that the same call evaluates after this one.
 
 ## Method details
 
@@ -87,14 +96,6 @@ If `true`, the slice only loads a parameter of its method, boxed or not.
 `boolean isEquivalent(SignalReplaySlice slice)` 
 
 If `true`, `slice` has the same type and the same instructions.
-
-<a id="SignalReplaySlice-method-convert"></a>
-
-### convert
-
-`Object convert(Object value)` 
-
-Converts an `int` result to the type of the slice.
 
 <a id="SignalReplaySlice-method-getStart"></a>
 
@@ -144,6 +145,14 @@ Returns the analysed method.
 
 Returns the names of the signals read, for the warnings.
 
+<a id="SignalReplaySlice-method-getFollowingList"></a>
+
+### getFollowingList
+
+`List<SignalReplaySlice> getFollowingList()` 
+
+Returns the slices of the arguments that the call evaluates after this one.
+
 <a id="SignalReplaySlice-method-getSignalCount"></a>
 
 ### getSignalCount
@@ -151,6 +160,22 @@ Returns the names of the signals read, for the warnings.
 `int getSignalCount()` 
 
 Returns the number of signal reads in the slice.
+
+<a id="SignalReplaySlice-method-encloses"></a>
+
+### encloses
+
+`boolean encloses(SignalReplaySlice slice)` 
+
+If `true`, `slice` lies strictly inside this slice, in the same method.
+
+<a id="SignalReplaySlice-method-convert"></a>
+
+### convert
+
+`Object convert(Object value)` 
+
+Converts an `int` result to the type of the slice.
 
 ---
 

@@ -33,6 +33,7 @@ Every argument expression of one setter call on one line, analysed once and kept
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [isPassThrough](#SignalReplaySite-method-isPassThrough)() | If `true`, the call only passes a parameter of its method on, so the replay looks for the expression one frame higher in the stack. |
+| `boolean` | [encloses](#SignalReplaySite-method-encloses)(SignalReplaySlice slice) | If `true`, one of the slices of the site encloses `slice`. |
 | `List<SignalReplaySlice>` | [getSliceList](#SignalReplaySite-method-getSliceList)() | Returns the slices of the arguments. |
 | [`SignalReplayException`](/reference/signals/signalreplayexception/) | [getFailure](#SignalReplaySite-method-getFailure)() | Returns why the line cannot be followed, or `null`. |
 
@@ -68,6 +69,14 @@ Returns a site that remembers why its line cannot be followed.
 `boolean isPassThrough()` 
 
 If `true`, the call only passes a parameter of its method on, so the replay looks for the expression one frame higher in the stack.
+
+<a id="SignalReplaySite-method-encloses"></a>
+
+### encloses
+
+`boolean encloses(SignalReplaySlice slice)` 
+
+If `true`, one of the slices of the site encloses `slice`.
 
 <a id="SignalReplaySite-method-getSliceList"></a>
 
