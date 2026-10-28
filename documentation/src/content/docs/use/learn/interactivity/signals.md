@@ -44,7 +44,7 @@ At each click, the text, the width and the color of the bar follow `clicks`, and
 </figcaption>
 </figure>
 
-`init()` runs once, so the text and the bar are created once.
+`init()` runs once per opening, so the text and the bar are created once.
 When `clicks` changes, JOID computes `"Clicks: " + this.clicks.get()` again and gives the result to the text node.
 
 Every change of a signal, through [[Signal#set]] or an operation such as `increment()`, stores the new value: a value equal to the current one (by `equals`) changes nothing and computes nothing again.

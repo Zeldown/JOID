@@ -1,8 +1,8 @@
 package com.example.style;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -12,22 +12,15 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class EffectOrderUI extends UI {
 
-	private static final Color LINE      = new Color(74, 82, 98).lock();
-	private static final Color TEXT      = new Color(231, 233, 238).lock();
-	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
-	private static final Color SURFACE   = new Color(23, 26, 33).lock();
-	private static final Color ACCENT    = new Color(91, 140, 255).lock();
-	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
-
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(EffectOrderUI.TEXT);
-		final TextInfo light = TextInfo.create(ExampleFont.REGULAR, 24F).color(EffectOrderUI.ON_ACCENT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CaptureStyle.TEXT);
+		final TextInfo light = TextInfo.create(ExampleFont.REGULAR, 24F).color(CaptureStyle.ON_ACCENT);
 
 		RectNode
 		.create(410, 220, 1100, 640)
-		.color(EffectOrderUI.SURFACE)
-		.borderColor(EffectOrderUI.LINE)
+		.color(CaptureStyle.SURFACE)
+		.borderColor(CaptureStyle.LINE)
 		.borderStroke(2D)
 		.effect(RoundedNodeEffect.create(12F))
 		.body(outer -> {
@@ -35,14 +28,14 @@ public class EffectOrderUI extends UI {
 			TextNode.create(30, 60).text(Text.create("transform (-100), shadow (-50), mask (0), yours (0)", info)).attach(outer);
 			RectNode
 			.create(30, 110, 1040, 440)
-			.color(EffectOrderUI.ELEMENT)
-			.borderColor(EffectOrderUI.LINE)
+			.color(CaptureStyle.STROKE)
+			.borderColor(CaptureStyle.LINE)
 			.borderStroke(2D)
 			.effect(RoundedNodeEffect.create(12F))
 			.body(inner -> {
 				RectNode
 				.create(30, 30, 480, 290)
-				.color(EffectOrderUI.ACCENT)
+				.color(CaptureStyle.ACCENT)
 				.effect(RoundedNodeEffect.create(12F))
 				.body(node -> {
 					TextNode.create(24, 24).text(Text.create("2. The node draws itself", light)).attach(node);
@@ -54,8 +47,8 @@ public class EffectOrderUI extends UI {
 				.attach(inner);
 				RectNode
 				.create(530, 30, 480, 290)
-				.color(EffectOrderUI.ELEMENT)
-				.borderColor(EffectOrderUI.LINE)
+				.color(CaptureStyle.STROKE)
+				.borderColor(CaptureStyle.LINE)
 				.borderStroke(2D)
 				.effect(RoundedNodeEffect.create(12F))
 				.body(children -> {

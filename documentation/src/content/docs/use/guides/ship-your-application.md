@@ -72,7 +72,7 @@ If a step of your build repacks the jars, such as a shading or a shrinking tool,
 
 ## If it does not work
 
-1. Tooltips disappeared: the window UI bridge has no `hoverInfo`, and the prod jar prints no warning about it.
+1. Tooltips do not show: the window UI bridge has no `hoverInfo` (step 3); the dev jar warns about it, the prod jar does not.
 2. An image or a video is missing without any message: the resource cannot be read; run the same screen with the dev jar to read the warning.
 3. `IllegalStateException: The core shader … is missing from the classpath`: a packaging step dropped `assets/shaders/` of the JOID jar; keep it.
 4. Settings come back to their defaults on each launch: the data folder moves with the working directory; set `dataDir(...)`.

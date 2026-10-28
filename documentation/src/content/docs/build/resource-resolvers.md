@@ -46,9 +46,14 @@ A resolver implements [[IResourceResolver]] and turns an object of the engine in
 ```java file="com/example/backend/EngineSpriteResourceResolver.java" region="resolver"
 ```
 
-- `supports` answers from the type of the input only, quickly: it runs for every `Resource.of`.
-- `resolve` gives the resource a unique id, so that two calls with the same object share one cached texture through `builder.compute(...)`, each in its own `Resource`.
-- Register it from `registerDefaults()` with `ResourceResolver.register(...)` ([Writing a backend](/build/writing-a-backend/#register-the-defaults)): it then comes before the resolvers of the core.
+## Required
+
+| Member | What it must do |
+|---|---|
+| [[IResourceResolver#supports]] | Answer from the type of the input only, quickly: it runs for every `Resource.of`. |
+| [[IResourceResolver#resolve]] | Give the resource a unique id, so that two calls with the same object share one cached texture through `builder.compute(...)`, each in its own `Resource`. |
+
+Register it from `registerDefaults()` with `ResourceResolver.register(...)` ([Writing a backend](/build/writing-a-backend/#register-the-defaults)): it then comes before the resolvers of the core.
 
 :::caution
 Keep `supports` narrow.

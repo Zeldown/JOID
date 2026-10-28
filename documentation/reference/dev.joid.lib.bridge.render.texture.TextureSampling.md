@@ -26,7 +26,7 @@ Returns the wrap.
 
 ## isMipmapped()
 
-If `true`, the texture is sampled with its mipmaps.
+If `true`, the texture has mip levels that the draw may use; only a `LINEAR` filter reads them (`isMipmapFiltered()`), and a `NEAREST` sampling reads level 0 alone.
 
 ## getFilter()
 

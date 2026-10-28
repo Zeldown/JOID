@@ -6,7 +6,7 @@ Learn: [Textures and samplers](/build/pipeline/#textures-and-samplers).
 
 ## NEAREST
 
-The nearest texel, for pixel art and textures drawn at their size.
+The nearest texel, for pixel art and textures drawn at their size; it reads the first mipmap level only.
 
 ## LINEAR
 

@@ -1,8 +1,8 @@
 package com.example.running;
 
 import com.example.ExampleFont;
+import com.example.capture.CaptureStyle;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -12,16 +12,13 @@ import dev.joid.lib.utils.align.Align;
 
 public class RunningPanelUI extends UI {
 
-	private static final Color TEXT    = new Color(231, 233, 238).lock();
-	private static final Color ELEMENT = new Color(38, 43, 53).lock();
-
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(RunningPanelUI.TEXT);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CaptureStyle.TEXT);
 
 		RectNode
 		.create(1480, 40, 400, 200)
-		.color(RunningPanelUI.ELEMENT)
+		.color(CaptureStyle.STROKE)
 		.hover(() -> "A panel of the library")
 		.body(rect -> TextNode.create(0, 0, 400, 200).text(Text.create("Panel", info).align(Align.CENTER)).attach(rect))
 		.attach(this);

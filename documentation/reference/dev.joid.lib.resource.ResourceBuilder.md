@@ -61,7 +61,7 @@ Use it in a resolver or for data you build yourself.
 
 ## compute(String,Supplier,Consumer)
 
-Same as `compute(String, Supplier)`, and calls `onCreate` with the handle when the data was created rather than found in the cache.
+Returns a handle on the data cached under `uniqueId`, creating it with `dataSupplier` when the cache does not have it, and calls `onCreate` with the handle when the data was created rather than found in the cache.
 
 ## remove(ResourceData)
 

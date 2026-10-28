@@ -132,7 +132,7 @@ Two presses of the Up arrow, then two of the Down arrow: the value goes from 4 t
 - a typed value out of the range shows as its bound when the field loses the focus;
 - `value(...)` gives the value or binds it to a signal, and `change(value)` acts like the user.
 
-An empty field that the user leaves takes back its last value, `0` before any; with `allowEmpty(true)`, it holds `null`, and a bound signal receives `null`.
+An empty number field takes back `0` before any value, as `allowEmpty` above says; with `allowEmpty(true)`, a bound signal receives `null`.
 
 ## Let the user type several lines
 
@@ -157,6 +157,8 @@ A field for another type extends [[LineFieldNode]] and says how a text becomes a
 
 ```java file="com/example/interactivity/fields/HexColorFieldNode.java" region="field"
 ```
+
+The constructor, the factory and the generic setters follow the pattern of every node of your own ([Custom nodes](/use/learn/going-further/custom-nodes/#give-the-node-a-property)).
 
 | Method | What it does |
 |---|---|

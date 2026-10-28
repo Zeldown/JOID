@@ -81,7 +81,7 @@ On Vulkan, the frame of JOID loads the image of the host without clearing it: th
 
 Your application can also hide every overlay of JOID, for a screenshot or a cutscene: override `isOverlayHidden()` of [[UIBridge]] in your bridge and return `true` while the interface must disappear.
 Overlays with `always = true` in [[UIDataOverlayRender]] stay visible.
-`getInterfaceScale(ui)` of the bridge returns the [interface scale](/use/learn/describing-the-ui/design-canvas/) of each UI it holds.
+To make your UIs larger or smaller, such as for a scale option of your settings, override `getInterfaceScale(ui)` in your bridge and return the [interface scale](/use/learn/describing-the-ui/design-canvas/#follow-the-interface-scale) of each UI; the window UI bridge returns `1D`.
 
 ## Follow the screens that JOID opens
 

@@ -72,7 +72,7 @@ Two colors are equal when their channels, their gradient and their update functi
 |---|---|---|
 | `void` | [bind](#Color-method-bind)() | Sets the color of the render state to the current frame of this color. |
 | `void` | [bind](#Color-method-bind)(Runnable runnable, BoundingBox canvas) | Runs `runnable` with this color applied, then restores the previous color of the render state. |
-| `void` | [bind](#Color-method-bind)(Runnable runnable, BoundingBox canvas, boolean hasTexture) | Same as `bind(Runnable, BoundingBox)`; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image. |
+| `void` | [bind](#Color-method-bind)(Runnable runnable, BoundingBox canvas, boolean hasTexture) | Runs `runnable` with this color applied, then restores the previous color; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image. |
 
 ### Queries
 
@@ -301,7 +301,7 @@ For a gradient, it binds the gradient shader instead, spread over `canvas` in th
 
 `void bind(Runnable runnable, BoundingBox canvas, boolean hasTexture)` 
 
-Same as `bind(Runnable, BoundingBox)`; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image.
+Runs `runnable` with this color applied, then restores the previous color; if `hasTexture` is `true`, a gradient multiplies the bound texture instead of replacing it, which tints an image.
 
 <a id="Color-method-getRGB"></a>
 

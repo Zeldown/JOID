@@ -35,7 +35,7 @@ A filter, a wrap and a mipmap flag, one of the 12 shared samplings that a render
 | `boolean` | [isMipmapFiltered](#TextureSampling-method-isMipmapFiltered)() | If `true`, the sampling reads mipmaps with a linear filter. |
 | `int` | [getIndex](#TextureSampling-method-getIndex)() | Returns the index of the sampling, from `0` to `11`, for a cache of samplers. |
 | [`TextureWrap`](/reference/bridges/texturewrap/) | [getWrap](#TextureSampling-method-getWrap)() | Returns the wrap. |
-| `boolean` | [isMipmapped](#TextureSampling-method-isMipmapped)() | If `true`, the texture is sampled with its mipmaps. |
+| `boolean` | [isMipmapped](#TextureSampling-method-isMipmapped)() | If `true`, the texture has mip levels that the draw may use; only a `LINEAR` filter reads them (`isMipmapFiltered()`), and a `NEAREST` sampling reads level 0 alone. |
 | [`TextureFilter`](/reference/bridges/texturefilter/) | [getFilter](#TextureSampling-method-getFilter)() | Returns the filter. |
 
 ## Creation details
@@ -88,7 +88,7 @@ Returns the wrap.
 
 `boolean isMipmapped()` 
 
-If `true`, the texture is sampled with its mipmaps.
+If `true`, the texture has mip levels that the draw may use; only a `LINEAR` filter reads them (`isMipmapFiltered()`), and a `NEAREST` sampling reads level 0 alone.
 
 <a id="TextureSampling-method-getFilter"></a>
 

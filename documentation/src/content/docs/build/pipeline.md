@@ -90,6 +90,7 @@ In `drawPrimitive`, bind `resolveSampler(sampler)` on the unit of each sampler t
 Each returns a [[SamplerBinding]]: the texture, and a [[TextureSampling]] with its filter, its wrap and whether it has mip levels.
 
 - [[TextureSampling#isMipmapFiltered]] is `true` for a `LINEAR` filter on a texture with mip levels: sample with linear filtering between the levels too.
+- A `NEAREST` sampling reads level 0 only, even on a texture with mip levels: only `isMipmapFiltered()` turns the levels on, as the OpenGL and Vulkan backends do.
 - A wrap that [[IRenderBridge#canWrap]] refuses reaches you as `CLAMP_TO_EDGE`; when the refused wrap is `CLAMP_TO_BORDER`, the shaders also emulate its transparent border.
 
 ## Mipmaps

@@ -21,7 +21,8 @@ Only the framebuffers you create wait for you to release them.
 | Work | When it runs | Cost grows with |
 |---|---|---|
 | Layout, hover test, drawing | Every frame, for every visible node | The number of visible nodes |
-| Followed values, animators, `update()` | Every frame, for every attached node, hidden or not | The number of nodes |
+| Followed values, `onAnimate`, `update()` | Every frame, for every attached node, hidden or not | The number of nodes |
+| Started animators | Every frame, until their steps end, whether a UI shows them or not | The number of started animators |
 | Effects that render off screen (rounded corners, circle, border, blur) | Every frame, for every node that has one | The visible area of the node and the number of passes |
 | A derived value (`map`, [[Signal#from]], an expression given to a setter) | Only when a signal it reads changes | What the expression computes |
 | Decoding an image, a video or an SVG | The first time it is drawn | The size of the file |

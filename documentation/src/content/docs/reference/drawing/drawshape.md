@@ -48,7 +48,7 @@ A rectangle without width or height draws nothing.
 | `void` | [drawRoundedBorder](#DrawShape-method-drawRoundedBorder)(double x, double y, double width, double height, Color color, float radius) | Strokes the outline of the rounded rectangle, 1 design pixel wide, inside its edge. |
 | `void` | [drawRoundedBorder](#DrawShape-method-drawRoundedBorder)(double x, double y, double width, double height, Color color, float radius, double stroke) | Strokes the outline of the rounded rectangle, `stroke` design pixels wide, inside its edge. |
 | `void` | [drawShadow](#DrawShape-method-drawShadow)(double x, double y, double width, double height, Color color, float radius, float blur) | Draws the soft shadow of a rounded box: the box at `x`, `y` of `width` × `height` with corner `radius`, blurred by `blur` design pixels. |
-| `void` | [drawShadow](#DrawShape-method-drawShadow)(double x, double y, double width, double height, Color color, float radius, boolean roundedLeft, boolean roundedTop, boolean roundedRight, boolean roundedBottom, float blur) | Same as the other `drawShadow`, with only the corners of the chosen sides rounded, as in `drawRoundedRect`. |
+| `void` | [drawShadow](#DrawShape-method-drawShadow)(double x, double y, double width, double height, Color color, float radius, boolean roundedLeft, boolean roundedTop, boolean roundedRight, boolean roundedBottom, float blur) | Draws the soft shadow of a box whose corners are rounded only on the chosen sides, as in `drawRoundedRect`, blurred by `blur` design pixels. |
 | `void` | [drawCircle](#DrawShape-method-drawCircle)(double x, double y, Color color, double radius) | Fills the disc centered on `x`, `y` with the given `radius`. |
 | `void` | [drawBorder](#DrawShape-method-drawBorder)(double x, double y, double width, double height, Color color) | Strokes a border 1 design pixel wide inside the rectangle at `x`, `y` of `width` × `height`. |
 | `void` | [drawBorder](#DrawShape-method-drawBorder)(double x, double y, double width, double height, Color color, double stroke) | Strokes a border `stroke` design pixels wide inside the rectangle. |
@@ -122,7 +122,7 @@ A gradient color uses its start color.
 
 `void drawShadow(double x, double y, double width, double height, Color color, float radius, boolean roundedLeft, boolean roundedTop, boolean roundedRight, boolean roundedBottom, float blur)` 
 
-Same as the other `drawShadow`, with only the corners of the chosen sides rounded, as in `drawRoundedRect`.
+Draws the soft shadow of a box whose corners are rounded only on the chosen sides, as in `drawRoundedRect`, blurred by `blur` design pixels.
 
 <a id="DrawShape-method-drawCircle"></a>
 

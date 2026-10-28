@@ -37,7 +37,7 @@ The points are on 1 of the drawn area, so the same gradient fits a node of any s
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [use](#ColorGradient-method-use)(Runnable runnable, BoundingBox canvas) | Runs `runnable` with the gradient shader bound and spread over `canvas`, in the coordinates you draw in, then restores the previous shader. |
-| `void` | [use](#ColorGradient-method-use)(boolean hasTexture, Runnable runnable, BoundingBox canvas) | Same as `use(Runnable, BoundingBox)`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it. |
+| `void` | [use](#ColorGradient-method-use)(boolean hasTexture, Runnable runnable, BoundingBox canvas) | Runs `runnable` with the gradient shader bound over `canvas`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it. |
 | [`Color`](/reference/drawing/color/) | [getStartColor](#ColorGradient-method-getStartColor)() | Returns the color at the start point and before it. |
 | [`Color`](/reference/drawing/color/) | [getEndColor](#ColorGradient-method-getEndColor)() | Returns the color at the end point and after it. |
 | [`Point`](/reference/utilities/point/) | [getStartPoint](#ColorGradient-method-getStartPoint)() | Returns the start point, on 1 of the drawn area. |
@@ -67,7 +67,7 @@ Runs `runnable` with the gradient shader bound and spread over `canvas`, in the 
 
 `void use(boolean hasTexture, Runnable runnable, BoundingBox canvas)` 
 
-Same as `use(Runnable, BoundingBox)`; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
+Runs `runnable` with the gradient shader bound over `canvas`, then restores the previous shader; if `hasTexture` is `true`, the gradient multiplies the bound texture instead of replacing it.
 
 <a id="ColorGradient-method-getStartColor"></a>
 

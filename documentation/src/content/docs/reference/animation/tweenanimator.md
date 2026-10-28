@@ -28,6 +28,7 @@ Read its value like any signal, in a node property, a `map(...)` or an `onChange
 - [Animation](/use/learn/style-and-motion/animation/)
 - [Give your controls a look](/use/learn/going-further/ui-kit/)
 - [Polish with effects and motion](/use/tutorial/polish/)
+- [The frame lifecycle](/use/in-depth/frame-lifecycle/)
 
 ## Creation
 

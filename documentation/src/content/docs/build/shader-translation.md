@@ -34,7 +34,7 @@ The dialect decides how the translator writes each declaration:
 The OpenGL module picks the highest desktop dialect of the context, up to GLSL 3.30.
 The Vulkan backend uses GLSL 4.50 with [[VulkanShaderTranslator]], which adds the `binding` and `location` qualifiers of SPIR-V.
 
-A shader that uses a feature the dialect lacks (`switch`, bitwise operators, `texelFetch`, `textureSize`, unsigned integers, `flat` varyings, or the derivatives `dFdx`, `dFdy` and `fwidth` on ESSL 1.00) fails to translate with an `UnsupportedOperationException` that names the feature and the dialect it needs.
+A shader that uses a [[ShaderFeature]] that the dialect lacks ([Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl) lists them), or the derivatives on ESSL 1.00, fails to translate with an `UnsupportedOperationException` that names the feature and the dialect it needs.
 In dev mode, the core also warns once about any feature beyond GLSL 1.20, which every OpenGL 2.1 context accepts, so that a shader written on a recent machine still runs everywhere.
 
 ## Pick a uniform layout
