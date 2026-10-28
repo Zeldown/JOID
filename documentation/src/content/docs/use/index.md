@@ -62,7 +62,7 @@ The Learn chapters form one path, from describing a screen to running it in your
 Each page relies only on the pages before it, so read them in the sidebar order the first time, starting with [How JOID works](/use/learn/how-joid-thinks/).
 A page explains one notion in full; any other page that needs it gives one sentence and a link.
 
-The examples of Learn and of the guides are UIs: the [launcher of the Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation) runs any of them.
+Most examples of Learn and of the guides are UIs, which the [launcher of the Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation) runs; the few that start JOID themselves, in [Running your UI](/use/learn/running/), have their own `main`.
 The [glossary](/reference/glossary/) defines the terms that many pages use, such as design pixel, signal or popup.
 When something goes wrong, [Troubleshooting](/use/troubleshooting/) lists the checks by symptom, and [Best practices](/use/best-practices/) sums up the rules of the documentation in one page.
 

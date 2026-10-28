@@ -64,7 +64,7 @@ Check, in this order:
 
 ## Run any example of this documentation
 
-The examples of Learn and of the guides are UIs, and the "Full file" link under each one shows its class without a `main`.
+Most examples of Learn and of the guides are UIs, and the "Full file" link under each one shows its class without a `main`; the few that start JOID themselves, in [Running your UI](/use/learn/running/), have their own `main`.
 Most of them write their text with `ExampleFont.REGULAR`, a family of two faces of Montserrat loaded once for every example.
 Add this class to the package `com.example`, and put `Montserrat-Bold.ttf` next to the `Montserrat-Regular.ttf` of step 1:
 

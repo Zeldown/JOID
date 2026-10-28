@@ -28,7 +28,7 @@ The lambda of `body` receives the parent, already sized, so its children can use
 ![A dark panel with rounded corners and a thin border, a blue header bar across its whole width and a dark grey button centered near its bottom edge](/captures/describing-position-panel.webp)
 
 <figcaption>
-The header takes the width of the panel and the button is centered from it: change the panel and both follow at the next build.
+The header takes the width of the panel and the button is centered from it: change the size of the panel in the code, and both follow the next time `init()` runs.
 </figcaption>
 </figure>
 

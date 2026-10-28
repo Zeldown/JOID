@@ -38,7 +38,7 @@ One image, many ways to draw it: natural size, proportional size, tint, the thre
 A `ResourceNode` sizes itself from the image:
 
 - Without a size, or with `0` for both, it takes the size of the image, one design pixel per image pixel.
-- With a width and a height of `0`, it takes the height that keeps the proportions of the image; with a height and a width of `0`, the width.
+- With only a width (the height at `0`), such as `create(400, 40, 160, 0)`, it computes the height that keeps the proportions of the image; with only a height (the width at `0`), the width.
 - With both, it fills that box, as [Fit, tint and crop](#fit-tint-and-crop) shows.
 
 An image has a fixed number of pixels, while the canvas scales with the window ([The design canvas](/use/learn/describing-the-ui/design-canvas/)).

@@ -110,6 +110,8 @@ Overlays and popups open above the current screen instead of replacing it, so se
 
 ## Rebuild an open UI
 
+This UI counts in a field how many times `init()` built it, and gives `reload()` and `renew()` a button each:
+
 ```java file="com/example/describing/uis/ReloadUI.java" region="rebuild"
 ```
 
