@@ -16,4 +16,4 @@ Returns the current time in nanoseconds, from any origin, at the same rate as `c
 
 ## currentTimeMillis()
 
-Returns the current time in milliseconds; it never goes backwards.
+Returns the current time in milliseconds, which JOID reads as a date or as the phase of a cycle ([Clock bridge](/build/bridges/clock/#required)).

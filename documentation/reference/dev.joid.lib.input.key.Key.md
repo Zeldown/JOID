@@ -463,15 +463,15 @@ The equal key of the numeric keypad.
 
 ## LEFT_SHIFT
 
-The left Shift key. [[UI#isShiftKeyDown]] tests both Shift keys.
+The left Shift key; [[UI#isShiftKeyDown]] tests both Shift keys.
 
 ## LEFT_CONTROL
 
-The left Control key. [[UI#isCtrlKeyDown]] tests both Control keys.
+The left Control key; [[UI#isCtrlKeyDown]] tests both Control keys.
 
 ## LEFT_ALT
 
-The left Alt key. [[UI#isAltKeyDown]] tests both Alt keys.
+The left Alt key; [[UI#isAltKeyDown]] tests both Alt keys.
 
 ## LEFT_SUPER
 

@@ -17,11 +17,7 @@ The cache folder of JOID, split into named areas whose entries expire when they 
 
 ## Description
 
-Ask for an area by name with [`FileCacheArea.of`](/reference/resources/filecachearea/#FileCacheArea-factory-of) and keep it in a constant; JOID itself uses the areas `msdf` (font atlases), `video` (copies of the videos it plays), `ffmpeg` (the video natives), `lwjgl` (the LWJGL 2 natives) and, in tests, `snapshot`.
-
-```java fragment
-private static final FileCacheArea THUMBNAILS = FileCacheArea.of("thumbnails").retention(Duration.ofDays(7L));
-```
+Ask for an area by name with [`FileCacheArea.of`](/reference/resources/filecachearea/#FileCacheArea-factory-of) and keep it in a constant ([Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache)); JOID itself uses the areas `msdf` (font atlases), `video` (copies of the videos it plays), `ffmpeg` (the video natives), `lwjgl` (the LWJGL 2 natives) and, in tests, `snapshot`.
 
 Every entry that has not been read for longer than the retention of its area is deleted when JOID starts.
 Use the cache for files that you can build again; data that must survive goes in the data folder.

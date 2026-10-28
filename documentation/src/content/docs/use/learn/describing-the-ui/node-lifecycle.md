@@ -56,7 +56,7 @@ The time starts again at 0 each time the card joins the UI, here when the same U
 </figcaption>
 </figure>
 
-[[BridgeHandler#CLOCK]] gives the time of JOID in milliseconds, the clock that drives animations: the card shows the seconds since it joined the UI.
+[[BridgeHandler#CLOCK]] gives the [time of JOID](/use/learn/running/testing/#keep-every-run-identical) in milliseconds: the card shows the seconds since it joined the UI.
 The text is a lambda: JOID calls it each time it draws the text, so it shows the field as it changes ([Keep a text up to date](/use/learn/describing-the-ui/text/#keep-a-text-up-to-date)).
 [[UI#getFrameTime]] gives the time since the previous frame, for a value that moves at a speed.
 

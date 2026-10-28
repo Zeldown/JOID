@@ -71,7 +71,7 @@ A plain value never changes, an expression changes after a click, a lambda on ev
 </figcaption>
 </figure>
 
-The lambda reads the time from [[BridgeHandler]]`.CLOCK`, the clock of JOID, which a [screen test](/use/learn/running/testing/#keep-every-run-identical) drives.
+The lambda reads the [time of JOID](/use/learn/running/testing/#keep-every-run-identical) from [[BridgeHandler]]`.CLOCK`.
 
 | What you pass | Example | JOID computes it again |
 |---|---|---|
@@ -90,7 +90,8 @@ A value that changes without any signal (the time, the position of the pointer) 
 A value that never changes is a plain value.
 
 Most factories (`create(...)`) take plain values: their arguments follow nothing.
-The factories of [[Text]] and of the rounded, border, shadow and blur effects follow the signals that their arguments read, as a setter does: a [[BorderNodeEffect]] created with `BorderNodeEffect.create(on.get() ? accent : element, 1.5F)` changes color with `on`.
+The factories of the rounded, border, shadow and blur effects follow the signals that their arguments read, as a setter does: a [[BorderNodeEffect]] created with `BorderNodeEffect.create(on.get() ? accent : element, 1.5F)` changes color with `on`.
+So does the factory of [[Text]] ([What JOID follows](#what-joid-follows)).
 Calling a setter again replaces what it followed: `width(200D)` after `width(40D + clicks.get() * 80D)` stops following `clicks`.
 
 Some setters take a `Signal` in place of a `Supplier`: the value of a control, the position of a node (`x(...)`, `y(...)`), its scroll.

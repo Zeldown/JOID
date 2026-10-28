@@ -35,14 +35,14 @@ public class RebuildUI extends UI {
 		RectNode
 		.create(660, 240, 280, 60)
 		.color(RebuildUI.ACCENT)
-		.onClick(event -> this.items.add("Item " + (this.items.size() + 1)))
+		.onClick(event -> this.items.add("Item " + (this.items.peek().size() + 1)))
 		.label(Text.create("Add", label))
 		.attach(this);
 
 		RectNode
 		.create(980, 240, 280, 60)
 		.color(RebuildUI.ACCENT)
-		.onClick(event -> this.items.remove(this.items.size() - 1))
+		.onClick(event -> this.items.remove(this.items.peek().size() - 1))
 		.visible(!this.items.isEmpty())
 		.label(Text.create("Remove", label))
 		.attach(this);

@@ -52,7 +52,7 @@ The rounded corner, circle, border and blur [effects](/use/learn/style-and-motio
 Each pass costs a draw of the visible area of the node, and a blur costs two passes, one horizontal and one vertical.
 Shadows, masks and transforms draw in place and cost much less.
 
-The effects draw into targets borrowed from the [[FrameBufferPool]], reused from frame to frame, released 5 seconds after their last use and shrunk when 5 seconds go by without a draw at their full size ([Borrow a temporary target](/use/learn/going-further/framebuffers-and-models/#borrow-a-temporary-target)).
+The effects draw into targets borrowed from the [[FrameBufferPool]] and reused from frame to frame ([Borrow a temporary target](/use/learn/going-further/framebuffers-and-models/#borrow-a-temporary-target)).
 
 ## Once: resources, fonts and shaders
 

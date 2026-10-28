@@ -100,7 +100,7 @@ A second color for the hovered state is set with `hoveredColor(...)` ([Hover, to
 
 ## Use the colors that change on their own
 
-Two presets change with the clock of JOID:
+Two presets change with the [clock of JOID](/use/learn/running/testing/#keep-every-run-identical):
 - `Color.RAINBOW` cycles through the hues every 3 s;
 - `Color.LOADING` pulses slowly between two dark greys, for loading placeholders ([Rebuilding the tree](/use/learn/state/rebuilding/#wait-for-data-before-showing-a-node)).
 

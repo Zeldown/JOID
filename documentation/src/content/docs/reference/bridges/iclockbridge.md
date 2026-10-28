@@ -36,7 +36,7 @@ This clock follows the time of a game, which stops while the game pauses:
 | Returns | Signature | Summary |
 |---|---|---|
 | `long` | [nanoTime](#IClockBridge-method-nanoTime)() <span class="joid-qualifier">abstract</span> | Returns the current time in nanoseconds, from any origin, at the same rate as `currentTimeMillis()`; JOID uses only differences of it. |
-| `long` | [currentTimeMillis](#IClockBridge-method-currentTimeMillis)() <span class="joid-qualifier">abstract</span> | Returns the current time in milliseconds; it never goes backwards. |
+| `long` | [currentTimeMillis](#IClockBridge-method-currentTimeMillis)() <span class="joid-qualifier">abstract</span> | Returns the current time in milliseconds, which JOID reads as a date or as the phase of a cycle ([Clock bridge](/build/bridges/clock/#required)). |
 
 ## Method details
 
@@ -54,7 +54,7 @@ Returns the current time in nanoseconds, from any origin, at the same rate as `c
 
 `long currentTimeMillis()` <span class="joid-qualifier">abstract</span>
 
-Returns the current time in milliseconds; it never goes backwards.
+Returns the current time in milliseconds, which JOID reads as a date or as the phase of a cycle ([Clock bridge](/build/bridges/clock/#required)).
 
 ---
 

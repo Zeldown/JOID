@@ -152,9 +152,9 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`NUMPAD_ADD`](#Key-value-NUMPAD_ADD) | The plus key of the numeric keypad. |
 | [`NUMPAD_ENTER`](#Key-value-NUMPAD_ENTER) | The Enter key of the numeric keypad; text fields treat it as `ENTER`. |
 | [`NUMPAD_EQUAL`](#Key-value-NUMPAD_EQUAL) | The equal key of the numeric keypad. |
-| [`LEFT_SHIFT`](#Key-value-LEFT_SHIFT) | The left Shift key. [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys. |
-| [`LEFT_CONTROL`](#Key-value-LEFT_CONTROL) | The left Control key. [`UI.isCtrlKeyDown`](/reference/ui/ui/#UI-method-isCtrlKeyDown) tests both Control keys. |
-| [`LEFT_ALT`](#Key-value-LEFT_ALT) | The left Alt key. [`UI.isAltKeyDown`](/reference/ui/ui/#UI-method-isAltKeyDown) tests both Alt keys. |
+| [`LEFT_SHIFT`](#Key-value-LEFT_SHIFT) | The left Shift key; [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys. |
+| [`LEFT_CONTROL`](#Key-value-LEFT_CONTROL) | The left Control key; [`UI.isCtrlKeyDown`](/reference/ui/ui/#UI-method-isCtrlKeyDown) tests both Control keys. |
+| [`LEFT_ALT`](#Key-value-LEFT_ALT) | The left Alt key; [`UI.isAltKeyDown`](/reference/ui/ui/#UI-method-isAltKeyDown) tests both Alt keys. |
 | [`LEFT_SUPER`](#Key-value-LEFT_SUPER) | The left system key: Windows on a PC, Command on a Mac, where text fields use it for their shortcuts. |
 | [`RIGHT_SHIFT`](#Key-value-RIGHT_SHIFT) | The right Shift key. |
 | [`RIGHT_CONTROL`](#Key-value-RIGHT_CONTROL) | The right Control key. |
@@ -1069,7 +1069,7 @@ The equal key of the numeric keypad.
 
 `LEFT_SHIFT` 
 
-The left Shift key. [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys.
+The left Shift key; [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys.
 
 <a id="Key-value-LEFT_CONTROL"></a>
 
@@ -1077,7 +1077,7 @@ The left Shift key. [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKey
 
 `LEFT_CONTROL` 
 
-The left Control key. [`UI.isCtrlKeyDown`](/reference/ui/ui/#UI-method-isCtrlKeyDown) tests both Control keys.
+The left Control key; [`UI.isCtrlKeyDown`](/reference/ui/ui/#UI-method-isCtrlKeyDown) tests both Control keys.
 
 <a id="Key-value-LEFT_ALT"></a>
 
@@ -1085,7 +1085,7 @@ The left Control key. [`UI.isCtrlKeyDown`](/reference/ui/ui/#UI-method-isCtrlKey
 
 `LEFT_ALT` 
 
-The left Alt key. [`UI.isAltKeyDown`](/reference/ui/ui/#UI-method-isAltKeyDown) tests both Alt keys.
+The left Alt key; [`UI.isAltKeyDown`](/reference/ui/ui/#UI-method-isAltKeyDown) tests both Alt keys.
 
 <a id="Key-value-LEFT_SUPER"></a>
 
