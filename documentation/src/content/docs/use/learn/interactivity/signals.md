@@ -37,7 +37,7 @@ To show the value, read it with `get()` inside the value that you give to a sett
 
 <figure>
 
-![A white "+1" button, the text "Clicks: 0", a short grey bar and the text "At open: 0"; the pointer clicks the button three times: the count goes up to 3, the bar widens at each click and turns dark grey at the third, and "At open" stays at 0](/captures/interactivity-counter.webp)
+![A dark grey "+1" button, the text "Clicks: 0", a short dark grey bar and the text "At open: 0"; the pointer clicks the button three times: the count goes up to 3, the bar widens at each click and turns blue at the third, and "At open" stays at 0](/captures/interactivity-counter.webp)
 
 <figcaption>
 At each click, the text, the width and the color of the bar follow `clicks`, and nothing else runs again.
@@ -64,7 +64,7 @@ The three bars below set the same property in the three possible ways:
 
 <figure>
 
-![Three grey bars: the "Value" bar keeps its width, the "Expression" bar grows at each click on "+1", the "Lambda" bar grows on every frame and starts again every two seconds](/captures/interactivity-reread.webp)
+![Three blue bars: the "Value" bar keeps its width, the "Expression" bar grows at each click on "+1", the "Lambda" bar grows on every frame and starts again every two seconds](/captures/interactivity-reread.webp)
 
 <figcaption>
 A plain value never changes, an expression changes after a click, a lambda on every frame.
@@ -117,6 +117,10 @@ Some code cannot be replayed, and then the value stays fixed:
 | The variable of a loop combined with a signal in a calculation, or deciding a condition | Frozen |
 | A lambda written inside the expression, such as `names.stream().filter(name -> ...)` | Frozen |
 | The time, a random number, a call with side effects | Frozen |
+
+The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its first argument, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
+Its [[TextInfo]] is not followed reliably: depending on the rest of the expression and of the chain, it keeps its first value, without a warning.
+To switch the style of a text with a signal, pass a lambda: `label(() -> Text.create(..., on.get() ? bold : regular))`.
 
 This table is about the expression given to the value overload.
 A lambda given to the setter itself, or to `map(...)` and `Signal.from(...)`, is not part of an expression: the table of the previous section applies to it.
