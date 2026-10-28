@@ -87,8 +87,9 @@ Keep the type of a remembered field, or give it another name: [Remember a field 
 
 Emitted by [`UIPropertyHook.save`](/reference/ui/uipropertyhook/#UIPropertyHook-method-save).
 
-When the UI closed, the value of a field marked [`UIProperty`](/reference/ui/uiproperty/) could not be turned into JSON, for example because it refers to itself.
-The previous saved value stays on disk.
+When the UI closed, the value of a field marked [`UIProperty`](/reference/ui/uiproperty/) could not be turned into JSON, for example a `Class` that Gson refuses to write.
+The property is removed from the file: at the next launch, the field keeps the value that the UI gives it.
+An object that refers to itself prints no warning: it overflows the stack with a `StackOverflowError`.
 
 Remember a value that JSON can hold: numbers, strings, booleans, lists, maps and plain objects of them.
 See [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui).

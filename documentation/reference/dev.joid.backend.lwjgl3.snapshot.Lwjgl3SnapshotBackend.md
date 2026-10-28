@@ -12,7 +12,7 @@ Creates the snapshot backend; the window and the surface are created when a run 
 
 ## create(int,int)
 
-Opens a hidden window of that size in pixels with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile.
+Opens a hidden window of that size, in GLFW window coordinates, with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile.
 
 ## destroy()
 

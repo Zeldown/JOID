@@ -530,7 +530,7 @@ Adds a listener that runs once the node has been dropped; the event holds the sn
 
 ## onDragSnap(EventListener)
 
-Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`.
+Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it.
 
 ## isDragging()
 
@@ -662,7 +662,7 @@ If `true`, the node has a listener for this event type.
 
 ## isVisibleProperty()
 
-The `visible` value of the node itself, without its parents and its clipping.
+If `true`, the node itself is set visible, whatever its parents and its clipping.
 
 ## getIndex()
 

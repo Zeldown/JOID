@@ -259,7 +259,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [hasListener](#Node-method-hasListener)(EventType<?> type) | If `true`, the node has a listener for this event type. |
-| `boolean` | [isVisibleProperty](#Node-method-isVisibleProperty)() | The `visible` value of the node itself, without its parents and its clipping. |
+| `boolean` | [isVisibleProperty](#Node-method-isVisibleProperty)() | If `true`, the node itself is set visible, whatever its parents and its clipping. |
 | `boolean` | [isMounted](#Node-method-isMounted)() | If `true`, every `wait` condition of the node and of its parents holds. |
 | `int` | [getIndex](#Node-method-getIndex)() | The `zindex` of the node, or the highest value while it is dragged with `DraggableType.MOVE` so that it is drawn above its siblings. |
 | `T` | [getUi](#Node-method-getUi)() | The UI of the node, or the UI whose code is running ([`UI.getCurrent`](/reference/ui/ui/#UI-method-getCurrent)) when the node is not attached yet. |
@@ -379,7 +379,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | [onDragStart](#Node-event-onDragStart) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once a drag has started. |
 | [onDrag](#Node-event-onDrag) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs at every mouse move of the drag. |
 | [onDragDrop](#Node-event-onDragDrop) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once the node has been dropped; the event holds the snap target, or `null`. |
-| [onDragSnap](#Node-event-onDragSnap) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`. |
+| [onDragSnap](#Node-event-onDragSnap) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it. |
 
 ### Other events
 
@@ -1480,7 +1480,7 @@ If `true`, the node has a listener for this event type.
 
 `boolean isVisibleProperty()` 
 
-The `visible` value of the node itself, without its parents and its clipping.
+If `true`, the node itself is set visible, whatever its parents and its clipping.
 
 <a id="Node-method-isMounted"></a>
 
@@ -2155,7 +2155,7 @@ Adds a listener that runs once the node has been dropped; the event holds the sn
 
 `this onDragSnap(EventListener<NodeDragEvent.Post<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`.
+Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it.
 
 <a id="Node-event-onMove"></a>
 
