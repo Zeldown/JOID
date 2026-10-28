@@ -105,7 +105,7 @@ Opening a screen closes the open screens first, with the popups open above them:
 
 <figure>
 
-![The Menu card with its three grey buttons; the editor card, with its blue Save button, opens in its place; Escape, shown in a badge, leaves the editor open; the pointer clicks Save, which changes nothing on screen; a second later MenuUI opens again and replaces the editor, which no longer refuses](/captures/describing-uis-replace.webp)
+![The Menu card with its three grey buttons; the editor card, with its blue Save button, opens in its place; Escape, shown in a badge, leaves the editor open; the pointer clicks Save, which changes nothing on screen; a second later MenuUI opens again and replaces the editor, which lets it close once saved](/captures/describing-uis-replace.webp)
 
 <figcaption>
 Opening a screen closes the one before it: the editor refuses to close until Save is clicked, then opening `MenuUI` replaces it.
