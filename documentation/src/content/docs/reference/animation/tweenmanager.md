@@ -20,10 +20,7 @@ Holds tweens and timelines and advances them together when you update it.
 Use one when code of yours already runs at each frame, for example `UI.update()`: call `update(...)` there with the time elapsed since the previous frame, in ms.
 A [`TweenAnimator`](/reference/animation/tweenanimator/) needs no manager.
 Its methods can be called from several threads.
-The UI that owns the manager advances it in its own `update()`:
-
-```java file="com/example/style/TweenUI.java" region="update"
-```
+[Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own) advances one in the `update()` of the UI that owns it.
 
 ## Learn more
 

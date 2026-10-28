@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`FileAssetLocator`](/reference/resources/fileassetlocator/), [`StreamAssetLocator`](/reference/resources/streamassetlocator/), [`StringAssetLocator`](/reference/resources/stringassetlocator/), [`SnapshotUrlAssetLocator`](/reference/testing/snapshoturlassetlocator/)<br/>
 **Package:** `dev.joid.lib.asset.locator` · **Module:** `core` · **Source:** [IAssetLocator.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/asset/locator/IAssetLocator.java)
 
-Turns one kind of input into an Asset, so that every loader of JOID accepts it.
+Turns one kind of input into an `Asset`, so that every loader of JOID accepts it.
 
 ## Description
 

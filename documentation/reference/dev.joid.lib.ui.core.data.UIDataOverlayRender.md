@@ -1,5 +1,5 @@
 ---
-summary: When an overlay is drawn, set in the render option of @UIDataOverlay.
+summary: When an overlay is drawn, set in the render option of `@UIDataOverlay`.
 ---
 Learn: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/#draw-an-overlay-above-the-screens-and-let-it-take-input).
 

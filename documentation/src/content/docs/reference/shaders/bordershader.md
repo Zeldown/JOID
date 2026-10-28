@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`ShaderProgram`](/reference/shaders/shaderprogram/)<br/>
 **Package:** `dev.joid.lib.shader.impl` · **Module:** `core` · **Source:** [BorderShader.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/shader/impl/BorderShader.java)
 
-The shader of the outline that BorderShaderPass draws around the alpha of a texture.
+The shader of the outline that `BorderShaderPass` draws around the alpha of a texture.
 
 ## Learn more
 

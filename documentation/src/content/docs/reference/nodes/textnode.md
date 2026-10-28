@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`Node`](/reference/nodes/node/)<br/>
 **Package:** `dev.joid.lib.ui.node.impl.text` · **Module:** `core` · **Source:** [TextNode.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/node/impl/text/TextNode.java)
 
-Draws a Text in its bounds, and takes the size of the text when no size is declared.
+Draws a `Text` in its bounds, and takes the size of the text when no size is declared.
 
 ![The word Text in light grey, centered on a dark card](/captures/catalog-nodes-textnode.webp)
 

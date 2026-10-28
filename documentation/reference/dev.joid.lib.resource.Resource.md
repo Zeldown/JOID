@@ -1,5 +1,5 @@
 ---
-summary: An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or DrawResource.
+summary: An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or `DrawResource`.
 ---
 
 Create one from a path, a URL, a `File`, a stream or an [[Asset]], and give it to a resource node:

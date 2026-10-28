@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`IAssetLocator`](/reference/resources/iassetlocator/)<br/>
 **Package:** `dev.joid.lib.asset.locator.impl` · **Module:** `core` · **Source:** [StreamAssetLocator.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/asset/locator/impl/StreamAssetLocator.java)
 
-The built-in locator that turns an InputStream into a StreamAsset.
+The built-in locator that turns an `InputStream` into a `StreamAsset`.
 
 ## Learn more
 

@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`MemoryResourceCache`](/reference/resources/memoryresourcecache/)<br/>
 **Package:** `dev.joid.lib.resource.cache` · **Module:** `core` · **Source:** [IResourceCache.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/resource/cache/IResourceCache.java)
 
-Where a ResourceBuilder keeps the data of its resources by id, so that two loads of the same input share it.
+Where a `ResourceBuilder` keeps the data of its resources by id, so that two loads of the same input share it.
 
 ## Description
 

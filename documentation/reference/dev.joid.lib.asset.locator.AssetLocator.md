@@ -1,5 +1,5 @@
 ---
-summary: The registry of the asset locators, which turns any input into an Asset.
+summary: The registry of the asset locators, which turns any input into an `Asset`.
 ---
 
 JOID registers three locators, for a `File`, a `String` and an `InputStream`; register your own to accept another kind of input, such as an id of your application.

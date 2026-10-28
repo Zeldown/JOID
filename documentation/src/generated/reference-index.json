@@ -2622,7 +2622,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "An asset read once from an InputStream and kept in memory, so that it can be read again.",
+      "summary": "An asset read once from an `InputStream` and kept in memory, so that it can be read again.",
       "ancestors": [
         "dev.joid.lib.asset.Asset"
       ],
@@ -2642,7 +2642,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "An asset read once from an InputStream and kept in memory, so that it can be read again.",
+      "summary": "An asset read once from an `InputStream` and kept in memory, so that it can be read again.",
       "ancestors": [
         "dev.joid.lib.asset.Asset"
       ],
@@ -2714,7 +2714,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The registry of the asset locators, which turns any input into an Asset.",
+      "summary": "The registry of the asset locators, which turns any input into an `Asset`.",
       "ancestors": [],
       "url": "/reference/resources/assetlocator/",
       "members": {
@@ -2736,7 +2736,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The registry of the asset locators, which turns any input into an Asset.",
+      "summary": "The registry of the asset locators, which turns any input into an `Asset`.",
       "ancestors": [],
       "url": "/reference/resources/assetlocator/",
       "members": {
@@ -2758,7 +2758,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Turns one kind of input into an Asset, so that every loader of JOID accepts it.",
+      "summary": "Turns one kind of input into an `Asset`, so that every loader of JOID accepts it.",
       "ancestors": [],
       "url": "/reference/resources/iassetlocator/",
       "members": {
@@ -2776,7 +2776,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Turns one kind of input into an Asset, so that every loader of JOID accepts it.",
+      "summary": "Turns one kind of input into an `Asset`, so that every loader of JOID accepts it.",
       "ancestors": [],
       "url": "/reference/resources/iassetlocator/",
       "members": {
@@ -2794,7 +2794,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns a File into a FileAsset.",
+      "summary": "The built-in locator that turns a `File` into a `FileAsset`.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -2816,7 +2816,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns a File into a FileAsset.",
+      "summary": "The built-in locator that turns a `File` into a `FileAsset`.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -2838,7 +2838,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns an InputStream into a StreamAsset.",
+      "summary": "The built-in locator that turns an `InputStream` into a `StreamAsset`.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -2860,7 +2860,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns an InputStream into a StreamAsset.",
+      "summary": "The built-in locator that turns an `InputStream` into a `StreamAsset`.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -2882,7 +2882,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns a String into a URL, classpath or file asset.",
+      "summary": "The built-in locator that turns a `String` into a URL, classpath or file asset.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -2904,7 +2904,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The built-in locator that turns a String into a URL, classpath or file asset.",
+      "summary": "The built-in locator that turns a `String` into a URL, classpath or file asset.",
       "ancestors": [
         "dev.joid.lib.asset.locator.IAssetLocator"
       ],
@@ -8054,7 +8054,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The two stops and the direction of a linear gradient, carried by a gradient Color.",
+      "summary": "The two stops and the direction of a linear gradient, carried by a gradient `Color`.",
       "ancestors": [],
       "url": "/reference/drawing/colorgradient/",
       "members": {
@@ -8085,7 +8085,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The two stops and the direction of a linear gradient, carried by a gradient Color.",
+      "summary": "The two stops and the direction of a linear gradient, carried by a gradient `Color`.",
       "ancestors": [],
       "url": "/reference/drawing/colorgradient/",
       "members": {
@@ -8358,7 +8358,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "Draws filled and outlined shapes, lines and curves with a Color, sharp at every scale.",
+      "summary": "Draws filled and outlined shapes, lines and curves with a `Color`, sharp at every scale.",
       "ancestors": [],
       "url": "/reference/drawing/drawshape/",
       "members": {
@@ -8406,7 +8406,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "Draws filled and outlined shapes, lines and curves with a Color, sharp at every scale.",
+      "summary": "Draws filled and outlined shapes, lines and curves with a `Color`, sharp at every scale.",
       "ancestors": [],
       "url": "/reference/drawing/drawshape/",
       "members": {
@@ -8658,7 +8658,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "One styled part of a Text, with its value, its TextInfo and its own modifier.",
+      "summary": "One styled part of a `Text`, with its value, its `TextInfo` and its own modifier.",
       "ancestors": [],
       "url": "/reference/text/textelement/",
       "members": {
@@ -8692,7 +8692,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "One styled part of a Text, with its value, its TextInfo and its own modifier.",
+      "summary": "One styled part of a `Text`, with its value, its `TextInfo` and its own modifier.",
       "ancestors": [],
       "url": "/reference/text/textelement/",
       "members": {
@@ -8770,7 +8770,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "text",
-      "summary": "The marker that ends a text cut to fit a box with TextMode.OVERFLOW.",
+      "summary": "The marker that ends a text cut to fit a box with `TextMode.OVERFLOW`.",
       "ancestors": [],
       "url": "/reference/text/textoverflow/",
       "members": {
@@ -8794,7 +8794,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "text",
-      "summary": "The marker that ends a text cut to fit a box with TextMode.OVERFLOW.",
+      "summary": "The marker that ends a text cut to fit a box with `TextMode.OVERFLOW`.",
       "ancestors": [],
       "url": "/reference/text/textoverflow/",
       "members": {
@@ -8938,7 +8938,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "text",
-      "summary": "One laid-out glyph as an ITextEffect sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.",
+      "summary": "One laid-out glyph as an `ITextEffect` sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.",
       "ancestors": [],
       "url": "/reference/text/itextglyph/",
       "members": {
@@ -8989,7 +8989,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "text",
-      "summary": "One laid-out glyph as an ITextEffect sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.",
+      "summary": "One laid-out glyph as an `ITextEffect` sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.",
       "ancestors": [],
       "url": "/reference/text/itextglyph/",
       "members": {
@@ -9330,7 +9330,7 @@
       "kind": "class",
       "abstract": true,
       "family": "text",
-      "summary": "Base class of the text renderers of pixel fonts, which draws each glyph from the BitmapCell you return.",
+      "summary": "Base class of the text renderers of pixel fonts, which draws each glyph from the `BitmapCell` you return.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.GlyphTextRenderer",
         "dev.joid.lib.font.ITextRenderer"
@@ -9357,7 +9357,7 @@
       "kind": "class",
       "abstract": true,
       "family": "text",
-      "summary": "Base class of the text renderers of pixel fonts, which draws each glyph from the BitmapCell you return.",
+      "summary": "Base class of the text renderers of pixel fonts, which draws each glyph from the `BitmapCell` you return.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.GlyphTextRenderer",
         "dev.joid.lib.font.ITextRenderer"
@@ -9424,7 +9424,7 @@
       "kind": "class",
       "abstract": true,
       "family": "text",
-      "summary": "Base class of the fonts made of glyphs, which hold a FontFamily of faces.",
+      "summary": "Base class of the fonts made of glyphs, which hold a `FontFamily` of faces.",
       "ancestors": [
         "dev.joid.lib.font.IFont"
       ],
@@ -9446,7 +9446,7 @@
       "kind": "class",
       "abstract": true,
       "family": "text",
-      "summary": "Base class of the fonts made of glyphs, which hold a FontFamily of faces.",
+      "summary": "Base class of the fonts made of glyphs, which hold a `FontFamily` of faces.",
       "ancestors": [
         "dev.joid.lib.font.IFont"
       ],
@@ -9508,7 +9508,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The place of one character in a GlyphLayout, with the font, the face and the style it draws with.",
+      "summary": "The place of one character in a `GlyphLayout`, with the font, the face and the style it draws with.",
       "ancestors": [],
       "url": "/reference/text/glyphplacement/",
       "members": {
@@ -9536,7 +9536,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The place of one character in a GlyphLayout, with the font, the face and the style it draws with.",
+      "summary": "The place of one character in a `GlyphLayout`, with the font, the face and the style it draws with.",
       "ancestors": [],
       "url": "/reference/text/glyphplacement/",
       "members": {
@@ -9730,7 +9730,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and the font it comes from.",
+      "summary": "The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face and the font it comes from.",
       "ancestors": [
         "dev.joid.lib.font.effect.ITextGlyph"
       ],
@@ -9793,7 +9793,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and the font it comes from.",
+      "summary": "The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face and the font it comes from.",
       "ancestors": [
         "dev.joid.lib.font.effect.ITextGlyph"
       ],
@@ -9998,7 +9998,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "One face of an MsdfFont, with its atlas texture, its metrics, its glyphs and its kerning.",
+      "summary": "One face of an `MsdfFont`, with its atlas texture, its metrics, its glyphs and its kerning.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.IFontFace"
       ],
@@ -10056,7 +10056,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "One face of an MsdfFont, with its atlas texture, its metrics, its glyphs and its kerning.",
+      "summary": "One face of an `MsdfFont`, with its atlas texture, its metrics, its glyphs and its kerning.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.IFontFace"
       ],
@@ -10114,7 +10114,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "Loads an MSDF font from the files of its faces, in the background, and completes a future with the MsdfFont.",
+      "summary": "Loads an MSDF font from the files of its faces, in the background, and completes a future with the `MsdfFont`.",
       "ancestors": [],
       "url": "/reference/text/msdffontloader/",
       "members": {
@@ -10130,7 +10130,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "Loads an MSDF font from the files of its faces, in the background, and completes a future with the MsdfFont.",
+      "summary": "Loads an MSDF font from the files of its faces, in the background, and completes a future with the `MsdfFont`.",
       "ancestors": [],
       "url": "/reference/text/msdffontloader/",
       "members": {
@@ -10246,7 +10246,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The text renderer of every MsdfFont, which draws each glyph from the distance field of its face.",
+      "summary": "The text renderer of every `MsdfFont`, which draws each glyph from the distance field of its face.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.GlyphTextRenderer",
         "dev.joid.lib.font.ITextRenderer"
@@ -10265,7 +10265,7 @@
       "kind": "class",
       "abstract": false,
       "family": "text",
-      "summary": "The text renderer of every MsdfFont, which draws each glyph from the distance field of its face.",
+      "summary": "The text renderer of every `MsdfFont`, which draws each glyph from the distance field of its face.",
       "ancestors": [
         "dev.joid.lib.font.impl.glyph.GlyphTextRenderer",
         "dev.joid.lib.font.ITextRenderer"
@@ -10330,7 +10330,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "text",
-      "summary": "A source that reads one MsdfFontFace, from a font file or from anything else.",
+      "summary": "A source that reads one `MsdfFontFace`, from a font file or from anything else.",
       "ancestors": [],
       "url": "/reference/text/imsdfsource/",
       "members": {
@@ -10348,7 +10348,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "text",
-      "summary": "A source that reads one MsdfFontFace, from a font file or from anything else.",
+      "summary": "A source that reads one `MsdfFontFace`, from a font file or from anything else.",
       "ancestors": [],
       "url": "/reference/text/imsdfsource/",
       "members": {
@@ -11970,7 +11970,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "One triangle of an ObjModel, with its vertices, its optional texture coordinates and normals, and the normal of its plane.",
+      "summary": "One triangle of an `ObjModel`, with its vertices, its optional texture coordinates and normals, and the normal of its plane.",
       "ancestors": [],
       "url": "/reference/drawing/objface/",
       "members": {
@@ -11996,7 +11996,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "One triangle of an ObjModel, with its vertices, its optional texture coordinates and normals, and the normal of its plane.",
+      "summary": "One triangle of an `ObjModel`, with its vertices, its optional texture coordinates and normals, and the normal of its plane.",
       "ancestors": [],
       "url": "/reference/drawing/objface/",
       "members": {
@@ -12022,7 +12022,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A named group of triangles of an ObjModel, drawn in one batch.",
+      "summary": "A named group of triangles of an `ObjModel`, drawn in one batch.",
       "ancestors": [],
       "url": "/reference/drawing/objgroup/",
       "members": {
@@ -12046,7 +12046,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A named group of triangles of an ObjModel, drawn in one batch.",
+      "summary": "A named group of triangles of an `ObjModel`, drawn in one batch.",
       "ancestors": [],
       "url": "/reference/drawing/objgroup/",
       "members": {
@@ -12070,7 +12070,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A texture coordinate of an ObjModel, on 1 of the texture.",
+      "summary": "A texture coordinate of an `ObjModel`, on 1 of the texture.",
       "ancestors": [],
       "url": "/reference/drawing/objtexturecoordinate/",
       "members": {
@@ -12093,7 +12093,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A texture coordinate of an ObjModel, on 1 of the texture.",
+      "summary": "A texture coordinate of an `ObjModel`, on 1 of the texture.",
       "ancestors": [],
       "url": "/reference/drawing/objtexturecoordinate/",
       "members": {
@@ -12116,7 +12116,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A point or a normal of an ObjModel, in model units.",
+      "summary": "A point or a normal of an `ObjModel`, in model units.",
       "ancestors": [],
       "url": "/reference/drawing/objvertex/",
       "members": {
@@ -12139,7 +12139,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A point or a normal of an ObjModel, in model units.",
+      "summary": "A point or a normal of an `ObjModel`, in model units.",
       "ancestors": [],
       "url": "/reference/drawing/objvertex/",
       "members": {
@@ -12344,7 +12344,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "drawing",
-      "summary": "How the Tessellator joins the vertices you give it into lines or triangles.",
+      "summary": "How the `Tessellator` joins the vertices you give it into lines or triangles.",
       "ancestors": [],
       "url": "/reference/drawing/drawmode/",
       "members": {
@@ -12370,7 +12370,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "drawing",
-      "summary": "How the Tessellator joins the vertices you give it into lines or triangles.",
+      "summary": "How the `Tessellator` joins the vertices you give it into lines or triangles.",
       "ancestors": [],
       "url": "/reference/drawing/drawmode/",
       "members": {
@@ -12504,7 +12504,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The axis of a rotation in a Transformation, as yaw, pitch and roll components.",
+      "summary": "The axis of a rotation in a `Transformation`, as yaw, pitch and roll components.",
       "ancestors": [],
       "url": "/reference/drawing/rotation/",
       "members": {
@@ -12539,7 +12539,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The axis of a rotation in a Transformation, as yaw, pitch and roll components.",
+      "summary": "The axis of a rotation in a `Transformation`, as yaw, pitch and roll components.",
       "ancestors": [],
       "url": "/reference/drawing/rotation/",
       "members": {
@@ -12574,7 +12574,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The factors of a scale in a Transformation, one per axis, fixed or read from a supplier.",
+      "summary": "The factors of a scale in a `Transformation`, one per axis, fixed or read from a supplier.",
       "ancestors": [],
       "url": "/reference/drawing/scale/",
       "members": {
@@ -12610,7 +12610,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "The factors of a scale in a Transformation, one per axis, fixed or read from a supplier.",
+      "summary": "The factors of a scale in a `Transformation`, one per axis, fixed or read from a supplier.",
       "ancestors": [],
       "url": "/reference/drawing/scale/",
       "members": {
@@ -12716,7 +12716,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A 3D offset or pivot of a Transformation, in design pixels, fixed or read from suppliers.",
+      "summary": "A 3D offset or pivot of a `Transformation`, in design pixels, fixed or read from suppliers.",
       "ancestors": [],
       "url": "/reference/drawing/vector/",
       "members": {
@@ -12757,7 +12757,7 @@
       "kind": "class",
       "abstract": false,
       "family": "drawing",
-      "summary": "A 3D offset or pivot of a Transformation, in design pixels, fixed or read from suppliers.",
+      "summary": "A 3D offset or pivot of a `Transformation`, in design pixels, fixed or read from suppliers.",
       "ancestors": [],
       "url": "/reference/drawing/vector/",
       "members": {
@@ -12930,7 +12930,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Reads every frame of an animated image file into a ResourceAnimation.",
+      "summary": "Reads every frame of an animated image file into a `ResourceAnimation`.",
       "ancestors": [],
       "url": "/reference/resources/iresourceanimationreader/",
       "members": {
@@ -12946,7 +12946,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Reads every frame of an animated image file into a ResourceAnimation.",
+      "summary": "Reads every frame of an animated image file into a `ResourceAnimation`.",
       "ancestors": [],
       "url": "/reference/resources/iresourceanimationreader/",
       "members": {
@@ -13186,7 +13186,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Where a ResourceBuilder keeps the data of its resources by id, so that two loads of the same input share it.",
+      "summary": "Where a `ResourceBuilder` keeps the data of its resources by id, so that two loads of the same input share it.",
       "ancestors": [],
       "url": "/reference/resources/iresourcecache/",
       "members": {
@@ -13210,7 +13210,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "resources",
-      "summary": "Where a ResourceBuilder keeps the data of its resources by id, so that two loads of the same input share it.",
+      "summary": "Where a `ResourceBuilder` keeps the data of its resources by id, so that two loads of the same input share it.",
       "ancestors": [],
       "url": "/reference/resources/iresourcecache/",
       "members": {
@@ -14376,7 +14376,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or DrawResource.",
+      "summary": "An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or `DrawResource`.",
       "ancestors": [],
       "url": "/reference/resources/resource/",
       "members": {
@@ -14479,7 +14479,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or DrawResource.",
+      "summary": "An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or `DrawResource`.",
       "ancestors": [],
       "url": "/reference/resources/resource/",
       "members": {
@@ -14668,7 +14668,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The shared state of one resource, its decoder, pixels, textures, size and errors, behind every Resource handle on the same input.",
+      "summary": "The shared state of one resource, its decoder, pixels, textures, size and errors, behind every `Resource` handle on the same input.",
       "ancestors": [],
       "url": "/reference/resources/resourcedata/",
       "members": {
@@ -14763,7 +14763,7 @@
       "kind": "class",
       "abstract": false,
       "family": "resources",
-      "summary": "The shared state of one resource, its decoder, pixels, textures, size and errors, behind every Resource handle on the same input.",
+      "summary": "The shared state of one resource, its decoder, pixels, textures, size and errors, behind every `Resource` handle on the same input.",
       "ancestors": [],
       "url": "/reference/resources/resourcedata/",
       "members": {
@@ -14934,7 +14934,7 @@
       "kind": "class",
       "abstract": false,
       "family": "shaders",
-      "summary": "The shader of the one-axis blur that BlurShaderPass runs.",
+      "summary": "The shader of the one-axis blur that `BlurShaderPass` runs.",
       "ancestors": [
         "dev.joid.lib.shader.impl.ShaderProgram"
       ],
@@ -14954,7 +14954,7 @@
       "kind": "class",
       "abstract": false,
       "family": "shaders",
-      "summary": "The shader of the one-axis blur that BlurShaderPass runs.",
+      "summary": "The shader of the one-axis blur that `BlurShaderPass` runs.",
       "ancestors": [
         "dev.joid.lib.shader.impl.ShaderProgram"
       ],
@@ -14974,7 +14974,7 @@
       "kind": "class",
       "abstract": false,
       "family": "shaders",
-      "summary": "The shader of the outline that BorderShaderPass draws around the alpha of a texture.",
+      "summary": "The shader of the outline that `BorderShaderPass` draws around the alpha of a texture.",
       "ancestors": [
         "dev.joid.lib.shader.impl.ShaderProgram"
       ],
@@ -14994,7 +14994,7 @@
       "kind": "class",
       "abstract": false,
       "family": "shaders",
-      "summary": "The shader of the outline that BorderShaderPass draws around the alpha of a texture.",
+      "summary": "The shader of the outline that `BorderShaderPass` draws around the alpha of a texture.",
       "ancestors": [
         "dev.joid.lib.shader.impl.ShaderProgram"
       ],
@@ -15354,7 +15354,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "shaders",
-      "summary": "One step of a ShaderPipeline, which binds a shader that reads the previous result as a texture.",
+      "summary": "One step of a `ShaderPipeline`, which binds a shader that reads the previous result as a texture.",
       "ancestors": [],
       "url": "/reference/shaders/ishaderpass/",
       "members": {
@@ -15376,7 +15376,7 @@
       "kind": "interface",
       "abstract": true,
       "family": "shaders",
-      "summary": "One step of a ShaderPipeline, which binds a shader that reads the previous result as a texture.",
+      "summary": "One step of a `ShaderPipeline`, which binds a shader that reads the previous result as a texture.",
       "ancestors": [],
       "url": "/reference/shaders/ishaderpass/",
       "members": {
@@ -17158,7 +17158,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The dev-mode options of @UIDataDebug for a running UI.",
+      "summary": "The dev-mode options of `@UIDataDebug` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatadebugobject/",
       "members": {
@@ -17182,7 +17182,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The dev-mode options of @UIDataDebug for a running UI.",
+      "summary": "The dev-mode options of `@UIDataDebug` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatadebugobject/",
       "members": {
@@ -17206,7 +17206,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The options of @UIData for a running UI, read from the annotation and changed by its setters.",
+      "summary": "The options of `@UIData` for a running UI, read from the annotation and changed by its setters.",
       "ancestors": [],
       "url": "/reference/annotations/uidataobject/",
       "members": {
@@ -17263,7 +17263,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The options of @UIData for a running UI, read from the annotation and changed by its setters.",
+      "summary": "The options of `@UIData` for a running UI, read from the annotation and changed by its setters.",
       "ancestors": [],
       "url": "/reference/annotations/uidataobject/",
       "members": {
@@ -17360,7 +17360,7 @@
       "kind": "annotation",
       "abstract": false,
       "family": "annotations",
-      "summary": "Whether an overlay receives the input and what it lets through, set in the interaction option of @UIDataOverlay.",
+      "summary": "Whether an overlay receives the input and what it lets through, set in the interaction option of `@UIDataOverlay`.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayinteraction/",
       "members": {
@@ -17382,7 +17382,7 @@
       "kind": "annotation",
       "abstract": false,
       "family": "annotations",
-      "summary": "Whether an overlay receives the input and what it lets through, set in the interaction option of @UIDataOverlay.",
+      "summary": "Whether an overlay receives the input and what it lets through, set in the interaction option of `@UIDataOverlay`.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayinteraction/",
       "members": {
@@ -17464,7 +17464,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The overlay options of @UIDataOverlay for a running UI.",
+      "summary": "The overlay options of `@UIDataOverlay` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayobject/",
       "members": {
@@ -17489,7 +17489,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The overlay options of @UIDataOverlay for a running UI.",
+      "summary": "The overlay options of `@UIDataOverlay` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayobject/",
       "members": {
@@ -17514,7 +17514,7 @@
       "kind": "annotation",
       "abstract": false,
       "family": "annotations",
-      "summary": "When an overlay is drawn, set in the render option of @UIDataOverlay.",
+      "summary": "When an overlay is drawn, set in the render option of `@UIDataOverlay`.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayrender/",
       "members": {
@@ -17532,7 +17532,7 @@
       "kind": "annotation",
       "abstract": false,
       "family": "annotations",
-      "summary": "When an overlay is drawn, set in the render option of @UIDataOverlay.",
+      "summary": "When an overlay is drawn, set in the render option of `@UIDataOverlay`.",
       "ancestors": [],
       "url": "/reference/annotations/uidataoverlayrender/",
       "members": {
@@ -17690,7 +17690,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The popup options of @UIDataPopup for a running UI.",
+      "summary": "The popup options of `@UIDataPopup` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatapopupobject/",
       "members": {
@@ -17714,7 +17714,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The popup options of @UIDataPopup for a running UI.",
+      "summary": "The popup options of `@UIDataPopup` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatapopupobject/",
       "members": {
@@ -17778,7 +17778,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The interface-scale options of @UIDataScale for a running UI.",
+      "summary": "The interface-scale options of `@UIDataScale` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatascaleobject/",
       "members": {
@@ -17807,7 +17807,7 @@
       "kind": "class",
       "abstract": false,
       "family": "annotations",
-      "summary": "The interface-scale options of @UIDataScale for a running UI.",
+      "summary": "The interface-scale options of `@UIDataScale` for a running UI.",
       "ancestors": [],
       "url": "/reference/annotations/uidatascaleobject/",
       "members": {
@@ -17868,7 +17868,7 @@
       "kind": "class",
       "abstract": false,
       "family": "ui",
-      "summary": "Reads and writes the @UIProperty fields of a UI in its property file.",
+      "summary": "Reads and writes the `@UIProperty` fields of a UI in its property file.",
       "ancestors": [],
       "url": "/reference/ui/uipropertyhook/",
       "members": {
@@ -17886,7 +17886,7 @@
       "kind": "class",
       "abstract": false,
       "family": "ui",
-      "summary": "Reads and writes the @UIProperty fields of a UI in its property file.",
+      "summary": "Reads and writes the `@UIProperty` fields of a UI in its property file.",
       "ancestors": [],
       "url": "/reference/ui/uipropertyhook/",
       "members": {
@@ -18280,7 +18280,7 @@
       "kind": "class",
       "abstract": true,
       "family": "ui",
-      "summary": "Base class of a screen, an overlay or a popup that builds its node tree in init() and draws it on the design canvas.",
+      "summary": "Base class of a screen, an overlay or a popup that builds its node tree in `init()` and draws it on the design canvas.",
       "ancestors": [
         "dev.joid.lib.utils.list.IIndexedElement"
       ],
@@ -18462,7 +18462,7 @@
       "kind": "class",
       "abstract": true,
       "family": "ui",
-      "summary": "Base class of a screen, an overlay or a popup that builds its node tree in init() and draws it on the design canvas.",
+      "summary": "Base class of a screen, an overlay or a popup that builds its node tree in `init()` and draws it on the design canvas.",
       "ancestors": [
         "dev.joid.lib.utils.list.IIndexedElement"
       ],
@@ -25578,7 +25578,7 @@
       "kind": "class",
       "abstract": false,
       "family": "nodes",
-      "summary": "Draws a Text in its bounds, and takes the size of the text when no size is declared.",
+      "summary": "Draws a `Text` in its bounds, and takes the size of the text when no size is declared.",
       "ancestors": [
         "dev.joid.lib.ui.node.Node",
         "dev.joid.lib.ui.node.INode",
@@ -25617,7 +25617,7 @@
       "kind": "class",
       "abstract": false,
       "family": "nodes",
-      "summary": "Draws a Text in its bounds, and takes the size of the text when no size is declared.",
+      "summary": "Draws a `Text` in its bounds, and takes the size of the text when no size is declared.",
       "ancestors": [
         "dev.joid.lib.ui.node.Node",
         "dev.joid.lib.ui.node.INode",

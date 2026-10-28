@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class AssetLocator`<br/>
 **Package:** `dev.joid.lib.asset.locator` · **Module:** `core` · **Source:** [AssetLocator.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/asset/locator/AssetLocator.java)
 
-The registry of the asset locators, which turns any input into an Asset.
+The registry of the asset locators, which turns any input into an `Asset`.
 
 ## Description
 

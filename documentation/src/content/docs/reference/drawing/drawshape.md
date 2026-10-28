@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class DrawShape`<br/>
 **Package:** `dev.joid.lib.draw.shape` · **Module:** `core` · **Source:** [DrawShape.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/draw/shape/DrawShape.java)
 
-Draws filled and outlined shapes, lines and curves with a Color, sharp at every scale.
+Draws filled and outlined shapes, lines and curves with a `Color`, sharp at every scale.
 
 ## Description
 

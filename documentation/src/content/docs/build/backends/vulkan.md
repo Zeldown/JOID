@@ -67,7 +67,7 @@ The window, the stack size and the loop that the backend needs are on [Start the
 ## Run inside a Vulkan host
 
 An engine that already renders with Vulkan implements [[IVulkanHost]] and passes it to `VulkanBackend.create(window, host)`: JOID then records into its frame instead of owning one.
-[[SnapshotVulkanHost]], the host of the tests, is a complete host in a few lines: no surface, one offscreen image, one frame in flight.
+[[SnapshotVulkanHost]], the host of the tests, is a complete host without a surface: one offscreen image, one frame in flight.
 
 | Member | What it returns |
 |---|---|

@@ -25,7 +25,7 @@ Nothing below the core is visible to the code of a UI.
 
 - the UI engine: UIs, nodes, layout, signals, effects, animation, text and resources;
 - the contracts that a backend implements, in `dev.joid.lib.bridge`: one interface per [bridge](/build/bridges/), and the registries of [[BridgeHandler]];
-- the generic half of every backend: [[RenderBridge]] keeps the matrices, the render state and the frame in Java, [[Texture]] computes the mipmap chain, [[Shader]] parses and translates the shaders, and [[Backend]] registers the bridges in a fixed order.
+- the generic half of every backend: [[RenderBridge]] keeps the matrices, the render state and the frame in Java, [[Texture]] computes the mipmap chain, [[ShaderSource]] parses each stage and [[Shader]] translates it, and [[Backend]] registers the bridges in a fixed order.
 
 The core never calls OpenGL, Vulkan, GLFW or OpenAL.
 It reaches them only through the bridges.

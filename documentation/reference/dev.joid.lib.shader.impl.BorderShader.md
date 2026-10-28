@@ -1,5 +1,5 @@
 ---
-summary: The shader of the outline that BorderShaderPass draws around the alpha of a texture.
+summary: The shader of the outline that `BorderShaderPass` draws around the alpha of a texture.
 ---
 
 Learn: [Shaders](/use/learn/going-further/shaders/).

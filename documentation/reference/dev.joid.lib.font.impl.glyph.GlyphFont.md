@@ -1,5 +1,5 @@
 ---
-summary: Base class of the fonts made of glyphs, which hold a FontFamily of faces.
+summary: Base class of the fonts made of glyphs, which hold a `FontFamily` of faces.
 ---
 
 [[MsdfFont]] and [[BitmapFont]] extend it.

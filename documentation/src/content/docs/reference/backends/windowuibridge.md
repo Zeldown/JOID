@@ -20,18 +20,15 @@ The default UI bridge, which clears the window to a color every frame and draws 
 ## Description
 
 The backend registers one when no UI bridge was registered before it.
-Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text:
-
-```java file="com/example/running/RunningApp.java" region="bridge"
-```
+Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text, as [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge) shows.
 
 ## Learn more
 
-- [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)
 - [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)
 - [Embedding JOID](/use/learn/running/embedding/)
 - [Replace a font](/use/guides/replace-a-font/)
 - [Ship your application](/use/guides/ship-your-application/)
+- [UI bridge](/build/bridges/ui/)
 
 ## Creation
 

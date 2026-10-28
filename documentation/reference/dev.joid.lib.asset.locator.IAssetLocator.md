@@ -1,5 +1,5 @@
 ---
-summary: Turns one kind of input into an Asset, so that every loader of JOID accepts it.
+summary: Turns one kind of input into an `Asset`, so that every loader of JOID accepts it.
 ---
 
 Register it with [[AssetLocator#register]].

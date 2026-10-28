@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `@interface UIDataOverlayRender`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataOverlayRender.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataOverlayRender.java)
 
-When an overlay is drawn, set in the render option of @UIDataOverlay.
+When an overlay is drawn, set in the render option of `@UIDataOverlay`.
 
 ## Learn more
 

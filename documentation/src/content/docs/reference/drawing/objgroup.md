@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ObjGroup`<br/>
 **Package:** `dev.joid.lib.obj.data` · **Module:** `core` · **Source:** [ObjGroup.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/obj/data/ObjGroup.java)
 
-A named group of triangles of an ObjModel, drawn in one batch.
+A named group of triangles of an `ObjModel`, drawn in one batch.
 
 ## Learn more
 

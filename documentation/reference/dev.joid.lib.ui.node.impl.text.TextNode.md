@@ -1,5 +1,5 @@
 ---
-summary: Draws a Text in its bounds, and takes the size of the text when no size is declared.
+summary: Draws a `Text` in its bounds, and takes the size of the text when no size is declared.
 ---
 The style comes from the [[Text]] and its [[TextInfo]]; the mode decides how a text wider than the node is shown.
 The node measures its text in `update()`, so a layout node sees a change of text on the same frame; an empty or `null` text gives a size of `0` on each axis that is not declared.

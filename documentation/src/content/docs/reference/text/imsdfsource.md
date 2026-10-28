@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`MsdfSource`](/reference/text/msdfsource/)<br/>
 **Package:** `dev.joid.lib.font.impl.msdf.source` · **Module:** `core` · **Source:** [IMsdfSource.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/msdf/source/IMsdfSource.java)
 
-A source that reads one MsdfFontFace, from a font file or from anything else.
+A source that reads one `MsdfFontFace`, from a font file or from anything else.
 
 ## Description
 

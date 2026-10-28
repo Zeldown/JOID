@@ -1,5 +1,5 @@
 ---
-summary: The factors of a scale in a Transformation, one per axis, fixed or read from a supplier.
+summary: The factors of a scale in a `Transformation`, one per axis, fixed or read from a supplier.
 ---
 
 `1D` keeps the size, `2D` doubles it, a negative factor mirrors the drawing.

@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ObjFace`<br/>
 **Package:** `dev.joid.lib.obj.data` · **Module:** `core` · **Source:** [ObjFace.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/obj/data/ObjFace.java)
 
-One triangle of an ObjModel, with its vertices, its optional texture coordinates and normals, and the normal of its plane.
+One triangle of an `ObjModel`, with its vertices, its optional texture coordinates and normals, and the normal of its plane.
 
 ## Learn more
 

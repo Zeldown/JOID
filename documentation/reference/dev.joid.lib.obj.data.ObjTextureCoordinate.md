@@ -1,5 +1,5 @@
 ---
-summary: A texture coordinate of an ObjModel, on 1 of the texture.
+summary: A texture coordinate of an `ObjModel`, on 1 of the texture.
 ---
 
 Learn: [3D models](/use/learn/going-further/3d-models/).

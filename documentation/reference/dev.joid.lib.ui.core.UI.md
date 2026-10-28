@@ -1,5 +1,5 @@
 ---
-summary: Base class of a screen, an overlay or a popup that builds its node tree in init() and draws it on the design canvas.
+summary: Base class of a screen, an overlay or a popup that builds its node tree in `init()` and draws it on the design canvas.
 ---
 A `UI` is one interface: a screen, an overlay or a popup.
 Write one class per interface, build its nodes in `init()`, configure it with annotations on the class ([[UIData]], [[UIDataPopup]], [[UIDataOverlay]], [[UIDataScale]], [[UIDataDebug]]), then open it with [[JOID#open]]:

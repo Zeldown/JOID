@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `enum DrawMode`<br/>
 **Package:** `dev.joid.lib.render.tessellator` · **Module:** `core` · **Source:** [DrawMode.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/render/tessellator/DrawMode.java)
 
-How the Tessellator joins the vertices you give it into lines or triangles.
+How the `Tessellator` joins the vertices you give it into lines or triangles.
 
 ## Learn more
 

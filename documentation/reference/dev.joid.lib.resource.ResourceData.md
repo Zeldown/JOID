@@ -1,5 +1,5 @@
 ---
-summary: The shared state of one resource, its decoder, pixels, textures, size and errors, behind every Resource handle on the same input.
+summary: The shared state of one resource, its decoder, pixels, textures, size and errors, behind every `Resource` handle on the same input.
 ---
 
 You meet it when you write a decoder or a resolver: the [[IResourceDecoder]] fills it, the [[Resource]] handles draw it.

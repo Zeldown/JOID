@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`BlurShaderPass`](/reference/shaders/blurshaderpass/), [`BorderShaderPass`](/reference/shaders/bordershaderpass/), [`CircleShaderPass`](/reference/shaders/circleshaderpass/), [`RoundedShaderPass`](/reference/shaders/roundedshaderpass/)<br/>
 **Package:** `dev.joid.lib.shader.pipeline` · **Module:** `core` · **Source:** [IShaderPass.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/shader/pipeline/IShaderPass.java)
 
-One step of a ShaderPipeline, which binds a shader that reads the previous result as a texture.
+One step of a `ShaderPipeline`, which binds a shader that reads the previous result as a texture.
 
 ## Description
 

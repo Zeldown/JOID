@@ -1,5 +1,5 @@
 ---
-summary: The text renderer of every MsdfFont, which draws each glyph from the distance field of its face.
+summary: The text renderer of every `MsdfFont`, which draws each glyph from the distance field of its face.
 ---
 
 You never call it yourself: [[MsdfFont#getTextRenderer]] returns it to [[DrawText]].

@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class Vector`<br/>
 **Package:** `dev.joid.lib.render.transform` · **Module:** `core` · **Source:** [Vector.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/render/transform/Vector.java)
 
-A 3D offset or pivot of a Transformation, in design pixels, fixed or read from suppliers.
+A 3D offset or pivot of a `Transformation`, in design pixels, fixed or read from suppliers.
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-summary: How the Tessellator joins the vertices you give it into lines or triangles.
+summary: How the `Tessellator` joins the vertices you give it into lines or triangles.
 ---
 
 Learn: [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/).

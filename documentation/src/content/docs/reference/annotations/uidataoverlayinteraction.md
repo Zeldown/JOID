@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `@interface UIDataOverlayInteraction`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataOverlayInteraction.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataOverlayInteraction.java)
 
-Whether an overlay receives the input and what it lets through, set in the interaction option of @UIDataOverlay.
+Whether an overlay receives the input and what it lets through, set in the interaction option of `@UIDataOverlay`.
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-summary: One laid-out glyph as an ITextEffect sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.
+summary: One laid-out glyph as an `ITextEffect` sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.
 ---
 
 Positions and metrics are in design pixels, scaled by the font size of the glyph.

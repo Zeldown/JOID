@@ -1,5 +1,5 @@
 ---
-summary: Draws filled and outlined shapes, lines and curves with a Color, sharp at every scale.
+summary: Draws filled and outlined shapes, lines and curves with a `Color`, sharp at every scale.
 ---
 
 Reach it through `DrawUtils.SHAPE`.

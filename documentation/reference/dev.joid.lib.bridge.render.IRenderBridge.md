@@ -5,10 +5,7 @@ summary: The bridge that draws every pixel of JOID: it clears targets, draws tri
 The core reads it from `BridgeHandler.RENDER`; [[DrawUtils]] goes through it.
 A backend extends [[RenderBridge]], which implements the state, the matrices and the frame and leaves the GPU calls to write.
 Every method runs on the render thread.
-This node reads it to find its area in screen pixels, then lets the host draw there:
-
-```java file="com/example/backend/HostPreviewNode.java" region="draw"
-```
+[Let the host draw inside a frame](/build/embedding-in-a-host/#let-the-host-draw-inside-a-frame) reads it from a node to find the area of the node in screen pixels.
 
 Learn: [Render bridge](/build/bridges/render/), [Render pipeline](/build/pipeline/).
 

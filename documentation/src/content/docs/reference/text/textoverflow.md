@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `enum TextOverflow`<br/>
 **Package:** `dev.joid.lib.draw.text` · **Module:** `core` · **Source:** [TextOverflow.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/draw/text/TextOverflow.java)
 
-The marker that ends a text cut to fit a box with TextMode.OVERFLOW.
+The marker that ends a text cut to fit a box with `TextMode.OVERFLOW`.
 
 ## Learn more
 

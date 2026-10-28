@@ -1,5 +1,5 @@
 ---
-summary: Reads every frame of an animated image file into a ResourceAnimation.
+summary: Reads every frame of an animated image file into a `ResourceAnimation`.
 ---
 
 Give it to [[AnimatedResourceDecoder#create]] from the [[IResourceFormat]] of your format.

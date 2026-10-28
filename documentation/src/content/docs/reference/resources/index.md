@@ -20,36 +20,36 @@ Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats]
 | [`ApngResourceAnimationReader`](/reference/resources/apngresourceanimationreader/) | class | Reads the frames of an animated PNG (APNG). |
 | [`ApngResourceFormat`](/reference/resources/apngresourceformat/) | class | The built-in format of PNG files, still or animated (APNG). |
 | [`Asset`](/reference/resources/asset/) | class | Where the bytes of a resource, a font, a shader or a model come from, a file, the classpath, a URL or a stream, behind one stable id. |
-| [`AssetLocator`](/reference/resources/assetlocator/) | class | The registry of the asset locators, which turns any input into an Asset. |
+| [`AssetLocator`](/reference/resources/assetlocator/) | class | The registry of the asset locators, which turns any input into an `Asset`. |
 | [`AudioListenerPosition`](/reference/resources/audiolistenerposition/) | interface | Gives the position of the listener that the sound of placed videos fades with. |
 | [`ClasspathAsset`](/reference/resources/classpathasset/) | class | An asset found in the classpath, such as a file packed in the jar of your application. |
 | [`FileAsset`](/reference/resources/fileasset/) | class | An asset read from a file on disk. |
-| [`FileAssetLocator`](/reference/resources/fileassetlocator/) | class | The built-in locator that turns a File into a FileAsset. |
+| [`FileAssetLocator`](/reference/resources/fileassetlocator/) | class | The built-in locator that turns a `File` into a `FileAsset`. |
 | [`FileCache`](/reference/resources/filecache/) | class | The cache folder of JOID, split into named areas whose entries expire when they go unused. |
 | [`FileCacheArea`](/reference/resources/filecachearea/) | class | One folder of the cache, whose entries are written once by key, read many times, and deleted after a period without use. |
 | [`FileCacheWriter`](/reference/resources/filecachewriter/) | interface | Writes the content of a cache entry into the file it is given. |
 | [`GifResourceAnimationReader`](/reference/resources/gifresourceanimationreader/) | class | Reads the frames of a GIF. |
 | [`GifResourceFormat`](/reference/resources/gifresourceformat/) | class | The built-in format of GIF files, played as animated images. |
 | [`HeifResourceFormat`](/reference/resources/heifresourceformat/) | class | The built-in format that recognizes HEIF and AVIF images, which JOID cannot decode, to fail with a clear message. |
-| [`IAssetLocator`](/reference/resources/iassetlocator/) | interface | Turns one kind of input into an Asset, so that every loader of JOID accepts it. |
-| [`IResourceAnimationReader`](/reference/resources/iresourceanimationreader/) | interface | Reads every frame of an animated image file into a ResourceAnimation. |
-| [`IResourceCache`](/reference/resources/iresourcecache/) | interface | Where a ResourceBuilder keeps the data of its resources by id, so that two loads of the same input share it. |
+| [`IAssetLocator`](/reference/resources/iassetlocator/) | interface | Turns one kind of input into an `Asset`, so that every loader of JOID accepts it. |
+| [`IResourceAnimationReader`](/reference/resources/iresourceanimationreader/) | interface | Reads every frame of an animated image file into a `ResourceAnimation`. |
+| [`IResourceCache`](/reference/resources/iresourcecache/) | interface | Where a `ResourceBuilder` keeps the data of its resources by id, so that two loads of the same input share it. |
 | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | interface | Reads the data of one resource, decodes it on a background thread and sends it to the GPU on the render thread. |
 | [`IResourceFormat`](/reference/resources/iresourceformat/) | interface | Recognizes one file format from its first bytes and creates the decoder that reads it. |
 | [`IResourcePlayback`](/reference/resources/iresourceplayback/) | interface | The playback controls of an animated image or a video, to play, pause, seek and loop it. |
 | [`MemoryResourceCache`](/reference/resources/memoryresourcecache/) | class | The default resource cache, which keeps the data in memory while it is used and for a while after. |
 | [`RasterResourceDecoder`](/reference/resources/rasterresourcedecoder/) | class | Decodes a still image, PNG, JPEG, BMP, still WebP and the other formats of the bundled image readers, into one texture. |
-| [`Resource`](/reference/resources/resource/) | class | An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or DrawResource. |
+| [`Resource`](/reference/resources/resource/) | class | An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or `DrawResource`. |
 | [`ResourceAnimation`](/reference/resources/resourceanimation/) | class | The decoded frames of an animated image, with its size and its play count. |
 | [`ResourceAnimationCanvas`](/reference/resources/resourceanimationcanvas/) | class | Builds the full images of an animation from frames that update only a part of the picture, as GIF, APNG and WebP store them. |
 | [`ResourceAnimationFrame`](/reference/resources/resourceanimationframe/) | class | One full image of an animation and how long it shows. |
 | [`ResourceBuilder`](/reference/resources/resourcebuilder/) | class | Creates resources with shared default settings and a cache that makes two loads of the same input share their data. |
-| [`ResourceData`](/reference/resources/resourcedata/) | class | The shared state of one resource, its decoder, pixels, textures, size and errors, behind every Resource handle on the same input. |
+| [`ResourceData`](/reference/resources/resourcedata/) | class | The shared state of one resource, its decoder, pixels, textures, size and errors, behind every `Resource` handle on the same input. |
 | [`ResourceFormat`](/reference/resources/resourceformat/) | class | The registry of the resource formats, which picks the decoder of a file from its first bytes. |
 | [`ResourceProperties`](/reference/resources/resourceproperties/) | class | The drawing settings of a resource handle, its filtering, its mipmaps and its region. |
-| [`StreamAsset`](/reference/resources/streamasset/) | class | An asset read once from an InputStream and kept in memory, so that it can be read again. |
-| [`StreamAssetLocator`](/reference/resources/streamassetlocator/) | class | The built-in locator that turns an InputStream into a StreamAsset. |
-| [`StringAssetLocator`](/reference/resources/stringassetlocator/) | class | The built-in locator that turns a String into a URL, classpath or file asset. |
+| [`StreamAsset`](/reference/resources/streamasset/) | class | An asset read once from an `InputStream` and kept in memory, so that it can be read again. |
+| [`StreamAssetLocator`](/reference/resources/streamassetlocator/) | class | The built-in locator that turns an `InputStream` into a `StreamAsset`. |
+| [`StringAssetLocator`](/reference/resources/stringassetlocator/) | class | The built-in locator that turns a `String` into a URL, classpath or file asset. |
 | [`SvgResourceFormat`](/reference/resources/svgresourceformat/) | class | The built-in format of SVG files, rendered as vector images at the size they are drawn. |
 | [`UrlAsset`](/reference/resources/urlasset/) | class | An asset read from a URL, over the network or from a file:, jar: or other scheme. |
 | [`VectorResourceDecoder`](/reference/resources/vectorresourcedecoder/) | class | Decodes an SVG document and renders it again at the size it is drawn at, so that it stays sharp. |

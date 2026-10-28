@@ -1,5 +1,5 @@
 ---
-summary: One styled part of a Text, with its value, its TextInfo and its own modifier.
+summary: One styled part of a `Text`, with its value, its `TextInfo` and its own modifier.
 ---
 
 Put several elements in one [[Text]] to mix styles in one run, such as a bold word in a sentence.

@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIDataObject`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataObject.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataObject.java)
 
-The options of @UIData for a running UI, read from the annotation and changed by its setters.
+The options of `@UIData` for a running UI, read from the annotation and changed by its setters.
 
 ## Description
 

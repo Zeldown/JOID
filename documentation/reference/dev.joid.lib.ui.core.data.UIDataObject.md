@@ -1,5 +1,5 @@
 ---
-summary: The options of @UIData for a running UI, read from the annotation and changed by its setters.
+summary: The options of `@UIData` for a running UI, read from the annotation and changed by its setters.
 ---
 [[UI#getData]] returns it.
 Each option has a getter and a setter of the same name, such as `closeable()` and `closeable(boolean)`, and the setter returns the object for chaining; [[UIData]] gives the meaning of each option.

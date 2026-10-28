@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`TextGlyph`](/reference/text/textglyph/)<br/>
 **Package:** `dev.joid.lib.font.effect` · **Module:** `core` · **Source:** [ITextGlyph.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/effect/ITextGlyph.java)
 
-One laid-out glyph as an ITextEffect sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.
+One laid-out glyph as an `ITextEffect` sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change.
 
 ## Description
 

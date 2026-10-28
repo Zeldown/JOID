@@ -20,10 +20,7 @@ The bridge that tells JOID which thread draws and runs the work of other threads
 ## Description
 
 Every entry point of JOID that must run on the render thread goes through [`ThreadUtils.runOnRenderThread`](/reference/utilities/threadutils/#ThreadUtils-method-runOnRenderThread), which calls this bridge.
-This bridge hands the work to the queue of an engine that draws on a thread of its own:
-
-```java file="com/example/backend/EngineThreadBridge.java" region="thread"
-```
+[Write your own when the engine owns the render thread](/build/bridges/thread/#write-your-own-when-the-engine-owns-the-render-thread) hands the work to the queue of an engine that draws on a thread of its own.
 
 ## Learn more
 

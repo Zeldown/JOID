@@ -1,5 +1,5 @@
 ---
-summary: The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and the font it comes from.
+summary: The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face and the font it comes from.
 ---
 
 [[GlyphTextRenderer]] creates one per drawn character, passes it to the text effects, then to its `drawGlyph` hook.

@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIDataPopupObject`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataPopupObject.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataPopupObject.java)
 
-The popup options of @UIDataPopup for a running UI.
+The popup options of `@UIDataPopup` for a running UI.
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-summary: The axis of a rotation in a Transformation, as yaw, pitch and roll components.
+summary: The axis of a rotation in a `Transformation`, as yaw, pitch and roll components.
 ---
 
 `ROLL` turns the drawing in the plane of the screen; `YAW` and `PITCH` turn it in depth.

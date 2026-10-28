@@ -1,5 +1,5 @@
 ---
-summary: The overlay options of @UIDataOverlay for a running UI.
+summary: The overlay options of `@UIDataOverlay` for a running UI.
 ---
 [[UI#getOverlay]] returns it; `active()` and `active(boolean)` read and change whether the UI is an overlay.
 
