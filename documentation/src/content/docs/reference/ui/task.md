@@ -17,7 +17,7 @@ Code that runs once after a delay, or on a period, while it is attached to a UI 
 
 ## Description
 
-A task counts its delay from the moment it is attached, and runs on the render thread when its UI starts to draw, on the first frame after it is due (after the update step).
+A task counts its delay from the moment it is attached, and again each time its node joins a UI; it runs on the render thread when its UI starts to draw, on the first frame after it is due (after the update step).
 A task attached to a node runs while the node belongs to an open UI; a one-shot task detaches itself when it runs.
 A task attached in the constructor of a UI comes back at every opening; one attached in `init()` lasts until the UI closes.
 
@@ -54,7 +54,7 @@ A task attached in the constructor of a UI comes back at every opening; one atta
 | `long` | [getDelay](#Task-method-getDelay)() | Time, in ms, between the attach and the first run. |
 | [`EventBus`](/reference/events/eventbus/) | [getEventBus](#Task-method-getEventBus)() | The listeners of the task. |
 | `long` | [getPeriod](#Task-method-getPeriod)() | Time, in ms, between two runs; negative for a task that runs once. |
-| `long` | [getNextRun](#Task-method-getNextRun)() | Time of the next run, in ms of the clock bridge. |
+| `long` | [getNextRun](#Task-method-getNextRun)() | Time of the next run, in nanoseconds of the clock bridge (`nanoTime()`). |
 | [`UI`](/reference/ui/ui/) | [getUi](#Task-method-getUi)() | The UI the task is attached to, or `null`. |
 | [`Node`](/reference/nodes/node/) | [getNode](#Task-method-getNode)() | The node the task is attached to, or `null`. |
 
@@ -157,7 +157,7 @@ Time, in ms, between two runs; negative for a task that runs once.
 
 `long getNextRun()` 
 
-Time of the next run, in ms of the clock bridge.
+Time of the next run, in nanoseconds of the clock bridge (`nanoTime()`).
 
 <a id="Task-method-getUi"></a>
 

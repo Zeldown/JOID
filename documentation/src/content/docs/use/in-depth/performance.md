@@ -52,7 +52,7 @@ The rounded corner, circle, border and blur [effects](/use/learn/style-and-motio
 Each pass costs a draw of the visible area of the node, and a blur costs two passes, one horizontal and one vertical.
 Shadows, masks and transforms draw in place and cost much less.
 
-The effects draw into targets borrowed from the [[FrameBufferPool]], reused from frame to frame and released 5 seconds after their last use ([Borrow a temporary target](/use/learn/going-further/framebuffers-and-models/#borrow-a-temporary-target)).
+The effects draw into targets borrowed from the [[FrameBufferPool]], reused from frame to frame, released 5 seconds after their last use and shrunk when 5 seconds go by without a draw at their full size ([Borrow a temporary target](/use/learn/going-further/framebuffers-and-models/#borrow-a-temporary-target)).
 
 ## Once: resources, fonts and shaders
 
@@ -69,7 +69,7 @@ A shader compiles the first time it draws, so an effect or a shader that appears
 |---|---|---|
 | A resource (image, animated image, video, SVG) | Width × height × 4 bytes, a third more with mipmaps | JOID, once no object refers to it and the shared cache dropped it, 5 minutes after its last use; or you, at once, with [[Resource#clear]] |
 | A font face | 16 MB (a 2048 × 2048 atlas) | JOID, with the font |
-| The off-screen images of effects | One set per level of nested effects, as large as the largest visible area that used it | JOID, 5 seconds after their last use |
+| The off-screen images of effects | One set per level of nested effects, as large as the largest visible area that used it in the last 5 seconds | JOID, 5 seconds after their last use |
 | A [[FrameBuffer]] you create | Width × height × 4 bytes, plus depth | You, with [[FrameBuffer#delete]] |
 
 JOID releases what the garbage collector reclaims on the render thread, before the next frame draws.

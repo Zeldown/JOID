@@ -3,7 +3,7 @@ summary: Lends offscreen framebuffers by owner and nesting depth, grows them whe
 ---
 
 The effects, the shader passes and [[DrawRaster]] borrow their framebuffers here, so that a size that changes on every frame does not create one each time.
-A framebuffer grows to the next power of two of the size asked, and is freed after 5 seconds without use.
+A framebuffer grows to the next power of two of the size asked, and is freed after 5 seconds without use, or when no draw of the last 5 seconds needed its full size: the next draw creates it again at the size it needs.
 Each draw of a UI bridge calls `releaseUnused()`, so a host that draws through the UI bridge has nothing to call.
 
 Learn: [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/).
@@ -19,4 +19,4 @@ Frees every pooled framebuffer, for example before the render bridge is destroye
 
 ## releaseUnused()
 
-Frees the framebuffers that no `allocate` asked for in the last 5 seconds.
+Frees the framebuffers that no `allocate` asked for in the last 5 seconds, and those larger than the power of two that the largest `allocate` of the last 5 seconds needed.

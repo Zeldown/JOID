@@ -19,7 +19,7 @@ Shows what another renderer draws inside a UI, through an offscreen framebuffer 
 
 Reach it through `DrawUtils.RASTER`.
 The framebuffer has the size of the area in screen pixels, at most 4096 on each side, so the result stays sharp at every interface scale.
-JOID keeps one framebuffer per nesting depth, grows it when an area does not fit and frees it after 5 seconds without use.
+JOID keeps one framebuffer per nesting depth, grows it when an area does not fit, shrinks it when the areas of the last 5 seconds fit a smaller one, and frees it after 5 seconds without use.
 
 ## Learn more
 
