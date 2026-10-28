@@ -3,7 +3,7 @@
 # crop interactivity-reread 540 320 840 440
 # still interactivity-reread 109
 # crop interactivity-types 540 320 840 370
-# still interactivity-types 90
+# still interactivity-types 96
 ui com.example.interactivity.signals.CounterUI
 move 1100 700
 # film interactivity-counter
@@ -45,18 +45,26 @@ ui com.example.interactivity.signals.TypesUI
 move 1150 610
 # film interactivity-types
 wait 300
-moveto 760 420 500
-wait 200
+moveto 760 420 400
+wait 150
 press LEFT
 release LEFT
-wait 800
-moveto 1000 420 400
-wait 200
+wait 600
+moveto 1000 420 300
+wait 150
 press LEFT
 release LEFT
-wait 800
+wait 600
 press LEFT
 release LEFT
-wait 900
-moveto 1150 610 500
+wait 700
+moveto 1200 420 300
+wait 150
+press LEFT
+release LEFT
+wait 700
+press LEFT
+release LEFT
+wait 700
+moveto 1150 610 400
 wait 300
