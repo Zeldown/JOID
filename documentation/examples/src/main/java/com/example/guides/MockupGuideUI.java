@@ -21,6 +21,16 @@ import dev.joid.lib.utils.align.Align;
 
 public class MockupGuideUI extends UI {
 
+	// #region colors
+	private static final Color TEXT      = Color.decode("#E7E9EE").lock();
+	private static final Color MUTED     = Color.decode("#8B93A3").lock();
+	private static final Color ACCENT    = Color.decode("#5B8CFF").lock();
+	private static final Color ELEMENT   = Color.decode("#262B35").lock();
+	private static final Color SURFACE   = Color.decode("#171A21").lock();
+	private static final Color SHADOW    = Color.decode("#00000099").lock();
+	private static final Color ON_ACCENT = Color.decode("#0E1014").lock();
+	// #endregion
+
 	@Override
 	public void init() {
 		// #region flag
@@ -31,28 +41,28 @@ public class MockupGuideUI extends UI {
 		.create(ExampleFont.REGULAR, 32F)
 		.weight(FontWeight.BOLD)
 		.letterSpacing(-0.02F)
-		.color(Color.decode("#E7E9EE"));
+		.color(MockupGuideUI.TEXT);
 		final TextInfo role = TextInfo
 		.create(ExampleFont.REGULAR, 22F)
 		.lineHeight(1.4F)
-		.color(Color.decode("#8B93A3"));
+		.color(MockupGuideUI.MUTED);
 		// #endregion
 
 		// #region card
 		RectNode
 		.create(660, 290, 600, 500)
-		.color(Color.decode("#171A21"))
+		.color(MockupGuideUI.SURFACE)
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(ShadowNodeEffect.create(Color.decode("#00000099"), 30F).offsetY(8D))
+		.effect(ShadowNodeEffect.create(MockupGuideUI.SHADOW, 30F).offsetY(8D))
 		.body(card -> {
-			CircleNode.create(240, 60, 120).color(Color.decode("#262B35")).attach(card);
+			CircleNode.create(240, 60, 120).color(MockupGuideUI.ELEMENT).attach(card);
 			TextNode.create(300, 230).text(Text.create("Ada Lovelace", name)).anchorX(Align.CENTER).attach(card);
 			TextNode.create(300, 290).text(Text.create("Analyst", role)).anchorX(Align.CENTER).attach(card);
 			RectNode
 			.create(200, 380, 200, 64)
-			.color(Color.decode("#5B8CFF"))
+			.color(MockupGuideUI.ACCENT)
 			.effect(RoundedNodeEffect.create(32F))
-			.label(Text.create("Follow", role.withColor(Color.decode("#0E1014"))))
+			.label(Text.create("Follow", role.withColor(MockupGuideUI.ON_ACCENT)))
 			.attach(card);
 		})
 		.attach(this);

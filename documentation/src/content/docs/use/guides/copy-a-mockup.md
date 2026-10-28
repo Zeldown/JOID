@@ -39,7 +39,12 @@ When the frame of the mockup has the same size, every value of the mockup is a v
 
 Give the position and the size of each layer to `create(x, y, width, height)`.
 The position of a child is relative to its parent: subtract the position of the parent layer.
-A hexadecimal color goes through [[Color#decode]], a corner radius becomes a [[RoundedNodeEffect]], and a shadow becomes a [[ShadowNodeEffect]] with the same color, blur and offset:
+A hexadecimal color goes through [[Color#decode]], in a constant of the UI:
+
+```java file="com/example/guides/MockupGuideUI.java" region="colors"
+```
+
+A corner radius becomes a [[RoundedNodeEffect]], and a shadow becomes a [[ShadowNodeEffect]] with the same color, blur and offset:
 
 ```java file="com/example/guides/MockupGuideUI.java" region="card"
 ```

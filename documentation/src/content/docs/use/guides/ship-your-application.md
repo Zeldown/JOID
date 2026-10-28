@@ -47,9 +47,10 @@ The data folder defaults to `joid` in the working directory, which a launcher or
 Set it to a folder of the user on the backend, before `register()`:
 
 ```java fragment
-final Lwjgl3Backend backend = Lwjgl3Backend.create(window)
-	.dataDir(new File(System.getProperty("user.home"), ".my-application"))
-	.register();
+final Lwjgl3Backend backend = Lwjgl3Backend
+.create(window)
+.dataDir(new File(System.getProperty("user.home"), ".my-application"))
+.register();
 ```
 
 The cache folder already defaults to the cache folder of the system ([Where JOID stores files](/use/learn/running/files/)).
