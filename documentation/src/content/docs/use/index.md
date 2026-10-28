@@ -24,7 +24,7 @@ The button reads the signal `notifications`, so its color, its label and the sty
 </figcaption>
 </figure>
 
-The dotted background, the pointer, its click rings and the key badges of the captures come from the capture tool: your window has none of them and clears to its window background, black by default ([Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)).
+The dotted stage under each UI, the pointer, its click rings and the key badges of the captures come from the capture tool: your window has none of them and clears to its window background, black by default ([Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)).
 
 `ExampleFont` loads the font of the examples ([Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation)).
 
