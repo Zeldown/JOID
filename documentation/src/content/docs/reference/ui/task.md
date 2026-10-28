@@ -17,9 +17,7 @@ Code that runs once after a delay, or on a period, while it is attached to a UI 
 
 ## Description
 
-A task counts its delay from the moment it is attached, and again each time its node joins a UI; it runs on the render thread when its UI starts to draw, on the first frame after it is due (after the update step).
-A task attached to a node runs while the node belongs to an open UI; a one-shot task detaches itself when it runs.
-A task attached in the constructor of a UI comes back at every opening; one attached in `init()` lasts until the UI closes.
+Runs its listeners on the render thread while its UI or its node is drawn ([Know how long a task lives](/use/learn/state/tasks/#know-how-long-a-task-lives)).
 
 ## Learn more
 

@@ -18,7 +18,7 @@ Translates the place of a letter or punctuation key into the key that the keyboa
 ## Description
 
 A window library reports a key by its place on a US QWERTY keyboard: on a French AZERTY keyboard, the key that types `a` arrives as [`Key.Q`](/reference/input/key/#Key-value-Q).
-A window bridge gives each key press two keys, its place and the key that the layout names; a `KeyLayout` computes the second from the first.
+The input forwarder of a backend gives each key press two keys, its place and the key that the layout names ([Input forwarding](/build/input/#required)); a `KeyLayout` computes the second from the first.
 Only the letters `A` to `Z` and the punctuation keys from [`Key.APOSTROPHE`](/reference/input/key/#Key-value-APOSTROPHE) to [`Key.GRAVE_ACCENT`](/reference/input/key/#Key-value-GRAVE_ACCENT) depend on the layout; every other key passes through unchanged.
 
 ## Learn more

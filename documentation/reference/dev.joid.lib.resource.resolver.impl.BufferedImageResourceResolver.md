@@ -14,4 +14,4 @@ If `true`, the input is a `BufferedImage`.
 
 ## resolve(ResourceBuilder,Object)
 
-Returns the resource of the image, decoded once; the same image gives the same resource while it lives.
+Returns a resource of the image; while the image lives, every call shares the same decoded data, each in its own resource.

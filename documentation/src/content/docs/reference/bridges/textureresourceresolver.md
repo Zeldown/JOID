@@ -33,7 +33,7 @@ The resolver that turns a texture of the render bridge, owned or borrowed, into 
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [supports](#TextureResourceResolver-method-supports)(Object input) | If `true`, the input is an [`ITexture`](/reference/bridges/itexture/). |
-| [`Resource`](/reference/resources/resource/) | [resolve](#TextureResourceResolver-method-resolve)(ResourceBuilder builder, Object input) | Returns the resource that shows the texture as it is, without decoding; the same texture gives the same resource while it lives. |
+| [`Resource`](/reference/resources/resource/) | [resolve](#TextureResourceResolver-method-resolve)(ResourceBuilder builder, Object input) | Returns a resource that shows the texture as it is, without decoding; while the texture lives, every call shares the same data, each in its own resource. |
 
 ## Creation details
 
@@ -61,7 +61,7 @@ If `true`, the input is an [`ITexture`](/reference/bridges/itexture/).
 
 `Resource resolve(ResourceBuilder builder, Object input)` 
 
-Returns the resource that shows the texture as it is, without decoding; the same texture gives the same resource while it lives.
+Returns a resource that shows the texture as it is, without decoding; while the texture lives, every call shares the same data, each in its own resource.
 
 ---
 
