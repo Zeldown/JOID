@@ -76,7 +76,7 @@ A locked node shows where it is, what listens to it and what it holds: walk down
 
 <figure>
 
-![The middle of the canvas of the counter, crossed by two blue lines through the center of the canvas and by four blue lines from the pointer to the four edges, each labelled with its length in pixels; as the pointer moves, the lines and the four lengths follow it; a right click turns the grid red, a second one blue again](/captures/start-dev-grid.webp)
+![The middle of the canvas of the counter, drawn at twice its size, crossed by two blue lines through the center of the canvas and by four blue lines from the pointer to the four edges; each line is labelled with its length in pixels halfway along it, and the labels in view read 1070px to the right and 630px down; the pointer moves down and right, the lines follow it and the labels now in view read 1080px to the left and 640px up; a right click turns the grid red, a second one blue again](/captures/start-dev-grid.webp)
 
 <figcaption>
 The grid measures the canvas from the pointer: copy a position from a mockup and check it here, in the color that stands out on your UI.

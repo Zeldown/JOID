@@ -1,27 +1,27 @@
-# crop start-dev-grid 360 200 1200 680
-# still start-dev-grid 80
+# crop start-dev-grid 0 0 960 540
+# still start-dev-grid 135
 dev true
+resize 960 540
+scale 2
 ui com.example.start.CounterUI
 key F3
 wait 100
 key I
 wait 100
 key G
-move 900 450
+move 370 180
 wait 2000
 # film start-dev-grid 60
-wait 300
-moveto 1100 630 800
-wait 300
-moveto 820 470 700
-wait 200
+wait 1000
+moveto 600 370 900
+wait 400
 press RIGHT
 release RIGHT
 wait 600
 press RIGHT
 release RIGHT
+wait 500
+moveto 370 180 900
 wait 400
-moveto 900 450 400
-wait 200
 cut
 dev false
