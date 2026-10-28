@@ -36,7 +36,7 @@ Returns the part of the content that the node shows on the axis of the bar, from
 
 ## getProgress()
 
-Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the place of the pointer.
+Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the scroll that the drag asked for, so the thumb stays in place when `beforeScroll` refuses it.
 
 ## getThumbLength()
 

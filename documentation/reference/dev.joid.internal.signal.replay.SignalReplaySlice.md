@@ -4,9 +4,9 @@ summary: Instructions of the bytecode that compute one argument of a setter call
 
 Learn: [How signals work](/use/in-depth/how-signals-work/).
 
-## of(SignalReplayMethod,int,int,Type)
+## of(SignalReplayMethod,int,int,Type,List)
 
-Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`.
+Returns the slice of `method` from `start` to `end` (excluded), whose value has the type `type`; `followingList` holds the slices of the arguments that the same call evaluates after this one.
 
 ## hasLambda()
 
@@ -23,6 +23,10 @@ If `true`, the slice only loads a parameter of its method, boxed or not.
 ## isEquivalent(SignalReplaySlice)
 
 If `true`, `slice` has the same type and the same instructions.
+
+## encloses(SignalReplaySlice)
+
+If `true`, `slice` lies strictly inside this slice, in the same method.
 
 ## convert(Object)
 
@@ -51,6 +55,10 @@ Returns the analysed method.
 ## getSignalNameList()
 
 Returns the names of the signals read, for the warnings.
+
+## getFollowingList()
+
+Returns the slices of the arguments that the call evaluates after this one.
 
 ## getSignalCount()
 

@@ -17,6 +17,10 @@ Returns a site that remembers why its line cannot be followed.
 
 If `true`, the call only passes a parameter of its method on, so the replay looks for the expression one frame higher in the stack.
 
+## encloses(SignalReplaySlice)
+
+If `true`, one of the slices of the site encloses `slice`.
+
 ## getSliceList()
 
 Returns the slices of the arguments.

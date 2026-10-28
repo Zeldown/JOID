@@ -18,7 +18,7 @@ Tests register a [[ManualClockBridge]], which moves only when they call `advance
 
 | Member | What it returns |
 |---|---|
-| [[IClockBridge#currentTimeMillis]] | The current time, in milliseconds: JOID reads it as a date, or as the phase of a cycle such as `Color.RAINBOW()` and the blink of a text cursor. |
+| [[IClockBridge#currentTimeMillis]] | The current time, in milliseconds: JOID reads it as a date, or as the phase of a cycle such as [[Color#RAINBOW]] and the blink of a text cursor. |
 | [[IClockBridge#nanoTime]] | The current time in nanoseconds, from any origin: JOID measures every duration as a difference of it. |
 
 ## Guarantees

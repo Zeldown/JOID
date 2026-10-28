@@ -44,7 +44,7 @@ A trap that the context lacks is skipped.
 | `void` | [drawsThroughTheAlphaTestSetBeforeJoid](#StateGuardContractSuite-method-drawsThroughTheAlphaTestSetBeforeJoid)() | Checks the frame with an alpha test left on by the host. |
 | `void` | [drawsWhateverTheReadFrameBufferSetBeforeJoid](#StateGuardContractSuite-method-drawsWhateverTheReadFrameBufferSetBeforeJoid)() | Checks the frame with a read framebuffer bound by the host. |
 | `void` | [rastersANativeDrawingUprightAtItsPixelSize](#StateGuardContractSuite-method-rastersANativeDrawingUprightAtItsPixelSize)() | Checks that a drawing of the host inside `DrawUtils.RASTER` lands upright at the pixel size of its area. |
-| `void` | [givesTheHostItsStateBackAroundARasterNestedInItsDrawing](#StateGuardContractSuite-method-givesTheHostItsStateBackAroundARasterNestedInItsDrawing)() | Checks that a raster nested in a drawing of the host gives the host its state back. |
+| `void` | [givesTheHostItsStateBackAroundARasterNestedInItsDrawing](#StateGuardContractSuite-method-givesTheHostItsStateBackAroundARasterNestedInItsDrawing)() | Checks that a raster nested in the drawing of another raster gives that drawing its state back, and that the outer raster gives the host its state back. |
 
 ### Actions
 
@@ -131,7 +131,7 @@ Checks that a drawing of the host inside `DrawUtils.RASTER` lands upright at the
 
 `void givesTheHostItsStateBackAroundARasterNestedInItsDrawing()` 
 
-Checks that a raster nested in a drawing of the host gives the host its state back.
+Checks that a raster nested in the drawing of another raster gives that drawing its state back, and that the outer raster gives the host its state back.
 
 <a id="StateGuardContractSuite-method-startBackend"></a>
 
