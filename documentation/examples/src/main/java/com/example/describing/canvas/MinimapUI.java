@@ -11,21 +11,11 @@ import dev.joid.lib.utils.align.Align;
 @UIData(anchorX = Align.END, anchorY = Align.START)
 public class MinimapUI extends UI {
 
-	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
 	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
-		RectNode
-		.create(0, 0, 0, 0)
-		.color(MinimapUI.ELEMENT)
-		.x(() -> super.getViewX())
-		.y(() -> super.getViewY())
-		.width(() -> super.getViewWidth())
-		.height(() -> super.getViewHeight())
-		.attach(this);
-
 		RectNode
 		.create(1560, 40, 320, 320)
 		.color(MinimapUI.SURFACE)
