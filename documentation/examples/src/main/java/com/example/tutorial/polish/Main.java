@@ -9,7 +9,6 @@ import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
 
 public final class Main {
@@ -32,7 +31,7 @@ public final class Main {
 		GL.createCapabilities();
 		final Lwjgl3Backend backend = Lwjgl3Backend.create(window).register();
 		final WindowUIBridge bridge = BridgeHandler.UI.getBridge(WindowUIBridge.class);
-		bridge.hoverInfo(TextInfo.create(Theme.FONT, 24F).color(Color.WHITE));
+		bridge.hoverInfo(TextInfo.create(Theme.FONT, 24F).color(Theme.TEXT));
 
 		JOID.open(new MenuUI());
 		while (!GLFW.glfwWindowShouldClose(window) && JOID.isOpen(MenuUI.class)) {

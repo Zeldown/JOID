@@ -11,7 +11,7 @@ Each lesson starts from a program that runs, points at what it lacks, and closes
 
 <figure>
 
-![The main menu of Starfall at the end of the tutorial: the title and its tagline, three grey buttons Play, Settings and Quit, the line of the settings, and a white profile panel with rounded corners and a soft shadow that shows three rounded statistic cards and the three rounds played](/captures/tutorial-overview.webp)
+![The main menu of Starfall at the end of the tutorial: the title and its tagline, three dark grey buttons Play, Settings and Quit, the line of the settings, and a dark profile panel with rounded corners and a soft shadow that shows three rounded statistic cards and the three rounds played](/captures/tutorial-overview.webp)
 
 <figcaption>
 Starfall at the end of the tutorial: every part of it is a node you write yourself.

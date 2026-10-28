@@ -6,7 +6,6 @@ import java.util.Random;
 import dev.joid.lib.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
@@ -17,7 +16,6 @@ import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
@@ -28,7 +26,6 @@ import dev.joid.lib.ui.node.property.WatchProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class MenuUI extends UI {
 
 	// #region fields
@@ -40,13 +37,13 @@ public class MenuUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(Theme.FONT, 120F).weight(FontWeight.BOLD).color(Theme.INK);
-		final TextInfo tagline = TextInfo.create(Theme.FONT, 36F).color(Theme.INK);
-		final TextInfo label = TextInfo.create(Theme.FONT, 36F).color(Color.WHITE);
-		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.INK);
-		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.INK);
-		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.INK);
-		final TextInfo status = TextInfo.create(Theme.FONT, 32F).weight(FontWeight.BOLD).color(Theme.DARK);
+		final TextInfo title = TextInfo.create(Theme.FONT, 120F).weight(FontWeight.BOLD).color(Theme.TEXT);
+		final TextInfo tagline = TextInfo.create(Theme.FONT, 36F).color(Theme.TEXT);
+		final TextInfo label = TextInfo.create(Theme.FONT, 36F).color(Theme.TEXT);
+		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.TEXT);
+		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.TEXT);
+		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.TEXT);
+		final TextInfo status = TextInfo.create(Theme.FONT, 32F).weight(FontWeight.BOLD).color(Theme.TEXT);
 		// #region store
 		final SettingsStore settings = super.useStore(SettingsStore.class, SettingsStore::new);
 		// #endregion
@@ -70,8 +67,8 @@ public class MenuUI extends UI {
 			// #region play
 			RectNode
 			.create(0, 0, 360, 80)
-			.color(Theme.INK)
-			.hoveredColor(Theme.DARK)
+			.color(Theme.ELEMENT)
+			.hoveredColor(Theme.HOVER)
 			.cursor(Cursor.POINTER)
 			.effect(RoundedNodeEffect.create(16F))
 			.onClick(event -> this.rounds.add(this.random.nextInt(900) + 100))
@@ -80,8 +77,8 @@ public class MenuUI extends UI {
 			// #endregion
 			RectNode
 			.create(0, 0, 360, 80)
-			.color(Theme.INK)
-			.hoveredColor(Theme.DARK)
+			.color(Theme.ELEMENT)
+			.hoveredColor(Theme.HOVER)
 			.cursor(Cursor.POINTER)
 			.effect(RoundedNodeEffect.create(16F))
 			.onClick(event -> JOID.open(new SettingsUI()))
@@ -89,8 +86,8 @@ public class MenuUI extends UI {
 			.attach(flex);
 			RectNode
 			.create(0, 0, 360, 80)
-			.color(Theme.INK)
-			.hoveredColor(Theme.DARK)
+			.color(Theme.ELEMENT)
+			.hoveredColor(Theme.HOVER)
 			.cursor(Cursor.POINTER)
 			.effect(RoundedNodeEffect.create(16F))
 			.onClick(event -> JOID.close(this))
@@ -112,9 +109,9 @@ public class MenuUI extends UI {
 		// #region panel
 		RectNode
 		.create(760, 160, 1000, 760)
-		.color(Color.WHITE)
+		.color(Theme.SURFACE)
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(ShadowNodeEffect.create(Theme.SHADE, 40F).offsetY(12D))
+		.effect(ShadowNodeEffect.create(Theme.SHADOW, 40F).offsetY(12D))
 		// #endregion
 		// #region slide
 		.y(() -> 160D + 80D * (1D - intro.get()))
@@ -128,7 +125,7 @@ public class MenuUI extends UI {
 			.body(grid -> {
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.effect(RoundedNodeEffect.create(16F))
 				.hover(() -> "Rounds you played")
 				.body(card -> {
@@ -138,7 +135,7 @@ public class MenuUI extends UI {
 				.attach(grid);
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.effect(RoundedNodeEffect.create(16F))
 				.hover(() -> "Your highest score")
 				.body(card -> {
@@ -148,7 +145,7 @@ public class MenuUI extends UI {
 				.attach(grid);
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.effect(RoundedNodeEffect.create(16F))
 				.hover(() -> "Every point you scored")
 				.body(card -> {
@@ -175,7 +172,7 @@ public class MenuUI extends UI {
 					final String[] round = {"Round " + (index + 1), String.valueOf(list.get(index))};
 					RectNode
 					.create(0, 0, 904, 72)
-					.color(Theme.PAPER)
+					.color(Theme.ELEMENT)
 					.effect(RoundedNodeEffect.create(12F))
 					.body(row -> {
 						TextNode

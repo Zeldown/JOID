@@ -6,11 +6,11 @@ sidebar:
   order: 4
 ---
 
-In this lesson the menu reacts: buttons darken under the pointer, Settings opens a popup, S opens it from the keyboard, the statistic cards explain themselves, and Quit ends the program.
+In this lesson the menu reacts: buttons light up under the pointer, Settings opens a popup, S opens it from the keyboard, the statistic cards explain themselves, and Quit ends the program.
 
 <figure>
 
-![The Starfall menu: the pointer moves onto the Settings button, which darkens, and clicks it; a settings popup opens over the darkened menu, a white card titled Settings with the lines Music: on and Volume: 80 % and a Close button, which the pointer clicks to close it](/captures/tutorial-interaction-popup.webp)
+![The left of the Starfall menu: the pointer moves onto the Settings button, which lights up, and clicks it; a settings popup opens over the darkened menu, a dark card titled Settings with the lines Music: on and Volume: 80 % and a Close button, which the pointer clicks to close it](/captures/tutorial-interaction-popup.webp)
 
 <figcaption>
 The result of this lesson: a click on Settings opens a popup above the menu.
@@ -20,17 +20,17 @@ The result of this lesson: a click on Settings opens a popup above the menu.
 ## Starting point
 
 The program of [the previous lesson](/use/tutorial/layout/) shows the whole menu, but nothing reacts.
-The buttons stay grey under the pointer, a click does nothing, and the only way out is to close the window.
+The buttons keep their color under the pointer, a click does nothing, and the only way out is to close the window.
 
 ## 1. Write the settings popup
 
-Add a darker grey, `DARK`, to the palette of `Theme`, for the buttons under the pointer:
+Add a lighter grey, `HOVER`, to the palette of `Theme`, for the buttons under the pointer:
 
-```java file="com/example/tutorial/interaction/Theme.java" title="Theme.java" ins={15}
+```java file="com/example/tutorial/interaction/Theme.java" title="Theme.java" ins={14}
 ```
 
 Settings opens a second UI above the menu.
-The annotation [[UIDataPopup]], `@UIDataPopup(active = true)`, makes `SettingsUI` a popup, and the option `background = true` of [[UIData]] darkens the menu behind it:
+The annotation [[UIDataPopup]], `@UIDataPopup(active = true)`, makes `SettingsUI` a popup, and the option `background = true` of [[UIData]] darkens the menu behind it with a veil, here black at 50 % opacity (`backgroundColor = "#00000080"`):
 
 ```java file="com/example/tutorial/interaction/SettingsUI.java" title="SettingsUI.java"
 ```
@@ -47,7 +47,7 @@ Then give Settings an `onClick` that opens the popup, and Quit one that closes t
 ```
 
 **Run it.**
-Hover a button: it darkens.
+Hover a button: it lights up.
 Click Settings: the popup grows into view over the darkened menu.
 Click Close or press Escape: it shrinks away and the menu is back.
 
@@ -95,7 +95,7 @@ A tooltip follows the pointer while it stays over the card.
 Quit closes the menu, but the loop of `Main` keeps running on an empty window.
 Stop the loop when no menu is open anymore:
 
-```java file="com/example/tutorial/interaction/Main.java" title="Main.java" ins={10-13,34-35,38}
+```java file="com/example/tutorial/interaction/Main.java" title="Main.java" ins={10-12,33-34,37}
 ```
 
 The highlighted lines are every change to `Main` in this lesson, the tooltip style of step 4 included.

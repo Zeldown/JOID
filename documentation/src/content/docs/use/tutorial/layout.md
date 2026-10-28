@@ -10,7 +10,7 @@ In this lesson a layout places the menu buttons for you, then you build the prof
 
 <figure>
 
-![A white panel titled Profile with three light grey cards Games 3, Best 640 and Total 1370, and a list of three rounds under the heading Recent rounds](/captures/tutorial-layout.webp)
+![A dark panel titled Profile with three dark grey cards Games 3, Best 640 and Total 1370, and a list of three rounds under the heading Recent rounds](/captures/tutorial-layout.webp)
 
 <figcaption>
 The result of this lesson: no position inside the column, the grid or the list is computed by hand.
@@ -38,9 +38,9 @@ The menu looks the same as before, but you can insert a button anywhere by addin
 
 ## 2. Add the profile panel
 
-Add a light grey, `PAPER`, to the palette of `Theme`, for the cards and the rows:
+Add a darker color, `SURFACE`, to the palette of `Theme`, for the panel; its cards and its rows take the `ELEMENT` of the buttons:
 
-```java file="com/example/tutorial/layout/Theme.java" title="Theme.java" ins={15}
+```java file="com/example/tutorial/layout/Theme.java" title="Theme.java" ins={16}
 ```
 
 The panel needs three more styles: a heading, a caption and a large value.
@@ -49,7 +49,7 @@ Declare them at the top of `init()`, with the other styles:
 ```java file="com/example/tutorial/layout/MenuUI.java" region="styles"
 ```
 
-The panel is a white rectangle on the right half of the canvas.
+The panel is a rectangle in `SURFACE` on the right half of the canvas.
 Add it after the column:
 
 ```java file="com/example/tutorial/layout/MenuUI.java" region="panel"

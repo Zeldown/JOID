@@ -10,7 +10,7 @@ In this lesson you create the Starfall project and open a window that shows the 
 
 <figure>
 
-![The word Starfall in large bold grey letters at the center of a light grey background](/captures/tutorial-setup.webp)
+![The word Starfall in large bold light grey letters at the center of a dark background](/captures/tutorial-setup.webp)
 
 <figcaption>
 The result of this lesson: one UI with one text node.
@@ -37,7 +37,7 @@ application {
 ```
 
 `MenuUI` is the main menu.
-For now it only fills the window behind it with a light grey, with the annotation [[UIData]]:
+For now it is empty: a UI draws nothing by itself.
 
 ```java file="com/example/tutorial/window/MenuUI.java" title="MenuUI.java"
 ```
@@ -49,8 +49,8 @@ Leave out the call to `closeAll()` for now: lesson 6 brings it back with its rea
 ```
 
 **Run it** with `gradle run`.
-You should see a light grey window.
-Press Escape: the menu closes and the window turns black, because no UI is open anymore.
+You should see a black window: the menu is open, but it has no node yet.
+Press Escape: the menu closes, and the window stays black, because no UI is open anymore.
 
 ## 2. Show the title
 
@@ -68,7 +68,7 @@ With another family, keep the folder and change the names in `Theme`.
 
 The menu now shows the title at the center of the canvas:
 
-```java file="com/example/tutorial/setup/MenuUI.java" title="MenuUI.java" ins={3-5,8-9,15-16,18-23}
+```java file="com/example/tutorial/setup/MenuUI.java" title="MenuUI.java" ins={3-5,7-8,13-14,16-21}
 ```
 
 - `init()` creates the nodes of the UI; `attach(this)` adds the text to it.
@@ -76,7 +76,7 @@ The menu now shows the title at the center of the canvas:
 - (960, 540) is the center of the 1920 × 1080 design canvas, and [[Align]]`.CENTER`, given to `anchor(...)`, puts the center of the text on that point.
 
 **Run it.**
-You should see the title in bold grey at the center of the window.
+You should see the title in bold light grey at the center of the window.
 Resize the window: the title stays centered and scales with it.
 If the run stops with an `ExceptionInInitializerError` in `Theme`, check the folder and the names of the font files.
 

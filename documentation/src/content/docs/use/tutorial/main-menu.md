@@ -10,7 +10,7 @@ In this lesson you move the title to the top-left corner and add the three butto
 
 <figure>
 
-![The Starfall title and the tagline Catch the falling stars at the top left of a light grey window, above three grey buttons labelled Play, Settings and Quit](/captures/tutorial-menu.webp)
+![The Starfall title and the tagline Catch the falling stars at the top left of a dark window, above three dark grey buttons labelled Play, Settings and Quit](/captures/tutorial-menu.webp)
 
 <figcaption>
 The result of this lesson: each button is a rectangle with a label.
@@ -50,11 +50,11 @@ Add it after the tagline:
 ```
 
 - [[RectNode]]`.create(160, 420, 360, 80)` creates a 360 × 80 rectangle with its top-left corner at (160, 420).
-- `color(...)` fills it with the grey of `Theme`.
+- `color(...)` fills it with `ELEMENT`, the dark grey of `Theme`.
 - [[Node#label]] draws a text centered on the node, so the button needs no extra node for its text.
 
 **Run it.**
-You should see a grey Play button under the tagline.
+You should see a dark grey Play button under the tagline.
 
 ## 3. Add Settings and Quit
 
@@ -64,7 +64,7 @@ Copy the button twice, 100 design pixels lower each time:
 ```
 
 **Run it.**
-You should see the title, the tagline and three grey buttons in a column on the left.
+You should see the title, the tagline and three dark grey buttons in a column on the left.
 
 Each button is placed by hand: to insert a button between two others, you would move every button below it.
 The right half of the window is empty, and the buttons do nothing yet.

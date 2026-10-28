@@ -1,29 +1,26 @@
 package com.example.tutorial.layout;
 
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class MenuUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(Theme.FONT, 120F).weight(FontWeight.BOLD).color(Theme.INK);
-		final TextInfo tagline = TextInfo.create(Theme.FONT, 36F).color(Theme.INK);
-		final TextInfo label = TextInfo.create(Theme.FONT, 36F).color(Color.WHITE);
+		final TextInfo title = TextInfo.create(Theme.FONT, 120F).weight(FontWeight.BOLD).color(Theme.TEXT);
+		final TextInfo tagline = TextInfo.create(Theme.FONT, 36F).color(Theme.TEXT);
+		final TextInfo label = TextInfo.create(Theme.FONT, 36F).color(Theme.TEXT);
 		// #region styles
-		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.INK);
-		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.INK);
-		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.INK);
+		final TextInfo heading = TextInfo.create(Theme.FONT, 40F).weight(FontWeight.BOLD).color(Theme.TEXT);
+		final TextInfo caption = TextInfo.create(Theme.FONT, 26F).color(Theme.TEXT);
+		final TextInfo value = TextInfo.create(Theme.FONT, 56F).weight(FontWeight.BOLD).color(Theme.TEXT);
 		// #endregion
 
 		TextNode.create(160, 160).text(Text.create("Starfall", title)).attach(this);
@@ -35,9 +32,9 @@ public class MenuUI extends UI {
 		.vertical(160, 420, 360)
 		.margin(20D)
 		.body(flex -> {
-			RectNode.create(0, 0, 360, 80).color(Theme.INK).label(Text.create("Play", label)).attach(flex);
-			RectNode.create(0, 0, 360, 80).color(Theme.INK).label(Text.create("Settings", label)).attach(flex);
-			RectNode.create(0, 0, 360, 80).color(Theme.INK).label(Text.create("Quit", label)).attach(flex);
+			RectNode.create(0, 0, 360, 80).color(Theme.ELEMENT).label(Text.create("Play", label)).attach(flex);
+			RectNode.create(0, 0, 360, 80).color(Theme.ELEMENT).label(Text.create("Settings", label)).attach(flex);
+			RectNode.create(0, 0, 360, 80).color(Theme.ELEMENT).label(Text.create("Quit", label)).attach(flex);
 		})
 		.attach(this);
 		// #endregion
@@ -45,7 +42,7 @@ public class MenuUI extends UI {
 		// #region panel
 		RectNode
 		.create(760, 160, 1000, 760)
-		.color(Color.WHITE)
+		.color(Theme.SURFACE)
 		.body(panel -> {
 			TextNode.create(48, 40).text(Text.create("Profile", heading)).attach(panel);
 			// #region grid
@@ -55,7 +52,7 @@ public class MenuUI extends UI {
 			.body(grid -> {
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.body(card -> {
 					TextNode.create(24, 24).text(Text.create("Games", caption)).attach(card);
 					TextNode.create(24, 64).text(Text.create("3", value)).attach(card);
@@ -63,7 +60,7 @@ public class MenuUI extends UI {
 				.attach(grid);
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.body(card -> {
 					TextNode.create(24, 24).text(Text.create("Best", caption)).attach(card);
 					TextNode.create(24, 64).text(Text.create("640", value)).attach(card);
@@ -71,7 +68,7 @@ public class MenuUI extends UI {
 				.attach(grid);
 				RectNode
 				.create(0, 0, 280, 150)
-				.color(Theme.PAPER)
+				.color(Theme.ELEMENT)
 				.body(card -> {
 					TextNode.create(24, 24).text(Text.create("Total", caption)).attach(card);
 					TextNode.create(24, 64).text(Text.create("1370", value)).attach(card);
@@ -90,7 +87,7 @@ public class MenuUI extends UI {
 				for (final String[] round : rounds) {
 					RectNode
 					.create(0, 0, 904, 72)
-					.color(Theme.PAPER)
+					.color(Theme.ELEMENT)
 					.body(row -> {
 						TextNode
 						.create(24, row.dh(2))

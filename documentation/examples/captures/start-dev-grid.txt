@@ -11,13 +11,14 @@ wait 100
 key G
 move 300 150
 wait 2000
+mask 832 488 108 40
 # film start-dev-grid 60
-wait 400
-moveto 580 240 1200
-wait 400
-moveto 380 360 1000
 wait 300
-moveto 300 150 900
+moveto 560 250 1000
 wait 300
+moveto 400 330 900
+wait 300
+moveto 300 150 800
+wait 200
 cut
 dev false

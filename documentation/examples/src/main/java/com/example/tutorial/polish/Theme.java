@@ -11,10 +11,11 @@ public final class Theme {
 		"fonts/Montserrat/Montserrat-Bold.ttf"
 	).join();
 
-	public static final Color INK   = new Color(153, 153, 153).lock();
-	public static final Color DARK  = new Color(85, 85, 85).lock();
-	public static final Color PAPER = new Color(221, 221, 221).lock();
-	public static final Color SHADE = new Color(153, 153, 153, 102).lock();
+	public static final Color HOVER   = new Color(54, 61, 77).lock();
+	public static final Color TEXT    = new Color(231, 233, 238).lock();
+	public static final Color ELEMENT = new Color(38, 43, 53).lock();
+	public static final Color SURFACE = new Color(23, 26, 33).lock();
+	public static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 
 	private Theme() {}
 
