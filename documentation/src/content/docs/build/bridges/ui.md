@@ -56,7 +56,7 @@ The members with a default, which you override when your host needs it:
 | [[UIBridge#drawBackground]] | [[UIBridge]]: nothing; [[WindowUIBridge]]: clears color, depth and stencil. | Paint the window before any UI is drawn; JOID calls it on the bridge of the lowest priority only. |
 | [[UIBridge#isOverlayHidden]] | `false`. | Return `true` while the host hides its own interface: the overlays that do not ask to stay are then neither drawn nor given the input. |
 | [[StackUIBridge#canReplace]] | `true`. | Return `false` to keep an open screen or popup below a new screen; a UI that refuses to close blocks the new screen. |
-| [[StackUIBridge#attachScreen]], [[StackUIBridge#detachScreen]] | Nothing. | Free or lock the cursor of the host when the first screen or popup opens and when the last one closes; overlays do not count. |
+| [[StackUIBridge#attachScreen]], [[StackUIBridge#detachScreen]] | Nothing. | Free or lock the cursor of the host ([Follow the screens that JOID opens](/use/learn/running/embedding/#follow-the-screens-that-joid-opens)). |
 
 ## Guarantees
 

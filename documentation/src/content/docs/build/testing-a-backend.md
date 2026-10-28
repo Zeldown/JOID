@@ -92,7 +92,7 @@ Each test class runs in its own JVM, so a backend registered by one class does n
 ## Force the dev mode in a test
 
 The dev and demo modes follow the classes on the classpath ([Demos](/build/demos/#modes)).
-A test that needs the dev mode on or off sets it with [[JOIDEnv#devMode]] and restores it afterwards; turning it on without the dev classes throws an `IllegalStateException`.
+A test that needs the dev mode on or off sets it with [[JOIDEnv#devMode]] ([Turn the dev tools on](/use/get-started/dev-tools/#turn-the-dev-tools-on)) and restores it afterwards.
 The snapshot runner turns the dev mode off for every scenario, except where a scenario turns it on.
 
 Every command of a scenario is listed on the [[SnapshotRunner]] reference page.

@@ -14,7 +14,7 @@ A borrowed texture lets JOID draw them without copying a pixel, and a resource r
 
 1. `Resource.of(input)` asks the resolvers of [[ResourceResolver]] in turn, the last registered first.
 2. The first one whose `supports(input)` returns `true` builds the resource.
-3. When none does, the input is read as an asset (a path, a URL, a stream) and decoded by its format.
+3. When none does, the input goes through the asset locators and the formats ([See how JOID loads a resource](/use/learn/going-further/custom-formats/#see-how-joid-loads-a-resource)).
 
 The core registers two resolvers: one for an [[ITexture]], which turns any texture into a resource, and one for a `BufferedImage`.
 So a texture that your backend lends is a resource already: `Resource.of(texture)`.
