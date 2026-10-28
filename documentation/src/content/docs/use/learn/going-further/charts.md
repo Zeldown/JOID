@@ -116,7 +116,7 @@ At the end of `draw`:
 ```java fragment
 final double average = top + height - height * (super.getAverage().doubleValue() - min) / (max - min);
 final Point start = Point.of(left, average);
-DrawUtils.SHAPE.drawDashedLine(ChartsLineChartNode.DARK, 8, 1F, start, Point.of(left + width, average));
+DrawUtils.SHAPE.drawDashedLine(ChartsLineChartNode.MUTED, 8, 1F, start, Point.of(left + width, average));
 ```
 
 </details>

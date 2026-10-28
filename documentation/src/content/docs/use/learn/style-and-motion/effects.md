@@ -178,14 +178,14 @@ Call `mask` while JOID draws, such as in [[Node#onDraw]] or in the `draw` of a [
 ## Try it
 
 **A pill button.**
-Turn a 200 × 60 rectangle into a pill with a 2 design pixel white border inside the shape.
+Turn a 200 × 60 rectangle into a pill with a 2 design pixel blue border inside the shape.
 
 <details>
 <summary>Solution</summary>
 
 ```java fragment
 .effect(RoundedNodeEffect.create(30F))
-.effect(BorderNodeEffect.create(Color.WHITE, 2F).mode(BorderMode.IN))
+.effect(BorderNodeEffect.create(EffectsUI.ACCENT, 2F).mode(BorderMode.IN))
 ```
 
 A radius of half the height gives round ends.

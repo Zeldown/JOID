@@ -167,7 +167,7 @@ Place a 100 × 100 square in the middle of the panel of `PanelUI`, without compu
 Anchor it at its center and place it at the center of the panel:
 
 ```java fragment
-RectNode.create(panel.dw(2D), panel.dh(2D), 100, 100).color(Color.WHITE).anchor(Align.CENTER).attach(panel);
+RectNode.create(panel.dw(2D), panel.dh(2D), 100, 100).color(PanelUI.ACCENT).anchor(Align.CENTER).attach(panel);
 ```
 
 </details>

@@ -155,7 +155,7 @@ The drawable speaks the graphics API of the backend: OpenGL calls on LWJGL 2 and
 ## Try it
 
 **A progress ring.**
-Draw a grey disc with a smaller light disc on top, so that only a ring of 10 design pixels shows.
+Draw an accent disc with a smaller disc of the surface color on top, so that only a ring of 10 design pixels shows.
 
 <details>
 <summary>Solution</summary>
@@ -163,8 +163,8 @@ Draw a grey disc with a smaller light disc on top, so that only a ring of 10 des
 Draw the larger disc first; the second one covers its center:
 
 ```java fragment
-DrawUtils.SHAPE.drawCircle(60D, 60D, DrawingUI.INK, 60D);
-DrawUtils.SHAPE.drawCircle(60D, 60D, DrawingUI.LIGHT, 50D);
+DrawUtils.SHAPE.drawCircle(60D, 60D, DrawingUI.ACCENT, 60D);
+DrawUtils.SHAPE.drawCircle(60D, 60D, DrawingUI.SURFACE, 50D);
 ```
 
 </details>
@@ -194,7 +194,7 @@ The layer receives the mouse in the coordinates of the node, and `isHovered()` t
 ```java fragment
 .layer((node, mouseX, mouseY) -> {
 	if (node.isHovered()) {
-		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, DrawingUI.INK, 8D);
+		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, DrawingUI.ACCENT, 8D);
 	}
 })
 ```

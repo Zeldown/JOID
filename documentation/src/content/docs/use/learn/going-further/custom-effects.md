@@ -130,13 +130,13 @@ The type parameter limits the nodes that take the effect: an effect for [[RectNo
 ## Try it
 
 **A colored shadow.**
-Give the hard shadow the blue [[Color]] `new Color(91, 140, 255)` and an offset of 6 design pixels.
+Give the hard shadow the light blue [[Color]] `new Color(125, 164, 255)` and an offset of 6 design pixels.
 
 <details>
 <summary>Solution</summary>
 
 ```java fragment
-.effect(HardShadowNodeEffect.create(new Color(124, 92, 255), 6D))
+.effect(HardShadowNodeEffect.create(new Color(125, 164, 255), 6D))
 ```
 
 </details>

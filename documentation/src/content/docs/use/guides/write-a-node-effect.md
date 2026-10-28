@@ -42,7 +42,7 @@ Run `body` first, then draw the badge on top of it ([Draw around a node](/use/le
 ```java file="com/example/guides/BadgeNodeEffect.java" region="draw"
 ```
 
-**Check:** give a node the effect in white [[Color]], with `effect(BadgeNodeEffect.create(Color.WHITE))`: a dot shows on its top-right corner.
+**Check:** give a node the effect in the blue [[Color]] `new Color(91, 140, 255)`, with `effect(BadgeNodeEffect.create(new Color(91, 140, 255)))`: a dot shows on its top-right corner.
 
 ## 3. Add the setters
 
@@ -51,7 +51,7 @@ Give each setting a value setter and a `Supplier` setter, as a node does for its
 ```java file="com/example/guides/BadgeNodeEffect.java" region="setters"
 ```
 
-**Check:** `BadgeNodeEffect.create(Color.WHITE).shown(false)` compiles, and the dot still shows: nothing reads `shown` yet.
+**Check:** `BadgeNodeEffect.create(new Color(91, 140, 255)).shown(false)` compiles, and the dot still shows: nothing reads `shown` yet.
 
 ## 4. Hide it when the count is zero
 
@@ -60,7 +60,7 @@ Return the `shown` setting from `shouldApply(node)`, so the badge disappears whi
 ```java file="com/example/guides/BadgeNodeEffect.java" region="apply"
 ```
 
-**Check:** `BadgeNodeEffect.create(Color.WHITE).shown(false)` hides the dot.
+**Check:** `BadgeNodeEffect.create(new Color(91, 140, 255)).shown(false)` hides the dot.
 
 ## 5. Apply it to a node
 

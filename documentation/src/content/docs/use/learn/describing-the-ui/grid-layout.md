@@ -119,7 +119,7 @@ A hidden, removed or `ABSOLUTE` child gets no cell ([Know who places a child](/u
 ## Try it
 
 **A palette.**
-Build a grid of 16 white squares of 40 design pixels, four per row, 8 design pixels apart.
+Build a grid of 16 blue squares of 40 design pixels, four per row, 8 design pixels apart.
 
 <details>
 <summary>Solution</summary>
