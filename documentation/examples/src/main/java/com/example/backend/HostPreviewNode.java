@@ -26,7 +26,7 @@ public class HostPreviewNode extends Node {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		final int x = (int) Math.round(grid.toScreenX(super.getX()));
-		final int y = (int) Math.round(grid.toScreenY(super.getY()));
+		final int y = (int) Math.round(grid.toScreenY(super.getY() + super.getHeight()));
 		final int width = grid.toPixelWidth(super.getWidth());
 		final int height = grid.toPixelHeight(super.getHeight());
 		render.suspend(() -> this.engine.drawPreview(x, y, width, height));

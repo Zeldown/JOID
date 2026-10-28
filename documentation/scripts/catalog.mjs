@@ -35,6 +35,15 @@ export function cardName(card) {
 	return card.name ?? card.type.slice(card.type.lastIndexOf('.') + 1);
 }
 
+function isCodeName(card) {
+	const reference = card.reference ?? '';
+	return !card.name || card.name === reference.slice(Math.max(reference.lastIndexOf('#'), reference.lastIndexOf('.')) + 1);
+}
+
+function nameMarkup(card) {
+	return isCodeName(card) ? `<code>${escape(cardName(card))}</code>` : escape(cardName(card));
+}
+
 export function shotName(section, card) {
 	return `catalog-${section.id}-${slug(cardName(card))}`;
 }
@@ -114,7 +123,7 @@ function page(catalog, index) {
 		if (section.cards.every((card) => card.capture === false)) {
 			out.push(`## ${section.title}`, '', section.intro, '', `| ${section.columns[0]} | ${section.columns[1]} |`, '|---|---|');
 			for (const card of section.cards) {
-				out.push(`| [\`${cardName(card)}\`](${reference(card, index).url}) | ${card.text} |`);
+				out.push(`| [${isCodeName(card) ? `\`${cardName(card)}\`` : cardName(card)}](${reference(card, index).url}) | ${card.text} |`);
 			}
 			out.push('');
 			continue;
@@ -122,11 +131,10 @@ function page(catalog, index) {
 		out.push(`## ${section.title}`, '', section.intro, '', '<div class="joid-catalog">');
 		for (const card of section.cards) {
 			const { url, entry } = reference(card, index);
-			const name = cardName(card);
 			const shot = shotName(section, card);
 			const img = `<img src="/captures/${shot}.webp" alt="${escape(card.alt)}" loading="lazy" width="360" height="320" />`;
 			const still = existsSync(join(CAPTURES, `${shot}.still.webp`)) ? filmMarkup(`/captures/${shot}.webp`, `/captures/${shot}.still.webp`, img) : img;
-			const image = card.capture !== false && existsSync(join(CAPTURES, `${shot}.webp`)) ? still : `<div class="joid-card-empty" aria-hidden="true"><code>${escape(name)}</code></div>`;
+			const image = card.capture !== false && existsSync(join(CAPTURES, `${shot}.webp`)) ? still : `<div class="joid-card-empty" aria-hidden="true">${nameMarkup(card)}</div>`;
 			const summary = card.type ? entry.summary : '';
 			const abstract = card.type && entry.abstract && entry.ancestors.includes('dev.joid.lib.ui.node.Node') ? ` <a class="joid-badge" href="${SKINS}">needs a skin</a>` : '';
 			const learn = card.learn.includes('#') ? card.learn.replace('#', '/#') : `${card.learn}/`;
@@ -134,7 +142,7 @@ function page(catalog, index) {
 			if (card.example) {
 				links.push(`<a href="${EXAMPLES}${card.example}">Example source</a>`);
 			}
-			out.push('<figure class="joid-card">', image, `<figcaption><a href="${url}"><code>${escape(name)}</code></a>${abstract}${summary ? `<span>${escape(summary).replace(/`([^`]+)`/g, '<code>$1</code>')}</span>` : ''}<small>${links.join(' · ')}</small></figcaption>`, '</figure>');
+			out.push('<figure class="joid-card">', image, `<figcaption><a href="${url}">${nameMarkup(card)}</a>${abstract}${summary ? `<span>${escape(summary).replace(/`([^`]+)`/g, '<code>$1</code>')}</span>` : ''}<small>${links.join(' · ')}</small></figcaption>`, '</figure>');
 		}
 		out.push('</div>', '');
 	}

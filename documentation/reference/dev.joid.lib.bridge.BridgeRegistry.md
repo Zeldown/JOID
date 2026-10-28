@@ -18,7 +18,7 @@ Registers a bridge with the priority `0`.
 ## register(T,int)
 
 Registers a bridge with a priority: the highest priority comes first.
-A bridge that is already registered moves to its new priority, after the other bridges of that priority.
+Among bridges of the same priority, the last one registered comes first; a bridge that is already registered moves to its new priority.
 
 ## unregister(T)
 

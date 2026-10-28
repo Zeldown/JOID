@@ -92,4 +92,4 @@ An engine that already renders with Vulkan implements [[IVulkanHost]] and passes
 ## Tests
 
 [[VulkanSnapshotBackend]] opens a hidden GLFW window without client API for the window and input bridges, and renders through a [[SnapshotVulkanHost]] into an offscreen `B8G8R8A8_UNORM` image, whatever the screens of the machine.
-The backend runs every contract suite and the snapshot suite; the state guard suite has no trap to set on Vulkan, which has no global state shared with a host.
+[Testing a backend](/build/testing-a-backend/#the-suites) runs the contract suites and the snapshot suite on your backend; the state guard suite has no trap to set on Vulkan, which has no global state shared with a host.

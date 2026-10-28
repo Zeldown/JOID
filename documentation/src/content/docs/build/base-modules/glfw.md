@@ -40,7 +40,7 @@ An application that sets its callbacks before registering the backend therefore 
 
 [[GlfwKeys]] maps the key codes of GLFW to [[Key]] values and back.
 `getPhysicalKey(code)` gives the position, and `getKey(code)` the printed key, through a [[KeyLayout]] fed by `glfwGetKeyName`: `Key.A` is the key that types `a`, wherever it sits.
-The table needs no GLFW call, so a backend whose engine reports the key codes of GLFW reuses it, as the forwarder of [Input forwarding](/build/input/) does.
+Its position table (`getPhysicalKey`, `getCode`, `isKeyDown`) needs no GLFW call, so a backend whose engine reports the key codes of GLFW reuses it with a [[KeyLayout]] of its own, as the forwarder of [Input forwarding](/build/input/) does; `getKey` reads the layout through GLFW.
 
 ## OpenAL of LWJGL 3
 
@@ -50,5 +50,5 @@ It lives here, with the OpenAL library of LWJGL 3 and its natives, so that base-
 ## Hidden windows
 
 [[GlfwSnapshotWindow]] opens a hidden, undecorated window of a fixed size for the snapshot backends of the tests; a `Runnable` sets the hints of the backend before the window exists.
-Undecorated, its framebuffer has the size asked for, whatever the screens of the machine.
+Undecorated, the window gives its whole surface to the framebuffer; on a high-density macOS screen, the framebuffer is larger than the size asked for.
 It ships in the dev and demo jars of the backends; the published `joid-base-glfw` jar does not hold it.

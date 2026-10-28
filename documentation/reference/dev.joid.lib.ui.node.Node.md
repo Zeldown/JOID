@@ -660,7 +660,7 @@ The `visible` value of the node itself, without its parents and its clipping.
 
 ## getIndex()
 
-The `zindex` of the node, or the highest value while it is dragged so that it is drawn above its siblings.
+The `zindex` of the node, or the highest value while it is dragged with `DraggableType.MOVE` so that it is drawn above its siblings.
 
 ## getHierarchy()
 

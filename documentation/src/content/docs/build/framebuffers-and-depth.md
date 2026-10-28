@@ -60,7 +60,7 @@ The UI bridge places the UIs at increasing depths, so that a UI drawn later stay
 ## Stencil
 
 Only the screen has a stencil, of 8 bits.
-At the start of each frame, `drawBackground()` of the lowest UI bridge clears it to 0: [[WindowUIBridge]] does, and a UI bridge of a host must too ([UI bridge](/build/bridges/ui/#guarantees)).
+JOID clears it to 0 around the masks of each UI ([[RenderBridge#clearStencil]] reaches only the screen); `drawBackground()` of [[WindowUIBridge]] also clears it with the depth.
 A [[StencilState]] holds the function, the reference, the mask and the three operations; apply them as they are, on the front and back faces.
 
 ## Clears

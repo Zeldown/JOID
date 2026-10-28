@@ -261,7 +261,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | `boolean` | [hasListener](#Node-method-hasListener)(EventType<?> type) | If `true`, the node has a listener for this event type. |
 | `boolean` | [isVisibleProperty](#Node-method-isVisibleProperty)() | The `visible` value of the node itself, without its parents and its clipping. |
 | `boolean` | [isMounted](#Node-method-isMounted)() | If `true`, every `wait` condition of the node and of its parents holds. |
-| `int` | [getIndex](#Node-method-getIndex)() | The `zindex` of the node, or the highest value while it is dragged so that it is drawn above its siblings. |
+| `int` | [getIndex](#Node-method-getIndex)() | The `zindex` of the node, or the highest value while it is dragged with `DraggableType.MOVE` so that it is drawn above its siblings. |
 | `T` | [getUi](#Node-method-getUi)() | The UI of the node, or the UI whose code is running ([`UI.getCurrent`](/reference/ui/ui/#UI-method-getCurrent)) when the node is not attached yet. |
 | `String` | [getHierarchy](#Node-method-getHierarchy)() | The class names from the root down to the node, such as `FlexNode - RectNode`. |
 | `String` | [getMappedIndex](#Node-method-getMappedIndex)() | The path of the node in the tree, its index at each level, such as `0.2.1`; `N/A` when it is not attached. |
@@ -1498,7 +1498,7 @@ If `true`, every `wait` condition of the node and of its parents holds.
 
 `int getIndex()` 
 
-The `zindex` of the node, or the highest value while it is dragged so that it is drawn above its siblings.
+The `zindex` of the node, or the highest value while it is dragged with `DraggableType.MOVE` so that it is drawn above its siblings.
 
 <a id="Node-method-getUi"></a>
 

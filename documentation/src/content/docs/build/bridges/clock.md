@@ -31,10 +31,12 @@ Tests register a [[ManualClockBridge]], which moves only when they call `advance
 ## Use a manual clock in a test
 
 ```java fragment
-final ManualClockBridge clock = new ManualClockBridge(0L);
+final ManualClockBridge clock = new ManualClockBridge(BridgeHandler.CLOCK.get().currentTimeMillis());
 BridgeHandler.CLOCK.register(clock);
 clock.advance(16L);
 ```
+
+Start it at the current time, so that what the system clock already dated does not jump back.
 
 `time(milliseconds)` sets the clock to an absolute time.
 Unregister it at the end of the test with `BridgeHandler.CLOCK.unregister(clock)`: the system clock, still in the registry below it, takes over.

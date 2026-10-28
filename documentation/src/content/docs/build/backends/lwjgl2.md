@@ -69,4 +69,4 @@ The `Display` and the OpenGL context that the backend needs are on [Check the pr
 ## Tests
 
 [[Lwjgl2SnapshotBackend]] renders into a `Display` on Linux and into a `Pbuffer` elsewhere, both with a 24-bit depth and an 8-bit stencil.
-The backend runs every contract suite and the snapshot suite ([Testing a backend](/build/testing-a-backend/)).
+[Testing a backend](/build/testing-a-backend/#the-suites) runs the contract suites and the snapshot suite on your backend.

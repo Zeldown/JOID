@@ -55,4 +55,4 @@ Every profile but `DEFAULT` checks the version and the profile that the driver g
 ## Tests
 
 `Lwjgl3SnapshotBackend` opens a hidden GLFW window with the request of the profile, turns vertical sync off and registers the backend with `audio(false)`.
-The backend runs every contract suite and the snapshot suite.
+[Testing a backend](/build/testing-a-backend/#the-suites) runs the contract suites and the snapshot suite on your backend.

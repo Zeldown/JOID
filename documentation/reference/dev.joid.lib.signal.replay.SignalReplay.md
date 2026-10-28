@@ -15,7 +15,7 @@ Returns a supplier that computes again the expression that produced `value`, or 
 ## run(Object,Object,Runnable)
 
 Runs `runnable` with read tracking on, for the code of `owner` (a UI or a node) and of `parent` (the UI of a node), so the replay can find the object that the bytecode calls `this`.
-JOID calls it around `init()`, bodies and watches.
+JOID calls it around `init()`, bodies, listeners, tasks, shortcuts and watches.
 
 ## reset()
 

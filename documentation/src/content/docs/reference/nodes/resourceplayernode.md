@@ -79,7 +79,7 @@ The node waits for its resource like a [`ResourceNode`](/reference/nodes/resourc
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [play](#ResourcePlayerNode-method-play)() <span class="joid-qualifier">fluent</span> | Starts the playback, or resumes it after a pause or a stop, and fires `onPlay`. |
+| `this` | [play](#ResourcePlayerNode-method-play)() <span class="joid-qualifier">fluent</span> | Starts the playback, or resumes it after a pause or a stop; `onPlay` fires on the next frame, once the playback runs. |
 | `this` | [stop](#ResourcePlayerNode-method-stop)() <span class="joid-qualifier">fluent</span> | Stops the playback, back at the start, and fires `onStop`. |
 | `this` | [pause](#ResourcePlayerNode-method-pause)() <span class="joid-qualifier">fluent</span> | Pauses a playing resource and fires `onPause`. |
 | `this` | [toggle](#ResourcePlayerNode-method-toggle)() <span class="joid-qualifier">fluent</span> | Pauses a playing resource, otherwise plays it. |
@@ -310,7 +310,7 @@ If `true`, the playback is playing.
 
 `this play()` <span class="joid-qualifier">fluent</span>
 
-Starts the playback, or resumes it after a pause or a stop, and fires `onPlay`.
+Starts the playback, or resumes it after a pause or a stop; `onPlay` fires on the next frame, once the playback runs.
 Throws an `IllegalStateException` when the resource has no playback, such as a still image.
 
 <a id="ResourcePlayerNode-method-stop"></a>

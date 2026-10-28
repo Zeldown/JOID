@@ -41,7 +41,7 @@ JOID records which presses it consumed, so that the host receives each key and b
 | Mouse release | The UI bridges that received the press of that button. | One of them consumed the press or the release. |
 | Key release | Every UI bridge, and every UI that received its press, even a node hidden since. | A UI bridge consumed the press of that key. |
 | Escape on the top closeable UI that is not an overlay | That UI, which closes when no node handles the key and the UI accepts to close. | Always: the host never receives it. |
-| A press that an overlay lets through (its interaction does not cancel it) | The UIs below. | Never by that overlay, and its release neither. |
+| A press that an overlay lets through (its interaction does not cancel it) | The UIs below when no node of the overlay consumed it; the lower bridges and the host in every case. | Never by that overlay, and its release neither. |
 
 ## Guarantees
 
