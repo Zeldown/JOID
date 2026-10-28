@@ -34,7 +34,7 @@ What [[RenderBridge]] does for you.
 
 | Member | What you get |
 |---|---|
-| [[RenderBridge#getState]] | The live [[RenderState]]: color, blend, depth, cull, lighting, color write, alpha cutoff, lines, stencil, viewport, target framebuffer, texture with its filter and wrap, shader. |
+| [[RenderBridge#getState]] | The live [[RenderState]] ([The render state](/build/pipeline/#the-render-state)). |
 | [[RenderBridge#pushState]], [[RenderBridge#popState]] | A stack of copies: `popState` loads the copy back into the same instance, so a reference to `getState()` stays valid. |
 | [[RenderBridge#getModelView]], [[RenderBridge#getProjection]] | Two [[MatrixStack]]s, read as column-major `float[16]`: a copy with `getMatrix()`, the live array with `getRawMatrix()`. |
 | [[RenderBridge#beginFrame]], [[RenderBridge#endFrame]] | The frame flag around your two frame hooks; a second `beginFrame` or an `endFrame` outside a frame throws an `IllegalStateException`. |
