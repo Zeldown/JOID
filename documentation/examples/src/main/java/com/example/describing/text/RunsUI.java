@@ -29,7 +29,7 @@ public class RunsUI extends UI {
 		final TextInfo bold = info.withWeight(FontWeight.BOLD).withColor(RunsUI.ACCENT);
 
 		RectNode
-		.create(610, 340, 700, 400)
+		.create(610, 300, 700, 270)
 		.color(RunsUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(RunsUI.ELEMENT, 1.5F))
@@ -53,10 +53,19 @@ public class RunsUI extends UI {
 			})
 			.attach(card);
 			// #endregion
+		})
+		.attach(this);
+
+		RectNode
+		.create(610, 600, 700, 170)
+		.color(RunsUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(RunsUI.ELEMENT, 1.5F))
+		.body(card -> {
 			// #region measure
 			final String label = "Settings";
 			RectNode
-			.create(50, 270, info.aw(label, 48D), info.ah(24D))
+			.create(50, 50, info.aw(label, 48D), info.ah(24D))
 			.color(RunsUI.ELEMENT)
 			.body(box -> TextNode.create(24, 12).text(Text.create(label, info)).attach(box))
 			.attach(card);

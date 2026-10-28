@@ -4,11 +4,11 @@
 # still interactivity-refuse 120
 # crop interactivity-pending 640 370 640 340
 # still interactivity-pending 50
-# crop interactivity-switch 980 120 860 240
+# crop interactivity-switch 980 120 860 290
 # still interactivity-switch 40
 # crop interactivity-selector 80 540 860 420
 # still interactivity-selector 45
-# crop interactivity-slider 980 540 860 240
+# crop interactivity-slider 980 540 860 290
 # still interactivity-slider 60
 # crop interactivity-progress 640 370 640 340
 # still interactivity-progress 20

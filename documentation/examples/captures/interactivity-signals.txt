@@ -1,7 +1,7 @@
 # crop interactivity-counter 640 320 640 440
 # still interactivity-counter 80
 # crop interactivity-reread 540 320 840 440
-# crop interactivity-types 540 320 840 340
+# crop interactivity-types 540 320 840 370
 # still interactivity-types 90
 ui com.example.interactivity.signals.CounterUI
 move 1100 700

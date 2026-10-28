@@ -87,7 +87,7 @@ With `NONE`, the node counts the children that go past it in its own extent, so 
 
 <figure>
 
-![A dark grey panel shows the blue rows 1 to 4 of a numbered list; the wheel moves the list up until rows 4 to 7 show, then moves it back down](/captures/describing-layout-scroll.webp)
+![A dark grey panel shows the blue rows 1 to 4 of a numbered list, above a blue Top button that a later section uses; the wheel moves the list up until rows 4 to 7 show, then moves it back down](/captures/describing-layout-scroll.webp)
 
 <figcaption>
 The panel keeps its size: the wheel moves its eight rows inside it.

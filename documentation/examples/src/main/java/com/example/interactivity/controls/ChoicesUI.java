@@ -37,7 +37,7 @@ public class ChoicesUI extends UI {
 		final TextInfo selected = TextInfo.create(ExampleFont.REGULAR, 24F).color(ChoicesUI.ON_ACCENT);
 
 		RectNode
-		.create(100, 140, 820, 380)
+		.create(100, 140, 820, 250)
 		.color(ChoicesUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(ChoicesUI.ELEMENT, 1.5F))
@@ -55,7 +55,7 @@ public class ChoicesUI extends UI {
 		.attach(this);
 
 		RectNode
-		.create(1000, 140, 820, 380)
+		.create(1000, 140, 820, 250)
 		.color(ChoicesUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(ChoicesUI.ELEMENT, 1.5F))
@@ -97,7 +97,7 @@ public class ChoicesUI extends UI {
 		.attach(this);
 
 		RectNode
-		.create(1000, 560, 820, 380)
+		.create(1000, 560, 820, 250)
 		.color(ChoicesUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(ChoicesUI.ELEMENT, 1.5F))

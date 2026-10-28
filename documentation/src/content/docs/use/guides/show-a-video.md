@@ -16,7 +16,7 @@ This guide shows a looping video, a bar that follows its progress, and a button 
 ![An 800 by 450 video playing in the center of the screen, a thin blue progress bar under it that grows with the video, and a dark grey button that the pointer clicks twice: it reads Pause, then Play while the video stops, then Pause again](/captures/guides-video.webp)
 
 <figcaption>
-The bar and the label of the button follow the video on every frame.
+The bar and the label of the button follow the video on every frame; the capture loops a few seconds of it, so the bar jumps back when it starts again.
 Video: an excerpt of <a href="https://studio.blender.org/films/charge/">Charge</a> © Blender Foundation, cropped to 16:9, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
 </figcaption>
 </figure>
