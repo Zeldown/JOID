@@ -23,7 +23,7 @@ public class MuteUI extends UI {
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
 	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
-	private final IntegerSignal volume = new IntegerSignal(7);
+	private final IntegerSignal volume    = new IntegerSignal(7);
 	private final BooleanSignal subtitles = new BooleanSignal(true);
 
 	@Override
