@@ -163,23 +163,13 @@ A `before` event guards the changes that a gesture asks for and the calls that m
 The setters that give a node its value, such as `x(...)`, and the signals bound to it are never refused.
 A UI has the same pair for its closing: [[UI#beforeClose]] can keep it open, and [[UI#onClose]] runs once it is closed.
 
-## Know the three kinds of events
-
-Every event method of JOID starts with one of three prefixes, and the prefix says what your listener can do:
-
-| Prefix | When the listener runs | What it can do | Examples |
-|---|---|---|---|
-| `handle` | The raw input reaches the node, before the node handles it | Consume the input | `handleMousePressed`, `handleKeyPressed` |
-| `before` | A change is asked for, before it applies | Cancel the change | `beforeMove`, `beforeChange`, `beforeClose` |
-| `on` | Something happened | Read what happened | `onClick`, `onMove`, `onChange`, `onHoverStart` |
-
-Each listener receives one event object, which holds the node (`getNode()`) or the UI (`getUi()`) and the values of the event.
+Every event method starts with `handle`, `before` or `on`, and its listener receives one event object, which holds the node (`getNode()`) or the UI (`getUi()`) and the values of the event.
 A node also has events of its own life, such as [[Node#onInit]] or [[Node#onDetach]]: [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) lists them.
 
 ## Order the listeners of one event
 
 Every node and every UI holds its listeners in an [[EventBus]], one list per [[EventType]].
-The listeners of one event run in the order of their [[EventPriority]], then in the order you added them.
+The listeners of one event run in the order of their listener priority, an [[EventPriority]], then in the order you added them.
 [[EventListener#priority]] gives a listener another priority than `NORMAL`:
 
 ```java fragment
@@ -204,7 +194,7 @@ A listener of a UI added in `init()` lasts one opening, one added in the constru
 - A consumed input reaches no other `handle` listener, no UI below and not the host; only the **`MONITOR`** listeners still hear it.
 - A **`before`** listener cancels a change that a gesture or a call such as `move(...)` asks for; setters and signals are never refused.
 - The **`on`** listeners tell what happened.
-- Listeners run by **priority**, then in the order you added them.
+- Listeners run by **listener priority** (`EventPriority`), then in the order you added them.
 
 ## Try it
 

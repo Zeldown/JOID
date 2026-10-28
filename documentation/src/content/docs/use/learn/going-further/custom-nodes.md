@@ -155,7 +155,7 @@ The fluent methods of the node hand each call to the value:
 - `start(value)` gives a start value.
 - `bind(signal)` follows a writable signal and writes the changes of the user back to it; a signal that cannot be written throws `IllegalArgumentException`.
 - `change(value)` changes the value as the user would: `beforeSelect` can refuse it, then `onSelect` fires.
-- In an input hook, `set(value)` keeps the value pending until the hook ends, and `get()` reads the pending value.
+- In an input hook, `set(value)` applies the value when the hook ends, and `get()` already reads it.
 
 The UI owns the signal and reads it anywhere:
 
@@ -175,7 +175,7 @@ The click selects the swatch, writes the signal and fires `onSelect`.
 </figure>
 
 The events fire on every real change, whatever its source, and never when the value stays the same.
-[Controls](/use/learn/interactivity/controls/) explains the order of these events and the pending value.
+[Controls](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse) explains the order of these events and the pending value.
 
 ## Fire an event of your own
 

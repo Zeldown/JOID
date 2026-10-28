@@ -82,7 +82,7 @@ A refused value does not stop the drag of a slider: the thumb follows the pointe
 ## Keep a value that the bounds refuse
 
 A control remembers the last value that it was asked for, by a setter, its signal or the user, and shows it within its bounds.
-When the bounds change, it asks for that value again:
+A value that the bounds refuse is the **pending value**: the control asks for it again each time the bounds change:
 
 ```java file="com/example/interactivity/controls/PendingUI.java" region="pending"
 ```
@@ -96,13 +96,13 @@ With the limit, the field shows `10` and `tickets` holds `10`; once the box is u
 </figcaption>
 </figure>
 
-- The value shown is the value asked for, kept within the bounds: `max(...)` and `min(...)` of a number field, the options of a switch, a selector or a slider.
+- The value shown is the last value asked for, kept within the bounds: `max(...)` and `min(...)` of a number field, the options of a switch, a selector or a slider.
 - The bound signal holds the value shown, so every node that reads it agrees with the control.
-- The value asked for waits until the bounds allow it: the next value that the user, a setter or the signal gives replaces it.
-- Writing to the signal the value that it already holds changes nothing, so the value asked for before stays pending.
+- The pending value waits until the bounds allow it: the next value that the user, a setter or the signal gives replaces it.
+- Writing to the signal the value that it already holds changes nothing, so the pending value stays.
 
-While the value asked for is not one of its options, a choice (switch, selector, slider) shows a fallback.
-An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the value asked for, the smaller one on a tie: `50` on `range(0, 10)` shows `10`.
+While the pending value is not one of its options, a choice (switch, selector, slider) shows a fallback.
+An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the pending value, the smaller one on a tie: `50` on `range(0, 10)` shows `10`.
 Any other choice keeps its current value, or shows its first option when the current one is gone too.
 The [[BaseChoiceNode#fallback]] hook picks that value, for a choice of your own.
 
@@ -237,14 +237,14 @@ The progress goes from `0F` to `1F`, and a value out of it shows an empty or a f
 - A plain value gives the **start value**; a **signal** binds the value both ways; `change(...)` acts like the user.
 - **`onChange`** runs on every real change, whatever its source, never for an equal value nor for the start value.
 - **`beforeChange`** refuses what the user or `change(...)` asks for; setters and signals are never refused.
-- A control **keeps the value asked for** and shows it within its bounds, and the signal holds the value shown.
+- A control keeps the **pending value** that its bounds refuse and asks for it again when they change; the signal holds the value shown.
 - A change runs `beforeChange`, then applies, then updates the **bound nodes**, then runs `onChange`.
 - **Choices** take their options with `values(...)`; new options keep the value when they still hold it, else the choice shows its **fallback**.
 - **`ProgressNode`** shows a value from `0F` to `1F` and takes no input.
 
 ## Try it
 
-**Mute at zero.**
+**Hide subtitles at zero.**
 In `SettingsUI`, uncheck "Subtitles" when the volume reaches `0`.
 
 <details>
