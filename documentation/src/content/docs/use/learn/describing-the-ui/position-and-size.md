@@ -49,6 +49,15 @@ To follow a parent whose size changes, give the setter a lambda:
 ```java file="com/example/describing/position/PanelUI.java" region="ratio"
 ```
 
+<figure>
+
+![A dark panel whose width grows and shrinks; a grey bar sized from the width of the panel read once keeps its first width, a blue bar given a lambda stays as wide as the panel, and a blue square whose width follows the panel keeps its square shape](/captures/describing-position-follow.webp)
+
+<figcaption>
+A value read once stays where it was; a lambda follows the parent at each frame, and `aspectRatio` brings the height along with the width.
+</figcaption>
+</figure>
+
 ## Keep a point of a node in place
 
 The position of a node names its top-left corner by default.

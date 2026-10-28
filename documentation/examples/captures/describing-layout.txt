@@ -17,3 +17,23 @@ wait 1100
 scroll 8
 wait 1500
 cut
+# crop describing-layout-feed 700 290 520 480
+ui com.example.describing.layout.FeedUI
+wait 100
+move 960 480
+# film describing-layout-feed 60
+wait 300
+scroll -6
+wait 200
+scroll -6
+wait 1900
+scroll -6
+wait 700
+moveto 840 700 350
+wait 100
+press LEFT
+release LEFT
+wait 1000
+moveto 960 480 400
+wait 100
+cut

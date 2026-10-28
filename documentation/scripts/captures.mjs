@@ -39,6 +39,8 @@ const KEY_NAMES = {
 	RIGHT: '→',
 	HOME: 'Home',
 	END: 'End',
+	EQUAL: '=',
+	MINUS: '-',
 };
 
 function keyName(combination) {
@@ -50,6 +52,15 @@ function keyName(combination) {
 
 function typedName(text) {
 	return text === ' ' ? 'Space' : text;
+}
+
+function wheelName(parts) {
+	const vertical = Number(parts[parts.length - 1]);
+	const horizontal = parts.length > 2 ? Number(parts[1]) : 0;
+	if (vertical !== 0) {
+		return vertical < 0 ? 'Wheel ↓' : 'Wheel ↑';
+	}
+	return horizontal < 0 ? 'Wheel ←' : 'Wheel →';
 }
 
 function expand(file, films) {
@@ -123,6 +134,8 @@ function expand(file, films) {
 			film.keys.push({ label: typedName(line.trim().slice(5)), start: film.time, end: film.time + 400 });
 		} else if (film !== null && parts[0] === 'key') {
 			film.keys.push({ label: keyName(parts[1]), start: film.time, end: film.time + 400 });
+		} else if (film !== null && parts[0] === 'scroll') {
+			film.keys.push({ label: wheelName(parts), start: film.time, end: film.time + 400 });
 		} else if (film !== null && parts[0] === 'down') {
 			film.keys.push({ label: keyName(parts[1]), start: film.time, end: null, key: parts[1] });
 		} else if (film !== null && parts[0] === 'up') {

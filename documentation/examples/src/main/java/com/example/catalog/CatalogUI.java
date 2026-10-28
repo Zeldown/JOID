@@ -14,6 +14,7 @@ public abstract class CatalogUI extends UI {
 	public static final Color TEXT        = CaptureStyle.TEXT;
 	public static final Color ELEMENT     = CaptureStyle.STROKE;
 	public static final Color PLACEHOLDER = CaptureStyle.SURFACE;
+	public static final Color ACTIVE      = new Color(125, 164, 255).lock();
 
 	protected final RectNode card(final int index) {
 		return RectNode

@@ -94,7 +94,7 @@ Losing the focus clears the selection.
 
 <figure>
 
-![A dark grey field with the placeholder "Code" and the text "Signal: "; the user types a space, a, b and 1, each key showing in a badge at the bottom right: the digit never appears, and Enter turns the text into "AB" in the field and in the signal](/captures/interactivity-field-rules.webp)
+![A dark grey field with the placeholder "Code" and the text "Signal: "; the user types a space, a, b and 1, each key showing in a badge at the bottom right: the digit never appears, and Enter turns the text into "AB" in the field and in the signal; a click in the field, Backspace twice and Enter empty both again](/captures/interactivity-field-rules.webp)
 
 <figcaption>
 The user types ` ab1` then Enter: the digit is refused, and the field rewrites ` ab` as `AB` when it loses the focus.
@@ -140,6 +140,15 @@ An empty field that the user leaves takes back its last value, `0` before any; w
 
 [[MultilineTextFieldNode]] wraps its text in its width.
 Enter starts a new line, Up and Down move the cursor between lines, and the wheel scrolls a text taller than the field.
+
+<figure>
+
+![A dark grey field of several lines with the placeholder "Notes"; the pointer clicks it and the user types a sentence, each key showing in a badge at the bottom right, that wraps onto a second line; Enter starts a third line, "Second line", Up moves the cursor to the line above, then Ctrl + A and Backspace empty the field and Escape leaves it](/captures/interactivity-notes.webp)
+
+<figcaption>
+The text wraps in the width of the field by itself; only Enter starts a line of its own.
+</figcaption>
+</figure>
 
 ## Write a field for your own value
 

@@ -1,22 +1,121 @@
-# crop start-dev-inspect 0 0 960 540
-# still start-dev-inspect 40
+# crop start-dev-inspect 260 0 700 540
+# still start-dev-inspect 90
+# crop start-dev-panel 260 0 700 540
+# still start-dev-panel 80
+# crop start-dev-move 0 0 960 540
+# still start-dev-move 120
+# keys start-dev-move 880 14
 dev true
 resize 960 540
 scale 2
-ui com.example.start.CounterUI
+ui com.example.start.DevSceneUI
 key F3
-move 480 272
-wait 1000
-move 800 420
-wait 1000
-mask 832 488 108 40
-# film start-dev-inspect
+move 340 90
 wait 300
-moveto 480 272 600
-wait 600
-moveto 550 290 600
-wait 600
-moveto 800 420 600
+move 620 180
+wait 1200
+mask 832 488 108 40
+# film start-dev-inspect 60
+wait 300
+moveto 340 90 500
+wait 700
+moveto 380 155 400
+wait 700
+down LEFT_CONTROL
+wait 900
+up LEFT_CONTROL
 wait 400
+moveto 620 180 500
+wait 400
+cut
+# film start-dev-panel 60
+wait 300
+moveto 460 280 450
+wait 250
+press LEFT
+release LEFT
+unmask
+mask 740 490 100 40
+wait 800
+moveto 550 437 400
+wait 250
+scroll -3
+wait 800
+press LEFT
+release LEFT
+wait 900
+key ENTER
+wait 800
+press RIGHT
+release RIGHT
+unmask
+mask 832 488 108 40
+wait 350
+moveto 620 180 400
+wait 250
+cut
+unmask
+key F3
+wait 1200
+# film start-dev-move 60
+wait 300
+key F3
+wait 500
+moveto 714 514 400
+wait 1000
+moveto 880 514 300
+wait 100
+press LEFT
+moveto 560 330 700
+release LEFT
+wait 500
+press LEFT
+moveto 880 514 700
+release LEFT
+wait 300
+key F3
+wait 400
+moveto 620 180 400
+wait 300
+cut
+# crop start-dev-reload 230 160 500 240
+# still start-dev-reload 100
+ui com.example.start.CounterUI
+move 650 370
+wait 300
+# film start-dev-reload 60
+wait 300
+moveto 480 270 400
+wait 150
+press LEFT
+release LEFT
+wait 350
+press LEFT
+release LEFT
+wait 350
+press LEFT
+release LEFT
+wait 500
+key LEFT_CONTROL+R
+wait 1000
+key LEFT_CONTROL+LEFT_SHIFT+R
+wait 1000
+moveto 650 370 400
+wait 300
+cut
+# crop start-dev-zoom 0 0 960 540
+ui com.example.start.CounterUI
+move 820 440
+wait 300
+# film start-dev-zoom 60
+wait 300
+key LEFT_CONTROL+MINUS
+wait 600
+key LEFT_CONTROL+MINUS
+wait 1200
+key LEFT_CONTROL+EQUAL
+wait 600
+key LEFT_CONTROL+EQUAL
+wait 800
 cut
 dev false

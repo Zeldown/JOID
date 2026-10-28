@@ -92,6 +92,15 @@ Attaching it to another node, or to the UI, moves it there with its children.
 A detached node stops drawing, reacting and following its signals.
 Attached again, it starts again: [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) details what runs at each step.
 
+<figure>
+
+![A dark card with an empty dark grey row, an Add button and a Remove button; the pointer clicks Add three times and a blue square joins the row at each click, then clicks Remove three times and the squares leave the row, the last one first](/captures/describing-nodes-build.webp)
+
+<figcaption>
+Each click attaches a new child to the row or removes its last child; the row draws exactly the children it holds.
+</figcaption>
+</figure>
+
 To rebuild a whole branch when data changes, let JOID run the `body` again for you: [Rebuilding the tree](/use/learn/state/rebuilding/) shows how.
 
 ## Bring a node to the front
@@ -102,6 +111,15 @@ Attaching a node that is already attached to the same parent moves it to the end
 ```
 
 The blue rectangle is attached first, then the dark grey one covers it; attaching the blue one again puts it on top.
+
+<figure>
+
+![A blue rectangle half covered by a grey one on a dark card; a click on the blue rectangle attaches it again and it comes over the grey one, then a click on the grey rectangle brings it back on top](/captures/describing-nodes-front.webp)
+
+<figcaption>
+Each click attaches the clicked rectangle to the card again, so it becomes the last child and is drawn on top.
+</figcaption>
+</figure>
 To keep a node above or below its siblings whatever the attach order, give it a `zindex` ([Position and size](/use/learn/describing-the-ui/position-and-size/#choose-what-is-drawn-on-top)).
 
 ## Read the tree

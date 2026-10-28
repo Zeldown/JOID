@@ -2,13 +2,43 @@
 ui com.example.catalog.NodesCatalogUI
 wait 100
 # crop catalog-nodes-rectnode 28 28 364 324
-shot catalog-nodes-rectnode
+# still catalog-nodes-rectnode 0
+ui com.example.catalog.NodesCatalogUI
+wait 100
+move 330 295
+# film catalog-nodes-rectnode 60
+wait 300
+moveto 210 190 500
+wait 900
+moveto 330 295 500
+wait 600
+cut
 # crop catalog-nodes-circlenode 398 28 364 324
-shot catalog-nodes-circlenode
+# still catalog-nodes-circlenode 0
+ui com.example.catalog.NodesCatalogUI
+wait 100
+move 700 295
+# film catalog-nodes-circlenode 60
+wait 300
+moveto 580 190 500
+wait 900
+moveto 700 295 500
+wait 600
+cut
 # crop catalog-nodes-textnode 768 28 364 324
 shot catalog-nodes-textnode
 # crop catalog-nodes-resourcenode 1138 28 364 324
-shot catalog-nodes-resourcenode
+# still catalog-nodes-resourcenode 0
+ui com.example.catalog.NodesCatalogUI
+wait 100
+move 1440 295
+# film catalog-nodes-resourcenode 60
+wait 300
+moveto 1320 190 500
+wait 900
+moveto 1440 295 500
+wait 600
+cut
 # crop catalog-nodes-resourceplayernode 1508 28 364 324
 # still catalog-nodes-resourceplayernode 12
 ui com.example.catalog.NodesCatalogUI
@@ -17,7 +47,12 @@ wait 100
 wait 2367
 cut
 # crop catalog-nodes-progressnode 28 368 364 324
-shot catalog-nodes-progressnode
+# still catalog-nodes-progressnode 0
+ui com.example.catalog.NodesCatalogUI
+wait 100
+# film catalog-nodes-progressnode 60
+wait 3000
+cut
 # crop catalog-nodes-modelnode 398 368 364 324
 shot catalog-nodes-modelnode
 # crop catalog-nodes-modelviewernode 768 368 364 324
@@ -33,7 +68,7 @@ moveto 1040 530 700
 wait 100
 moveto 930 530 700
 release LEFT
-wait 2000
+wait 500
 moveto 1070 635 400
 wait 200
 cut

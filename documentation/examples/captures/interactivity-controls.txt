@@ -33,18 +33,24 @@ ui com.example.interactivity.controls.RefuseUI
 move 1120 650
 # film interactivity-refuse 60
 wait 300
-moveto 962 476 500
-wait 200
+moveto 962 476 400
+wait 150
 press LEFT
-moveto 1200 476 800
+moveto 1200 476 700
+wait 250
+release LEFT
+wait 500
+moveto 840 576 400
+wait 150
+press LEFT
+release LEFT
+wait 600
+moveto 1180 470 400
+wait 100
+press LEFT
+moveto 962 470 600
+release LEFT
 wait 300
-release LEFT
-wait 700
-moveto 840 576 500
-wait 200
-press LEFT
-release LEFT
-wait 800
 moveto 1120 650 400
 wait 300
 cut

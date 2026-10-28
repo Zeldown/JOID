@@ -61,7 +61,16 @@ wait 300
 type 1
 wait 700
 key ENTER
-wait 1200
+wait 1000
+press LEFT
+release LEFT
+wait 200
+key BACKSPACE
+wait 250
+key BACKSPACE
+wait 250
+key ENTER
+wait 500
 moveto 1120 650 400
 wait 300
 cut
@@ -128,3 +137,134 @@ type F
 wait 600
 moveto 1120 650 400
 wait 300
+cut
+# crop interactivity-notes 640 320 640 440
+# still interactivity-notes 200
+ui com.example.interactivity.fields.NotesFieldUI
+move 1180 720
+# film interactivity-notes 60
+wait 200
+moveto 960 460 400
+wait 100
+press LEFT
+release LEFT
+wait 200
+type N
+wait 35
+type o
+wait 35
+type t
+wait 35
+type e
+wait 35
+type s
+wait 35
+type  
+wait 35
+type w
+wait 35
+type r
+wait 35
+type a
+wait 35
+type p
+wait 35
+type  
+wait 35
+type i
+wait 35
+type n
+wait 35
+type s
+wait 35
+type i
+wait 35
+type d
+wait 35
+type e
+wait 35
+type  
+wait 35
+type t
+wait 35
+type h
+wait 35
+type e
+wait 35
+type  
+wait 35
+type w
+wait 35
+type i
+wait 35
+type d
+wait 35
+type t
+wait 35
+type h
+wait 35
+type  
+wait 35
+type o
+wait 35
+type f
+wait 35
+type  
+wait 35
+type t
+wait 35
+type h
+wait 35
+type e
+wait 35
+type  
+wait 35
+type f
+wait 35
+type i
+wait 35
+type e
+wait 35
+type l
+wait 35
+type d
+wait 35
+type .
+wait 35
+wait 250
+key ENTER
+wait 200
+type S
+wait 35
+type e
+wait 35
+type c
+wait 35
+type o
+wait 35
+type n
+wait 35
+type d
+wait 35
+type  
+wait 35
+type l
+wait 35
+type i
+wait 35
+type n
+wait 35
+type e
+wait 35
+wait 350
+key UP
+wait 500
+key LEFT_CONTROL+A
+wait 350
+key BACKSPACE
+wait 350
+key ESCAPE
+wait 250
+moveto 1180 720 350
+wait 250
+cut

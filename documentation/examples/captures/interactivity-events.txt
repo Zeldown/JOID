@@ -88,9 +88,15 @@ wait 400
 type D
 wait 400
 type 2
-wait 1000
+wait 800
+key BACKSPACE
+wait 300
+key BACKSPACE
+wait 300
+key ESCAPE
+wait 300
 moveto 1110 600 400
-wait 600
+wait 300
 cut
 ui com.example.interactivity.events.DispatchDiagramUI
 wait 100

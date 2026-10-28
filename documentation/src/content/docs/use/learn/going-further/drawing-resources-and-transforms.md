@@ -67,7 +67,7 @@ With an angle that grows over time, each rectangle turns around its pivot:
 
 <figure>
 
-![The same two blue rectangles turn a full circle in four seconds, the first around its center, the second around its top-left corner, over their grey starting outlines; the two light dots never move](/captures/further-transforms-spin.webp)
+![The same two blue rectangles turn a full circle in three seconds, the first around its center, the second around its top-left corner, over their grey starting outlines; the two light dots never move](/captures/further-transforms-spin.webp)
 
 <figcaption>
 The pivot is the one point of the drawing that the rotation leaves in place.

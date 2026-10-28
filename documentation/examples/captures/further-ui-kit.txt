@@ -1,4 +1,44 @@
 # crop further-ui-kit-controls 80 80 340 344
+# still further-ui-kit-controls 0
 ui com.example.further.KitUI
+move 300 140
 wait 400
-shot further-ui-kit-controls
+# film further-ui-kit-controls 60
+wait 100
+moveto 120 120 300
+wait 100
+press LEFT
+release LEFT
+wait 350
+press LEFT
+release LEFT
+wait 350
+moveto 224 200 300
+wait 100
+press LEFT
+moveto 328 200 400
+wait 200
+moveto 224 200 400
+release LEFT
+wait 200
+moveto 350 285 300
+wait 100
+press LEFT
+release LEFT
+wait 400
+moveto 250 285 250
+wait 100
+press LEFT
+release LEFT
+wait 400
+moveto 140 370 300
+wait 100
+press LEFT
+release LEFT
+wait 400
+press LEFT
+release LEFT
+wait 400
+moveto 300 140 300
+wait 100
+cut

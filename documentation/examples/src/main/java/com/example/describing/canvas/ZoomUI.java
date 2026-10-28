@@ -6,6 +6,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
@@ -27,12 +28,11 @@ public class ZoomUI extends UI {
 		// #region zoom
 		super.zoom(0.8D);
 
-		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.SURFACE).attach(this);
-
 		RectNode
 		.create(660, 290, 600, 500)
-		.color(ZoomUI.ELEMENT)
+		.color(ZoomUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(ZoomUI.ELEMENT, 1.5F))
 		.body(card -> {
 			TextNode
 			.create(300, 150)

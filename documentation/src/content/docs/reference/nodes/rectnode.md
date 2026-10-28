@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Draws a filled rectangle on its bounds, with an optional border, and colors that fade on hover.
 
-![A blue square on a dark card](/captures/catalog-nodes-rectnode.webp)
+![A blue square on a dark card; while the pointer rests on it, the square fades to a lighter blue, then back when the pointer leaves](/captures/catalog-nodes-rectnode.webp)
 
 ## Description
 

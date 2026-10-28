@@ -81,7 +81,7 @@ By default, the canvas sits in the middle of the window.
 
 <figure>
 
-![A window filled with dark grey widens from 16:9 to three times as wide as it is high, then narrows back; a darker square holding a blue disc stays in its top-right corner, smaller while the window is lower.](/captures/describing-canvas-pinned.webp)
+![A window, drawn as an outline, widens from 16:9 to three times as wide as it is high, then narrows back; a dark square holding a blue disc stays in its top-right corner, smaller while the window is lower.](/captures/describing-canvas-pinned.webp)
 
 <figcaption>
 Pinned to the top-right corner, the canvas keeps the minimap against the right edge, however wide the window gets.
@@ -103,7 +103,7 @@ The default window UI bridge gives 1; a UI bridge of your own gives another valu
 
 <figure>
 
-![Two cards in the top corners of a window, Default on the left and Limit 1.5 on the right. The interface scale goes from 1 to 2 and back: the left card grows to twice its size, the right card stops at one and a half times its size, then both shrink back.](/captures/describing-canvas-scale.webp)
+![Two cards against the left and right edges of a window, at mid-height, Default on the left and Limit 1.5 on the right. The interface scale goes from 1 to 2 and back: the left card grows to twice its size, the right card stops at one and a half times its size, then both shrink back.](/captures/describing-canvas-scale.webp)
 
 <figcaption>
 A limit caps the size of a UI, whatever scale the application asks for: `GaugeUI` stops at 1.5, while the UI without `@UIDataScale` reaches 2.
@@ -123,7 +123,7 @@ The zoom makes a UI smaller around its anchor, on top of the fit and the interfa
 
 <figure>
 
-![A window whose UI is drawn smaller than the window, its dark canvas framed by the stage around it, with a dark grey card in its middle that reads 80 % above two blue buttons marked minus and plus; the pointer clicks plus and the UI grows to 90 %, then clicks minus and the UI shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
+![A window with a dark card in its middle that reads 80 % above two blue buttons marked minus and plus; the pointer clicks plus and the card grows to 90 %, then clicks minus and it shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
 
 <figcaption>
 At a zoom of `0.8D`, the whole UI is drawn at 80 % of its size, around the center of the window.

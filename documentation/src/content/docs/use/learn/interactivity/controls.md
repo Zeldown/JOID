@@ -69,7 +69,7 @@ Keep `onChange` for an action, such as saving the settings or playing a sound.
 
 <figure>
 
-![A slider at 5 of 10 with a blue thumb, a dark grey "Set to 10" button and the text "Volume: 5"; the pointer drags to the end of the track: the text stays at 8, the thumb stops half a step past 8 and, at the release, settles on 8; then it clicks "Set to 10", and the slider and the text show 10](/captures/interactivity-refuse.webp)
+![A slider at 5 of 10 with a blue thumb, a dark grey "Set to 10" button and the text "Volume: 5"; the pointer drags to the end of the track: the text stays at 8, the thumb stops half a step past 8 and, at the release, settles on 8; then it clicks "Set to 10", and the slider and the text show 10; a drag of the thumb brings both back to 5](/captures/interactivity-refuse.webp)
 
 <figcaption>
 `beforeChange` refuses the values above 8 that the user asks for: the thumb stops half a step past 8 and settles on it at the release.

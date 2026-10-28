@@ -11,6 +11,11 @@ ui com.example.describing.position.AnchorGrowUI
 # film describing-position-grow 60
 wait 4000
 cut
+# crop describing-position-follow 540 310 840 460
+ui com.example.describing.position.FollowGrowUI
+# film describing-position-follow 60
+wait 4000
+cut
 # crop describing-position-order 640 320 640 440
 ui com.example.describing.position.OrderUI
 wait 100

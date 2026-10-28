@@ -12,5 +12,5 @@ cut
 ui com.example.describing.media.StretchFlowUI
 wait 500
 # film describing-media-stretch 60
-wait 4000
+wait 3000
 cut

@@ -4,6 +4,7 @@ import com.example.ExampleFont;
 import com.example.further.ChartsLineChartNode;
 import com.example.further.ChartsRadarChartNode;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.obj.ObjModel;
@@ -29,17 +30,19 @@ public class NodesCatalogUI extends CatalogUI {
 
 	private static final ObjModel CUBE = ObjModel.of("cube", "models/cube.obj", Resource.of("models/texture.png"));
 
+	private final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
+
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CatalogUI.TEXT);
 
-		super.card(0).body(card -> RectNode.create(90, 70, 160, 160).color(CatalogUI.INK).attach(card)).attach(this);
+		super.card(0).body(card -> RectNode.create(90, 70, 160, 160).color(CatalogUI.INK).hoveredColor(CatalogUI.ACTIVE).attach(card)).attach(this);
 
-		super.card(1).body(card -> CircleNode.create(90, 70, 160).color(CatalogUI.INK).attach(card)).attach(this);
+		super.card(1).body(card -> CircleNode.create(90, 70, 160).color(CatalogUI.INK).hoveredColor(CatalogUI.ACTIVE).attach(card)).attach(this);
 
 		super.card(2).body(card -> TextNode.create(0, 0, 340, 300).text(Text.create("Text", info).align(Align.CENTER)).attach(card)).attach(this);
 
-		super.card(3).body(card -> ResourceNode.create(30, 71, 280, 158).resource(Resource.of("images/placeholder.png")).attach(card)).attach(this);
+		super.card(3).body(card -> ResourceNode.create(30, 71, 280, 158).resource(Resource.of("images/placeholder.png")).hoveredResource(Resource.of("models/texture.png")).attach(card)).attach(this);
 
 		super.card(4).body(card -> ResourcePlayerNode.create(30, 71, 280, 158).resource(Resource.of("images/animation.gif")).loop(true).attach(card)).attach(this);
 
@@ -48,7 +51,7 @@ public class NodesCatalogUI extends CatalogUI {
 			.create(40, 135, 260, 30)
 			.track(RectNode.create(0, 0, 0, 0).color(CatalogUI.ELEMENT))
 			.fill(RectNode.create(0, 0, 0, 0).color(CatalogUI.INK))
-			.progress(0.6F)
+			.progress(() -> this.getProgress())
 			.attach(card);
 		})
 		.attach(this);
@@ -128,6 +131,11 @@ public class NodesCatalogUI extends CatalogUI {
 			.attach(card);
 		})
 		.attach(this);
+	}
+
+	private float getProgress() {
+		final double time = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 3000D;
+		return (float) (0.8D - 0.2D * Math.cos(time * 2D * Math.PI));
 	}
 
 }

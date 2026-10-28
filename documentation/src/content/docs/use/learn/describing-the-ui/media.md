@@ -178,6 +178,7 @@ Here a video waits for the user, at half volume, and closes its UI when it ends:
 - [[ResourcePlayerNode#onPlay]], [[ResourcePlayerNode#onPause]], [[ResourcePlayerNode#onStop]] and [[ResourcePlayerNode#onEnd]] follow it; `onEnd` never fires on a loop.
   [[ResourcePlayerNode#onProgress]] receives a [[NodeProgressEvent]], with the progress on 1 and the current time in seconds.
 
+The guide [Show a video](/use/guides/show-a-video/#what-you-will-build) shows a video playing under these controls, with a progress bar and a pause button.
 Each player has its own playback, created when it is attached: two players of one resource play independently.
 A player that leaves the tree stops and releases its playback; attached again, it starts from the beginning ([Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/)).
 

@@ -125,6 +125,15 @@ A field marked [[UIProperty]] keeps its value from one launch to the next:
 ```java file="com/example/state/SettingsUI.java" region="opened"
 ```
 
+<figure>
+
+![The settings card, which reads "Openings: 2" at its bottom; Escape, shown in a badge, closes it, and it opens again reading "Openings: 3", then closes and opens again reading "Openings: 4"](/captures/state-property.webp)
+
+<figcaption>
+The count is written when the UI closes and read back before the next `init()`, so each opening adds one to it.
+</figcaption>
+</figure>
+
 JOID writes the remembered fields of a UI to `property/<class name>.property` in the data folder, as JSON, and reads them back into the fields before each `init()`.
 It writes them when the UI closes, before a reload, and when the program ends, if their text changed.
 

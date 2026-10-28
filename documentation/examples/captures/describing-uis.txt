@@ -27,8 +27,10 @@ cut
 ui com.example.describing.uis.MenuUI
 move 1140 730
 # film describing-uis-replace 60
-wait 800
+wait 700
 open com.example.describing.uis.EditorUI
+wait 600
+key ESCAPE
 wait 800
 moveto 960 670 500
 wait 200
