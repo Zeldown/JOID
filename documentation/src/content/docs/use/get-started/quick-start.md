@@ -50,7 +50,8 @@ JOID never creates a window: your program creates it with GLFW, hands it to the 
 **4. Run it** with `gradle run`.
 The console prints `[JOID] 8.0.0 loaded in dev mode, …` ([Installation](/use/get-started/installation/#choose-the-dev-or-the-prod-jar)), and the window shows the button: each click increments the counter, and Escape closes the UI.
 
-[Choosing a backend](/use/learn/running/backends/) starts the Vulkan and LWJGL 2 backends instead.
+This program runs on LWJGL 3.
+With Vulkan or LWJGL 2, take the complete program of your backend from [Start the other backends](/use/learn/running/backends/#start-the-other-backends) and open `CounterUI` in it; the rest of this page and the tutorial do not change.
 
 ### If it does not work
 
@@ -213,7 +214,7 @@ Read [Colors and styling](/use/learn/style-and-motion/styling/), then [Effects](
 
 ## Animate a value
 
-A [[TweenAnimator]] moves a value over time, and a node that reads it in a lambda follows it on every frame:
+A [[TweenAnimator]] moves a value over time; it is a signal, so a setter that reads it in an expression follows it:
 
 ```java file="com/example/start/TourUI.java" region="animator"
 ```
