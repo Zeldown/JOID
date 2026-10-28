@@ -450,11 +450,26 @@ public final class SourceReader {
 	}
 
 	private void readSourceDefaults(final ApiType type, final TypeDeclaration<?> declaration) {
+		final String allArgs = SourceReader.lombokAccess(declaration.getAnnotations(), "AllArgsConstructor");
+		final String requiredArgs = SourceReader.lombokAccess(declaration.getAnnotations(), "RequiredArgsConstructor");
 		for (final BodyDeclaration<?> member : declaration.getMembers()) {
 			if (member instanceof FieldDeclaration) {
-				for (final VariableDeclarator variable : ((FieldDeclaration) member).getVariables()) {
-					type.getFieldNames().add(variable.getNameAsString());
-					variable.getInitializer().ifPresent(initializer -> type.getSourceDefaults().put(variable.getNameAsString(), SourceReader.unwrap(initializer, new HashSet<>())));
+				final FieldDeclaration field = (FieldDeclaration) member;
+				for (final VariableDeclarator variable : field.getVariables()) {
+					final String name = variable.getNameAsString();
+					type.getFieldNames().add(name);
+					variable.getInitializer().ifPresent(initializer -> type.getSourceDefaults().put(name, SourceReader.unwrap(initializer, new HashSet<>())));
+					if (variable.getInitializer().isPresent() || field.isStatic()) {
+						continue;
+					}
+
+					final String access = allArgs != null ? allArgs : requiredArgs != null && (field.isFinal() || field.getAnnotationByName("NonNull").isPresent()) ? requiredArgs : null;
+					if (SourceReader.isExposed(access, type)) {
+						type.getSourceDefaults().put(name, "@parameter");
+						type.getSourceDefaults().put(name + "#constructor", "");
+					} else if (access == null && !field.isFinal()) {
+						type.getSourceDefaults().put(name + "#implicit", SourceReader.implicitDefault(variable.getTypeAsString()));
+					}
 				}
 			}
 		}
@@ -484,11 +499,19 @@ public final class SourceReader {
 					continue;
 				}
 
-				final AssignExpr assign = (AssignExpr) statement.getExpression();
-				final String target = assign.getTarget() instanceof FieldAccessExpr ? ((FieldAccessExpr) assign.getTarget()).getNameAsString() : assign.getTarget() instanceof NameExpr ? ((NameExpr) assign.getTarget()).getNameAsString() : null;
-				if (target != null && assign.getOperator() == AssignExpr.Operator.ASSIGN && !type.getSourceDefaults().containsKey(target + "#constructor")) {
-					type.getSourceDefaults().put(target, SourceReader.unwrap(assign.getValue(), parameters));
-					type.getSourceDefaults().put(target + "#constructor", "");
+				final List<String> targets = new ArrayList<>();
+				Expression value = statement.getExpression();
+				while (value instanceof AssignExpr && ((AssignExpr) value).getOperator() == AssignExpr.Operator.ASSIGN) {
+					final Expression target = ((AssignExpr) value).getTarget();
+					targets.add(target instanceof FieldAccessExpr ? ((FieldAccessExpr) target).getNameAsString() : target instanceof NameExpr ? ((NameExpr) target).getNameAsString() : null);
+					value = ((AssignExpr) value).getValue();
+				}
+
+				for (final String target : targets) {
+					if (target != null && !type.getSourceDefaults().containsKey(target + "#constructor")) {
+						type.getSourceDefaults().put(target, SourceReader.unwrap(value, parameters));
+						type.getSourceDefaults().put(target + "#constructor", "");
+					}
 				}
 			}
 		}
@@ -772,6 +795,27 @@ public final class SourceReader {
 	private static String shortExpression(final Expression expression) {
 		final String printed = expression.toString().replaceAll("\\s+", " ");
 		return printed.length() > 80 ? null : printed;
+	}
+
+	private static String implicitDefault(final String type) {
+		switch (type) {
+		case "boolean":
+			return "false";
+		case "double":
+			return "0D";
+		case "float":
+			return "0F";
+		case "long":
+			return "0L";
+		case "byte":
+		case "short":
+		case "int":
+			return "0";
+		case "char":
+			return "'\\u0000'";
+		default:
+			return "null";
+		}
 	}
 
 	private static boolean returnsThis(final MethodDeclaration method) {

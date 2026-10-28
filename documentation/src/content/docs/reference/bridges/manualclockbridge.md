@@ -36,7 +36,7 @@ Register it above the system clock in a test, then unregister it at the end: the
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [time](#ManualClockBridge-property-time) | `long` |  | Sets the clock to an absolute time, in milliseconds, and returns the clock. |
+| [time](#ManualClockBridge-property-time) | `long` | set at creation | Sets the clock to an absolute time, in milliseconds, and returns the clock. |
 
 <a id="ManualClockBridge-methods"></a>
 
@@ -66,7 +66,7 @@ Creates a clock at that time, in milliseconds.
 
 - `this time(long time)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** set at creation
 
 Sets the clock to an absolute time, in milliseconds, and returns the clock.
 

@@ -37,7 +37,7 @@ The model is scaled so that its width fills the width of the node, centered.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [model](#BaseModelNode-property-model) <span class="joid-qualifier">signal</span> | [`IDrawableModel`](/reference/drawing/idrawablemodel/) |  | The model to draw. |
+| [model](#BaseModelNode-property-model) <span class="joid-qualifier">signal</span> | [`IDrawableModel`](/reference/drawing/idrawablemodel/) | `null` | The model to draw. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -92,7 +92,7 @@ Called by a subclass with the position and the size of the node.
 - `this model(Supplier<IDrawableModel> model)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `IDrawableModel getModel()` 
 
-**Default:** 
+**Default:** `null`
 
 The model to draw.
 Throws an `IllegalStateException` when the node is attached without one.

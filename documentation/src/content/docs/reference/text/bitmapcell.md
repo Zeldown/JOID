@@ -37,8 +37,8 @@ Each texel is filtered by the area it covers on screen, so the glyph stays crisp
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [bold](#BitmapCell-property-bold) | `boolean` |  | If `true`, the glyph draws twice, the second time one font pixel to the right, which thickens a font that has no bold face. |
-| [grayscale](#BitmapCell-property-grayscale) | `boolean` |  | If `true`, the red channel of the texels is the coverage of a white glyph, tinted by the text color; if `false`, the texels are colors with alpha, multiplied by the text color. |
+| [bold](#BitmapCell-property-bold) | `boolean` | `false` | If `true`, the glyph draws twice, the second time one font pixel to the right, which thickens a font that has no bold face. |
+| [grayscale](#BitmapCell-property-grayscale) | `boolean` | `false` | If `true`, the red channel of the texels is the coverage of a white glyph, tinted by the text color; if `false`, the texels are colors with alpha, multiplied by the text color. |
 
 <a id="BitmapCell-methods"></a>
 
@@ -92,7 +92,7 @@ Throws `IllegalArgumentException` when the rectangle holds no texel.
 - `this bold(boolean bold)` <span class="joid-qualifier">fluent</span>
 - `boolean isBold()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the glyph draws twice, the second time one font pixel to the right, which thickens a font that has no bold face.
 
@@ -103,7 +103,7 @@ If `true`, the glyph draws twice, the second time one font pixel to the right, w
 - `this grayscale(boolean grayscale)` <span class="joid-qualifier">fluent</span>
 - `boolean isGrayscale()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the red channel of the texels is the coverage of a white glyph, tinted by the text color; if `false`, the texels are colors with alpha, multiplied by the text color.
 

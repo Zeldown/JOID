@@ -37,10 +37,10 @@ When an action throws, JOID prints a warning and the other actions of the watch 
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`WatchProperty`](/reference/signals/watchproperty/) | [BODY](#WatchProperty-constant-BODY) |  |
-| [`WatchProperty`](/reference/signals/watchproperty/) | [CLEAR_CHILDREN](#WatchProperty-constant-CLEAR_CHILDREN) | `(node, signal) -> node.clearChildren()` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`WatchProperty`](/reference/signals/watchproperty/) | [BODY](#WatchProperty-constant-BODY) |  | Runs the body that the node received with `body(...)` again; it does nothing on a node without body. |
+| [`WatchProperty`](/reference/signals/watchproperty/) | [CLEAR_CHILDREN](#WatchProperty-constant-CLEAR_CHILDREN) | `(node, signal) -> node.clearChildren()` | Removes every child of the node. |
 
 ## Method details
 

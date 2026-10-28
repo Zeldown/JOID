@@ -82,10 +82,10 @@ Use it to place your own drawing in screen pixels or to read where the window ed
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `double` | [DESIGN_WIDTH](#UIView-constant-DESIGN_WIDTH) | `1920D` |
-| `double` | [DESIGN_HEIGHT](#UIView-constant-DESIGN_HEIGHT) | `1080D` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `double` | [DESIGN_WIDTH](#UIView-constant-DESIGN_WIDTH) | `1920D` | Width of the design canvas, in design pixels. |
+| `double` | [DESIGN_HEIGHT](#UIView-constant-DESIGN_HEIGHT) | `1080D` | Height of the design canvas, in design pixels. |
 
 ## Creation details
 

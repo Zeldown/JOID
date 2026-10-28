@@ -51,7 +51,7 @@ The file is decoded on a background thread the first time the resource is drawn,
 |---|---|---|---|
 | [properties](#Resource-property-properties) | [`ResourceProperties`](/reference/resources/resourceproperties/) | set at creation | The settings of this handle: interpolation, mipmaps and region. |
 | [uniqueId](#Resource-property-uniqueId) | `String` | `""` | The id under which the data of this resource is cached and named in the warnings. |
-| [decoder](#Resource-property-decoder) | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) |  | The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data, or `null` until the format is detected. |
+| [decoder](#Resource-property-decoder) | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | `null`, then the decoder of the format that JOID detects | The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data, or `null` until the format is detected. |
 
 <a id="Resource-methods"></a>
 
@@ -181,7 +181,7 @@ The id under which the data of this resource is cached and named in the warnings
 - `this decoder(IResourceDecoder decoder)` <span class="joid-qualifier">fluent</span>
 - `IResourceDecoder getDecoder()` 
 
-**Default:** 
+**Default:** `null`, then the decoder of the format that JOID detects
 
 The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data, or `null` until the format is detected.
 `decoder(IResourceDecoder)` waits for a running decode, clears the data and decodes it again with `decoder`, for every handle on the data.

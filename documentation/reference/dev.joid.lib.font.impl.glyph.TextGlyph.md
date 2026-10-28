@@ -14,9 +14,13 @@ Creates a glyph of `codepoint` at index `index` of the string, drawn with `face`
 
 The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` replaces it.
 
+Default: set at creation
+
 ## color
 
 The color the glyph draws in: `getColor()` reads it, `color(Color)` replaces it.
+
+Default: set at creation
 
 ## getX()
 

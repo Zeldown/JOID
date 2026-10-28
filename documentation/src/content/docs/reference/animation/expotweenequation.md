@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [IN](#ExpoTweenEquation-constant-IN) |  |
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [OUT](#ExpoTweenEquation-constant-OUT) |  |
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [IN_OUT](#ExpoTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [IN](#ExpoTweenEquation-constant-IN) |  | Starts slowly, along an exponential. |
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [OUT](#ExpoTweenEquation-constant-OUT) |  | Ends slowly, along an exponential. |
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [IN_OUT](#ExpoTweenEquation-constant-IN_OUT) |  | Starts and ends slowly, along an exponential. |
 
 ## Creation details
 

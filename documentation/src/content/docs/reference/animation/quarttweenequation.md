@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [IN](#QuartTweenEquation-constant-IN) |  |
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [OUT](#QuartTweenEquation-constant-OUT) |  |
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [IN_OUT](#QuartTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [IN](#QuartTweenEquation-constant-IN) |  | Starts slowly, with a power of 4. |
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [OUT](#QuartTweenEquation-constant-OUT) |  | Ends slowly, with a power of 4. |
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [IN_OUT](#QuartTweenEquation-constant-IN_OUT) |  | Starts and ends slowly, with a power of 4. |
 
 ## Creation details
 

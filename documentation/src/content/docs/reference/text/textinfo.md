@@ -48,16 +48,16 @@ Sizes are in design pixels; the letter spacing and the line height are on 1 of t
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [font](#TextInfo-property-font) | [`IFont`](/reference/text/ifont/) |  | The [`IFont`](/reference/text/ifont/) that draws the text; its text renderer measures and draws it. |
+| [font](#TextInfo-property-font) | [`IFont`](/reference/text/ifont/) | set at creation, by `TextInfo.create(font, fontSize)` | The [`IFont`](/reference/text/ifont/) that draws the text; its text renderer measures and draws it. |
 | [fontSize](#TextInfo-property-fontSize) | `float` | set at creation, by `TextInfo.create(font, fontSize)` | The size of the text, in design pixels: the em size of the font. |
 | [weight](#TextInfo-property-weight) | [`FontWeight`](/reference/text/fontweight/) | `FontWeight.REGULAR` | The [`FontWeight`](/reference/text/fontweight/) of the text; a font without that weight draws its closest one. |
 | [letterSpacing](#TextInfo-property-letterSpacing) | `float` | `0F` | The extra space after each character, on 1 of the font size: `0.1F` adds a tenth of the size, `-0.02F` tightens. |
 | [lineHeight](#TextInfo-property-lineHeight) | `float` | the line height of the font | The height of one line, on 1 of the font size; `0F` takes the line height of the font. |
-| [color](#TextInfo-property-color) | [`Color`](/reference/drawing/color/) |  | The [`Color`](/reference/drawing/color/) of the text, gradient and animated colors included; markup colors replace it when `colored` is `true`. |
+| [color](#TextInfo-property-color) | [`Color`](/reference/drawing/color/) | `Color.BLACK` | The [`Color`](/reference/drawing/color/) of the text, gradient and animated colors included; markup colors replace it when `colored` is `true`. |
 | [colored](#TextInfo-property-colored) | `boolean` | `true` | If `true`, the markups that set a color change the color of the text and keep the alpha of `color`; if `false`, every character takes `color`. |
 | [italic](#TextInfo-property-italic) | `boolean` | `false` | If `true`, the text draws with the italic face of the font, or slanted when the font has none. |
-| [markups](#TextInfo-property-markups) | [`ITextMarkup...`](/reference/text/itextmarkup/) |  | The [`ITextMarkup`](/reference/text/itextmarkup/) tags that the text reads; JOID registers none by default. |
-| [effects](#TextInfo-property-effects) | [`ITextEffect...`](/reference/text/itexteffect/) |  | The [`ITextEffect`](/reference/text/itexteffect/) list applied to every glyph, such as a wave or a typewriter; `getEffects()` returns it as a list you cannot change. |
+| [markups](#TextInfo-property-markups) | [`ITextMarkup...`](/reference/text/itextmarkup/) | the registered markups of [`TextMarkup`](/reference/text/textmarkup/) | The [`ITextMarkup`](/reference/text/itextmarkup/) tags that the text reads; JOID registers none by default. |
+| [effects](#TextInfo-property-effects) | [`ITextEffect...`](/reference/text/itexteffect/) | none | The [`ITextEffect`](/reference/text/itexteffect/) list applied to every glyph, such as a wave or a typewriter; `getEffects()` returns it as a list you cannot change. |
 | [shadowTint](#TextInfo-property-shadowTint) | `Float` | none, the shadow takes the color of `shadow(Color)` | The tint of a shadow drawn in the color of each glyph multiplied by this factor, alpha kept; `null` for none. |
 
 <a id="TextInfo-methods"></a>
@@ -144,7 +144,7 @@ Creates a style that draws with `font` at `fontSize` design pixels, in opaque bl
 - `this font(IFont font)` <span class="joid-qualifier">fluent</span>
 - `IFont getFont()` 
 
-**Default:** 
+**Default:** set at creation, by `TextInfo.create(font, fontSize)`
 
 The [`IFont`](/reference/text/ifont/) that draws the text; its text renderer measures and draws it.
 
@@ -199,7 +199,7 @@ The height of one line, on 1 of the font size; `0F` takes the line height of the
 - `this color(Color color)` <span class="joid-qualifier">fluent</span>
 - `Color getColor()` 
 
-**Default:** 
+**Default:** `Color.BLACK`
 
 The [`Color`](/reference/drawing/color/) of the text, gradient and animated colors included; markup colors replace it when `colored` is `true`.
 
@@ -232,7 +232,7 @@ If `true`, the text draws with the italic face of the font, or slanted when the 
 - `this markups(ITextMarkup... markups)` <span class="joid-qualifier">fluent</span>
 - `List<ITextMarkup> getMarkups()` 
 
-**Default:** 
+**Default:** the registered markups of [`TextMarkup`](/reference/text/textmarkup/)
 
 The [`ITextMarkup`](/reference/text/itextmarkup/) tags that the text reads; JOID registers none by default.
 `getMarkups()` returns the registered markups of [`TextMarkup`](/reference/text/textmarkup/) until `markups(...)` sets a list of your own.
@@ -244,7 +244,7 @@ The [`ITextMarkup`](/reference/text/itextmarkup/) tags that the text reads; JOID
 - `this effects(ITextEffect... effects)` <span class="joid-qualifier">fluent</span>
 - `List<ITextEffect> getEffects()` 
 
-**Default:** 
+**Default:** none
 
 The [`ITextEffect`](/reference/text/itexteffect/) list applied to every glyph, such as a wave or a typewriter; `getEffects()` returns it as a list you cannot change.
 

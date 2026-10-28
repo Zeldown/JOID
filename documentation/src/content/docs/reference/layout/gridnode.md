@@ -107,8 +107,6 @@ Where each row sits in the width: `START`, `CENTER` or `END`.
 - `this margin(double margin)` <span class="joid-qualifier">fluent</span>
 - `this margin(Supplier<Double> margin)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
-
 Sets the space between the cells on both axes, in design pixels.
 
 <a id="GridNode-property-marginHorizontal"></a>

@@ -26,8 +26,8 @@ The Y axis of a chart, which formats its values.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [prefix](#ChartNode-ChartAxis-YChartAxis-property-prefix) | `String` |  | Text written before every value, such as a currency sign; `null` writes none. |
-| [suffix](#ChartNode-ChartAxis-YChartAxis-property-suffix) | `String` |  | Text written after every value, such as a unit; `null` writes none. |
+| [prefix](#ChartNode-ChartAxis-YChartAxis-property-prefix) | `String` | `null` | Text written before every value, such as a currency sign; `null` writes none. |
+| [suffix](#ChartNode-ChartAxis-YChartAxis-property-suffix) | `String` | `null` | Text written after every value, such as a unit; `null` writes none. |
 
 <a id="ChartNode-ChartAxis-YChartAxis-methods"></a>
 
@@ -53,7 +53,7 @@ The Y axis of a chart, which formats its values.
 - `this prefix(String prefix)` <span class="joid-qualifier">fluent</span>
 - `String getPrefix()` 
 
-**Default:** 
+**Default:** `null`
 
 Text written before every value, such as a currency sign; `null` writes none.
 
@@ -64,7 +64,7 @@ Text written before every value, such as a currency sign; `null` writes none.
 - `this suffix(String suffix)` <span class="joid-qualifier">fluent</span>
 - `String getSuffix()` 
 
-**Default:** 
+**Default:** `null`
 
 Text written after every value, such as a unit; `null` writes none.
 

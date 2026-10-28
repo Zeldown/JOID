@@ -329,9 +329,9 @@ public final class PageWriter {
 		}
 
 		if (!page.getConstants().isEmpty() || !page.getFields().isEmpty()) {
-			out.append("## Constants and fields\n\n| Type | Name | Value |\n|---|---|---|\n");
+			out.append("## Constants and fields\n\n| Type | Name | Value | Summary |\n|---|---|---|---|\n");
 			for (final ApiMember member : PageWriter.concat(page.getConstants(), page.getFields())) {
-				out.append("| ").append(this.typeLink(page, this.declaring(member), member.getReturnType())).append(" | [").append(member.getName()).append("](#").append(page.anchorOf(member)).append(") | ").append(member.getKind() == MemberKind.CONSTANT && member.getDefaultValue() != null ? "`" + PageWriter.escape(member.getDefaultValue()) + "`" : "").append(" |\n");
+				out.append("| ").append(this.typeLink(page, this.declaring(member), member.getReturnType())).append(" | [").append(member.getName()).append("](#").append(page.anchorOf(member)).append(") | ").append(member.getKind() == MemberKind.CONSTANT && member.getDefaultValue() != null ? "`" + PageWriter.escape(member.getDefaultValue()) + "`" : "").append(" | ").append(this.summary(page, description, path, member.getKey())).append(" |\n");
 			}
 			out.append('\n');
 		}
@@ -373,9 +373,12 @@ public final class PageWriter {
 					for (final ApiMember member : property.getMembers()) {
 						out.append("- `").append(PageWriter.escapeCode(member.getSignature())).append("` ").append(PageWriter.qualifiers(member)).append('\n');
 					}
-					out.append("\n**Default:** ").append(this.defaultValue(page, description, path, property)).append("\n\n");
+					final String value = this.defaultValue(page, description, path, property);
+					out.append(value.isEmpty() ? "\n" : "\n**Default:** " + value + "\n\n");
 					property.getMembers().forEach(member -> PageWriter.behavior(member, out));
-					this.entry(page, description, path, property.getName(), property.getMembers().stream().map(ApiMember::getKey).collect(Collectors.toList()), out);
+					final List<String> keys = property.getMembers().stream().map(ApiMember::getKey).collect(Collectors.toList());
+					this.entry(page, description, path, property.getName(), keys, out);
+					this.masked(description, path, property.getName(), keys);
 				}
 			}
 		}
@@ -459,8 +462,26 @@ public final class PageWriter {
 		out.append(text == null ? PageWriter.missing(key, path) : this.text(page, text, path)).append("\n\n");
 	}
 
+	private void masked(final DescriptionFile description, final String path, final String property, final List<String> keys) {
+		if (description == null) {
+			return;
+		}
+
+		final List<String> described = new ArrayList<>();
+		if (description.has(property)) {
+			described.add(property);
+		}
+		keys.stream().filter(description::has).forEach(described::add);
+		described.stream().skip(1).forEach(key -> this.coverage.masked(path, key, property));
+	}
+
 	private String defaultValue(final TypePage page, final DescriptionFile description, final String path, final ApiProperty property) {
-		final String explained = description == null ? null : description.getDefaults().get(property.getName());
+		String explained = description == null ? null : description.getDefaults().get(property.getName());
+		for (final ApiMember member : property.getMembers()) {
+			if (explained == null && description != null) {
+				explained = description.getDefaults().get(member.getKey());
+			}
+		}
 		return explained == null ? PageWriter.defaultValue(property.getDefaultValue()) : PageWriter.escape(this.text(page, explained, path));
 	}
 

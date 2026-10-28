@@ -46,9 +46,9 @@ The flags tell which optional attributes the draw wrote: the backend gives the o
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [STRIDE](#VertexBuffer-constant-STRIDE) | `32` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [STRIDE](#VertexBuffer-constant-STRIDE) | `32` | The size of one vertex, in bytes. |
 
 ## Creation details
 

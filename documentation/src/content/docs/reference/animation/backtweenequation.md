@@ -39,7 +39,7 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [overshoot](#BackTweenEquation-property-overshoot) | `float` |  | How far the curve swings past its ends: `0F` gives no swing, larger values swing further. |
+| [overshoot](#BackTweenEquation-property-overshoot) | `float` | `1.70158F` in `IN`, `OUT` and `IN_OUT` | How far the curve swings past its ends: `0F` gives no swing, larger values swing further. |
 
 <a id="BackTweenEquation-methods"></a>
 
@@ -54,12 +54,12 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [IN](#BackTweenEquation-constant-IN) | `BackTweenEquation.in(1.70158F)` |
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [OUT](#BackTweenEquation-constant-OUT) | `BackTweenEquation.out(1.70158F)` |
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [IN_OUT](#BackTweenEquation-constant-IN_OUT) | `BackTweenEquation.inOut(1.70158F)` |
-| `float` | [overshoot](#BackTweenEquation-field-overshoot) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [IN](#BackTweenEquation-constant-IN) | `BackTweenEquation.in(1.70158F)` | Moves back a little before it starts. |
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [OUT](#BackTweenEquation-constant-OUT) | `BackTweenEquation.out(1.70158F)` | Goes past the end a little before it settles. |
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [IN_OUT](#BackTweenEquation-constant-IN_OUT) | `BackTweenEquation.inOut(1.70158F)` | Moves back a little at the start and goes past the end a little. |
+| `float` | [overshoot](#BackTweenEquation-field-overshoot) |  | How far the curve swings past its ends: `0F` gives no swing, larger values swing further. |
 
 ## Creation details
 
@@ -80,7 +80,7 @@ Creates a curve with the swing `overshoot`, for a subclass.
 - `this overshoot(float overshoot)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span>
 - `float getOvershoot()` 
 
-**Default:** 
+**Default:** `1.70158F` in `IN`, `OUT` and `IN_OUT`
 
 How far the curve swings past its ends: `0F` gives no swing, larger values swing further.
 `overshoot(float)` returns a curve of the same direction with that swing and leaves this one unchanged.

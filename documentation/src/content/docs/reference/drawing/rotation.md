@@ -47,11 +47,11 @@ The components are read each time the rotation is applied.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`Rotation`](/reference/drawing/rotation/) | [YAW](#Rotation-constant-YAW) | `new Rotation(1D, 0D, 0D)` |
-| [`Rotation`](/reference/drawing/rotation/) | [ROLL](#Rotation-constant-ROLL) | `new Rotation(0D, 0D, 1D)` |
-| [`Rotation`](/reference/drawing/rotation/) | [PITCH](#Rotation-constant-PITCH) | `new Rotation(0D, 1D, 0D)` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`Rotation`](/reference/drawing/rotation/) | [YAW](#Rotation-constant-YAW) | `new Rotation(1D, 0D, 0D)` | Turns around the vertical axis. |
+| [`Rotation`](/reference/drawing/rotation/) | [ROLL](#Rotation-constant-ROLL) | `new Rotation(0D, 0D, 1D)` | Turns in the plane of the screen, around the axis that points out of it. |
+| [`Rotation`](/reference/drawing/rotation/) | [PITCH](#Rotation-constant-PITCH) | `new Rotation(0D, 1D, 0D)` | Turns around the horizontal axis. |
 
 ## Creation details
 

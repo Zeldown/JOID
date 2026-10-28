@@ -36,39 +36,39 @@ The catalog shows every curve.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`LinearTweenEquation`](/reference/animation/lineartweenequation/) | [LINEAR](#TweenEquations-constant-LINEAR) | `LinearTweenEquation.IN_OUT` |
-| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_IN](#TweenEquations-constant-QUAD_IN) | `QuadTweenEquation.IN` |
-| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_OUT](#TweenEquations-constant-QUAD_OUT) | `QuadTweenEquation.OUT` |
-| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_IN_OUT](#TweenEquations-constant-QUAD_IN_OUT) | `QuadTweenEquation.IN_OUT` |
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_IN](#TweenEquations-constant-CUBIC_IN) | `CubicTweenEquation.IN` |
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_OUT](#TweenEquations-constant-CUBIC_OUT) | `CubicTweenEquation.OUT` |
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_IN_OUT](#TweenEquations-constant-CUBIC_IN_OUT) | `CubicTweenEquation.IN_OUT` |
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_IN](#TweenEquations-constant-QUART_IN) | `QuartTweenEquation.IN` |
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_OUT](#TweenEquations-constant-QUART_OUT) | `QuartTweenEquation.OUT` |
-| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_IN_OUT](#TweenEquations-constant-QUART_IN_OUT) | `QuartTweenEquation.IN_OUT` |
-| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_IN](#TweenEquations-constant-QUINT_IN) | `QuintTweenEquation.IN` |
-| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_OUT](#TweenEquations-constant-QUINT_OUT) | `QuintTweenEquation.OUT` |
-| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_IN_OUT](#TweenEquations-constant-QUINT_IN_OUT) | `QuintTweenEquation.IN_OUT` |
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_IN](#TweenEquations-constant-CIRC_IN) | `CircTweenEquation.IN` |
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_OUT](#TweenEquations-constant-CIRC_OUT) | `CircTweenEquation.OUT` |
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_IN_OUT](#TweenEquations-constant-CIRC_IN_OUT) | `CircTweenEquation.IN_OUT` |
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_IN](#TweenEquations-constant-SINE_IN) | `SineTweenEquation.IN` |
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_OUT](#TweenEquations-constant-SINE_OUT) | `SineTweenEquation.OUT` |
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_IN_OUT](#TweenEquations-constant-SINE_IN_OUT) | `SineTweenEquation.IN_OUT` |
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_IN](#TweenEquations-constant-EXPO_IN) | `ExpoTweenEquation.IN` |
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_OUT](#TweenEquations-constant-EXPO_OUT) | `ExpoTweenEquation.OUT` |
-| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_IN_OUT](#TweenEquations-constant-EXPO_IN_OUT) | `ExpoTweenEquation.IN_OUT` |
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_IN](#TweenEquations-constant-BACK_IN) | `BackTweenEquation.IN` |
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_OUT](#TweenEquations-constant-BACK_OUT) | `BackTweenEquation.OUT` |
-| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_IN_OUT](#TweenEquations-constant-BACK_IN_OUT) | `BackTweenEquation.IN_OUT` |
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_IN](#TweenEquations-constant-BOUNCE_IN) | `BounceTweenEquation.IN` |
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_OUT](#TweenEquations-constant-BOUNCE_OUT) | `BounceTweenEquation.OUT` |
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_IN_OUT](#TweenEquations-constant-BOUNCE_IN_OUT) | `BounceTweenEquation.IN_OUT` |
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_IN](#TweenEquations-constant-ELASTIC_IN) | `ElasticTweenEquation.IN` |
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_OUT](#TweenEquations-constant-ELASTIC_OUT) | `ElasticTweenEquation.OUT` |
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_IN_OUT](#TweenEquations-constant-ELASTIC_IN_OUT) | `ElasticTweenEquation.IN_OUT` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`LinearTweenEquation`](/reference/animation/lineartweenequation/) | [LINEAR](#TweenEquations-constant-LINEAR) | `LinearTweenEquation.IN_OUT` | Constant speed. |
+| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_IN](#TweenEquations-constant-QUAD_IN) | `QuadTweenEquation.IN` | Starts slowly, with a power of 2. |
+| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_OUT](#TweenEquations-constant-QUAD_OUT) | `QuadTweenEquation.OUT` | Ends slowly, with a power of 2. |
+| [`QuadTweenEquation`](/reference/animation/quadtweenequation/) | [QUAD_IN_OUT](#TweenEquations-constant-QUAD_IN_OUT) | `QuadTweenEquation.IN_OUT` | Starts and ends slowly, with a power of 2. |
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_IN](#TweenEquations-constant-CUBIC_IN) | `CubicTweenEquation.IN` | Starts slowly, with a power of 3. |
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_OUT](#TweenEquations-constant-CUBIC_OUT) | `CubicTweenEquation.OUT` | Ends slowly, with a power of 3. |
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [CUBIC_IN_OUT](#TweenEquations-constant-CUBIC_IN_OUT) | `CubicTweenEquation.IN_OUT` | Starts and ends slowly, with a power of 3. |
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_IN](#TweenEquations-constant-QUART_IN) | `QuartTweenEquation.IN` | Starts slowly, with a power of 4. |
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_OUT](#TweenEquations-constant-QUART_OUT) | `QuartTweenEquation.OUT` | Ends slowly, with a power of 4. |
+| [`QuartTweenEquation`](/reference/animation/quarttweenequation/) | [QUART_IN_OUT](#TweenEquations-constant-QUART_IN_OUT) | `QuartTweenEquation.IN_OUT` | Starts and ends slowly, with a power of 4. |
+| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_IN](#TweenEquations-constant-QUINT_IN) | `QuintTweenEquation.IN` | Starts slowly, with a power of 5. |
+| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_OUT](#TweenEquations-constant-QUINT_OUT) | `QuintTweenEquation.OUT` | Ends slowly, with a power of 5. |
+| [`QuintTweenEquation`](/reference/animation/quinttweenequation/) | [QUINT_IN_OUT](#TweenEquations-constant-QUINT_IN_OUT) | `QuintTweenEquation.IN_OUT` | Starts and ends slowly, with a power of 5. |
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_IN](#TweenEquations-constant-CIRC_IN) | `CircTweenEquation.IN` | Starts slowly, along a quarter circle. |
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_OUT](#TweenEquations-constant-CIRC_OUT) | `CircTweenEquation.OUT` | Ends slowly, along a quarter circle. |
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [CIRC_IN_OUT](#TweenEquations-constant-CIRC_IN_OUT) | `CircTweenEquation.IN_OUT` | Starts and ends slowly, along quarter circles. |
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_IN](#TweenEquations-constant-SINE_IN) | `SineTweenEquation.IN` | Starts slowly, along a sine. |
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_OUT](#TweenEquations-constant-SINE_OUT) | `SineTweenEquation.OUT` | Ends slowly, along a sine. |
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [SINE_IN_OUT](#TweenEquations-constant-SINE_IN_OUT) | `SineTweenEquation.IN_OUT` | Starts and ends slowly, along a sine. |
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_IN](#TweenEquations-constant-EXPO_IN) | `ExpoTweenEquation.IN` | Starts very slowly, with an exponential. |
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_OUT](#TweenEquations-constant-EXPO_OUT) | `ExpoTweenEquation.OUT` | Ends very slowly, with an exponential. |
+| [`ExpoTweenEquation`](/reference/animation/expotweenequation/) | [EXPO_IN_OUT](#TweenEquations-constant-EXPO_IN_OUT) | `ExpoTweenEquation.IN_OUT` | Starts and ends very slowly, with an exponential. |
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_IN](#TweenEquations-constant-BACK_IN) | `BackTweenEquation.IN` | Moves back a little before it starts. |
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_OUT](#TweenEquations-constant-BACK_OUT) | `BackTweenEquation.OUT` | Goes past the end a little before it settles. |
+| [`BackTweenEquation`](/reference/animation/backtweenequation/) | [BACK_IN_OUT](#TweenEquations-constant-BACK_IN_OUT) | `BackTweenEquation.IN_OUT` | Moves back a little at the start and goes past the end a little. |
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_IN](#TweenEquations-constant-BOUNCE_IN) | `BounceTweenEquation.IN` | Bounces at the start. |
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_OUT](#TweenEquations-constant-BOUNCE_OUT) | `BounceTweenEquation.OUT` | Bounces at the end, like a ball that falls. |
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [BOUNCE_IN_OUT](#TweenEquations-constant-BOUNCE_IN_OUT) | `BounceTweenEquation.IN_OUT` | Bounces at the start and at the end. |
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_IN](#TweenEquations-constant-ELASTIC_IN) | `ElasticTweenEquation.IN` | Oscillates at the start, like a spring. |
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_OUT](#TweenEquations-constant-ELASTIC_OUT) | `ElasticTweenEquation.OUT` | Oscillates at the end, like a spring. |
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [ELASTIC_IN_OUT](#TweenEquations-constant-ELASTIC_IN_OUT) | `ElasticTweenEquation.IN_OUT` | Oscillates at the start and at the end. |
 
 ## Method details
 

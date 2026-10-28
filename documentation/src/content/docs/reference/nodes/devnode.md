@@ -47,7 +47,7 @@ The panel can be dragged on the screen; I turns the inspector on and off, Enter 
 
 | Property | Default here | Inherited default |
 |---|---|---|
-| [anchor](/reference/nodes/node/#Node-property-anchor) | `Align.END` | not read in `Node` |
+| [anchor](/reference/nodes/node/#Node-property-anchor) | `Align.END` | `Align.START` in `Node` |
 
 <a id="DevNode-methods"></a>
 

@@ -37,13 +37,13 @@ Call them on the render thread, during a frame; outside a frame the render bridg
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`DrawText`](/reference/text/drawtext/) | [TEXT](#DrawUtils-constant-TEXT) | `DrawText.inst()` |
-| [`DrawShape`](/reference/drawing/drawshape/) | [SHAPE](#DrawUtils-constant-SHAPE) | `DrawShape.inst()` |
-| [`DrawModel`](/reference/drawing/drawmodel/) | [MODEL](#DrawUtils-constant-MODEL) | `DrawModel.inst()` |
-| [`DrawRaster`](/reference/drawing/drawraster/) | [RASTER](#DrawUtils-constant-RASTER) | `DrawRaster.inst()` |
-| [`DrawResource`](/reference/drawing/drawresource/) | [RESOURCE](#DrawUtils-constant-RESOURCE) | `DrawResource.inst()` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`DrawText`](/reference/text/drawtext/) | [TEXT](#DrawUtils-constant-TEXT) | `DrawText.inst()` | Draws and measures text with a [`TextInfo`](/reference/text/textinfo/): [`DrawText`](/reference/text/drawtext/). |
+| [`DrawShape`](/reference/drawing/drawshape/) | [SHAPE](#DrawUtils-constant-SHAPE) | `DrawShape.inst()` | Draws rectangles, rounded rectangles, borders, circles, shadows, lines, curves and polygons: [`DrawShape`](/reference/drawing/drawshape/). |
+| [`DrawModel`](/reference/drawing/drawmodel/) | [MODEL](#DrawUtils-constant-MODEL) | `DrawModel.inst()` | Draws a 3D model scaled into the UI: [`DrawModel`](/reference/drawing/drawmodel/). |
+| [`DrawRaster`](/reference/drawing/drawraster/) | [RASTER](#DrawUtils-constant-RASTER) | `DrawRaster.inst()` | Draws what another renderer draws, through an offscreen framebuffer: [`DrawRaster`](/reference/drawing/drawraster/). |
+| [`DrawResource`](/reference/drawing/drawresource/) | [RESOURCE](#DrawUtils-constant-RESOURCE) | `DrawResource.inst()` | Draws resources and textures: [`DrawResource`](/reference/drawing/drawresource/). |
 
 ## Constant and field details
 

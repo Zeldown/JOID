@@ -19,15 +19,21 @@ The options, at least one, in their order on screen.
 The reactive setter takes a `Supplier` of a list, and the choice builds its options again each time the list changes.
 An empty list throws an `IllegalArgumentException`.
 
+Default: none, `values(...)` is required before the attach
+
 ## value
 
 The selected option.
 A plain value is the start value, and throws an `IllegalArgumentException` when it is not one of the options; a signal binds the selection both ways.
 
+Default: the first option
+
 ## valueIndex
 
 The index of the selected option in the options.
 A plain index is the start value, and throws an `IllegalArgumentException` when it is out of the options; an [[IntegerSignal]] binds the index both ways.
+
+Default: `0`, the first option
 
 ## getValueList()
 

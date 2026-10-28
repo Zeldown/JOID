@@ -40,10 +40,10 @@ Get it from [`Resource.getPlayback`](/reference/resources/resource/#Resource-met
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [loop](#VideoResourceDecoder-property-loop) | `boolean` |  | If `true`, the video starts again at the end. |
+| [loop](#VideoResourceDecoder-property-loop) | `boolean` | `false` | If `true`, the video starts again at the end. |
 | [autoplay](#VideoResourceDecoder-property-autoplay) | `boolean` | `true` | If `true`, the video starts once its first frame is uploaded. |
 | [volume](#VideoResourceDecoder-property-volume) | `float` | `1F` | The volume of the sound, on 1; `0F` mutes it. |
-| [audioGroup](#VideoResourceDecoder-property-audioGroup) | `Object` |  | The group of the audio source, which the audio bridge can use to set the volume of every sound of a group at once; `null` for none. |
+| [audioGroup](#VideoResourceDecoder-property-audioGroup) | `Object` | `null` | The group of the audio source, which the audio bridge can use to set the volume of every sound of a group at once; `null` for none. |
 | [referenceDistance](#VideoResourceDecoder-property-referenceDistance) | `float` | `5F` | With a `location`, the distance from the listener under which the sound plays at full volume. |
 | [maxDistance](#VideoResourceDecoder-property-maxDistance) | `float` | `50F` | With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances. |
 
@@ -122,7 +122,7 @@ Creates a decoder of the video `asset`.
 - `this loop(boolean loop)` <span class="joid-qualifier">fluent</span>
 - `boolean isLoop()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the video starts again at the end.
 
@@ -155,7 +155,7 @@ The volume of the sound, on 1; `0F` mutes it.
 - `this audioGroup(Object audioGroup)` <span class="joid-qualifier">fluent</span>
 - `Object getAudioGroup()` 
 
-**Default:** 
+**Default:** `null`
 
 The group of the audio source, which the audio bridge can use to set the volume of every sound of a group at once; `null` for none.
 

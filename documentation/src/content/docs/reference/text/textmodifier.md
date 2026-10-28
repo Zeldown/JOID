@@ -38,15 +38,15 @@ It applies to the whole text at once and leaves the markup tags untouched.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`TextModifier`](/reference/text/textmodifier/) | [LOWER_CASE](#TextModifier-constant-LOWER_CASE) | `text -> text.toLowerCase(Locale.ROOT)` |
-| [`TextModifier`](/reference/text/textmodifier/) | [UPPER_CASE](#TextModifier-constant-UPPER_CASE) | `text -> text.toUpperCase(Locale.ROOT)` |
-| [`TextModifier`](/reference/text/textmodifier/) | [CAMEL_CASE](#TextModifier-constant-CAMEL_CASE) | `text -> TextModifier.camelCase(text, false)` |
-| [`TextModifier`](/reference/text/textmodifier/) | [UPPER_CAMEL_CASE](#TextModifier-constant-UPPER_CAMEL_CASE) | `text -> TextModifier.camelCase(text, true)` |
-| [`TextModifier`](/reference/text/textmodifier/) | [SNAKE_CASE](#TextModifier-constant-SNAKE_CASE) | `text -> text.toLowerCase(Locale.ROOT).replace(" ", "_")` |
-| [`TextModifier`](/reference/text/textmodifier/) | [CAPITALIZE](#TextModifier-constant-CAPITALIZE) | `StringUtils::capitalize` |
-| [`TextModifier`](/reference/text/textmodifier/) | [WORD_CAPITALIZE](#TextModifier-constant-WORD_CAPITALIZE) | `TextModifier::capitalizeWords` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`TextModifier`](/reference/text/textmodifier/) | [LOWER_CASE](#TextModifier-constant-LOWER_CASE) | `text -> text.toLowerCase(Locale.ROOT)` | Shows the text in lower case. |
+| [`TextModifier`](/reference/text/textmodifier/) | [UPPER_CASE](#TextModifier-constant-UPPER_CASE) | `text -> text.toUpperCase(Locale.ROOT)` | Shows the text in upper case. |
+| [`TextModifier`](/reference/text/textmodifier/) | [CAMEL_CASE](#TextModifier-constant-CAMEL_CASE) | `text -> TextModifier.camelCase(text, false)` | Shows `hello big world` as `helloBigWorld`. |
+| [`TextModifier`](/reference/text/textmodifier/) | [UPPER_CAMEL_CASE](#TextModifier-constant-UPPER_CAMEL_CASE) | `text -> TextModifier.camelCase(text, true)` | Shows `hello big world` as `HelloBigWorld`. |
+| [`TextModifier`](/reference/text/textmodifier/) | [SNAKE_CASE](#TextModifier-constant-SNAKE_CASE) | `text -> text.toLowerCase(Locale.ROOT).replace(" ", "_")` | Shows `Hello big world` as `hello_big_world`. |
+| [`TextModifier`](/reference/text/textmodifier/) | [CAPITALIZE](#TextModifier-constant-CAPITALIZE) | `StringUtils::capitalize` | Capitalizes the first letter of the text. |
+| [`TextModifier`](/reference/text/textmodifier/) | [WORD_CAPITALIZE](#TextModifier-constant-WORD_CAPITALIZE) | `TextModifier::capitalizeWords` | Capitalizes the first letter of every word. |
 
 ## Method details
 

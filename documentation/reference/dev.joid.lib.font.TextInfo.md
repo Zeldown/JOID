@@ -22,6 +22,8 @@ Creates a style that draws with `font` at `fontSize` design pixels, in opaque bl
 
 The [[IFont]] that draws the text; its text renderer measures and draws it.
 
+Default: set at creation, by `TextInfo.create(font, fontSize)`
+
 ## fontSize
 
 The size of the text, in design pixels: the em size of the font.
@@ -59,9 +61,13 @@ If `true`, the text draws with the italic face of the font, or slanted when the 
 The [[ITextMarkup]] tags that the text reads; JOID registers none by default.
 `getMarkups()` returns the registered markups of [[TextMarkup]] until `markups(...)` sets a list of your own.
 
+Default: the registered markups of [[TextMarkup]]
+
 ## effects
 
 The [[ITextEffect]] list applied to every glyph, such as a wave or a typewriter; `getEffects()` returns it as a list you cannot change.
+
+Default: none
 
 ## shadowTint
 

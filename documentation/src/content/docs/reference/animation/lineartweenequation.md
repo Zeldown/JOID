@@ -45,9 +45,9 @@ Its only constant is also [`TweenEquations.LINEAR`](/reference/animation/tweeneq
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`LinearTweenEquation`](/reference/animation/lineartweenequation/) | [IN_OUT](#LinearTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`LinearTweenEquation`](/reference/animation/lineartweenequation/) | [IN_OUT](#LinearTweenEquation-constant-IN_OUT) |  | Constant speed from the start to the end. |
 
 ## Creation details
 

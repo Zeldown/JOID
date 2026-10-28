@@ -38,8 +38,8 @@ The value can be any object, converted to a string by [`TextConverter`](/referen
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [text](#TextElement-property-text) <span class="joid-qualifier">signal</span> | `Object` |  | The value of the element: `getText()` returns it as a string after the modifier; `text(Object)` and `text(Supplier)` set it. |
-| [info](#TextElement-property-info) | [`TextInfo`](/reference/text/textinfo/) |  | The [`TextInfo`](/reference/text/textinfo/) that styles the element: font, size, color, weight and spacing. |
+| [text](#TextElement-property-text) <span class="joid-qualifier">signal</span> | `Object` | set at creation, by `TextElement.create(text, info)` | The value of the element: `getText()` returns it as a string after the modifier; `text(Object)` and `text(Supplier)` set it. |
+| [info](#TextElement-property-info) | [`TextInfo`](/reference/text/textinfo/) | set at creation, by `TextElement.create(text, info)` | The [`TextInfo`](/reference/text/textinfo/) that styles the element: font, size, color, weight and spacing. |
 | [modifier](#TextElement-property-modifier) | [`TextModifier`](/reference/text/textmodifier/) | `null` | The [`TextModifier`](/reference/text/textmodifier/) applied to the text of this element, or `null` for none. |
 
 <a id="TextElement-methods"></a>
@@ -77,7 +77,7 @@ Creates an element showing the value of `text`, styled by `info`.
 - `this text(Supplier<?> text)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `String getText()` 
 
-**Default:** 
+**Default:** set at creation, by `TextElement.create(text, info)`
 
 The value of the element: `getText()` returns it as a string after the modifier; `text(Object)` and `text(Supplier)` set it.
 
@@ -88,7 +88,7 @@ The value of the element: `getText()` returns it as a string after the modifier;
 - `this info(TextInfo info)` <span class="joid-qualifier">fluent</span>
 - `TextInfo getInfo()` 
 
-**Default:** 
+**Default:** set at creation, by `TextElement.create(text, info)`
 
 The [`TextInfo`](/reference/text/textinfo/) that styles the element: font, size, color, weight and spacing.
 

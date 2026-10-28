@@ -95,6 +95,8 @@ If `false`, the node and its children let the mouse through to what is under the
 
 Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one.
 
+Default: `null`: the cursor of the closest parent that sets one, `Cursor.DEFAULT` when none does
+
 ## hoverDuration
 
 Time, in ms, that the hover progress takes to go from `0` to `1` and back.
@@ -124,9 +126,13 @@ Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and 
 
 Text drawn centered over the node, after the node itself and before its children; `null` draws none.
 
+Default: `null`: no label
+
 ## draggable
 
 Lets the user drag the node with the left button, inside the area and with the movement and the snapping of the [[DraggableProperty]]; `null` means the node cannot be dragged.
+
+Default: `null`: the node cannot be dragged
 
 ## load(UI)
 

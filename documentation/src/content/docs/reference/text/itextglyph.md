@@ -67,8 +67,6 @@ Positions and metrics are in design pixels, scaled by the font size of the glyph
 - `this codepoint(int codepoint)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span>
 - `int getCodepoint()` <span class="joid-qualifier">abstract</span>
 
-**Default:** 
-
 The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` replaces it, for example to scramble a text; the advance of the glyph is unchanged.
 
 <a id="ITextGlyph-property-color"></a>
@@ -77,8 +75,6 @@ The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` 
 
 - `this color(Color color)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span>
 - `Color getColor()` <span class="joid-qualifier">abstract</span>
-
-**Default:** 
 
 The color the glyph draws in: `getColor()` reads it, `color(Color)` replaces it.
 

@@ -60,8 +60,6 @@ Times are in seconds; call the controls on the render thread.
 - `this loop(boolean loop)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span>
 - `boolean isLoop()` <span class="joid-qualifier">abstract</span>
 
-**Default:** 
-
 If `true`, the playback starts again at the end.
 
 <a id="IResourcePlayback-property-autoplay"></a>
@@ -70,8 +68,6 @@ If `true`, the playback starts again at the end.
 
 - `this autoplay(boolean autoplay)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span>
 - `boolean isAutoplay()` <span class="joid-qualifier">abstract</span>
-
-**Default:** 
 
 If `true`, the playback starts by itself once the resource is loaded.
 

@@ -42,7 +42,7 @@ The border setters of a [`RectNode`](/reference/nodes/rectnode/) drive the `Bord
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [color](#BorderNodeEffect-property-color) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) |  | Color of the border. |
+| [color](#BorderNodeEffect-property-color) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | set at creation, by `BorderNodeEffect.create(color, width)` | Color of the border. |
 | [width](#BorderNodeEffect-property-width) <span class="joid-qualifier">signal</span> | `float` | set at creation | Thickness of the border, in design pixels; `0F` or less turns the effect off. |
 | [mode](#BorderNodeEffect-property-mode) <span class="joid-qualifier">signal</span> | [`BorderMode`](/reference/shaders/bordershader-bordermode/) | `BorderMode.OUT` | Side of the edge where the border lies: `BorderMode.OUT` around the shape, `BorderMode.IN` over its outer pixels. |
 | [corners](#BorderNodeEffect-property-corners) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, an `OUT` border leaves the corners of the node open and runs along its four sides only. |
@@ -99,7 +99,7 @@ Called by a subclass with suppliers of the color and of the width.
 - `this color(Supplier<Color> colorSupplier)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `this color(Function<N,Color> colorFunction)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** set at creation, by `BorderNodeEffect.create(color, width)`
 
 Color of the border.
 The overload that takes a `Function` receives the node, so that the color can depend on its state, such as its focus.

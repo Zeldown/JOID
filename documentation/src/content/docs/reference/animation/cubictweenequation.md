@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [IN](#CubicTweenEquation-constant-IN) |  |
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [OUT](#CubicTweenEquation-constant-OUT) |  |
-| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [IN_OUT](#CubicTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [IN](#CubicTweenEquation-constant-IN) |  | Starts slowly, with a power of 3. |
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [OUT](#CubicTweenEquation-constant-OUT) |  | Ends slowly, with a power of 3. |
+| [`CubicTweenEquation`](/reference/animation/cubictweenequation/) | [IN_OUT](#CubicTweenEquation-constant-IN_OUT) |  | Starts and ends slowly, with a power of 3. |
 
 ## Creation details
 

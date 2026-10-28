@@ -129,24 +129,24 @@ Two colors are equal when their channels, their gradient and their update functi
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`Color`](/reference/drawing/color/) | [RED](#Color-constant-RED) | `new Color(1F, 0F, 0F, 1F).constant("RED")` |
-| [`Color`](/reference/drawing/color/) | [BLUE](#Color-constant-BLUE) | `new Color(0F, 0F, 1F, 1F).constant("BLUE")` |
-| [`Color`](/reference/drawing/color/) | [GRAY](#Color-constant-GRAY) | `new Color(0.5F, 0.5F, 0.5F, 1F).constant("GRAY")` |
-| [`Color`](/reference/drawing/color/) | [CYAN](#Color-constant-CYAN) | `new Color(0F, 1F, 1F, 1F).constant("CYAN")` |
-| [`Color`](/reference/drawing/color/) | [PINK](#Color-constant-PINK) | `new Color(1F, 0.7F, 0.7F, 1F).constant("PINK")` |
-| [`Color`](/reference/drawing/color/) | [WHITE](#Color-constant-WHITE) | `new Color(1F, 1F, 1F, 1F).constant("WHITE")` |
-| [`Color`](/reference/drawing/color/) | [GREEN](#Color-constant-GREEN) | `new Color(0F, 1F, 0F, 1F).constant("GREEN")` |
-| [`Color`](/reference/drawing/color/) | [BLACK](#Color-constant-BLACK) | `new Color(0F, 0F, 0F, 1F).constant("BLACK")` |
-| [`Color`](/reference/drawing/color/) | [YELLOW](#Color-constant-YELLOW) | `new Color(1F, 1F, 0F, 1F).constant("YELLOW")` |
-| [`Color`](/reference/drawing/color/) | [ORANGE](#Color-constant-ORANGE) | `new Color(1F, 0.5F, 0F, 1F).constant("ORANGE")` |
-| [`Color`](/reference/drawing/color/) | [MAGENTA](#Color-constant-MAGENTA) | `new Color(1F, 0F, 1F, 1F).constant("MAGENTA")` |
-| [`Color`](/reference/drawing/color/) | [DARKGRAY](#Color-constant-DARKGRAY) | `new Color(0.3F, 0.3F, 0.3F, 1F).constant("DARKGRAY")` |
-| [`Color`](/reference/drawing/color/) | [LIGHTGRAY](#Color-constant-LIGHTGRAY) | `new Color(0.7F, 0.7F, 0.7F, 1F).constant("LIGHTGRAY")` |
-| [`Color`](/reference/drawing/color/) | [TRANSPARENT](#Color-constant-TRANSPARENT) | `new Color(0F, 0F, 0F, 0F).constant("TRANSPARENT")` |
-| [`Color`](/reference/drawing/color/) | [RAINBOW](#Color-constant-RAINBOW) |  |
-| [`Color`](/reference/drawing/color/) | [LOADING](#Color-constant-LOADING) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`Color`](/reference/drawing/color/) | [RED](#Color-constant-RED) | `new Color(1F, 0F, 0F, 1F).constant("RED")` | Opaque red, `#FF0000FF`. |
+| [`Color`](/reference/drawing/color/) | [BLUE](#Color-constant-BLUE) | `new Color(0F, 0F, 1F, 1F).constant("BLUE")` | Opaque blue, `#0000FFFF`. |
+| [`Color`](/reference/drawing/color/) | [GRAY](#Color-constant-GRAY) | `new Color(0.5F, 0.5F, 0.5F, 1F).constant("GRAY")` | Opaque mid gray, `0.5F` on every channel. |
+| [`Color`](/reference/drawing/color/) | [CYAN](#Color-constant-CYAN) | `new Color(0F, 1F, 1F, 1F).constant("CYAN")` | Opaque cyan, `#00FFFFFF`. |
+| [`Color`](/reference/drawing/color/) | [PINK](#Color-constant-PINK) | `new Color(1F, 0.7F, 0.7F, 1F).constant("PINK")` | Opaque light pink: red `1F`, green and blue `0.7F`. |
+| [`Color`](/reference/drawing/color/) | [WHITE](#Color-constant-WHITE) | `new Color(1F, 1F, 1F, 1F).constant("WHITE")` | Opaque white, `#FFFFFFFF`. |
+| [`Color`](/reference/drawing/color/) | [GREEN](#Color-constant-GREEN) | `new Color(0F, 1F, 0F, 1F).constant("GREEN")` | Opaque green, `#00FF00FF`. |
+| [`Color`](/reference/drawing/color/) | [BLACK](#Color-constant-BLACK) | `new Color(0F, 0F, 0F, 1F).constant("BLACK")` | Opaque black, `#000000FF`. |
+| [`Color`](/reference/drawing/color/) | [YELLOW](#Color-constant-YELLOW) | `new Color(1F, 1F, 0F, 1F).constant("YELLOW")` | Opaque yellow, `#FFFF00FF`. |
+| [`Color`](/reference/drawing/color/) | [ORANGE](#Color-constant-ORANGE) | `new Color(1F, 0.5F, 0F, 1F).constant("ORANGE")` | Opaque orange: red `1F`, green `0.5F`, blue `0F`. |
+| [`Color`](/reference/drawing/color/) | [MAGENTA](#Color-constant-MAGENTA) | `new Color(1F, 0F, 1F, 1F).constant("MAGENTA")` | Opaque magenta, `#FF00FFFF`. |
+| [`Color`](/reference/drawing/color/) | [DARKGRAY](#Color-constant-DARKGRAY) | `new Color(0.3F, 0.3F, 0.3F, 1F).constant("DARKGRAY")` | Opaque dark gray, `0.3F` on every channel. |
+| [`Color`](/reference/drawing/color/) | [LIGHTGRAY](#Color-constant-LIGHTGRAY) | `new Color(0.7F, 0.7F, 0.7F, 1F).constant("LIGHTGRAY")` | Opaque light gray, `0.7F` on every channel. |
+| [`Color`](/reference/drawing/color/) | [TRANSPARENT](#Color-constant-TRANSPARENT) | `new Color(0F, 0F, 0F, 0F).constant("TRANSPARENT")` | Fully transparent black: draws nothing. |
+| [`Color`](/reference/drawing/color/) | [RAINBOW](#Color-constant-RAINBOW) |  | An animated color that cycles through the hues every 3 seconds, at 80 % saturation and brightness; its alpha is kept. |
+| [`Color`](/reference/drawing/color/) | [LOADING](#Color-constant-LOADING) |  | An animated color that pulses slightly around a dark gray every 2 seconds, the look of a loading placeholder; its alpha is kept. |
 
 ## Creation details
 

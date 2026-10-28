@@ -62,7 +62,7 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 |---|---|---|
 | [marginHorizontal](/reference/controls/fieldnode/#FieldNode-property-marginHorizontal) | `2D` | not read in `FieldNode` |
 | [marginVertical](/reference/controls/fieldnode/#FieldNode-property-marginVertical) | `10D` | not read in `FieldNode` |
-| [cursorMargin](/reference/controls/fieldnode/#FieldNode-property-cursorMargin) | `15D` | not read in `FieldNode` |
+| [cursorMargin](/reference/controls/fieldnode/#FieldNode-property-cursorMargin) | `15D` | `0D` in `FieldNode` |
 
 <a id="LineFieldNode-methods"></a>
 
@@ -137,8 +137,6 @@ Creates the field at `x`, `y` with a `width` and a `height` in design pixels, fr
 
 - `this align(Align align)` <span class="joid-qualifier">fluent</span>
 - `this align(Supplier<Align> align)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
-
-**Default:** 
 
 Sets `alignX` and `alignY` at once.
 

@@ -46,7 +46,7 @@ This tween moves `alpha` to `1F` in 400 ms; it moves only while its manager is u
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [target](#Tween-property-target) | `float` |  | The value to reach; a call to `target(...)` cancels a relative target. |
+| [target](#Tween-property-target) | `float` | `0F` | The value to reach; a call to `target(...)` cancels a relative target. |
 | [path](#Tween-property-path) | [`ITweenPath`](/reference/animation/itweenpath/) | `TweenPaths.CATMULL_ROM` | The curve that joins the start, the waypoints and the target; it has an effect only with waypoints. |
 | [easing](#Tween-property-easing) | [`TweenEquation`](/reference/animation/tweenequation/) | `TweenEquations.LINEAR` | The curve that maps the elapsed time to the progress. |
 
@@ -127,7 +127,7 @@ Creates an empty step without value, a place in a timeline.
 
 - `this target(float target)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `0F`
 
 The value to reach; a call to `target(...)` cancels a relative target.
 

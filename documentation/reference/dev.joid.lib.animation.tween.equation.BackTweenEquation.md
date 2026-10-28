@@ -16,6 +16,8 @@ Creates a curve with the swing `overshoot`, for a subclass.
 How far the curve swings past its ends: `0F` gives no swing, larger values swing further.
 `overshoot(float)` returns a curve of the same direction with that swing and leaves this one unchanged.
 
+Default: `1.70158F` in `IN`, `OUT` and `IN_OUT`
+
 ## IN
 
 Moves back a little before it starts.

@@ -39,8 +39,8 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [period](#ElasticTweenEquation-property-period) | `float` |  | The length of one oscillation, as a part of the step: smaller values oscillate faster. |
-| [amplitude](#ElasticTweenEquation-property-amplitude) | `float` |  | The height of the oscillations; a value below `1F` counts as `1F`. |
+| [period](#ElasticTweenEquation-property-period) | `float` | `0.3F` in `IN` and `OUT`, `0.45F` in `IN_OUT` | The length of one oscillation, as a part of the step: smaller values oscillate faster. |
+| [amplitude](#ElasticTweenEquation-property-amplitude) | `float` | `0F` in the three constants, which counts as `1F` | The height of the oscillations; a value below `1F` counts as `1F`. |
 
 <a id="ElasticTweenEquation-methods"></a>
 
@@ -55,13 +55,13 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [IN](#ElasticTweenEquation-constant-IN) | `ElasticTweenEquation.in(0.3F, 0F)` |
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [OUT](#ElasticTweenEquation-constant-OUT) | `ElasticTweenEquation.out(0.3F, 0F)` |
-| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [IN_OUT](#ElasticTweenEquation-constant-IN_OUT) | `ElasticTweenEquation.inOut(0.3F * 1.5F, 0F)` |
-| `float` | [period](#ElasticTweenEquation-field-period) |  |
-| `float` | [amplitude](#ElasticTweenEquation-field-amplitude) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [IN](#ElasticTweenEquation-constant-IN) | `ElasticTweenEquation.in(0.3F, 0F)` | Oscillates at the start, like a spring. |
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [OUT](#ElasticTweenEquation-constant-OUT) | `ElasticTweenEquation.out(0.3F, 0F)` | Oscillates at the end, like a spring. |
+| [`ElasticTweenEquation`](/reference/animation/elastictweenequation/) | [IN_OUT](#ElasticTweenEquation-constant-IN_OUT) | `ElasticTweenEquation.inOut(0.3F * 1.5F, 0F)` | Oscillates at the start and at the end. |
+| `float` | [period](#ElasticTweenEquation-field-period) |  | The length of one oscillation, as a part of the step: smaller values oscillate faster. |
+| `float` | [amplitude](#ElasticTweenEquation-field-amplitude) |  | The height of the oscillations; a value below `1F` counts as `1F`. |
 
 ## Creation details
 
@@ -82,7 +82,7 @@ Creates a curve with the oscillation `period` and the `amplitude`, for a subclas
 - `this period(float period)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span>
 - `float getPeriod()` 
 
-**Default:** 
+**Default:** `0.3F` in `IN` and `OUT`, `0.45F` in `IN_OUT`
 
 The length of one oscillation, as a part of the step: smaller values oscillate faster.
 `period(float)` returns a curve of the same direction with that period and leaves this one unchanged.
@@ -94,7 +94,7 @@ The length of one oscillation, as a part of the step: smaller values oscillate f
 - `this amplitude(float amplitude)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span>
 - `float getAmplitude()` 
 
-**Default:** 
+**Default:** `0F` in the three constants, which counts as `1F`
 
 The height of the oscillations; a value below `1F` counts as `1F`.
 `amplitude(float)` returns a curve of the same direction with that amplitude and leaves this one unchanged.

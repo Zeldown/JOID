@@ -50,11 +50,11 @@ The calls of `DrawUtils` set the blending they need; a blend of yours applies to
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`BlendState`](/reference/pipeline/blendstate/) | [NORMAL](#BlendState-constant-NORMAL) |  |
-| [`BlendState`](/reference/pipeline/blendstate/) | [DISABLED](#BlendState-constant-DISABLED) |  |
-| [`BlendState`](/reference/pipeline/blendstate/) | [PREMULTIPLIED](#BlendState-constant-PREMULTIPLIED) | `BlendState.of(Equation.ADD, Factor.ONE, Factor.ONE_MINUS_SRC_ALPHA)` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`BlendState`](/reference/pipeline/blendstate/) | [NORMAL](#BlendState-constant-NORMAL) |  | The usual transparency: the color covers what is under it in proportion to its alpha, and the alpha of the target adds up. |
+| [`BlendState`](/reference/pipeline/blendstate/) | [DISABLED](#BlendState-constant-DISABLED) |  | No blending: the color replaces the pixel, alpha included. |
+| [`BlendState`](/reference/pipeline/blendstate/) | [PREMULTIPLIED](#BlendState-constant-PREMULTIPLIED) | `BlendState.of(Equation.ADD, Factor.ONE, Factor.ONE_MINUS_SRC_ALPHA)` | Blending for colors already multiplied by their alpha, such as the content of a framebuffer drawn over the screen. |
 
 ## Creation details
 

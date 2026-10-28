@@ -48,8 +48,8 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [depthLevel](#UI-property-depthLevel) | `double` |  | Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from. |
-| [transition](#UI-property-transition) | [`Transition`](/reference/ui/transition/) |  | The animation played when the UI opens and closes. |
+| [depthLevel](#UI-property-depthLevel) | `double` | `0D` | Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from. |
+| [transition](#UI-property-transition) | [`Transition`](/reference/ui/transition/) | `null` | The animation played when the UI opens and closes. |
 
 <a id="UI-methods"></a>
 
@@ -213,7 +213,7 @@ Throws an `IllegalStateException` when the class is both a popup and an overlay.
 - `this depthLevel(double depthLevel)` <span class="joid-qualifier">fluent</span>
 - `double getDepthLevel()` 
 
-**Default:** 
+**Default:** `0D`
 
 Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from.
 JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D model, raises it so that what comes next is drawn in front.
@@ -225,7 +225,7 @@ JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D m
 - `this transition(Transition transition)` <span class="joid-qualifier">fluent</span>
 - `Transition getTransition()` 
 
-**Default:** 
+**Default:** `null`
 
 The animation played when the UI opens and closes.
 A popup gets a [`PopTransition`](/reference/ui/poptransition/) from `@UIDataPopup`; a transition set here replaces it, and `null` removes it.

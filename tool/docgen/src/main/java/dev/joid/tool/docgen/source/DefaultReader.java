@@ -3,6 +3,7 @@ package dev.joid.tool.docgen.source;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -51,20 +52,23 @@ public final class DefaultReader {
 
 		final Object instance = this.runtime ? this.instance(page.getType()) : null;
 		for (final ApiProperty property : page.getProperties().values()) {
-			final String source = this.sourceDefault(page.getType(), property);
-			String value = source;
+			final String source = this.sourceDefault(page.getType(), property, "");
+			final String implicit = source == null ? this.sourceDefault(page.getType(), property, "#implicit") : null;
+			String value = source == null ? implicit : source;
 			if (instance != null && property.getGetter() != null && !"@parameter".equals(source)) {
 				final Object read = DefaultReader.read(instance, property.getGetter());
 				final String formatted = DefaultReader.format(read);
 				if (formatted != null && (source == null || DefaultReader.isLiteral(read))) {
 					value = formatted;
+				} else if (implicit != null && read != DefaultReader.class) {
+					value = null;
 				}
 			}
 			property.setDefaultValue(value);
 		}
 	}
 
-	private String sourceDefault(final ApiType type, final ApiProperty property) {
+	private String sourceDefault(final ApiType type, final ApiProperty property, final String suffix) {
 		final List<ApiType> candidates = new ArrayList<>();
 		final ApiType declaring = this.types.get(property.getSetters().get(0).getDeclaringType());
 		if (declaring != null) {
@@ -74,10 +78,15 @@ public final class DefaultReader {
 		candidates.addAll(TypePage.ancestors(type, this.types));
 		for (final ApiType candidate : candidates) {
 			for (final String field : Arrays.asList(property.getName(), property.getName() + "Supplier")) {
-				final String value = candidate.getSourceDefaults().get(field);
+				final String value = DefaultReader.sourceValue(candidate, field, suffix);
 				if (value != null) {
 					return value;
 				}
+			}
+
+			final String x = DefaultReader.sourceValue(candidate, property.getName() + "X", suffix);
+			if (x != null && x.equals(DefaultReader.sourceValue(candidate, property.getName() + "Y", suffix))) {
+				return x;
 			}
 		}
 		return null;
@@ -222,6 +231,10 @@ public final class DefaultReader {
 		return type.isPrimitive() && type != void.class ? DefaultReader.argument(type, 2) : null;
 	}
 
+	private static String sourceValue(final ApiType type, final String field, final String suffix) {
+		return suffix.isEmpty() || !type.getSourceDefaults().containsKey(field) ? type.getSourceDefaults().get(field + suffix) : null;
+	}
+
 	private static boolean isLiteral(final Object value) {
 		return value == null || value instanceof Number || value instanceof Boolean || value instanceof String || value instanceof Character || value instanceof Enum;
 	}
@@ -257,7 +270,26 @@ public final class DefaultReader {
 			final Class<?> declaring = ((Enum<?>) value).getDeclaringClass();
 			return declaring.getSimpleName() + "." + ((Enum<?>) value).name();
 		}
+		return DefaultReader.constant(value);
+	}
+
+	private static String constant(final Object value) {
+		for (Class<?> clazz = value.getClass(); clazz != null && clazz != Object.class; clazz = clazz.getSuperclass()) {
+			for (final Field field : clazz.getFields()) {
+				if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && DefaultReader.isConstant(field, value)) {
+					return field.getDeclaringClass().getSimpleName() + "." + field.getName();
+				}
+			}
+		}
 		return null;
+	}
+
+	private static boolean isConstant(final Field field, final Object value) {
+		try {
+			return field.get(null) == value;
+		} catch (final Throwable ignored) {
+			return false;
+		}
 	}
 
 }

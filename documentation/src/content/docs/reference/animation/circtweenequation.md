@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [IN](#CircTweenEquation-constant-IN) |  |
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [OUT](#CircTweenEquation-constant-OUT) |  |
-| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [IN_OUT](#CircTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [IN](#CircTweenEquation-constant-IN) |  | Starts slowly, along quarter circles. |
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [OUT](#CircTweenEquation-constant-OUT) |  | Ends slowly, along quarter circles. |
+| [`CircTweenEquation`](/reference/animation/circtweenequation/) | [IN_OUT](#CircTweenEquation-constant-IN_OUT) |  | Starts and ends slowly, along quarter circles. |
 
 ## Creation details
 

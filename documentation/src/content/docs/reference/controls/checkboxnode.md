@@ -43,8 +43,8 @@ Attaching a checkbox without a mark throws an `IllegalStateException`.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [box](#CheckboxNode-property-box) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the mark, over the whole checkbox, with a `zindex` of `-1`; optional. |
-| [mark](#CheckboxNode-property-mark) | [`Node`](/reference/nodes/node/) |  | The node shown in the middle of the box while it is checked, and hidden otherwise; required. |
+| [box](#CheckboxNode-property-box) | [`Node`](/reference/nodes/node/) | `null` | The node drawn behind the mark, over the whole checkbox, with a `zindex` of `-1`; optional. |
+| [mark](#CheckboxNode-property-mark) | [`Node`](/reference/nodes/node/) | `null` | The node shown in the middle of the box while it is checked, and hidden otherwise; required. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -114,7 +114,7 @@ Creates the checkbox at `x`, `y` with a `width` and a `height` in design pixels,
 - `this box(Node box)` <span class="joid-qualifier">fluent</span>
 - `Node getBox()` 
 
-**Default:** 
+**Default:** `null`
 
 The node drawn behind the mark, over the whole checkbox, with a `zindex` of `-1`; optional.
 Giving another node replaces the previous one at its place.
@@ -126,7 +126,7 @@ Giving another node replaces the previous one at its place.
 - `this mark(Node mark)` <span class="joid-qualifier">fluent</span>
 - `Node getMark()` 
 
-**Default:** 
+**Default:** `null`
 
 The node shown in the middle of the box while it is checked, and hidden otherwise; required.
 Giving another node replaces the previous one at its place.

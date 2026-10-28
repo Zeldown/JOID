@@ -42,8 +42,8 @@ Attaching a selector without a field or without an `option` function throws an `
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [field](#SelectorNode-property-field) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the options, over the selected row while the list is closed and over every row while it is open, with a `zindex` of `-1`; required. |
-| [option](#SelectorNode-property-option) | `Function<V,Node>` |  | The function that creates the node of an option from its value. |
+| [field](#SelectorNode-property-field) | [`Node`](/reference/nodes/node/) | `null` | The node drawn behind the options, over the selected row while the list is closed and over every row while it is open, with a `zindex` of `-1`; required. |
+| [option](#SelectorNode-property-option) | `Function<V,Node>` | `null` | The function that creates the node of an option from its value. |
 | [direction](#SelectorNode-property-direction) <span class="joid-qualifier">signal</span> | [`SelectorDirection`](/reference/controls/selectornode-selectordirection/) | `SelectorDirection.DOWN` | The side where the list opens: `DOWN` under the selected row, `UP` above it, near the bottom of the screen. |
 
 <details>
@@ -144,7 +144,7 @@ Creates the selector at `x`, `y` with a `width` and a `height` in design pixels,
 - `this field(Node field)` <span class="joid-qualifier">fluent</span>
 - `Node getField()` 
 
-**Default:** 
+**Default:** `null`
 
 The node drawn behind the options, over the selected row while the list is closed and over every row while it is open, with a `zindex` of `-1`; required.
 
@@ -154,7 +154,7 @@ The node drawn behind the options, over the selected row while the list is close
 
 - `this option(Function<V,Node> option)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `null`
 
 The function that creates the node of an option from its value.
 The selector calls it again for every option each time the options change.

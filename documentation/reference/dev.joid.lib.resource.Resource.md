@@ -40,6 +40,8 @@ The id under which the data of this resource is cached and named in the warnings
 The [[IResourceDecoder]] that reads the data, or `null` until the format is detected.
 `decoder(IResourceDecoder)` waits for a running decode, clears the data and decodes it again with `decoder`, for every handle on the data.
 
+Default: `null`, then the decoder of the format that JOID detects
+
 ## getWidth()
 
 Returns the width to draw at: the width of the region when `textureCoords` is set, otherwise the width of the image in pixels, `0` before it is loaded.
