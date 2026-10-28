@@ -18,7 +18,8 @@ public class UnderlineUI extends UI {
 
 	@Override
 	public void init() {
-		RectNode.create(80, 80, 240, 140)
+		RectNode
+		.create(80, 80, 240, 140)
 		.color(UnderlineUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(UnderlineUI.ELEMENT, 1.5F))

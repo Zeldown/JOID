@@ -12,7 +12,8 @@ public final class HighlightTextEffect implements ITextEffect {
 	@Override
 	public void background(final ITextGlyph glyph) {
 		final double top = glyph.getBaseline() - glyph.getAscender();
-		DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), glyph.getBaseline() - glyph.getDescender() - top, HighlightTextEffect.BAND);
+		final double bottom = glyph.getBaseline() - glyph.getDescender();
+		DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), bottom - top, HighlightTextEffect.BAND);
 	}
 
 }
