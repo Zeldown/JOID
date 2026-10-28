@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Transition that grows a UI from 75 % of its size when it opens and shrinks it back when it closes, in 130 ms, around its anchor.
 
-![A popup grows into view on a dark card, stays open, then shrinks away when Escape closes it](/captures/catalog-transitions-poptransition.webp)
+![The pointer clicks Open on a dark card: a popup grows into view over it, stays open, then shrinks away when Escape closes it](/captures/catalog-transitions-poptransition.webp)
 
 ## Description
 

@@ -36,7 +36,11 @@ public class FeedUI extends UI {
 			.overflow(OverflowProperty.SCROLL)
 			.body(area -> {
 				for (int i = 0; i < 8; i++) {
-					RectNode.create(20, 20 + i * 80, 400, 60).color(FeedUI.ACCENT).attach(area);
+					RectNode
+					.create(20, 20 + i * 80, 400, 60)
+					.color(FeedUI.ACCENT)
+					.label(Text.create(String.valueOf(i + 1), info))
+					.attach(area);
 				}
 			})
 			.attach(card);
@@ -46,7 +50,11 @@ public class FeedUI extends UI {
 				final Node area = event.getNode();
 				final int count = area.getChildren().size();
 				for (int i = count; i < count + 4; i++) {
-					RectNode.create(20, 20 + i * 80, 400, 60).color(FeedUI.ACCENT).attach(area);
+					RectNode
+					.create(20, 20 + i * 80, 400, 60)
+					.color(FeedUI.ACCENT)
+					.label(Text.create(String.valueOf(i + 1), info))
+					.attach(area);
 				}
 			});
 			// #endregion

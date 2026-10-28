@@ -530,24 +530,30 @@
 			"intro": "A transition animates a UI when it opens and when it closes.",
 			"commands": [
 				"ui com.example.catalog.TransitionsCatalogUI",
+				"move 1060 640",
 				"# film {shot} 60",
-				"wait 400",
-				"open com.example.catalog.PopupCatalogUI",
-				"wait 1400",
+				"wait 300",
+				"moveto 960 540 300",
+				"wait 100",
+				"press LEFT",
+				"release LEFT",
+				"wait 1300",
 				"key ESCAPE",
-				"wait 700"
+				"wait 500",
+				"moveto 1060 640 300",
+				"wait 300"
 			],
 			"crop": [
-				780,
-				380,
-				360,
-				320
+				778,
+				378,
+				364,
+				324
 			],
 			"cards": [
 				{
 					"type": "dev.joid.lib.ui.core.transition.PopTransition",
 					"learn": "use/learn/style-and-motion/transitions",
-					"alt": "A popup grows into view on a dark card, stays open, then shrinks away when Escape closes it",
+					"alt": "The pointer clicks Open on a dark card: a popup grows into view over it, stays open, then shrinks away when Escape closes it",
 					"still": 60
 				}
 			]

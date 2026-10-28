@@ -4,11 +4,11 @@
 # still interactivity-refuse 120
 # crop interactivity-pending 640 370 640 340
 # still interactivity-pending 50
-# crop interactivity-switch 980 120 860 420
+# crop interactivity-switch 980 120 860 240
 # still interactivity-switch 40
 # crop interactivity-selector 80 540 860 420
 # still interactivity-selector 45
-# crop interactivity-slider 980 540 860 420
+# crop interactivity-slider 980 540 860 240
 # still interactivity-slider 60
 # crop interactivity-progress 640 370 640 340
 # still interactivity-progress 20
@@ -68,7 +68,7 @@ moveto 1120 650 400
 wait 300
 cut
 ui com.example.interactivity.controls.ChoicesUI
-move 1720 470
+move 1720 320
 # film interactivity-switch
 wait 300
 moveto 1565 238 500
@@ -86,7 +86,7 @@ wait 200
 press LEFT
 release LEFT
 wait 700
-moveto 1720 470 500
+moveto 1720 320 500
 wait 300
 cut
 ui com.example.interactivity.controls.ChoicesUI
@@ -117,7 +117,7 @@ moveto 620 880 400
 wait 300
 cut
 ui com.example.interactivity.controls.ChoicesUI
-move 1720 880
+move 1720 740
 # film interactivity-slider 60
 wait 300
 moveto 1270 650 400
@@ -136,7 +136,7 @@ wait 300
 moveto 1456 650 480
 release LEFT
 wait 500
-moveto 1720 880 400
+moveto 1720 740 400
 wait 300
 cut
 ui com.example.interactivity.controls.ProgressUI

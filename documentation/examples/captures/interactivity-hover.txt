@@ -2,7 +2,7 @@
 # still interactivity-hover 60
 # crop interactivity-underline 640 370 640 340
 # crop interactivity-enter 640 320 640 440
-# crop interactivity-tooltip-text 40 320 600 440
+# crop interactivity-tooltip-text 40 320 600 300
 # still interactivity-tooltip-text 70
 # crop interactivity-tooltip-node 660 320 600 440
 # still interactivity-tooltip-node 60
@@ -26,16 +26,18 @@ moveto 1000 640 300
 wait 600
 cut
 ui com.example.interactivity.hover.EnterUI
-move 700 640
+move 680 700
 # film interactivity-enter 60
+wait 300
 moveto 760 420 400
 moveto 980 540 600
 moveto 800 560 500
 moveto 1150 650 400
-wait 300
+moveto 680 700 400
+wait 600
 cut
 ui com.example.interactivity.hover.TooltipUI
-move 230 680
+move 230 575
 # film interactivity-tooltip-text
 wait 300
 moveto 228 438 500
@@ -48,7 +50,7 @@ release LEFT
 wait 800
 moveto 385 438 600
 wait 900
-moveto 230 680 500
+moveto 230 575 500
 wait 300
 cut
 move 960 680

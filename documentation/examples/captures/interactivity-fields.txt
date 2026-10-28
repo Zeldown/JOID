@@ -89,7 +89,7 @@ ui com.example.interactivity.fields.ColorFieldUI
 move 1120 650
 # film interactivity-field-color
 wait 300
-moveto 990 488 500
+moveto 990 488 400
 wait 200
 press LEFT
 release LEFT
@@ -109,10 +109,22 @@ wait 150
 type 4
 wait 150
 type 1
-wait 1200
+wait 900
 key LEFT_CONTROL+A
 wait 300
-type #5B8CFF
-wait 800
+type #
+wait 150
+type 5
+wait 150
+type B
+wait 150
+type 8
+wait 150
+type C
+wait 150
+type F
+wait 150
+type F
+wait 600
 moveto 1120 650 400
 wait 300

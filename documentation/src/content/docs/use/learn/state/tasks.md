@@ -71,6 +71,8 @@ A download or a long computation belongs on another thread, and its result comes
 ```java file="com/example/state/LoaderUI.java" region="fetch"
 ```
 
+`fetch` stands for a download: it waits one second of the JOID clock ([[BridgeHandler#CLOCK]]).
+
 <figure>
 
 ![A dark card with a blue button "Load" above the text "Not loaded"; the pointer clicks Load, and the text reads "Loading...", then "Loaded"](/captures/state-loader.webp)

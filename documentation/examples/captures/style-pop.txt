@@ -1,12 +1,15 @@
 # crop style-pop 540 140 840 570
-# hold style-pop 1100
-# still style-pop 32
+# still style-pop 60
 ui com.example.style.MenuUI
-move 680 190
+move 1250 300
+# film style-pop 60
+wait 300
+moveto 680 190 400
+wait 100
 press LEFT
 release LEFT
-move 1700 1050
-# film style-pop 60
-wait 600
+wait 900
 key ESCAPE
-wait 400
+wait 500
+moveto 1250 300 400
+wait 300

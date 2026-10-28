@@ -10,10 +10,10 @@ In this lesson the settings popup works: the player turns the music on and off a
 
 <figure>
 
-![The settings popup over the darkened menu: Music with an On button, Volume with minus and plus buttons around 80 %, and a Close button; the pointer turns the music off, raises the volume by one step, lowers it back and turns the music on, and the line of the menu behind the popup follows each click](/captures/tutorial-settings.webp)
+![The settings popup over the darkened menu: Music with an On button, Volume with minus and plus buttons around 80 %, and a Close button; the pointer turns the music off, raises the volume by one step, lowers it back and turns the music on, and the button and the percentage of the popup follow each click](/captures/tutorial-settings.webp)
 
 <figcaption>
-The result of this lesson: the popup and the menu read the same store.
+The result of this lesson: the popup changes the settings kept in a store, and shows them back from it.
 </figcaption>
 </figure>
 

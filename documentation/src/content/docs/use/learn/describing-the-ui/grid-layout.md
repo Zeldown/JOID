@@ -83,10 +83,10 @@ A row is as high as its tallest cell, and the next row starts below it:
 
 <figure>
 
-![On a dark card, a first row of three cells of the same width and different heights, the dark grey one tallest, then a second row of two wider blue cells that starts below the dark grey cell](/captures/describing-grid-rows.webp)
+![On a dark card, a first row of three cells of the same width and different heights, the blue one tallest, then a second row of two wider dark grey cells that starts below the blue cell](/captures/describing-grid-rows.webp)
 
 <figcaption>
-The dark grey cell sets the height of the first row; the cells of a row are aligned at its top.
+The blue cell sets the height of the first row; the cells of a row are aligned at its top.
 </figcaption>
 </figure>
 

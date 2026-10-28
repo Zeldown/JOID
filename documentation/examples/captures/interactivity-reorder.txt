@@ -3,6 +3,7 @@
 # still interactivity-reorder-handle 200
 ui com.example.interactivity.reorder.PlaylistUI
 move 960 395
+wait 400
 # film interactivity-reorder 60
 wait 200
 press LEFT

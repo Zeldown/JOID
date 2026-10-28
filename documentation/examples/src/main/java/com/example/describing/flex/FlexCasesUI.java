@@ -91,9 +91,9 @@ public class FlexCasesUI extends UI {
 			.vertical(20, 20, 360)
 			.margin(10D)
 			.body(flex -> {
-				RectNode.create(0, 0, 200, 50).color(FlexCasesUI.ACCENT).attach(flex);
-				RectNode.create(40, 30, 200, 50).color(FlexCasesUI.ELEMENT).attach(flex);
-				RectNode.create(0, 0, 200, 50).color(FlexCasesUI.ACCENT).attach(flex);
+				RectNode.create(0, 0, 200, 50).color(FlexCasesUI.ELEMENT).attach(flex);
+				RectNode.create(40, 30, 200, 50).color(FlexCasesUI.ACCENT).attach(flex);
+				RectNode.create(0, 0, 200, 50).color(FlexCasesUI.ELEMENT).attach(flex);
 			})
 			.attach(card);
 			// #endregion

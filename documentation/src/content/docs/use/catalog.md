@@ -168,7 +168,7 @@ A transition animates a UI when it opens and when it closes.
 
 <div class="joid-catalog">
 <figure class="joid-card">
-<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-transitions-poptransition.webp" data-still="/captures/catalog-transitions-poptransition.still.webp"><picture><source srcset="/captures/catalog-transitions-poptransition.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-transitions-poptransition.webp" alt="A popup grows into view on a dark card, stays open, then shrinks away when Escape closes it" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
+<button type="button" class="joid-film" aria-pressed="false" data-film="/captures/catalog-transitions-poptransition.webp" data-still="/captures/catalog-transitions-poptransition.still.webp"><picture><source srcset="/captures/catalog-transitions-poptransition.still.webp" media="(prefers-reduced-motion: reduce)" /><img src="/captures/catalog-transitions-poptransition.webp" alt="The pointer clicks Open on a dark card: a popup grows into view over it, stays open, then shrinks away when Escape closes it" loading="lazy" width="364" height="324" /></picture><span class="joid-film-state">Pause the animation</span></button>
 <figcaption><a href="/reference/ui/poptransition/"><code>PopTransition</code></a><span>Transition that grows a UI from 75 % of its size when it opens and shrinks it back when it closes, in 130 ms, around its anchor.</span><small><a href="/use/learn/style-and-motion/transitions/">Learn</a> · <a href="/reference/ui/poptransition/">Reference</a></small></figcaption>
 </figure>
 </div>
