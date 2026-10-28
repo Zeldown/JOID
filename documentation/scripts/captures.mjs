@@ -46,7 +46,7 @@ const KEY_NAMES = {
 function keyName(combination) {
 	return combination
 		.split('+')
-		.map((key) => KEY_NAMES[key] ?? (key.length === 1 ? key : key.charAt(0) + key.slice(1).toLowerCase().replaceAll('_', ' ')))
+		.map((key) => KEY_NAMES[key] ?? (key.length === 1 ? key : key.startsWith('DIGIT_') ? key.slice(6) : key.charAt(0) + key.slice(1).toLowerCase().replaceAll('_', ' ')))
 		.join(' + ');
 }
 

@@ -13,7 +13,7 @@ wait 400
 press LEFT
 moveto 960 395 700
 release LEFT
-wait 400
+wait 1400
 cut
 ui com.example.interactivity.reorder.HandleListUI
 move 1000 720

@@ -126,7 +126,7 @@
 						"wait 100",
 						"moveto 150 150 700",
 						"release LEFT",
-						"wait 500",
+						"wait 2000",
 						"moveto 290 255 400",
 						"wait 200"
 					]

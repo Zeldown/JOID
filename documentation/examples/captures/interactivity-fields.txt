@@ -41,9 +41,13 @@ moveto 1100 540 500
 wait 200
 press LEFT
 release LEFT
+wait 700
+type a
+wait 500
+key ESCAPE
 wait 900
 moveto 1120 650 300
-wait 600
+wait 300
 cut
 ui com.example.interactivity.fields.RulesFieldUI
 move 1120 650

@@ -4,7 +4,7 @@ ui com.example.start.IntroUI
 move 1250 670
 # film start-intro
 wait 400
-moveto 1160 556 500
+moveto 1190 566 500
 wait 200
 press LEFT
 release LEFT

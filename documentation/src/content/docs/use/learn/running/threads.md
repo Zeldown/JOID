@@ -95,9 +95,11 @@ Write the click listener, with `label` a [[TextNode]] of the UI.
 <summary>Solution</summary>
 
 ```java fragment
-.onClick(event -> CompletableFuture
+.onClick(event -> {
+	CompletableFuture
 	.runAsync(this::compute)
-	.thenRun(() -> ThreadUtils.runOnRenderThread(() -> label.text(Text.create("Done", info)))))
+	.thenRun(() -> ThreadUtils.runOnRenderThread(() -> label.text(Text.create("Done", info))));
+})
 ```
 
 The computation runs on a worker thread, and the text node changes on the render thread.

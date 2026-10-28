@@ -114,7 +114,7 @@ The blue rectangle is attached first, then the dark grey one covers it; attachin
 
 <figure>
 
-![A blue rectangle half covered by a grey one on a dark card; a click on the blue rectangle attaches it again and it comes over the grey one, then a click on the grey rectangle brings it back on top](/captures/describing-nodes-front.webp)
+![A blue rectangle over a dark grey one on a dark card, as the code above leaves them; a click on the visible corner of the grey rectangle attaches it again and it comes over the blue one, then a click on the blue rectangle brings it back on top](/captures/describing-nodes-front.webp)
 
 <figcaption>
 Each click attaches the clicked rectangle to the card again, so it becomes the last child and is drawn on top.

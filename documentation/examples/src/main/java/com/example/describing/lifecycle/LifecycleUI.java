@@ -47,11 +47,13 @@ public class LifecycleUI extends UI {
 		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
 		.onInit(event -> this.start = BridgeHandler.CLOCK.get().currentTimeMillis())
 		.onUpdate(event -> this.open = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 1000D)
-		.body(card -> TextNode
-		.create(300, 80)
-		.text(Text.create(() -> String.format("%.1f s", this.open), info))
-		.anchor(Align.CENTER)
-		.attach(card))
+		.body(card -> {
+			TextNode
+			.create(300, 80)
+			.text(Text.create(() -> String.format("%.1f s", this.open), info))
+			.anchor(Align.CENTER)
+			.attach(card);
+		})
 		.attach(this);
 		// #endregion
 
@@ -61,16 +63,18 @@ public class LifecycleUI extends UI {
 		.color(LifecycleUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
-		.body(card -> TextNode
-		.create(200, 60)
-		.text(Text.create("Underlined", info))
-		.anchor(Align.CENTER)
-		.onDraw(event -> {
-			final Node node = event.getNode();
-			final double bottom = node.getY() + node.getHeight();
-			DrawUtils.SHAPE.drawRect(node.getX(), bottom + 4D, node.getWidth(), 4D, LifecycleUI.ACCENT);
+		.body(card -> {
+			TextNode
+			.create(200, 60)
+			.text(Text.create("Underlined", info))
+			.anchor(Align.CENTER)
+			.onDraw(event -> {
+				final Node node = event.getNode();
+				final double bottom = node.getY() + node.getHeight();
+				DrawUtils.SHAPE.drawRect(node.getX(), bottom + 4D, node.getWidth(), 4D, LifecycleUI.ACCENT);
+			})
+			.attach(card);
 		})
-		.attach(card))
 		.attach(this);
 		// #endregion
 
@@ -82,11 +86,13 @@ public class LifecycleUI extends UI {
 		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
 		.onInit(event -> this.poll = LifecycleUI.EXECUTOR.scheduleAtFixedRate(() -> this.checks++, 0L, 5L, TimeUnit.SECONDS))
 		.onDetach(event -> this.poll.cancel(false))
-		.body(card -> TextNode
-		.create(300, 80)
-		.text(Text.create(() -> this.checks + " checks", info))
-		.anchor(Align.CENTER)
-		.attach(card))
+		.body(card -> {
+			TextNode
+			.create(300, 80)
+			.text(Text.create(() -> this.checks + " checks", info))
+			.anchor(Align.CENTER)
+			.attach(card);
+		})
 		.attach(this);
 		// #endregion
 	}

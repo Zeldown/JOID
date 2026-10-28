@@ -68,7 +68,7 @@ moveto 1040 530 700
 wait 100
 moveto 930 530 700
 release LEFT
-wait 500
+wait 2000
 moveto 1070 635 400
 wait 200
 cut

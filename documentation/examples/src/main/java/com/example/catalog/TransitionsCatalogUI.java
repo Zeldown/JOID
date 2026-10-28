@@ -21,12 +21,14 @@ public class TransitionsCatalogUI extends CatalogUI {
 		.color(CatalogUI.PLACEHOLDER)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(CatalogUI.ELEMENT, 1.5F))
-		.body(card -> RectNode
-		.create(110, 125, 120, 50)
-		.color(CatalogUI.INK)
-		.onClick(event -> JOID.open(new PopupCatalogUI()))
-		.label(Text.create("Open", info))
-		.attach(card))
+		.body(card -> {
+			RectNode
+			.create(110, 125, 120, 50)
+			.color(CatalogUI.INK)
+			.onClick(event -> JOID.open(new PopupCatalogUI()))
+			.label(Text.create("Open", info))
+			.attach(card);
+		})
 		.attach(this);
 	}
 

@@ -21,14 +21,16 @@ public class TreeDiagramUI extends DiagramUI {
 			RectNode
 			.create(440, 50, 672, 378)
 			.color(DiagramUI.SURFACE)
-			.body(canvas -> RectNode
+			.body(canvas -> {
+				RectNode
 				.create(266, 119, 140, 140)
 				.color(DiagramUI.ELEMENT)
 				.body(card -> {
 					super.label(17.5, 10.5, 105, 28, "Text", 18F, DiagramUI.LABEL).attach(card);
 					RectNode.create(17.5, 45.5, 105, 24.5).color(DiagramUI.ACCENT).attach(card);
 				})
-				.attach(canvas))
+				.attach(canvas);
+			})
 			.attach(backdrop);
 
 			super.label(440, 445, 672, 30, "card at (760, 340) on the canvas", 22F, DiagramUI.LABEL).attach(backdrop);

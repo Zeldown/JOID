@@ -35,13 +35,15 @@ public class MinimapOverlay extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(MinimapOverlay.ELEMENT, 1.5F))
 		.onClick(event -> this.zoom = this.zoom == 1D ? 2D : 1D)
-		.body(map -> CircleNode
-		.create(160, 160, 40)
-		.color(MinimapOverlay.ACCENT)
-		.width(() -> 40D * this.zoom)
-		.height(() -> 40D * this.zoom)
-		.anchor(Align.CENTER)
-		.attach(map))
+		.body(map -> {
+			CircleNode
+			.create(160, 160, 40)
+			.color(MinimapOverlay.ACCENT)
+			.width(() -> 40D * this.zoom)
+			.height(() -> 40D * this.zoom)
+			.anchor(Align.CENTER)
+			.attach(map);
+		})
 		.attach(this);
 	}
 

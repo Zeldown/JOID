@@ -115,6 +115,15 @@ Both run on the render thread; added after the resource reached that state, they
 [[Resource#isLoaded]] and [[Resource#isFailed]] read the state at any time.
 A resource that cannot be read takes 64 × 64 design pixels in a node without a size; it draws a magenta and black checkerboard with the dev jar, and nothing with the prod jar.
 
+<figure>
+
+![A dark card with three images in a row: on the left, a magenta and black checkerboard above the status Missing photo, since photos/beach.png does not exist; in the middle and on the right, the grey placeholder image, drawn by the blocking and the builder examples further down](/captures/describing-media-loading.webp)
+
+<figcaption>
+With the dev jar, the photo that cannot be read shows as a checkerboard, and `onError` wrote the status.
+</figcaption>
+</figure>
+
 [[Resource#blocking]] loads the image on the render thread, the first time it is drawn, so that it is on screen from its first frame:
 
 ```java file="com/example/describing/media/LoadingUI.java" region="blocking"

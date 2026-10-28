@@ -16,43 +16,50 @@ move 620 180
 wait 1200
 mask 832 488 108 40
 # film start-dev-inspect 60
-wait 300
-moveto 340 90 500
-wait 700
+wait 200
+moveto 340 90 400
+wait 600
 moveto 380 155 400
-wait 700
+wait 600
 down LEFT_CONTROL
-wait 900
+wait 800
 up LEFT_CONTROL
-wait 400
-moveto 620 180 500
-wait 400
+wait 300
+key I
+wait 700
+key I
+wait 500
+moveto 620 180 400
+wait 300
 cut
 # film start-dev-panel 60
-wait 300
+wait 200
 moveto 460 280 450
 wait 250
 press LEFT
 release LEFT
 unmask
 mask 740 490 100 40
-wait 800
+wait 600
 moveto 550 437 400
 wait 250
 scroll -3
-wait 800
+wait 700
 press LEFT
 release LEFT
-wait 900
+wait 700
 key ENTER
-wait 800
+wait 200
+moveto 900 470 300
+scroll -6
+wait 1000
 press RIGHT
 release RIGHT
 unmask
 mask 832 488 108 40
 wait 350
-moveto 620 180 400
-wait 250
+moveto 620 180 300
+wait 150
 cut
 unmask
 key F3
@@ -60,32 +67,37 @@ wait 1200
 # film start-dev-move 60
 wait 300
 key F3
-wait 500
+wait 400
 moveto 714 514 400
-wait 1000
+wait 800
+moveto 746 514 200
+wait 100
+press LEFT
+release LEFT
+wait 500
 moveto 880 514 300
 wait 100
 press LEFT
-moveto 560 330 700
+moveto 560 330 600
 release LEFT
-wait 500
+wait 400
 press LEFT
-moveto 880 514 700
+moveto 880 514 600
 release LEFT
 wait 300
 key F3
-wait 400
-moveto 620 180 400
 wait 300
+moveto 620 180 400
+wait 100
 cut
 # crop start-dev-reload 230 160 500 240
 # still start-dev-reload 100
 ui com.example.start.CounterUI
-move 650 370
+move 650 350
 wait 300
 # film start-dev-reload 60
 wait 300
-moveto 480 270 400
+moveto 330 270 400
 wait 150
 press LEFT
 release LEFT
@@ -100,7 +112,7 @@ key LEFT_CONTROL+R
 wait 1000
 key LEFT_CONTROL+LEFT_SHIFT+R
 wait 1000
-moveto 650 370 400
+moveto 650 350 400
 wait 300
 cut
 # crop start-dev-zoom 0 0 960 540
@@ -117,5 +129,13 @@ key LEFT_CONTROL+EQUAL
 wait 600
 key LEFT_CONTROL+EQUAL
 wait 800
+down LEFT_ALT
+wait 200
+scroll -8
+wait 600
+scroll 8
+wait 600
+up LEFT_ALT
+wait 400
 cut
 dev false

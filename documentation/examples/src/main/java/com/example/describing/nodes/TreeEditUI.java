@@ -18,7 +18,7 @@ public class TreeEditUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CaptureStyle.TEXT);
 
 		RectNode
-		.create(660, 290, 600, 400)
+		.create(660, 290, 600, 220)
 		.color(CaptureStyle.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
@@ -40,8 +40,18 @@ public class TreeEditUI extends UI {
 				}
 			})
 			.attach(card);
-			RectNode.create(20, 240, 240, 100).color(CaptureStyle.ACCENT).onClick(event -> event.getNode().attach(card)).attach(card);
-			RectNode.create(120, 270, 240, 100).color(CaptureStyle.MUTED).onClick(event -> event.getNode().attach(card)).attach(card);
+		})
+		.attach(this);
+
+		RectNode
+		.create(660, 540, 460, 170)
+		.color(CaptureStyle.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
+		.body(card -> {
+			final RectNode first = RectNode.create(20, 20, 240, 100).color(CaptureStyle.ACCENT).onClick(event -> event.getNode().attach(card)).attach(card);
+			RectNode.create(120, 50, 240, 100).color(CaptureStyle.STROKE).onClick(event -> event.getNode().attach(card)).attach(card);
+			first.attach(card);
 		})
 		.attach(this);
 	}

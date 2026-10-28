@@ -37,3 +37,22 @@ wait 1000
 moveto 960 480 400
 wait 100
 cut
+# crop describing-layout-scrollbar 700 340 520 400
+ui com.example.describing.layout.ScrollbarUI
+wait 100
+move 1060 560
+# film describing-layout-scrollbar 60
+wait 300
+scroll -4
+wait 600
+scroll -4
+wait 900
+moveto 1168 572 400
+wait 200
+press LEFT
+moveto 1168 440 700
+release LEFT
+wait 600
+moveto 1060 560 400
+wait 300
+cut

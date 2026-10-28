@@ -1,4 +1,4 @@
-# crop further-3d-models-cubes 28 45 626 384
+# crop further-3d-models-cubes 18 35 646 404
 # still further-3d-models-cubes 0
 ui com.example.further.ModelsUI
 wait 200

@@ -27,7 +27,7 @@ public class LoadingUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(LoadingUI.TEXT);
 
 		RectNode
-		.create(410, 330, 1100, 420)
+		.create(410, 375, 1100, 330)
 		.color(LoadingUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(LoadingUI.ELEMENT, 1.5F))

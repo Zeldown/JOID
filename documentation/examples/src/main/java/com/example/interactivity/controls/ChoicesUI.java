@@ -62,10 +62,12 @@ public class ChoicesUI extends UI {
 		.body(card -> {
 			// #region switch
 			new SwitchNode<String>(60, 60, 600, 60) {}
-			.option((value, index) -> RectNode
-			.create(0, 0, 0, 0)
-			.color(() -> value.equals(this.difficulty.get()) ? ChoicesUI.ACCENT : ChoicesUI.ELEMENT)
-			.label(() -> Text.create(value, value.equals(this.difficulty.get()) ? selected : info)))
+			.option((value, index) -> {
+				return RectNode
+				.create(0, 0, 0, 0)
+				.color(() -> value.equals(this.difficulty.get()) ? ChoicesUI.ACCENT : ChoicesUI.ELEMENT)
+				.label(() -> Text.create(value, value.equals(this.difficulty.get()) ? selected : info));
+			})
 			.values("Story", "Normal", "Hard")
 			.value(this.difficulty)
 			.attach(card);
@@ -84,11 +86,13 @@ public class ChoicesUI extends UI {
 			// #region selector
 			new SelectorNode<String>(60, 40, 280, 60) {}
 			.field(RectNode.create(0, 0, 0, 0).color(ChoicesUI.ACCENT))
-			.option(value -> RectNode
-			.create(0, 0, 0, 0)
-			.color(ChoicesUI.ELEMENT)
-			.hoveredColor(ChoicesUI.HOVER)
-			.label(Text.create(value, info)))
+			.option(value -> {
+				return RectNode
+				.create(0, 0, 0, 0)
+				.color(ChoicesUI.ELEMENT)
+				.hoveredColor(ChoicesUI.HOVER)
+				.label(Text.create(value, info));
+			})
 			.values("English", "French", "German", "Japanese")
 			.value(this.language)
 			.attach(card);

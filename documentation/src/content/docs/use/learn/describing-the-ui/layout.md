@@ -154,17 +154,22 @@ The list grows each time its end is reached, and `scrollTo(0D, 0D)` glides back 
 
 [[Node#scrollbar]] gives a scrolling node a scrollbar, a control that shows the offset and that the user drags:
 
-```java fragment
-.overflow(OverflowProperty.SCROLL)
-.scrollbar(new ScrollbarNode(424, 8, 8, 304) {}
-.track(RectNode.create(0, 0, 0, 0).color(FeedUI.ELEMENT))
-.thumb(RectNode.create(0, 0, 0, 0).color(FeedUI.ACCENT)))
+```java file="com/example/describing/layout/ScrollbarUI.java" region="scrollbar"
 ```
 
 [[ScrollbarNode]] is an abstract control: its empty subclass gets its two parts, the track and the thumb, where it is created ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) explains this form).
 Its shape sets its axis: a scrollbar taller than wide scrolls vertically, one wider than tall horizontally.
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows on its axis.
-The [catalog](/use/catalog/#controls) shows one in motion, scrolled by the wheel and by its thumb.
+
+<figure>
+
+![The panel of eight numbered blue rows, with a thin dark track along its right edge and a blue thumb at its top; the wheel, shown in a badge, scrolls the list down to rows 4 to 7 and the thumb goes down the track with it; the pointer then drags the thumb back to the top and the list follows it up to row 1](/captures/describing-layout-scrollbar.webp)
+
+<figcaption>
+The thumb follows the wheel, and dragging the thumb scrolls the list.
+</figcaption>
+</figure>
+
 Its reference page lists its options, and [Give your controls a look](/use/learn/going-further/ui-kit/) turns it into a reusable skin.
 
 ## Recap

@@ -63,7 +63,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 
 <figure>
 
-![A dark grey "Search" field, a dark grey "Search" button and the text "Not focused"; the pointer clicks the button, the field gets its blue focus border and the cursor, and the text reads "Focused"; a press elsewhere on the card leaves the focus in the empty field](/captures/interactivity-focus.webp)
+![A dark grey "Search" field, a dark grey "Search" button and the text "Not focused"; the pointer clicks the button, the field gets its blue focus border and the cursor, and the text reads "Focused"; a press elsewhere on the card leaves the focus in the empty field; once an "a" is typed, Escape, shown in a badge, blurs the field and the text reads "Not focused" again](/captures/interactivity-focus.webp)
 
 <figcaption>
 The button focuses the field, and the signal follows the focus.
