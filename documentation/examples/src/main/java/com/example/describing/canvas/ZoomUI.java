@@ -27,6 +27,8 @@ public class ZoomUI extends UI {
 		RectNode.create(0, 0, 1920, 1080).color(ZoomUI.SURFACE).attach(this);
 
 		// #region zoom
+		super.zoom(0.8D);
+
 		RectNode
 		.create(760, 340, 400, 400)
 		.color(ZoomUI.ELEMENT)

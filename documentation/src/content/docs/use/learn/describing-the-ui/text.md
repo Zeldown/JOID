@@ -100,7 +100,7 @@ A [[TextMode]], given to [[TextNode#mode]], changes that inside the width of the
 
 <figure>
 
-![Four dark grey boxes one line high with the same sentence, in two rows: OVERFLOW, one line cut with an ellipsis at the edge of the box, and SPLIT, the sentence wrapped on two lines, the second below the box; then BOX, wrapped, only the first line, which fits in the box, is drawn; then NORMAL, one line that goes beyond the box.](/captures/describing-text-modes.webp)
+![Four dark grey boxes one line high with the same sentence: on the first row, OVERFLOW, one line cut with an ellipsis at the edge of the box, and SPLIT, the sentence wrapped on two lines, the second below the box; on the second row, BOX, wrapped, only the first line, which fits in the box, is drawn; on the third row, NORMAL, one line that goes beyond the box.](/captures/describing-text-modes.webp)
 
 <figcaption>
 The same sentence in four boxes of the same size: cut, wrapped onto a second line below the box, wrapped and clipped, or untouched.

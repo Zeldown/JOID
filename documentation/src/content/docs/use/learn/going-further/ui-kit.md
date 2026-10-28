@@ -28,7 +28,7 @@ Either way, the skin is a subclass with a `protected` constructor and a `create(
 
 <figure>
 
-![A checked dark grey checkbox with a blue mark, a slider with its blue thumb near the middle, a switch with Medium selected in blue among Low, Medium and High, and a blue pill toggle](/captures/further-ui-kit-controls.webp)
+![A checked dark grey checkbox with a blue mark, a slider with its blue thumb near the middle, a switch with Medium selected in blue among Low, Medium and High, and a pill toggle switched on, blue with its dark knob on the right](/captures/further-ui-kit-controls.webp)
 
 <figcaption>Four skins of this page.
 The first three give parts to their control; the pill toggle draws itself from its base class.</figcaption>

@@ -21,7 +21,7 @@ A popup, a UI whose [[UIDataPopup]] sets `active = true`, plays a [[PopTransitio
 
 <figure>
 
-![A dark popup that reads Saved grows into view while a dark backdrop fades in, stays, then shrinks away while the backdrop fades out when Escape, shown in a key badge, closes it](/captures/style-pop.webp)
+![Under a row of three blue buttons, a dark popup that reads Saved grows into view while its backdrop dims the buttons, stays, then shrinks away and the buttons light up again when Escape, shown in a key badge, closes it](/captures/style-pop.webp)
 
 <figcaption>The pop transition, in and out; the backdrop of the popup fades with it.</figcaption>
 </figure>
@@ -67,7 +67,7 @@ This one slides the UI up from below its place with a small overshoot, and drops
 
 <figure>
 
-![Over a screen darkened by the popup backdrop, a dark card slides up from below with a small bounce, stays, then drops down and disappears while the backdrop fades out](/captures/style-transition.webp)
+![Under a row of three blue buttons dimmed by the popup backdrop, a dark card slides up from below with a small bounce, stays, then drops down and disappears while the buttons light up again](/captures/style-transition.webp)
 
 <figcaption>`SlideTransition`: 500 ms in with `BACK_OUT`, 300 ms out with `QUART_IN`.</figcaption>
 </figure>

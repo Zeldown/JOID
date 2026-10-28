@@ -2,6 +2,9 @@ package com.example.style;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.geom.Point;
 
@@ -11,14 +14,17 @@ public class ColorsUI extends UI {
 	private static final Color BRAND = Color.decode("#3366CC").lock();
 	// #endregion
 
-	private static final Color BAND    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color BAND    = new Color(231, 233, 238).lock();
 
 	@Override
 	public void init() {
 		RectNode
 		.create(360, 60, 1200, 260)
 		.color(ColorsUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
+		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region create
@@ -34,6 +40,8 @@ public class ColorsUI extends UI {
 		RectNode
 		.create(360, 410, 1200, 260)
 		.color(ColorsUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
+		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region derive
@@ -50,6 +58,8 @@ public class ColorsUI extends UI {
 		RectNode
 		.create(360, 760, 1200, 260)
 		.color(ColorsUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
+		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region gradient

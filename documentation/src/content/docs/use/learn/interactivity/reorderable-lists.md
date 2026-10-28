@@ -22,7 +22,7 @@ A [[ReorderableFlexNode]] is a [flex layout](/use/learn/describing-the-ui/flex-l
 
 <figure>
 
-![The pointer drags "Ocean" down a column of five dark grey items, the dragged one lighter; the items below it slide up to make room, and at the release "Ocean" lands in fourth place and the text reads "Moved: Ocean from 1 to 3"; a second drag puts it back in second place, and the text reads "Moved: Ocean from 3 to 1"](/captures/interactivity-reorder.webp)
+![The pointer drags "Ocean" down a column of five dark grey items, the dragged one lighter and casting a shadow; the items below it slide up to make room, and at the release "Ocean" lands in fourth place and the text reads "Moved: Ocean from 1 to 3"; a second drag puts it back in second place, and the text reads "Moved: Ocean from 3 to 1"](/captures/interactivity-reorder.webp)
 
 <figcaption>
 The other items slide as soon as the dragged one passes half of a neighbor; the order changes for good at the release.
@@ -35,6 +35,8 @@ The other items slide as soon as the dragged one passes half of a neighbor; the 
 - The other children slide to make room as soon as the dragged one passes half of a neighbor.
 - At the release, the child eases into its slot, and the order of the children changes for good.
 - Near an edge of a parent that scrolls, the drag scrolls it.
+
+Here each row casts a shadow while the list reports it dragged, so that it stands out from the neighbor that it covers.
 
 A child that consumes the press, such as a button or a text field, keeps the drag from starting there.
 [[ReorderableFlexNode#autoDrag]] `(false)` turns the drag on press off for the whole list.

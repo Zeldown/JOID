@@ -19,7 +19,6 @@ wait 100
 shot describing-canvas-pinned
 resize 960 540
 ui com.example.describing.canvas.ZoomUI
-zoom 0.8
 move 700 470
 # film describing-canvas-zoom 60
 wait 300

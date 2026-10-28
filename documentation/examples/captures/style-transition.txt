@@ -1,4 +1,4 @@
-# crop style-transition 660 340 600 720
+# crop style-transition 540 140 840 920
 # hold style-transition 600
 # still style-transition 56
 ui com.example.style.MenuUI

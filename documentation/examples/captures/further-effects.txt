@@ -4,12 +4,12 @@ wait 100
 shot further-effects-shadow
 # crop further-effects-invert 680 80 540 160
 shot further-effects-invert
-# crop further-effects-lift 380 70 240 170
+# crop further-effects-lift 370 60 260 200
+move 605 235
 # film further-effects-lift 60
-moveto 1300 700 100
 wait 200
 moveto 500 160 300
 wait 800
-moveto 1300 700 300
+moveto 605 235 300
 wait 400
 cut

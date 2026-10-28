@@ -9,6 +9,7 @@ import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
@@ -16,6 +17,7 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 public class PlaylistUI extends UI {
 
 	private static final Color HOVER   = new Color(54, 61, 77).lock();
+	private static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
@@ -42,13 +44,17 @@ public class PlaylistUI extends UI {
 			})
 			// #endregion
 			.margin(10D)
-			.body(list -> {
+			.<ReorderableFlexNode>body(list -> {
 				for (final String song : new String[] {"Intro", "Ocean", "Night drive", "Echoes", "Outro"}) {
 					RectNode
 					.create(0, 0, 480, 70)
 					.color(PlaylistUI.ELEMENT)
 					.hoveredColor(PlaylistUI.HOVER)
 					.label(Text.create(song, info))
+					.body(row -> row.effect(ShadowNodeEffect.create(
+						() -> list.isDragging(row) ? PlaylistUI.SHADOW : Color.TRANSPARENT,
+						() -> 32F
+					)))
 					.attach(list);
 				}
 			})

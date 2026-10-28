@@ -1,4 +1,4 @@
-# crop further-ui-kit-controls 80 80 340 330
+# crop further-ui-kit-controls 80 80 340 344
 ui com.example.further.KitUI
 wait 400
 shot further-ui-kit-controls

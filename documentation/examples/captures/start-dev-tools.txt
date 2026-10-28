@@ -5,8 +5,11 @@ resize 960 540
 scale 2
 ui com.example.start.CounterUI
 key F3
+move 480 272
+wait 1000
 move 800 420
-wait 2000
+wait 1000
+mask 832 488 108 40
 # film start-dev-inspect
 wait 300
 moveto 480 272 600
