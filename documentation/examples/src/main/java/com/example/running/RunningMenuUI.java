@@ -13,16 +13,20 @@ import dev.joid.lib.utils.align.Align;
 
 public class RunningMenuUI extends UI {
 
+	private static final Color STAGE   = new Color(14, 16, 20).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(RunningMenuUI.TEXT);
 		final BooleanSignal playing = new BooleanSignal(false);
 
-		RectNode.create(0, 0, 1920, 1080).color(Color.decode("#0E1014")).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(RunningMenuUI.STAGE).attach(this);
 
 		RectNode
 		.create(860, 500, 200, 80)
-		.color(Color.decode("#262B35"))
+		.color(RunningMenuUI.ELEMENT)
 		.onClick(event -> playing.set(true))
 		.body(rect -> {
 			TextNode

@@ -15,6 +15,8 @@ import dev.joid.lib.font.TextInfo;
 
 public final class RunningApp {
 
+	private static final Color STAGE = new Color(14, 16, 20).lock();
+
 	private RunningApp() {}
 
 	public static void main(final String[] args) {
@@ -33,7 +35,7 @@ public final class RunningApp {
 		// #region bridge
 		BridgeHandler.UI
 		.getBridge(WindowUIBridge.class)
-		.background(Color.decode("#0E1014"))
+		.background(RunningApp.STAGE)
 		.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Color.WHITE));
 		// #endregion
 
