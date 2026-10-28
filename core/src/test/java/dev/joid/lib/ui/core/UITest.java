@@ -153,6 +153,22 @@ public class UITest {
 	}
 
 	@Test
+	public void warnsAboutAPopupOrAnOverlayLeftInactive() {
+		JOIDEnv.devMode(true);
+		final String output = TestUtils.captureErr(() -> {
+			new InactivePopupUI();
+			new InactiveOverlayUI();
+		});
+		Assert.assertEquals("[JOID] @UIDataPopup on InactivePopupUI leaves active = false and changes nothing: write @UIDataPopup(active = true)" + System.lineSeparator() + "[JOID] @UIDataOverlay on InactiveOverlayUI leaves active = false and changes nothing: write @UIDataOverlay(active = true)" + System.lineSeparator(), output);
+	}
+
+	@Test
+	public void letsASubclassTurnThePopupOfItsParentOffQuietly() {
+		JOIDEnv.devMode(true);
+		Assert.assertEquals("", TestUtils.captureErr(() -> new TurnedOffPopupUI()));
+	}
+
+	@Test
 	public void refusesToReloadAsAPopupAndAnOverlay() {
 		final PopupUI ui = new PopupUI(this.trace);
 		this.bridges.open(ui);
@@ -2813,6 +2829,21 @@ public class UITest {
 	@UIDataOverlay(active = true)
 	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PopupOverlayUI extends UI {}
+
+	@UIDataPopup
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class InactivePopupUI extends UI {}
+
+	@UIDataOverlay
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class InactiveOverlayUI extends UI {}
+
+	@UIDataPopup(active = true)
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static class ActivePopupUI extends UI {}
+
+	@UIDataPopup(transition = PopupTransition.NONE)
+	public static final class TurnedOffPopupUI extends ActivePopupUI {}
 
 	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PlainUI extends UI {}

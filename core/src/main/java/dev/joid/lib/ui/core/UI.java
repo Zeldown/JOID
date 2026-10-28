@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -795,6 +796,9 @@ public abstract class UI implements IIndexedElement {
 		if (this.popup.active() && this.overlay.active()) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
 		}
+
+		UI.warnInactive(this.getClass(), UIDataPopup.class, UIDataPopup::active);
+		UI.warnInactive(this.getClass(), UIDataOverlay.class, UIDataOverlay::active);
 	}
 
 	private void refreshTransition() {
@@ -1075,6 +1079,16 @@ public abstract class UI implements IIndexedElement {
 			annotationMap.put(annotation.annotationType(), annotation);
 		}
 		return annotationMap;
+	}
+
+	private static <A extends Annotation> void warnInactive(final Class<?> type, final Class<A> annotationType, final Predicate<A> active) {
+		final A annotation = type.getDeclaredAnnotation(annotationType);
+		if (annotation == null || active.test(annotation) || type.getSuperclass().isAnnotationPresent(annotationType)) {
+			return;
+		}
+
+		final String name = annotationType.getSimpleName();
+		JOIDLog.devWarnOnce("UI." + name + "." + type.getName(), () -> "@" + name + " on " + JOIDLog.nameOf(type) + " leaves active = false and changes nothing: write @" + name + "(active = true)");
 	}
 
 	private static Transition createPopupTransition(final PopupTransition popupTransition) {
