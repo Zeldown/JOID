@@ -182,7 +182,7 @@ Masks nest: inside another mask, the drawing is clipped to both, and the mask al
 
 ## mask(Resource,double,double,double,double,Runnable)
 
-Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least `0.5F`.
+Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is above `0.5F`.
 A resource that has not loaded yet hides the whole drawing.
 
 ## draw(double,double)
