@@ -1,4 +1,4 @@
-# crop start-dev-grid 0 0 960 540
+# crop start-dev-grid 260 110 700 430
 # still start-dev-grid 80
 dev true
 resize 960 540
@@ -9,16 +9,16 @@ wait 100
 key I
 wait 100
 key G
-move 200 140
+move 420 220
 wait 2000
 mask 832 488 108 40
 # film start-dev-grid 60
 wait 300
-moveto 380 210 800
+moveto 580 300 800
 wait 300
-moveto 160 200 700
+moveto 360 200 700
 wait 200
-moveto 200 140 400
+moveto 420 220 400
 wait 200
 cut
 dev false
