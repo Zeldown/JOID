@@ -18,7 +18,7 @@ You create the window, register the backend once, and call `frame()` in your loo
 ```java file="com/example/running/RunningApp.java" region="register"
 ```
 
-Read [Choosing a backend](/use/learn/running/backends/) to learn which backend fits, what `register()` does, and how to style the window bridge.
+Read [Choosing a backend](/use/learn/running/backends/) to learn which backend fits, what `register()` does, and how to style the window UI bridge.
 
 ## Embedding JOID
 

@@ -50,7 +50,7 @@ The control places its parts on every frame, so a part is created at `0, 0`:
 
 - A part of size `0` takes the size the control gives it: here the box covers the whole checkbox.
 - A part with a size keeps it, and the control centers or moves it: here the mark stays half the size of the box.
-- The parts that sit behind the others (box, track, field, background) get `zindex(-1)`, so the other parts and the children you add draw over them.
+- The control gives the parts that sit behind the others (box, track, field, background) a `zindex` of `-1` itself, so the other parts and the children you add draw over them.
 
 A part follows the state of its control through a reactive setter, as the thumb of the slider does while it slides:
 
@@ -108,7 +108,7 @@ The skins themselves stay small: the controls keep the behavior, so a kit never 
 - A control is a **`Base<X>Node`** that holds the behavior, extended by an **`<X>Node`** that places its **parts**.
 - A **skin** passes its parts in its constructor and has a `create(...)` factory.
 - A part of **size `0`** takes the size of the control; a part with a size keeps it.
-- The parts behind the others get **`zindex(-1)`**; a missing required part **throws** on attach.
+- The control puts the parts behind the others at **`zindex(-1)`** itself; a missing required part **throws** on attach.
 - A look of your own extends **`Base<X>Node`**, builds its children in **`init(UI)`** after `clearChildren()`, and animates in **`onChange`**.
 - A **UI kit** is a set of skins that read their colors and sizes from one place.
 

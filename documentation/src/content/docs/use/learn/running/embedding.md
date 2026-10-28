@@ -21,7 +21,7 @@ This page fits JOID into that loop without taking it over.
 Your application is the **host**: it owns the window and the loop, and JOID runs inside them.
 JOID reaches your window through **bridges**, small interfaces that the backend fills in.
 The one you meet on this page is the **UI bridge**: it holds the open UIs, routes the input to them and draws them every frame.
-The backend registers one, [the window bridge](/use/learn/running/backends/#style-the-window-bridge), and you can register more.
+The backend registers one, [the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge), and you can register more.
 
 A loop that shows JOID polls the window events, calls `frame()` of the backend, then shows the frame, as the loop of [Choosing a backend](/use/learn/running/backends/#start-a-backend) does.
 One call to [[Backend#frame]] follows the size of the window, updates the open UIs of every UI bridge, clears the window, then draws the bridges from the lowest priority to the highest.
@@ -57,13 +57,13 @@ To share them with your code, read the queues yourself and give each event to th
 
 ## Draw JOID over your own scene
 
-The window bridge clears the window before every frame, so it would erase a scene you drew before `frame()`.
+The window UI bridge clears the window before every frame, so it would erase a scene you drew before `frame()`.
 Register a bridge that keeps the colors and clears only the depth and the stencil:
 
 ```java file="com/example/running/SceneUIBridge.java"
 ```
 
-Register it before the backend: the backend then adds no window bridge of its own.
+Register it before the backend: the backend then adds no window UI bridge of its own.
 Give it a text style for the tooltips once the backend is registered, so that the font loads [after the folders apply](/use/learn/running/files/#move-the-folders):
 
 ```java file="com/example/running/HostApp.java" region="scene"
@@ -76,7 +76,7 @@ Draw your scene, then let JOID draw over it:
 
 `HostOverlayUI` is an overlay ([[UIDataOverlay]]) whose button receives the mouse.
 It sets no `background` in [[UIData]], so the scene shows around its button; a UI backdrop (`background = true`) covers the whole window and hides the scene.
-`SceneUIBridge` extends [[WindowUIBridge]], so it keeps the tooltips and every setting of the window bridge.
+`SceneUIBridge` extends [[WindowUIBridge]], so it keeps the tooltips and every setting of the window UI bridge.
 On Vulkan, the frame of JOID loads the image of the host without clearing it: the scene is what the host recorded into its command buffer before `frame()`.
 
 Your application can also hide every overlay of JOID, for a screenshot or a cutscene: override `isOverlayHidden()` of [[UIBridge]] in your bridge and return `true` while the interface must disappear.
@@ -128,7 +128,7 @@ The UI registry, [[BridgeHandler#UI]], orders its bridges by priority:
 
 - [[BridgeRegistry#register]] without a priority uses `0`.
   Between equal priorities, the latest registered counts as the highest, and registering a bridge again moves it.
-- The backend adds its window bridge only into an empty registry, and below every priority, so any bridge you register later sits above it.
+- The backend adds its window UI bridge only into an empty registry, and below every priority, so any bridge you register later sits above it.
 - [[JOID#open]] gives the UI to the highest bridge whose `canHandle` accepts it.
   An open UI stays with the bridge that holds it, whatever you register afterwards.
 - Input goes to the bridges from the highest and stops at the first one that consumes it.
@@ -151,7 +151,7 @@ Writing the contract of a UI bridge of your own belongs to the Build on JOID doc
 - **`attachScreen()`** and **`detachScreen()`** tell your bridge when the first JOID screen or popup opens and when the last one closes.
 - **`projection = false`** draws a UI inside the projection of the host, and `zlevel` keeps the UIs of that scene in order.
 - **`register(bridge, priority)`**: the highest priority receives input first and is drawn on top; equal priorities favor the latest.
-- The window bridge of the backend is a **default**: it sits below every bridge you register and clears the window.
+- The window UI bridge of the backend is a **default**: it sits below every bridge you register and clears the window.
 - `canHandle` decides which bridge receives a UI; an open UI **stays with its bridge**.
 
 ## Try it
@@ -165,7 +165,7 @@ Which priority do you give the bridge of the panels?
 <summary>Solution</summary>
 
 A negative one, such as `BridgeHandler.UI.register(panels, -10)`: the bridge of the application has the priority `0`, so the panels draw under it and receive the input after it.
-No priority goes below the default window bridge, so panels can never sit under the UIs it holds.
+No priority goes below the default window UI bridge, so panels can never sit under the UIs it holds.
 
 </details>
 

@@ -13,7 +13,7 @@ Run your application with the dev jar while you look for a problem: JOID then pr
 
 1. **No UI is open.** Check that your program calls [[JOID#open]] after the `register()` of the backend, and that `Escape` did not close the screen.
 2. **The loop never draws.** Each turn of your loop must call `frame()` on the backend, then present the image ([Choosing a backend](/use/learn/running/backends/)).
-3. **Your UI has no backdrop, and the window background is black.** A UI draws nothing behind its nodes unless its [[UIData]] sets `background = true` ([UIs](/use/learn/describing-the-ui/uis/)), and the window background is black until you change it ([Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)): dark nodes on it look like nothing.
+3. **Your UI has no backdrop, and the window background is black.** A UI draws nothing behind its nodes unless its [[UIData]] sets `background = true` ([UIs](/use/learn/describing-the-ui/uis/)), and the window background is black until you change it ([Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)): dark nodes on it look like nothing.
 
 ## Opening a UI throws "No IUIBridge can open"
 
@@ -70,8 +70,8 @@ A node follows a value only when JOID can compute it again ([Signals](/use/learn
 
 ## Tooltips do not show
 
-The window bridge has no text style for them, because JOID ships no font.
-Give it one with `hoverInfo(...)` ([Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)); in dev mode, JOID warns about it once.
+The window UI bridge has no text style for them, because JOID ships no font.
+Give it one with `hoverInfo(...)` ([Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)); in dev mode, JOID warns about it once.
 
 ## The first launch is slow
 

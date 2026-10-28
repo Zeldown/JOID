@@ -35,7 +35,7 @@ Give the application the prod jar, and keep the dev jar for your tests, as [Inst
 ## 3. Give every text a font of yours
 
 The dev jar carries a font for its own tools; the prod jar carries none.
-Load your fonts from the resources of your application, and give one to the window bridge for the tooltips, as [Replace a font](/use/guides/replace-a-font/) shows.
+Load your fonts from the resources of your application, and give one to the window UI bridge for the tooltips, as [Replace a font](/use/guides/replace-a-font/) shows.
 
 **Check:** every text and every tooltip shows, in your font.
 
@@ -72,7 +72,7 @@ If a step of your build repacks the jars, such as a shading or a shrinking tool,
 
 ## If it does not work
 
-1. Tooltips disappeared: the window bridge has no `hoverInfo`, and the prod jar prints no warning about it.
+1. Tooltips disappeared: the window UI bridge has no `hoverInfo`, and the prod jar prints no warning about it.
 2. An image or a video is missing without any message: the resource cannot be read; run the same screen with the dev jar to read the warning.
 3. `IllegalStateException: The core shader … is missing from the classpath`: a packaging step dropped `assets/shaders/` of the JOID jar; keep it.
 4. Settings come back to their defaults on each launch: the data folder moves with the working directory; set `dataDir(...)`.

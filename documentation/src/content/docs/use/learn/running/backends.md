@@ -1,6 +1,6 @@
 ---
 title: "Choosing a backend"
-description: "Pick a backend, check what it needs, start it in your program and style its window bridge."
+description: "Pick a backend, check what it needs, start it in your program and style its window UI bridge."
 genre: learn
 sidebar:
   order: 1
@@ -14,7 +14,7 @@ Your UIs never mention it: switching backends changes your startup code and noth
 - How to start a backend and run its frames
 - What `register()` does, and which settings come before it
 - How to run code once JOID is ready
-- How to style the window bridge: the window background and the tooltips
+- How to style the window UI bridge: the window background and the tooltips
 
 ## Pick the backend that fits your application
 
@@ -83,7 +83,7 @@ It follows the size of the window by itself, so you need no resize callback.
 
 ### Close the UIs before the program ends
 
-`closeAll()` of the window bridge, after the loop, closes every UI that the bridge holds, without asking their `beforeClose` listeners: their `onClose` listeners and the `onDetach` listeners of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
+`closeAll()` of the window UI bridge, after the loop, closes every UI that the bridge holds, without asking their `beforeClose` listeners: their `onClose` listeners and the `onDetach` listeners of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
 Call it on each UI bridge of your own as well, once the loop is over.
 
 When the JVM exits normally with UIs still open, a shutdown hook of JOID calls `closeAll()` on every UI bridge, then saves the stores; a process that is killed or crashes saves nothing.
@@ -119,7 +119,7 @@ LWJGL 2 has no input callbacks, so [[Lwjgl2InputForwarder#poll]] reads the input
 3. It applies the [data and cache folders](/use/learn/running/files/#move-the-folders) set with `dataDir(...)` and `cacheDir(...)`.
 4. It registers the audio bridge of the backend, unless you called `audio(false)`, then its window and render bridges.
 5. It registers a thread bridge tied to the calling thread, which becomes the render thread: work sent from other threads [runs there at the start of the next frame](/use/learn/running/threads/#bring-a-result-back-to-the-render-thread).
-6. It adds the window bridge, unless you registered a UI bridge of your own before ([Embedding JOID](/use/learn/running/embedding/#draw-joid-over-your-own-scene)).
+6. It adds the window UI bridge, unless you registered a UI bridge of your own before ([Embedding JOID](/use/learn/running/embedding/#draw-joid-over-your-own-scene)).
 7. It attaches the input to the window (LWJGL 3 and Vulkan).
 8. It loads JOID: it prints a banner with the version, the dev mode and the two folders (`[JOID] … loaded in dev mode, data in …, cache in …`), cleans the [cache folder](/use/learn/running/files/#keep-files-of-your-own-in-the-cache) on a background thread, and installs the shutdown hook that closes the open UIs and saves the stores.
 9. It runs the code given to [[JOID#onReady]].
@@ -150,7 +150,7 @@ Once the backend is registered, the code runs at once on the render thread, or a
 Code given before `register()` that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next `onReady` code still runs.
 Once JOID is ready, the exception reaches the caller on the render thread, and code sent from another thread prints `[JOID] A task sent to the render thread from another thread failed (…)`.
 
-## Style the window bridge
+## Style the window UI bridge
 
 When you register no UI bridge of your own, the backend registers a [[WindowUIBridge]].
 Every frame, it clears the window with its background color, draws the open UIs and draws the tooltip of the hovered node.
@@ -175,7 +175,7 @@ Get it from the UI registry once the backend is registered, and set what you nee
 </figure>
 
 :::caution
-JOID ships no font for your application, so the window bridge has no tooltip style until you give it one.
+JOID ships no font for your application, so the window UI bridge has no tooltip style until you give it one.
 With the dev jar, it prints `[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them` once; with the prod jar, tooltips stay invisible.
 :::
 
@@ -194,12 +194,12 @@ To run JOID on another library or engine, implement its bridges: [Writing a back
 - Call **`frame()`** once per frame of your loop; it follows the window size by itself.
 - After the loop, **`closeAll()`** closes the open UIs, so that their `onClose` listeners run and their stores reach the disk.
 - **`JOID.onReady`** runs setup code once the backend is registered, whatever the startup order.
-- The **window bridge** clears the window with `background`, and draws tooltips once you set **`hoverInfo`**.
+- The **window UI bridge** clears the window with `background`, and draws tooltips once you set **`hoverInfo`**.
 
 ## Try it
 
 **A window in your palette.**
-Give the window the background `#171A21` and tooltips with text `#E7E9EE` on a box `#262B35`.
+Give the window background the color `#171A21` and tooltips with text `#E7E9EE` on a box `#262B35`.
 
 <details>
 <summary>Solution</summary>

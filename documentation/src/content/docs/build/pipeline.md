@@ -105,7 +105,7 @@ Each level is a linear copy of the level before it, never of level 0, and never 
 |---|---|---|
 | `allocateStorage(chain)` | The size or the number of levels changes. | Storage for every level of the chain, before any copy. |
 | `uploadPixels(pixels, chain)` | New pixels arrive for level 0. | Level 0, then every other level with `forEachStep`. |
-| `generateMipmapLevels(chain, allocatedLevels)` | Mipmaps are turned on for a texture that already has pixels. | The missing storage when `allocatedLevels` differs, then the levels, keeping level 0. |
+| `generateMipmapLevels(chain, allocatedLevels)` | Mipmaps are turned on for a texture that is already allocated. | The missing storage when `allocatedLevels` differs, then the levels, keeping level 0. |
 | `deleteStorage()` | The texture is deleted, once. | Nothing: release the storage. |
 
 The OpenGL module copies each level with a framebuffer blit, or with a drawn quad when the context cannot blit ([base-opengl](/build/base-modules/opengl/)).

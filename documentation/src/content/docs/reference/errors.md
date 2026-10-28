@@ -1672,9 +1672,9 @@ Override `drawHover(...)` in the bridge, or extend [`WindowUIBridge`](/reference
 
 Emitted by [`WindowUIBridge.drawHover`](/reference/backends/windowuibridge/#WindowUIBridge-method-drawHover).
 
-With the dev jar, the pointer rests on a node that has a tooltip, and the window bridge has no text style for tooltips; JOID prints it once per bridge.
+With the dev jar, the pointer rests on a node that has a tooltip, and the window UI bridge has no text style for tooltips; JOID prints it once per bridge.
 
-Give the bridge a style with [`WindowUIBridge.hoverInfo`](/reference/backends/windowuibridge/#WindowUIBridge-property-hoverInfo): [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge).
+Give the bridge a style with [`WindowUIBridge.hoverInfo`](/reference/backends/windowuibridge/#WindowUIBridge-property-hoverInfo): [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge).
 
 ### … is already registered {#already-registered-call-register}
 

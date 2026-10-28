@@ -23,7 +23,7 @@ When your images live somewhere else, or in a file type that JOID does not read,
 2. Otherwise, an asset locator of [[AssetLocator]] turns the input into an [[Asset]]: the bytes and a unique id.
    The built-in locators read a `File`, an `InputStream`, and a `String` that is a URL with its scheme, a path in the classpath or a path on the disk.
 3. A resource format of [[ResourceFormat]] reads the first 4 096 bytes of the asset and returns the decoder that reads it.
-   When no format recognizes them, the image goes to `ImageIO`, which reads PNG, JPEG and BMP.
+   When no format recognizes them, the bundled image readers (`ImageIO`) try the file ([Supported formats](/use/learn/describing-the-ui/media/#supported-formats)).
 
 The decoder then reads the asset in the background, the first time a node draws the resource, and JOID uploads the pixels on the render thread.
 Resources with the same unique id share one decoded copy.

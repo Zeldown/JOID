@@ -242,7 +242,7 @@ Cancel the `beforeSelect` event:
 
 ```java fragment
 .beforeSelect(event -> {
-	if (locked.get()) {
+	if (locked.peek()) {
 		event.cancel();
 	}
 })

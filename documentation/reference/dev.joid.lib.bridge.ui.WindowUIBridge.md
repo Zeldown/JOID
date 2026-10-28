@@ -3,9 +3,9 @@ summary: The default UI bridge, which clears the window to a color every frame a
 ---
 
 The backend registers one when no UI bridge was registered before it.
-Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text, as [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge) shows.
+Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text, as [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge) shows.
 
-Learn: [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge).
+Learn: [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge).
 
 ## WindowUIBridge()
 
@@ -13,7 +13,7 @@ Creates the bridge with its default colors, for a subclass.
 
 ## create()
 
-Creates a window bridge with its default colors and no tooltip text style.
+Creates a window UI bridge with its default colors and no tooltip text style.
 
 ## background(Color)
 

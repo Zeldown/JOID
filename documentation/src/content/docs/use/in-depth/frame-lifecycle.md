@@ -45,7 +45,7 @@ Your input listeners (`handleMousePressed`, `onClick`, shortcuts…) therefore r
 3. **Update**: every open UI updates, hidden or not.
    It reads its own followed values, updates its nodes in their order, then runs its own `update()`.
    A node reads its followed values, fires `onAnimate` for each animator whose value changed, updates its children, then runs its own `update()` and its `onUpdate` listeners.
-4. **Background**: the UI bridge with the lowest priority, by default the window bridge, clears the window to its background color.
+4. **Background**: the UI bridge with the lowest priority, by default the window UI bridge, clears the window to its background color.
 5. **Draw UIs**: every UI bridge draws its visible UIs, from the lowest priority up ([Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)).
    Inside a bridge, the overlays drawn under the screens come first, then the screens and popups, then the overlays drawn above them.
 6. **End**: JOID closes the frame of the render bridge, and your loop presents the image.
@@ -101,7 +101,7 @@ A hidden node, or a node outside the visible area of a container that clips its 
 - Change state in listeners and in `update()`, and let the nodes read it: a value written in `update()` is drawn in the same frame.
 - A lambda given to a setter runs on every frame for every node that uses it, hidden or not: keep it to reading and combining values ([Performance](/use/in-depth/performance/)).
 - Draw by hand in `onDraw` or in a [layer](/use/learn/going-further/drawing/), never in `update()`: JOID draws only inside the draw step, and a draw call outside a frame throws.
-- Every duration JOID measures (animators, tasks, hover fades) comes from one clock, which the testkit replaces to make [snapshots](/use/learn/running/testing/) repeatable.
+- Every duration JOID measures comes from the [clock of JOID](/use/learn/running/testing/#keep-every-run-identical), never from the system.
 
 :::caution
 An exception thrown while a bridge draws ends the draw of its UIs for that frame: JOID prints it once and draws again on the next frame.

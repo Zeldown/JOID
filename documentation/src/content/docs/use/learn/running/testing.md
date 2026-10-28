@@ -95,7 +95,7 @@ Drivers round colors differently, so a tolerance of 2 or 3 keeps a reference val
 The testkit removes what changes from one run to the next:
 
 - **Time**: the runner drives a manual clock that starts at 2025-01-01 00:00 UTC and moves only with `wait` and `moveto`.
-  Animations, transitions and [tasks](/use/learn/state/tasks/) follow it.
+  JOID reads every time on [[BridgeHandler#CLOCK]], so animations, transitions, [tasks](/use/learn/state/tasks/), hover fades and the colors that change on their own follow it.
 - **Loading**: before each shot, the runner waits until every resource is loaded, then until two frames in a row are identical.
   It gives up after 30 seconds with `A resource never finished loading in 30s, …`.
 - **Network**: a resource read from an `http` or `https` URL is downloaded once into the `snapshot` area of the [cache folder](/use/learn/running/files/), then read from there, so later runs work offline.

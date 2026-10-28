@@ -35,7 +35,7 @@ Learn: [Testing your UIs](/use/learn/running/testing/), [Testing a backend](/bui
 | [`SnapshotSettings`](/reference/testing/snapshotsettings/) | class | The system properties of a snapshot run: where the references and the renders go, and whether the references are recorded. |
 | [`SnapshotStatus`](/reference/testing/snapshotstatus/) | enum | What happened to a shot in a snapshot run. |
 | [`SnapshotSuite`](/reference/testing/snapshotsuite/) | class | The snapshot tests of a backend: every scenario of the testkit, pixel for pixel against the references of the machine. |
-| [`SnapshotUIBridge`](/reference/testing/snapshotuibridge/) | class | The UI bridge of the snapshot runner: a window bridge with a `#323232` background and an interface scale that the scenarios set. |
+| [`SnapshotUIBridge`](/reference/testing/snapshotuibridge/) | class | The UI bridge of the snapshot runner: a window UI bridge with a `#323232` window background and an interface scale that the scenarios set. |
 | [`SnapshotUrlAssetLocator`](/reference/testing/snapshoturlassetlocator/) | class | Downloads an `http` or `https` resource once into the `snapshot` area of the cache folder, so that later snapshot runs work offline. |
 | [`SnapshotWindowBridge`](/reference/testing/snapshotwindowbridge/) | class | The window bridge of the snapshot runner, whose size, mouse, held keys, cursor and clipboard the commands set. |
 | [`StateGuardContractSuite`](/reference/testing/stateguardcontractsuite/) | class | The contract tests of a render bridge that shares its graphics context with a host: every frame must look the same and give the host its state back, whatever the host left set. |

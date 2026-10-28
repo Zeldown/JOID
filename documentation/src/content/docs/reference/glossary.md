@@ -382,6 +382,22 @@ See [UIs](/use/learn/describing-the-ui/uis/).
 
 ### UI bridge
 
-The bridge that holds the open UIs, routes the input to them and draws them every frame; `WindowUIBridge` is the default one.
+The bridge that holds the open UIs, routes the input to them and draws them every frame; the window UI bridge is the default one.
 
 See [Embedding JOID](/use/learn/running/embedding/).
+
+<a id="term-window-bridge"></a>
+
+### window bridge
+
+The [[IWindowBridge]] of a backend, which gives JOID the size of the window, the mouse, the held keys and the clipboard; it holds no UI.
+
+See [Window bridge](/build/bridges/window/).
+
+<a id="term-window-ui-bridge"></a>
+
+### window UI bridge
+
+The [[WindowUIBridge]], the UI bridge that the backend registers by default: it clears the window to the window background and draws text tooltips.
+
+See [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge).

@@ -61,13 +61,13 @@ Every text takes one of the styles, and the dark text of the button starts from 
 
 ## 4. Use the font for the tooltips
 
-The window bridge draws tooltips only once it has a text style.
+The window UI bridge draws tooltips only once it has a text style.
 Give it one after the backend is registered, for example when your first UI opens:
 
 ```java file="com/example/guides/FontGuideUI.java" region="tooltips"
 ```
 
-[Style the window bridge](/use/learn/running/backends/#style-the-window-bridge) lists the other settings of the tooltips.
+[Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge) lists the other settings of the tooltips.
 
 **Check:** hover the Save button: its tooltip shows in Montserrat.
 
@@ -77,7 +77,7 @@ Give it one after the backend is registered, for example when your first UI open
    Check that the files are in the resources, under that path from their root (a leading `/` changes nothing).
 2. `join()` throws a `CompletionException` that says the atlas cannot be generated: the file is not a valid TrueType or OpenType font, or the cache folder cannot be written.
 3. A text shows in another weight, and the dev jar prints `[JOID] The font weight … is not loaded in the family of …`: the style asks for a weight that the family lacks; load that face, or use a loaded weight.
-4. No tooltip appears, and the dev jar prints `[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them`: the window bridge has no text style yet.
+4. No tooltip appears, and the dev jar prints `[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them`: the window UI bridge has no text style yet.
 5. A setter on a shared style throws `IllegalStateException: This TextInfo is locked`: the style is locked on purpose; call its `with...` copy instead.
 
 ## Reference

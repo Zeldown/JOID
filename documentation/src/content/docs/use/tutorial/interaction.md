@@ -72,7 +72,7 @@ Give each statistic card a tooltip with `hover(...)`:
 ```java file="com/example/tutorial/interaction/MenuUI.java" region="grid" ins={8,17,26}
 ```
 
-The window bridge, the part of the backend that shows your UIs in the window, draws the tooltips, and it needs a text style for them, because JOID ships no font.
+The window UI bridge, the part of the backend that shows your UIs in the window, draws the tooltips, and it needs a text style for them, because JOID ships no font.
 Set it in `Main`, right after `register()`:
 
 ```java file="com/example/tutorial/interaction/Main.java" region="tooltips"
@@ -135,4 +135,4 @@ Any node takes a tooltip, a button as well as a card.
 - `hoveredColor`, `onClick` and `hover` are the most common reactions of a node ([Events](/use/learn/interactivity/events/), [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
 - A popup is a UI opened above another with `JOID.open`, and closed with `JOID.close` or Escape ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 - A shortcut runs code on a key press, for the UI that receives the keyboard ([Keyboard and shortcuts](/use/learn/interactivity/keyboard/#bind-a-shortcut)).
-- The window bridge draws tooltips once it has a text style ([Choosing a backend](/use/learn/running/backends/#style-the-window-bridge)).
+- The window UI bridge draws tooltips once it has a text style ([Choosing a backend](/use/learn/running/backends/#style-the-window-ui-bridge)).
