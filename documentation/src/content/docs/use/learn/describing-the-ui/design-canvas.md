@@ -158,14 +158,17 @@ Every conversion crosses the viewport: the fit changes the unit, then the anchor
 </figure>
 
 - **Screen**: the pixels of the window, whose size [[UI#getWindowWidth]] and [[UI#getWindowHeight]] return.
-- **Viewport**: the window measured in design pixels. The fit is the factor that makes the canvas fit, the smaller of `width / 1920` and `height / 1080`; the window divided by the fit is at least 1920 × 1080, and what exceeds the canvas forms the bands ([[UIView#getViewportWidth]], [[UIView#getViewportHeight]]).
-- **UI**: the design pixels of your code. The canvas runs from (0, 0) to (1920, 1080); the anchor shifts it inside the viewport, and the interface scale and the zoom scale it around the anchor.
+- **Viewport**: the window measured in design pixels.
+  The fit is the factor that makes the canvas fit, the smaller of `width / 1920` and `height / 1080`; the window divided by the fit is at least 1920 × 1080, and what exceeds the canvas forms the bands ([[UIView#getViewportWidth]], [[UIView#getViewportHeight]]).
+- **UI**: the design pixels of your code.
+  The canvas runs from (0, 0) to (1920, 1080); the anchor shifts it inside the viewport, and the interface scale and the zoom scale it around the anchor.
 
 The view converts both ways, and each conversion undoes the other: `toUiX(toScreenX(x))` gives `x` back.
 
-- [[UIView#toUiX]] and [[UIView#toUiY]] turn a screen pixel into a design position.
-- [[UIView#toScreenX]] and [[UIView#toScreenY]] turn a design position into a screen pixel.
-- [[UIView#toScreenWidth]] and [[UIView#toScreenHeight]] turn a size: they apply the fit, the interface scale and the zoom, never the shift of the anchor.
+| You want to | Use |
+|---|---|
+| Bring a position of the system, in screen pixels, into the UI | [[UIView#toUiX]], [[UIView#toUiY]] |
+| Draw outside JOID at the place of a node | [[UIView#toScreenX]], [[UIView#toScreenY]] for its position, [[UIView#toScreenWidth]], [[UIView#toScreenHeight]] for its size: they never apply the shift of the anchor |
 
 The getters of the UI read the window through the view: [[UI#getMouseX]] is `toUiX` of the mouse, `getViewX()` is `toUiX(0)`, and `getViewWidth()` is the width of the window in design pixels, after the interface scale and the zoom.
 
@@ -180,9 +183,11 @@ The same point, (1560, 300), on several windows:
 | 1920 × 1080, zoom `0.5D` | (1260, 420) | -960, 3840 |
 | 1920 × 1080, interface scale 1.5 | (1860, 180) | 320, 1280 |
 
-- A wider window adds bands. With the default anchor, half of them go on each side, so the point moves right by half the extra width, 320; pinned to the right, the canvas moves by the whole band, 640.
+- A wider window adds bands.
+  With the default anchor, half of them go on each side, so the point moves right by half the extra width, 320; pinned to the right, the canvas moves by the whole band, 640.
 - A 4K window doubles the fit: the same design position lands on twice as many screen pixels, and `toScreenWidth(320D)` returns 640.
-- The zoom and the interface scale act around the anchor, here the center (960, 540): the point comes closer to it at a zoom of 0.5 and moves away at a scale of 1.5. The view grows when the UI shrinks and narrows when the UI grows.
+- The zoom and the interface scale act around the anchor, here the center (960, 540): the point comes closer to it at a zoom of 0.5 and moves away at a scale of 1.5.
+  The view grows when the UI shrinks and narrows when the UI grows.
 
 <figure>
 
@@ -192,16 +197,6 @@ The same point, (1560, 300), on several windows:
 The dot keeps its design position, (1560, 300), while its screen position follows the window, the anchor and the zoom.
 </figcaption>
 </figure>
-
-Pick the method by what you hold:
-
-| You want to | Use |
-|---|---|
-| Place a node on the canvas | Its design position: the anchor keeps the canvas in place in any window |
-| Cover the window, bands included | `getViewX()`, `getViewY()`, `getViewWidth()`, `getViewHeight()` in lambdas ([Reach the edges](#reach-the-edges-of-the-window)) |
-| Know where the mouse is | `getMouseX()`, `getMouseY()` |
-| Bring a position of the system, in screen pixels, into the UI | `getView().toUiX(x)`, `getView().toUiY(y)` |
-| Draw outside JOID at the place of a node | `getView().toScreenX(x)`, `toScreenY(y)` for its position, `toScreenWidth(w)`, `toScreenHeight(h)` for its size |
 
 <details>
 <summary>How does toScreenX compute a position?</summary>
@@ -214,7 +209,7 @@ toScreenX(x)  = (shift + anchorX + (x - anchorX) * scale) * fit
 ```
 
 `anchorX` is 0, 960 or 1920 for `START`, `CENTER` and `END`, and `scale` is the interface scale times the zoom.
-On a 2560 × 1080 window with the default anchor, the fit is 1, the viewport 2560 wide and the shift 320, so `toScreenX(1560D)` is 320 + 960 + 600 = 1880.
+On a 2560 × 1080 window with the default anchor and a zoom of `0.5D`, the fit is 1, the viewport 2560 wide, the shift 320 and the scale 0.5, so `toScreenX(1560D)` is 320 + 960 + 600 × 0.5 = 1580.
 `toUiX` runs the same steps backwards, and the vertical axis uses 1080 and `anchorY`.
 
 </details>

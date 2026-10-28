@@ -40,6 +40,7 @@ Always run `body` once, or the node disappears.
 The constructor passes the priority to `super(...)`; the last section explains it.
 
 [[Node#effect]] adds the effect, as for the effects of JOID ([Add effects to a node](/use/learn/style-and-motion/effects/#add-effects-to-a-node)).
+[Write a node effect](/use/guides/write-a-node-effect/) builds a badge effect step by step.
 
 ## Change how a node draws
 

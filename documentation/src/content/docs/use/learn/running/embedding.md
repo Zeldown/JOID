@@ -43,7 +43,7 @@ Each event goes to the UIs first; an event that no UI [consumes](/use/learn/inte
 ```
 
 Here, Escape closes the window only when no UI used it, for example to [close a screen](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard).
-To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Place nodes on the canvas](/use/learn/describing-the-ui/design-canvas/#place-nodes-on-the-canvas)).
+To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Convert between the window and the UI](/use/learn/describing-the-ui/design-canvas/#convert-between-the-window-and-the-ui)).
 The same rule holds for releases: when a UI consumed a press, your callback receives neither the press nor its release.
 An overlay that receives the input is the exception: `cancelClick`, `cancelScroll` and `cancelKeyboard` of [[UIDataOverlayInteraction]] decide whether an event it used still reaches your callback ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 

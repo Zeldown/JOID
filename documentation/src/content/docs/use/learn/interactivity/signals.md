@@ -81,8 +81,8 @@ The lambda reads the [time of JOID](/use/learn/running/testing/#keep-every-run-i
 | A lambda or a method reference | `width(() -> ...)`, `width(this::computeWidth)` | On every frame, whatever changed |
 
 A signal is itself a `Supplier`, so every reactive setter accepts it.
-A signal or a [derived value](/use/learn/state/derived-values/) keeps its value and computes it again only after a change of its signals.
-A lambda or a method reference runs its code on every frame, for every node that uses it: `visible(shown::get)` is a method reference, so pass `shown` itself.
+A [derived value](/use/learn/state/derived-values/) is one too.
+`visible(shown::get)` is a method reference, read on every frame: pass `shown` itself.
 
 The rule follows from the question.
 A value that depends on signals is an expression that reads them, or the signal itself.

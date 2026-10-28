@@ -139,13 +139,13 @@ The click focuses the field at the center of the window, `type` sends the three 
 </details>
 
 **A popup fully open.**
-A popup opens with a 300 ms transition.
+A popup plays its opening transition, 130 ms by default ([Transitions](/use/learn/style-and-motion/transitions/#choose-what-a-popup-plays)).
 Capture it fully open.
 
 <details>
 <summary>Solution</summary>
 
-Play `wait 300` between the `open <class>` and the `shot`.
+Play a `wait` at least as long as the transition, such as `wait 200`, between the `open <class>` and the `shot`.
 The clock of the test stands still between commands, so the transition advances only with `wait`.
 
 </details>
