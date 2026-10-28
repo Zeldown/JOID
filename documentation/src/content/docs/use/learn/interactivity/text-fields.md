@@ -54,7 +54,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 - A press on the field focuses it and puts the cursor under the pointer.
 - A press anywhere else blurs the field, and so do Enter in a one-line field, Escape, and the detach of the field.
 - Escape keeps the typed text ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard) gives what a second Escape does).
-- One field has the focus at a time among the UIs of a [UI bridge](/use/learn/running/embedding/) (the UIs of one window): a press on a field first blurs the field that had the focus, which runs its `onBlur`, then focuses the new one.
+- A press on a field blurs the field that had the focus among the UIs of its [UI bridge](/use/learn/running/embedding/) (the UIs of one window), which runs its `onBlur`, then focuses the new one: the presses of the user keep one focused field at a time.
 
 [[FieldNode#focus]] and [[FieldNode#blur]] act from your code, and `focused(...)` binds the focus to a signal:
 
@@ -72,6 +72,7 @@ The button focuses the field, and the signal follows the focus.
 
 `beforeFocus` and `beforeBlur` can refuse the focus or keep it: here, the field keeps the focus while it is empty.
 `onFocus` and `onBlur` run after the change.
+Unlike a press, `focus()` and `focused(...)` blur no other field: call `blur()` on the field that had the focus first.
 
 The user edits the text with the keys of every text editor:
 
@@ -183,7 +184,7 @@ The rectangle reads the same signal as the field: a valid color shows at once.
 ## Recap
 
 - A **text field** needs `info(...)`, binds its text to a signal, and runs `onChange` on each edit and **`onSubmit`** on Enter.
-- A field gains the **focus** on a press, and loses it on a press elsewhere, Enter, Escape or its detach; **one field** has the focus at a time on the screen.
+- A field gains the **focus** on a press, and loses it on a press elsewhere, Enter, Escape or its detach; a press keeps **one field** focused at a time.
 - A focused field **consumes every key**; shortcuts set with `overrideFocus(true)` still run.
 - **`accept`**, **`maxTextLength`**, **`normalize`** and **`allowEmpty`** shape the text; the field rewrites it when it loses the focus.
 - **`IntegerFieldNode`** holds a number between `min` and `max`, stepped by the arrows and the wheel.

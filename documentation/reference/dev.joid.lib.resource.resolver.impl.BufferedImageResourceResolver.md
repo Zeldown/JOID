@@ -1,5 +1,5 @@
 ---
-summary: The resolver that turns a `BufferedImage` into a resource, one resource per image.
+summary: The resolver that turns a `BufferedImage` into a resource; every resource of one image shares its decoded data.
 ---
 
 Learn: [How Resource.of picks a resolver](/build/resource-resolvers/#how-resourceof-picks-a-resolver).

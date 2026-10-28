@@ -52,7 +52,7 @@ While it moves, JOID shifts it by a whole number of pixels from the place where 
 ![Two magnified rows of screen pixels under the same blue outline of a rectangle three pixels wide, which slides eight pixels to the right and back. Exact position: the pixels at its edges are painted at partial strength, which changes as it slides. On the screen: three whole pixels, fully painted, that jump from one pixel to the next and keep their shape](/captures/depth-pixel-motion.webp)
 
 <figcaption>
-While the node moves, its pixels keep the shape they had at rest and move by whole pixels: no edge fades in or out.
+Exact positions shimmer at the edges; whole-pixel motion keeps the shape.
 </figcaption>
 </figure>
 

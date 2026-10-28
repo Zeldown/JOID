@@ -27,7 +27,7 @@ JOID scales the whole canvas to the window, by the same factor on both axes, so 
 ![Two windows drawn in dark grey. On the left, a wide window holds a darker design canvas of 1920 by 1080 in its middle, with dark grey bands on its left and right. On the right, a tall window holds the canvas in its middle, with dark grey bands above and below. The labels read: wider window, more on the sides; taller window, more above and below.](/captures/describing-canvas-diagram.webp)
 
 <figcaption>
-The canvas always fits: a window of another shape shows more space on two of its sides.
+Whatever the shape of the window, the whole canvas stays visible.
 </figcaption>
 </figure>
 
@@ -247,7 +247,8 @@ With the default anchor, the middle of the view is also the middle of the canvas
 </details>
 
 **Predict a screen position.**
-On a 1280 × 720 window with the default anchor, where does `toScreenX(1560D)` land? And on a 2560 × 720 window?
+On a 1280 × 720 window with the default anchor, where does `toScreenX(1560D)` land?
+And on a 2560 × 720 window?
 
 <details>
 <summary>Solution</summary>

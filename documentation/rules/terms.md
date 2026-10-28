@@ -112,7 +112,7 @@ The last value that a control was asked for, by a setter, its signal or the user
 See: /use/learn/interactivity/controls/
 
 ## focus
-The state of the text field that receives the typed keys: one field at a time has it among the UIs of a UI bridge.
+The state of the text field that receives the typed keys: a press over a field blurs the other fields of the UI bridge first, so the user has one focused field at a time.
 A field gains the focus ("focuses the field") on a press over it or with `focus()`, and loses it ("blurs the field") on a press elsewhere, Escape, Enter in a one-line field, its detach or `blur()`.
 Avoid: take the focus, takes the focus, taking the focus
 See: /use/learn/interactivity/text-fields/

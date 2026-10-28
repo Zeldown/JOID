@@ -39,7 +39,7 @@ Your input listeners (`handleMousePressed`, `onClick`, shortcuts…) therefore r
 `frame()` runs these steps:
 
 1. **Resize**, only when the size of the window changed since the last frame: every open UI fits its view to the window.
-   `init()` does not run again: it runs once, when [[JOID#open]] adds the UI.
+   `init()` does not run again: it runs when [[JOID#open]] adds the UI, and on a reload.
 2. **Tasks**: the work that other threads sent to the render thread runs, in the order it was sent.
    A [[Signal]] written from another thread takes its value here.
 3. **Update**: every open UI updates, hidden or not.

@@ -52,7 +52,7 @@ Build the value of each card from the signals instead of a fixed text:
 ```java file="com/example/tutorial/state/MenuUI.java" region="grid" ins={11,20,29}
 ```
 
-[[Text]]`.create(String.valueOf(this.best.get()), value)` reads the signal `best`.
+[[Text]]`.create(String.valueOf(this.best.get()), value)` reads the signal `best`, and `this.rounds.size()` reads `rounds` in the same way.
 JOID records that this text depends on it, and builds the text again each time `best` changes: [Signals](/use/learn/interactivity/signals/) explains how.
 
 **Run it.**
