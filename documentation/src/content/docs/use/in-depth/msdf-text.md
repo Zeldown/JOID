@@ -52,7 +52,7 @@ A `.msdf` file made in advance by the MSDF generator ([Custom fonts and MSDF](/u
 
 ## What the atlas holds
 
-Every generated atlas is 2048 × 2048 texels, with a distance range of 24 texels, and holds the characters from U+0020 to U+0233: Basic Latin, Latin-1, Latin Extended-A and Latin Extended-B.
+Every generated atlas is 2048 × 2048 texels, with a distance range of 24 texels, and holds the characters from U+0020 to U+0233: Basic Latin, Latin-1, Latin Extended-A and most of Latin Extended-B (up to U+0233).
 A character outside this range has no glyph: JOID does not draw it and gives it no width.
 The MSDF generator builds atlases with other characters ([Custom fonts and MSDF](/use/learn/going-further/fonts/)).
 

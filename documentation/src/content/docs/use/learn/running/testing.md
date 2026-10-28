@@ -78,8 +78,6 @@ Commands play the input of a user, one line each:
 `moveto <x> <y> <ms>` moves the pointer over that time, in screen pixels, one frame every 16 ms; `press LEFT` and `release LEFT` click; `wait <ms>` advances the clock by exactly that time, one frame every 16 ms.
 Other commands type text, press keys, scroll, resize the window, zoom, turn the dev mode on, check the cursor and mask what changes between runs: [[SnapshotRunner#execute]] lists every command.
 
-Empty lines and lines that start with `#` are skipped; an unknown command throws `IllegalArgumentException: The snapshot command … is unknown, fix the scenario`.
-
 ## Compare with a reference
 
 `compare(reference, tolerance)` returns a [[SnapshotDifference]]:

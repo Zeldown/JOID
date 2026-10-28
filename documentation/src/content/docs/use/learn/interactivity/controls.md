@@ -163,6 +163,7 @@ The choice controls share the options of [[BaseChoiceNode]]:
 New options keep the value when it is still one of them; otherwise the control shows its [fallback](#keep-a-value-that-the-bounds-refuse).
 `getValueList()` is a read-only view that follows the options set later.
 A [[SwitchNode]] builds one node per option with its `option((value, index) -> node)` and lays them out side by side.
+The option function runs once per value, so `value` acts like the variable of a loop: the color and the label read `difficulty` in a lambda ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 
 ## Choose from a drop-down list
 

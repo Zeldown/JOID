@@ -57,7 +57,7 @@ The italic line has no italic face to draw, so the regular face is slanted.
 
 - When the family has no face of the weight you ask for, it draws the closest one, and dev mode prints a warning that names the missing weight and the loaded ones: load every weight you use.
 - `italic(true)` draws the italic face closest to the weight; a family without an italic face slants its upright face.
-- Two faces of the same weight and slant in one `load(...)` call throw an `IllegalArgumentException`.
+- Two faces of the same weight and slant in one `load(...)` call make the future fail with an `IllegalArgumentException`.
 
 A face whose file declares the wrong weight can be given another one: [Custom fonts and MSDF](/use/learn/going-further/fonts/) shows the MSDF sources that do it.
 

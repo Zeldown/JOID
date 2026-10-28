@@ -127,6 +127,7 @@ A wrapping effect contains every effect of a higher priority.
 6. The wrapping effects end, in reverse order.
 
 `priority(...)` changes the priority of an effect, and two effects of the same priority keep the order in which you added them.
+In the example below, the `Transformation` turns each node by 20 degrees with [[Rotation#ROLL]], in the plane of the screen ([Rotate and scale a drawing](/use/learn/going-further/drawing-resources-and-transforms/#rotate-and-scale-a-drawing)).
 A transform, at `-100`, wraps the mask, at `0`, so the mask turns with the node; a mask given a priority under `-100` wraps the transform, and stays in place while the node turns under it:
 
 ```java file="com/example/style/EffectsUI.java" region="priority"

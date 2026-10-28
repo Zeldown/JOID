@@ -111,7 +111,7 @@ Without an `id`, the file takes the full name of the class: give an `id` to a st
 
 When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
 
-:::caution
+:::danger
 A process that is killed or crashes saves nothing: call `save()` on a store that must survive a crash, at the moment its values change.
 :::
 

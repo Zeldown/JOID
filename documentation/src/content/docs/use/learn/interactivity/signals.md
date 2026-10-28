@@ -152,7 +152,7 @@ A value derived with `map` is computed by your own lambda, which reads `offset` 
 ```java file="com/example/interactivity/signals/FollowUI.java" region="loop"
 ```
 
-Three fixes exist, in this order of preference: a field in place of the local variable, a derived value with `map(...)`, or a lambda.
+Three fixes exist, in this order of preference: a field in place of the local variable when the value is the same for every call, a derived value with `map(...)`, as here, where each row has its own offset, or a lambda.
 
 ## Read a value without following it
 

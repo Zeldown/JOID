@@ -26,8 +26,8 @@ public class MenuUI extends UI {
 	// #region fields
 	private final Random                  random = new Random(7L);
 	private final ListSignal<Integer>     rounds = new ListSignal<>();
-	private final ComputedSignal<Integer> total  = this.rounds.map(list -> list.stream().reduce(0, Integer::sum));
 	private final ComputedSignal<Integer> best   = this.rounds.map(list -> list.stream().reduce(0, Math::max));
+	private final ComputedSignal<Integer> total  = this.rounds.map(list -> list.stream().reduce(0, Integer::sum));
 	// #endregion
 
 	@Override

@@ -107,4 +107,4 @@ The shortcut changes the same signal as the button, so the panel follows in the 
 - A [signal](/use/learn/interactivity/signals/) holds a value, and a node set from an expression that reads it follows it.
 - `map(...)` derives a signal from another ([Derived values](/use/learn/state/derived-values/)).
 - `watch(...)` rebuilds the children of a node when a signal changes ([Rebuilding the tree](/use/learn/state/rebuilding/)).
-- You change the data, never the nodes ([How JOID thinks](/use/learn/how-joid-thinks/#values-on-screen-follow-signals)).
+- You change the data, never the nodes ([How JOID works](/use/learn/how-joid-thinks/#values-on-screen-follow-signals)).

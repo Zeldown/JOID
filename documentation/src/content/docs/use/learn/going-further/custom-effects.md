@@ -87,12 +87,7 @@ Both rectangles are drawn dark grey with a blue disc: `SELF` inverts the rectang
 </figure>
 
 `toShaderPasses(node)` returns several passes, for an effect that needs more than one, such as a blur in two directions.
-The [[NodeEffect.NodeEffectScope]] decides what the passes process:
-
-- `SELF`, the default, processes what the node draws itself.
-- `CHILDREN` processes the node with its children and its layers.
-
-`scope(...)` sets it, as in the second rectangle.
+`scope(...)` chooses what the passes process, the node alone or with its children, as for the built-in effects ([Round a node with its children](/use/learn/style-and-motion/effects/#round-a-node-with-its-children)); the second rectangle uses `CHILDREN`.
 The passes of all the effects of a node run in one pipeline per scope, in the order of the priorities of their effects.
 
 ## Place your effect among the others
@@ -102,9 +97,9 @@ The constructor of the hard shadow gives its priority to `super(...)`:
 ```java file="com/example/further/HardShadowNodeEffect.java" region="priority"
 ```
 
-The priority orders the effects of a node: the lowest priority wraps all the others, and its passes run first.
+The priority places the effect among the others ([Control the order of effects](/use/learn/style-and-motion/effects/#control-the-order-of-effects)).
 At `-60`, the hard shadow wraps every built-in effect but the transform, at `-100`, which turns the shadow with the node.
-The built-in effects use priorities from `-100`, the transform, to `200`, the border ([Effects](/use/learn/style-and-motion/effects/) lists them).
+The built-in effects use priorities from `-100`, the transform, to `200`, the border.
 `priority(...)` changes the priority of one effect, and both `priority` and `scope` also take a `Supplier`.
 
 | Hook | JOID calls it |

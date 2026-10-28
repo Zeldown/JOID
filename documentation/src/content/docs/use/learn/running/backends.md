@@ -115,7 +115,7 @@ LWJGL 2 has no input callbacks, so [[Lwjgl2InputForwarder#poll]] reads the input
 `register()` runs these steps in this order:
 
 1. It throws `IllegalStateException` when the backend is already registered: a backend registers once.
-2. It checks that the backend was built for the same major version of JOID, and throws `The backend was built for JOID … but JOID … is loaded: update the backend` when it was not.
+2. It checks that the backend was built for the same major version of JOID, and throws `The backend was built for JOID ….x, but JOID … is loaded: update the backend` when it was not.
 3. It applies the [data and cache folders](/use/learn/running/files/#move-the-folders) set with `dataDir(...)` and `cacheDir(...)`.
 4. It registers the audio bridge of the backend, unless you called `audio(false)`, then its window and render bridges.
 5. It registers a thread bridge tied to the calling thread, which becomes the render thread: work sent from other threads [runs there at the start of the next frame](/use/learn/running/threads/#bring-a-result-back-to-the-render-thread).

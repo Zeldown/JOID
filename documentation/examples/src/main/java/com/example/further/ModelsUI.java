@@ -41,7 +41,7 @@ public class ModelsUI extends UI {
 		.create(100, 340, 200, 50)
 		.color(ModelsUI.ACCENT)
 		.label(Text.create("Turn", label))
-		.onClick(event -> yaw.set(yaw.get() + 45D))
+		.onClick(event -> yaw.set(yaw.peek() + 45D))
 		.attach(this);
 		// #endregion
 
