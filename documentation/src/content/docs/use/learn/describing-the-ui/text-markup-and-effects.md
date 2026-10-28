@@ -112,7 +112,7 @@ From then on, a `Duration` given as a text shows in your format:
 ```java file="com/example/describing/markup/MarkupUI.java" region="converter"
 ```
 
-The last converter registered is tried first, and registering the same instance again keeps one copy of it.
+The last converter registered is tried first.
 A string never goes through a converter.
 
 ## Recap

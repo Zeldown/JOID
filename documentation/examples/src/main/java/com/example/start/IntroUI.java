@@ -17,10 +17,10 @@ import dev.joid.lib.utils.align.Align;
 public class IntroUI extends UI {
 
 	private static final Color TEXT      = new Color(231, 233, 238).lock();
-	private static final Color ACCENT    = new Color(91, 140, 255).lock();
-	private static final Color SHADOW    = new Color(0, 0, 0, 153).lock();
 	private static final Color ELEMENT   = new Color(38, 43, 53).lock();
 	private static final Color SURFACE   = new Color(23, 26, 33).lock();
+	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color SHADOW    = new Color(0, 0, 0, 153).lock();
 	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	private final BooleanSignal notifications = new BooleanSignal(false);

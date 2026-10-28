@@ -45,13 +45,13 @@ public class CustomNodesUI extends UI {
 			.create(20, 20, 100)
 			.color(CustomNodesUI.ACCENT)
 			.selected(favorite)
-			.onSelect(event -> changes.set(changes.get() + 1))
+			.onSelect(event -> changes.increment())
 			.attach(container);
 			TextNode
 			.create(160, 30)
-			.text(Text.create(() -> favorite.get() ? "Favorite" : "Plain", info))
+			.text(Text.create(favorite.get() ? "Favorite" : "Plain", info))
 			.attach(container);
-			TextNode.create(160, 70).text(Text.create(() -> "Changes: " + changes.get(), info)).attach(container);
+			TextNode.create(160, 70).text(Text.create("Changes: " + changes.get(), info)).attach(container);
 		})
 		.attach(this);
 		// #endregion

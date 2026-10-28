@@ -39,6 +39,7 @@ Give the chart its axes, then its series:
 [[ChartNode.ChartAxis]] creates the axes.
 `ChartAxis.x(name, labels...)` creates the X axis: its labels are the columns of the chart, in this order.
 `ChartAxis.y(name)` creates the Y axis; `prefix(...)` and `suffix(...)` decorate the values that `format(value)` returns, here `8 k`.
+
 `data(name, data)` adds a series, or replaces the series of that name in place; call it after `xAxis(...)`, which holds the series.
 A [[ChartNode.ChartData]] maps each label to a number, and a label it does not hold has no value there: the skin decides what to draw.
 

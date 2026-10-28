@@ -33,7 +33,7 @@ A click on "Save" shows "Saved", and a second task hides it three seconds later.
 </figure>
 
 `Task.create(delay)` takes the delay in milliseconds, and `every(period)` the period in milliseconds; without `every`, the task runs once.
-`attach(ui)` or `attach(node)` starts the delay, and the owner runs the task at the start of a frame that it draws, on the render thread, with [[UI#getCurrent]] set to its UI.
+`attach(ui)` or `attach(node)` starts the delay, and the owner runs the task when it starts to draw a frame, after the update step, on the render thread, with [[UI#getCurrent]] set to its UI.
 The time is the clock of JOID, the one that drives animations, so a [snapshot test](/use/learn/running/testing/) moves it with its `wait` command.
 
 A frame that comes late runs a due task once, never twice: a period counts from the run before.

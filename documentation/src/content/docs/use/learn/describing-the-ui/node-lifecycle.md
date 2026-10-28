@@ -56,6 +56,8 @@ The time starts again at 0 each time the card joins the UI, here when the UI ope
 </figcaption>
 </figure>
 
+[[UI#getFrameTime]] gives the time since the previous frame in milliseconds, so the card adds the elapsed seconds on every frame.
+
 JOID first updates every node of every open UI, then draws them all.
 Inside a UI, the children are updated before their parent, and the `update()` of the UI runs after its nodes.
 

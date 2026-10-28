@@ -60,7 +60,7 @@ The state of a playing transition is on the UI: [[UI#getTransitionIn]] and [[UI#
 
 A transition is a class that extends [[Transition]] and passes two [[TransitionStep]] values to its constructor: one for the opening, one for the closing.
 This one slides the UI up from below its place with a small overshoot, and drops it down when it closes.
-`getModelView()` of the render bridge is the matrix stack that every drawing goes through: `with(...)` saves it, runs the lambda, which translates it and draws `body`, then restores it.
+The step moves the UI with the model-view matrix stack of the render bridge, `getModelView()`, inside `with(...)` ([Use the matrix stack](/use/learn/going-further/drawing-resources-and-transforms/#use-the-matrix-stack)).
 
 ```java file="com/example/style/SlideTransition.java"
 ```
@@ -76,17 +76,16 @@ This one slides the UI up from below its place with a small overshoot, and drops
 `draw((ui, progress, body) -> ...)` receives the progress of the step, from `0F` to `1F` with its easing applied, and `body`, which draws the UI: wrap `body.run()` in the transformation of this progress.
 Both steps count their progress from `0F` at their start, so the opening places the UI at `1F - progress` away, and the closing at `progress` away.
 
-The translations of the matrix stack ([Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)) are in design pixels, like the positions of the nodes: `300D` moves the UI by 300 design pixels whatever the size of the window.
-`enabled(false)` on a step turns it off, and an override of [[TransitionStep#init]] prepares what depends on the UI, such as its size, each time the UI loads.
+The translations of the matrix stack are in design pixels, like the positions of the nodes: `300D` moves the UI by 300 design pixels whatever the size of the window.
+`enabled(false)` on a step turns it off, and an override of [[TransitionStep#init]] prepares what depends on the UI each time it opens or reloads; read a value that follows the window, such as its size, in the drawing of the step.
 
 ## Know what happens while a transition plays
 
 - The [backdrop](/use/learn/describing-the-ui/uis/) of a UI whose [[UIData]] sets `background = true` fades in and out with the transition.
-- On `JOID.close(ui)` or Escape, the UI stays open while its closing transition plays, and JOID removes it when the transition ends; a second close in that time does nothing.
+- On `JOID.close(ui)` or Escape, the UI stays open while its closing transition plays, and JOID removes it when the transition ends.
 - A close during the opening transition plays the closing one from the point that the opening reached, so the UI turns back without a jump.
 - `JOID.open(ui)` during its closing transition stops the transition and keeps the UI open.
 - Opening a screen over another screen plays the closing transition of the open one first; the screen you open appears when it ends.
-  When several screens are opened during that time, the last one wins.
 - [[JOID#forceClose]] closes at once, without the closing transition, and so does a close of a UI that is hidden or not drawn.
 
 [Open and close a UI](/use/learn/describing-the-ui/uis/#open-and-close-a-ui) says when the opening transition plays.

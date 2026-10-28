@@ -18,7 +18,7 @@ This page shows the two kinds of UI that do: popups and overlays.
 
 ## Open a popup above a screen
 
-A popup is a UI annotated with [[UIDataPopup]]:
+A popup is a UI annotated with [[UIDataPopup]] and `active = true`: without it, the annotation does nothing, so that a subclass can turn the popup off with `active = false`.
 
 ```java file="com/example/describing/overlays/ConfirmPopup.java" region="class"
 ```
@@ -49,7 +49,7 @@ Opening another screen closes the current screen with every popup open above it 
 
 ## Keep an overlay over every screen
 
-An overlay is a UI annotated with [[UIDataOverlay]]:
+An overlay is a UI annotated with [[UIDataOverlay]] and `active = true`, which turns it on as for a popup:
 
 ```java file="com/example/describing/overlays/HudOverlay.java" region="class"
 ```

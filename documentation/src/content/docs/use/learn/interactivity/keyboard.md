@@ -91,7 +91,7 @@ The square moves 300 design pixels per second while D is held, at any frame rate
 - [[Key#isPhysicalDown]] tests a key by its place, like `getPhysicalKey()`.
 - [[UI#isShiftKeyDown]], [[UI#isCtrlKeyDown]] and [[UI#isAltKeyDown]] test both keys of a modifier.
 
-Text fields repeat a held key on their own, after 500 ms then every 100 ms.
+Text fields repeat a held key on their own ([[FieldNode]]).
 
 ## Bind a shortcut
 

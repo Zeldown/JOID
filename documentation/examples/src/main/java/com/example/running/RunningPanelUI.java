@@ -12,13 +12,16 @@ import dev.joid.lib.utils.align.Align;
 
 public class RunningPanelUI extends UI {
 
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(RunningPanelUI.TEXT);
 
 		RectNode
 		.create(1480, 40, 400, 200)
-		.color(Color.decode("#262B35"))
+		.color(RunningPanelUI.ELEMENT)
 		.hover(() -> "A panel of the library")
 		.body(rect -> TextNode.create(0, 0, 400, 200).text(Text.create("Panel", info).align(Align.CENTER)).attach(rect))
 		.attach(this);

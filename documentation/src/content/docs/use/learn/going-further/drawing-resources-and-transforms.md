@@ -106,6 +106,7 @@ The outline of the node shows its own bounds.
 `with(body)` saves the matrix, runs your code and restores the matrix, even when the code throws.
 Inside, `translate`, `rotate` and `scale` change it.
 The calls compose like in OpenGL: the last call applies first to what you draw.
+
 Here the rectangle is drawn around the origin, scaled, rotated, then moved to the center of the node.
 X goes right and Y goes down, in design pixels; `rotate(angle, x, y, z)` turns by `angle` degrees around the axis `(x, y, z)`.
 
