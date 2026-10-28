@@ -41,7 +41,7 @@ Attaching a switch without an `option` function throws an `IllegalStateException
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [option](#SwitchNode-property-option) | `BiFunction<V,Integer,Node>` |  | The function that creates the node of an option from its value and its index. |
+| [option](#SwitchNode-property-option) | `BiFunction<V,Integer,Node>` | `null` | The function that creates the node of an option from its value and its index. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/basechoicenode/#BaseChoiceNode-properties"><code>BaseChoiceNode</code></a> (3)</summary>
@@ -123,7 +123,7 @@ Creates the switch at `x`, `y` with a `width` and a `height` in design pixels, f
 
 - `this option(BiFunction<V,Integer,Node> option)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `null`
 
 The function that creates the node of an option from its value and its index.
 The switch calls it again for every option each time the options change.

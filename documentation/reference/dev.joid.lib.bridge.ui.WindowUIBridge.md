@@ -27,6 +27,8 @@ Sets the fill of the tooltip box.
 
 Sets the text style of the tooltips; without it, the bridge draws no tooltip and, with the dev jar, prints a warning once.
 
+Default: `null`: no tooltip
+
 ## hoverBorderColor(Color)
 
 Sets the color of the border, one design pixel wide, of the tooltip box.
@@ -38,19 +40,3 @@ Draws the lines of the tooltip in a rounded box near the pointer, moved to stay 
 ## drawBackground()
 
 Clears the color of the window to `background`, then the depth and the stencil.
-
-## getBackground()
-
-Returns the color that clears the window.
-
-## getHoverColor()
-
-Returns the fill of the tooltip box.
-
-## getHoverInfo()
-
-Returns the text style of the tooltips, or `null` when none is set and no tooltip is drawn.
-
-## getHoverBorderColor()
-
-Returns the color of the border of the tooltip box.

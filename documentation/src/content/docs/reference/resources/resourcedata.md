@@ -38,8 +38,8 @@ When no handle uses it any more, its textures are freed at the next frame.
 | Property | Type | Default | Summary |
 |---|---|---|---|
 | [uniqueId](#ResourceData-property-uniqueId) | `String` | set at creation | The id under which the data is cached and named in the warnings. |
-| [decoder](#ResourceData-property-decoder) | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) |  | The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data; `decoder(IResourceDecoder)` sets it and calls its `init`. |
-| [assetSource](#ResourceData-property-assetSource) <span class="joid-qualifier">signal</span> | [`Asset`](/reference/resources/asset/) |  | Where the data reads its asset when it detects its format: `assetSource(Supplier)` sets it, read again on each detection, so that a reload finds a file that appeared since. |
+| [decoder](#ResourceData-property-decoder) | [`IResourceDecoder`](/reference/resources/iresourcedecoder/) | set at creation; `null` until the format is detected | The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data; `decoder(IResourceDecoder)` sets it and calls its `init`. |
+| [assetSource](#ResourceData-property-assetSource) <span class="joid-qualifier">signal</span> | [`Asset`](/reference/resources/asset/) | `null` | Where the data reads its asset when it detects its format: `assetSource(Supplier)` sets it, read again on each detection, so that a reload finds a file that appeared since. |
 | [textures](#ResourceData-property-textures) | [`ITexture[]`](/reference/bridges/itexture/) | `null` | The GPU textures of the data, one per plane or per frame buffer of the decoder: `getTextures()` returns a copy, `textures(ITexture[])` sets them. |
 | [data](#ResourceData-property-data) | `int[][]` | `null` | The decoded pixels, one `0xAARRGGBB` array per texture, waiting for the upload: `getData()` returns a copy of the outer array, `data(int[][])` sets it; `null` once uploaded. |
 | [generated](#ResourceData-property-generated) | `boolean` | `false` | If `true`, the decode has started; `generated(boolean)` sets it. |
@@ -123,7 +123,7 @@ The id under which the data is cached and named in the warnings.
 - `this decoder(IResourceDecoder decoder)` <span class="joid-qualifier">fluent</span>
 - `IResourceDecoder getDecoder()` 
 
-**Default:** 
+**Default:** set at creation; `null` until the format is detected
 
 The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the data; `decoder(IResourceDecoder)` sets it and calls its `init`.
 
@@ -133,7 +133,7 @@ The [`IResourceDecoder`](/reference/resources/iresourcedecoder/) that reads the 
 
 - `this assetSource(Supplier<Asset> assetSource)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
+**Default:** `null`
 
 Where the data reads its asset when it detects its format: `assetSource(Supplier)` sets it, read again on each detection, so that a reload finds a file that appeared since.
 

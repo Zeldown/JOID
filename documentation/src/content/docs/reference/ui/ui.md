@@ -19,10 +19,8 @@ Base class of a screen, an overlay or a popup that builds its node tree in `init
 ## Description
 
 A `UI` is one interface: a screen, an overlay or a popup.
-Write one class per interface, build its nodes in `init()`, configure it with annotations on the class ([`UIData`](/reference/annotations/uidata/), [`UIDataPopup`](/reference/annotations/uidatapopup/), [`UIDataOverlay`](/reference/annotations/uidataoverlay/), [`UIDataScale`](/reference/annotations/uidatascale/), [`UIDataDebug`](/reference/annotations/uidatadebug/)), then open it with [`JOID.open`](/reference/ui/joid/#JOID-method-open):
-
-```java file="com/example/reference/ProfileUI.java" region="ui"
-```
+Write one class per interface, build its nodes in `init()`, configure it with annotations on the class ([`UIData`](/reference/annotations/uidata/), [`UIDataPopup`](/reference/annotations/uidatapopup/), [`UIDataOverlay`](/reference/annotations/uidataoverlay/), [`UIDataScale`](/reference/annotations/uidatascale/), [`UIDataDebug`](/reference/annotations/uidatadebug/)), then open it with [`JOID.open`](/reference/ui/joid/#JOID-method-open).
+[Write a UI](/use/learn/describing-the-ui/uis/#write-a-ui) shows one.
 
 Every position that a `UI` method takes or returns is in design pixels on the 1920 × 1080 canvas, unless the entry says screen pixels.
 The input reaches the nodes first, from the front-most, then the `handleX` listeners of the UI.
@@ -48,8 +46,8 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [depthLevel](#UI-property-depthLevel) | `double` |  | Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from. |
-| [transition](#UI-property-transition) | [`Transition`](/reference/ui/transition/) |  | The animation played when the UI opens and closes. |
+| [depthLevel](#UI-property-depthLevel) | `double` | `0D` | Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from. |
+| [transition](#UI-property-transition) | [`Transition`](/reference/ui/transition/) | `null` | The animation played when the UI opens and closes. |
 
 <a id="UI-methods"></a>
 
@@ -213,7 +211,7 @@ Throws an `IllegalStateException` when the class is both a popup and an overlay.
 - `this depthLevel(double depthLevel)` <span class="joid-qualifier">fluent</span>
 - `double getDepthLevel()` 
 
-**Default:** 
+**Default:** `0D`
 
 Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from.
 JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D model, raises it so that what comes next is drawn in front.
@@ -225,7 +223,7 @@ JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D m
 - `this transition(Transition transition)` <span class="joid-qualifier">fluent</span>
 - `Transition getTransition()` 
 
-**Default:** 
+**Default:** `null`
 
 The animation played when the UI opens and closes.
 A popup gets a [`PopTransition`](/reference/ui/poptransition/) from `@UIDataPopup`; a transition set here replaces it, and `null` removes it.

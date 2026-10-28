@@ -21,10 +21,7 @@ Moves one `float` value, read and written through a getter and a setter, to a ta
 The getter is read when the tween begins, after its delay, so a tween placed in a sequence starts from the value that the previous steps left.
 [`TweenAnimator.tween`](/reference/animation/tweenanimator/#TweenAnimator-method-tween) gives a tween already wired to an animator.
 A duration below `0` throws an `IllegalArgumentException`.
-This tween moves `alpha` to `1F` in 400 ms; it moves only while its manager is updated:
-
-```java file="com/example/reference/animation/FadeTween.java" region="tween"
-```
+A tween moves only while its manager is updated: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own) shows tweens in a timeline.
 
 ## Learn more
 
@@ -46,7 +43,7 @@ This tween moves `alpha` to `1F` in 400 ms; it moves only while its manager is u
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [target](#Tween-property-target) | `float` |  | The value to reach; a call to `target(...)` cancels a relative target. |
+| [target](#Tween-property-target) | `float` | `0F` | The value to reach; a call to `target(...)` cancels a relative target. |
 | [path](#Tween-property-path) | [`ITweenPath`](/reference/animation/itweenpath/) | `TweenPaths.CATMULL_ROM` | The curve that joins the start, the waypoints and the target; it has an effect only with waypoints. |
 | [easing](#Tween-property-easing) | [`TweenEquation`](/reference/animation/tweenequation/) | `TweenEquations.LINEAR` | The curve that maps the elapsed time to the progress. |
 
@@ -127,7 +124,7 @@ Creates an empty step without value, a place in a timeline.
 
 - `this target(float target)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `0F`
 
 The value to reach; a call to `target(...)` cancels a relative target.
 

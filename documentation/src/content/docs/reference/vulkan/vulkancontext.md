@@ -74,9 +74,9 @@ The device of the host seen by the Vulkan renderer, with its render passes, imag
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [TEXTURE_FORMAT](#VulkanContext-constant-TEXTURE_FORMAT) | `VK10.VK_FORMAT_B8G8R8A8_UNORM` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [TEXTURE_FORMAT](#VulkanContext-constant-TEXTURE_FORMAT) | `VK10.VK_FORMAT_B8G8R8A8_UNORM` | The format of every texture and framebuffer color image of JOID, `B8G8R8A8_UNORM`. |
 
 ## Creation details
 

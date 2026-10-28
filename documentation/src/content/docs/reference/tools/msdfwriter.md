@@ -29,9 +29,9 @@ Writes a `font.msdf` file: the face, the metrics, the glyphs, the kerning and th
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [VERSION](#MsdfWriter-constant-VERSION) | `4` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [VERSION](#MsdfWriter-constant-VERSION) | `4` | The version of the file format, part of the cache key of the atlases that JOID generates. |
 
 ## Method details
 

@@ -36,8 +36,8 @@ The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face an
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [codepoint](#TextGlyph-property-codepoint) | `int` |  | The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` replaces it. |
-| [color](#TextGlyph-property-color) | [`Color`](/reference/drawing/color/) |  | The color the glyph draws in: `getColor()` reads it, `color(Color)` replaces it. |
+| [codepoint](#TextGlyph-property-codepoint) | `int` | set at creation | The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` replaces it. |
+| [color](#TextGlyph-property-color) | [`Color`](/reference/drawing/color/) | set at creation | The color the glyph draws in: `getColor()` reads it, `color(Color)` replaces it. |
 
 <a id="TextGlyph-methods"></a>
 
@@ -97,7 +97,7 @@ Creates a glyph of `codepoint` at index `index` of the string, drawn with `face`
 - `this codepoint(int codepoint)` <span class="joid-qualifier">fluent</span>
 - `int getCodepoint()` 
 
-**Default:** 
+**Default:** set at creation
 
 The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` replaces it.
 
@@ -108,7 +108,7 @@ The character that the glyph draws: `getCodepoint()` reads it, `codepoint(int)` 
 - `this color(Color color)` <span class="joid-qualifier">fluent</span>
 - `Color getColor()` 
 
-**Default:** 
+**Default:** set at creation
 
 The color the glyph draws in: `getColor()` reads it, `color(Color)` replaces it.
 

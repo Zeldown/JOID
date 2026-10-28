@@ -41,8 +41,8 @@ Attaching a toggle without a knob throws an `IllegalStateException`.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [track](#ToggleNode-property-track) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the knob, over the whole toggle, with a `zindex` of `-1`; optional. |
-| [knob](#ToggleNode-property-knob) | [`Node`](/reference/nodes/node/) |  | The node that slides along the track and shows the state; required. |
+| [track](#ToggleNode-property-track) | [`Node`](/reference/nodes/node/) | `null` | The node drawn behind the knob, over the whole toggle, with a `zindex` of `-1`; optional. |
+| [knob](#ToggleNode-property-knob) | [`Node`](/reference/nodes/node/) | `null` | The node that slides along the track and shows the state; required. |
 | [speed](#ToggleNode-property-speed) <span class="joid-qualifier">signal</span> | `float` | `0.25F` | How fast the knob reaches its new place: the part of the remaining way that it covers in 1/60 s, at any frame rate. |
 
 <details>
@@ -118,7 +118,7 @@ Creates the toggle at `x`, `y` with a `width` and a `height` in design pixels, f
 - `this track(Node track)` <span class="joid-qualifier">fluent</span>
 - `Node getTrack()` 
 
-**Default:** 
+**Default:** `null`
 
 The node drawn behind the knob, over the whole toggle, with a `zindex` of `-1`; optional.
 
@@ -129,7 +129,7 @@ The node drawn behind the knob, over the whole toggle, with a `zindex` of `-1`; 
 - `this knob(Node knob)` <span class="joid-qualifier">fluent</span>
 - `Node getKnob()` 
 
-**Default:** 
+**Default:** `null`
 
 The node that slides along the track and shows the state; required.
 

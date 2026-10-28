@@ -41,8 +41,8 @@ Use [`ScrollbarNode`](/reference/controls/scrollbarnode/) for a look made of a t
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [scrollNode](#BaseScrollbarNode-property-scrollNode) | [`Node`](/reference/nodes/node/) |  | The node that the bar scrolls; [`Node.scrollbar`](/reference/nodes/node/#Node-property-scrollbar) sets it. |
-| [minThumb](#BaseScrollbarNode-property-minThumb) <span class="joid-qualifier">signal</span> | `double` |  | The smallest length of the thumb, in design pixels, so that a long content keeps a thumb large enough to grab. |
+| [scrollNode](#BaseScrollbarNode-property-scrollNode) | [`Node`](/reference/nodes/node/) | `null` | The node that the bar scrolls; [`Node.scrollbar`](/reference/nodes/node/#Node-property-scrollbar) sets it. |
+| [minThumb](#BaseScrollbarNode-property-minThumb) <span class="joid-qualifier">signal</span> | `double` | `0D` | The smallest length of the thumb, in design pixels, so that a long content keeps a thumb large enough to grab. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -111,7 +111,7 @@ Creates the bar at `x`, `y` with a `width` and a `height` in design pixels, rela
 - `this scrollNode(Node scrollNode)` <span class="joid-qualifier">fluent</span>
 - `Node getScrollNode()` 
 
-**Default:** 
+**Default:** `null`
 
 The node that the bar scrolls; [`Node.scrollbar`](/reference/nodes/node/#Node-property-scrollbar) sets it.
 A bar attached without one throws an `IllegalStateException`.
@@ -124,7 +124,7 @@ A bar attached without one throws an `IllegalStateException`.
 - `this minThumb(Supplier<Double> minThumb)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getMinThumb()` 
 
-**Default:** 
+**Default:** `0D`
 
 The smallest length of the thumb, in design pixels, so that a long content keeps a thumb large enough to grab.
 

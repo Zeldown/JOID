@@ -34,9 +34,9 @@ It is not in the prod jar, and JOID ships no production font: load a font of you
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`MsdfFont`](/reference/text/msdffont/) | [MONTSERRAT](#DevFont-field-MONTSERRAT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`MsdfFont`](/reference/text/msdffont/) | [MONTSERRAT](#DevFont-field-MONTSERRAT) |  | The loaded font, `null` outside dev mode. |
 
 ## Method details
 

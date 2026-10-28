@@ -16,10 +16,14 @@ Creates a curve with the oscillation `period` and the `amplitude`, for a subclas
 The length of one oscillation, as a part of the step: smaller values oscillate faster.
 `period(float)` returns a curve of the same direction with that period and leaves this one unchanged.
 
+Default: `0.3F` in `IN` and `OUT`, `0.45F` in `IN_OUT`
+
 ## amplitude
 
 The height of the oscillations; a value below `1F` counts as `1F`.
 `amplitude(float)` returns a curve of the same direction with that amplitude and leaves this one unchanged.
+
+Default: `0F` in the three constants, which counts as `1F`
 
 ## IN
 

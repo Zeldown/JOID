@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [IN](#BounceTweenEquation-constant-IN) |  |
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [OUT](#BounceTweenEquation-constant-OUT) |  |
-| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [IN_OUT](#BounceTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [IN](#BounceTweenEquation-constant-IN) |  | Bounces at the start. |
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [OUT](#BounceTweenEquation-constant-OUT) |  | Bounces at the end, like a ball that falls. |
+| [`BounceTweenEquation`](/reference/animation/bouncetweenequation/) | [IN_OUT](#BounceTweenEquation-constant-IN_OUT) |  | Bounces at the start and at the end. |
 
 ## Creation details
 

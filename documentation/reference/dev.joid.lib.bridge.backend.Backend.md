@@ -20,9 +20,13 @@ If `false`, `register()` registers no audio bridge and opens no audio device: vi
 
 Sets the folder where JOID writes the data of the application; it wins over the `joid.data` system property.
 
+Default: `null`: the `joid.data` system property, else the folder `joid` in the working directory ([Where JOID stores files](/use/learn/running/files/#find-the-folders))
+
 ## cacheDir(File)
 
 Sets the folder where JOID writes the caches it can rebuild; it wins over the `joid.cache` system property.
+
+Default: `null`: the `joid.cache` system property, else a folder `joid` in the cache folder of the system ([Where JOID stores files](/use/learn/running/files/#find-the-folders))
 
 ## register()
 
@@ -67,18 +71,6 @@ A backend whose input belongs to the loop of the application leaves it empty and
 ## getVersion()
 
 Returns the version of JOID that the backend was built for, read from `backend.properties`.
-
-## getDataDir()
-
-Returns the folder set with `dataDir(File)`, or `null` when none was set.
-
-## isAudio()
-
-If `true`, `register()` registers the audio bridge of the backend.
-
-## getCacheDir()
-
-Returns the folder set with `cacheDir(File)`, or `null` when none was set.
 
 ## isRegistered()
 

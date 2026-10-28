@@ -234,7 +234,7 @@ See [Nodes and the tree](/use/learn/describing-the-ui/nodes/).
 
 ### overlay
 
-A UI drawn over the screen, configured by [[UIDataOverlay]], that lets the input through or not.
+A UI that stays open while screens open and close, configured by [[UIDataOverlay]]: it is drawn below the screens unless its `render` sets `aboveScreens`, and it takes the input only when its `interaction` is active.
 
 See [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
@@ -300,7 +300,7 @@ See [Images and media](/use/learn/describing-the-ui/media/).
 
 ### screen
 
-A UI that takes the whole window and receives the input first.
+A UI that is neither a popup nor an overlay: opening one closes the open screens and popups.
 
 See [UIs](/use/learn/describing-the-ui/uis/).
 
@@ -374,7 +374,7 @@ See [Transitions](/use/learn/style-and-motion/transitions/).
 ### UI
 
 A class that extends [[UI]] and describes one interface: a screen, an overlay or a popup.
-JOID draws every open UI on top of the others in the order of their `zindex`.
+JOID draws the open UIs in three groups, the overlays below the screens, then the screens and the popups, then the overlays above the screens, ordered by `zindex` inside each group.
 
 See [UIs](/use/learn/describing-the-ui/uis/).
 

@@ -45,11 +45,11 @@ Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [IN](#SineTweenEquation-constant-IN) |  |
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [OUT](#SineTweenEquation-constant-OUT) |  |
-| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [IN_OUT](#SineTweenEquation-constant-IN_OUT) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [IN](#SineTweenEquation-constant-IN) |  | Starts slowly, along a sine. |
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [OUT](#SineTweenEquation-constant-OUT) |  | Ends slowly, along a sine. |
+| [`SineTweenEquation`](/reference/animation/sinetweenequation/) | [IN_OUT](#SineTweenEquation-constant-IN_OUT) |  | Starts and ends slowly, along a sine. |
 
 ## Creation details
 

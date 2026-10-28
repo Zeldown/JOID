@@ -53,23 +53,23 @@ JOID calls every hook and every listener of a node on the render thread.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [x](#Node-property-x) <span class="joid-qualifier">signal</span> | `double` |  | Horizontal position of the anchor point of the node, in design pixels, from the left edge of its parent (or of the canvas for a root or `ABSOLUTE` node). |
-| [y](#Node-property-y) <span class="joid-qualifier">signal</span> | `double` |  | Vertical position of the anchor point of the node, in design pixels, from the top edge of its parent (or of the canvas for a root or `ABSOLUTE` node). |
-| [width](#Node-property-width) <span class="joid-qualifier">signal</span> | `double` |  | Width of the node, in design pixels. |
-| [height](#Node-property-height) <span class="joid-qualifier">signal</span> | `double` |  | Height of the node, in design pixels. |
+| [x](#Node-property-x) <span class="joid-qualifier">signal</span> | `double` | set at creation | Horizontal position of the anchor point of the node, in design pixels, from the left edge of its parent (or of the canvas for a root or `ABSOLUTE` node). |
+| [y](#Node-property-y) <span class="joid-qualifier">signal</span> | `double` | set at creation | Vertical position of the anchor point of the node, in design pixels, from the top edge of its parent (or of the canvas for a root or `ABSOLUTE` node). |
+| [width](#Node-property-width) <span class="joid-qualifier">signal</span> | `double` | set at creation | Width of the node, in design pixels. |
+| [height](#Node-property-height) <span class="joid-qualifier">signal</span> | `double` | set at creation | Height of the node, in design pixels. |
 | [position](#Node-property-position) <span class="joid-qualifier">signal</span> | [`PositionProperty`](/reference/layout/positionproperty/) | `PositionProperty.RELATIVE` | `RELATIVE` places the node inside its parent; `ABSOLUTE` places it on the canvas whatever its parents, out of their layout, their scroll and their content size. |
-| [anchor](#Node-property-anchor) <span class="joid-qualifier">signal</span> | [`Align`](/reference/layout/align/) |  | Sets `anchorX` and `anchorY` to the same value. |
+| [anchor](#Node-property-anchor) <span class="joid-qualifier">signal</span> | [`Align`](/reference/layout/align/) | `Align.START` | Sets `anchorX` and `anchorY` to the same value. |
 | [anchorX](#Node-property-anchorX) <span class="joid-qualifier">signal</span> | [`Align`](/reference/layout/align/) | `Align.START` | Which point of the node sits at `x` and stays in place when the width changes: `START` the left edge, `CENTER` the middle, `END` the right edge. |
 | [anchorY](#Node-property-anchorY) <span class="joid-qualifier">signal</span> | [`Align`](/reference/layout/align/) | `Align.START` | Which point of the node sits at `y` and stays in place when the height changes: `START` the top edge, `CENTER` the middle, `END` the bottom edge. |
 | [aspectRatio](#Node-property-aspectRatio) <span class="joid-qualifier">signal</span> | `double` | none, the width and the height stay free | Width divided by height that the node keeps on every frame: JOID computes the height from the width, or the width from the height when the width is `0`. |
-| [zindex](#Node-property-zindex) <span class="joid-qualifier">signal</span> | `int` |  | Order of the node among its siblings: a higher value is drawn above and receives the input first. |
-| [zlevel](#Node-property-zlevel) <span class="joid-qualifier">signal</span> | `double` |  | Depth of the node along the Z axis, added to the depth of its parent. |
+| [zindex](#Node-property-zindex) <span class="joid-qualifier">signal</span> | `int` | `0` | Order of the node among its siblings: a higher value is drawn above and receives the input first. |
+| [zlevel](#Node-property-zlevel) <span class="joid-qualifier">signal</span> | `double` | `0D` | Depth of the node along the Z axis, added to the depth of its parent. |
 
 ### Visibility
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [skeleton](#Node-property-skeleton) | `Function<T,Node>` |  | Placeholder node drawn instead of this node and its children while one of its `wait` conditions fails; the function receives the node and returns the placeholder, or `null` for the default skeleton. |
+| [skeleton](#Node-property-skeleton) | `Function<T,Node>` | `null` | Placeholder node drawn instead of this node and its children while one of its `wait` conditions fails; the function receives the node and returns the placeholder, or `null` for the default skeleton. |
 | [visible](#Node-property-visible) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, the node and its children are neither drawn nor sent any input, and a layout node leaves them out. |
 | [enabled](#Node-property-enabled) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, the node and its children are drawn but ignore the input and show no hover progress. |
 | [interactive](#Node-property-interactive) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, the node and its children let the mouse through to what is under them and are never hovered. |
@@ -78,7 +78,7 @@ JOID calls every hook and every listener of a node on the render thread.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [cursor](#Node-property-cursor) <span class="joid-qualifier">signal</span> | [`Cursor`](/reference/input/cursor/) |  | Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one. |
+| [cursor](#Node-property-cursor) <span class="joid-qualifier">signal</span> | [`Cursor`](/reference/input/cursor/) | `null`: the cursor of the closest parent that sets one, `Cursor.DEFAULT` when none does | Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one. |
 | [hoverDuration](#Node-property-hoverDuration) <span class="joid-qualifier">signal</span> | `long` | `200L` | Time, in ms, that the hover progress takes to go from `0` to `1` and back. |
 | [hoverEquation](#Node-property-hoverEquation) <span class="joid-qualifier">signal</span> | [`TweenEquation`](/reference/animation/tweenequation/) | `TweenEquations.LINEAR` | Easing of the hover progress. |
 | [hover](#Node-property-hover) <span class="joid-qualifier">signal</span> | [`IHoverElement`](/reference/nodes/ihoverelement/) |  | Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover). |
@@ -89,14 +89,14 @@ JOID calls every hook and every listener of a node on the render thread.
 |---|---|---|---|
 | [overflow](#Node-property-overflow) <span class="joid-qualifier">signal</span> | [`OverflowProperty`](/reference/layout/overflowproperty/) | `OverflowProperty.NONE` | What the node does with children that go past its bounds: `NONE` draws them, `HIDDEN` clips them, `SCROLL` clips them and lets the wheel scroll them. |
 | [scrollSpeed](#Node-property-scrollSpeed) <span class="joid-qualifier">signal</span> | `double` | `1D` | Factor applied to the wheel: one notch scrolls 30 design pixels times this factor, twice as far with Control down. |
-| [scrollbar](#Node-property-scrollbar) | [`BaseScrollbarNode`](/reference/controls/basescrollbarnode/) |  | Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and the content goes past the node. |
+| [scrollbar](#Node-property-scrollbar) | [`BaseScrollbarNode`](/reference/controls/basescrollbarnode/) | `null` | Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and the content goes past the node. |
 
 ### Other properties
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [label](#Node-property-label) <span class="joid-qualifier">signal</span> | [`Text`](/reference/text/text/) |  | Text drawn centered over the node, after the node itself and before its children; `null` draws none. |
-| [draggable](#Node-property-draggable) <span class="joid-qualifier">signal</span> | [`DraggableProperty`](/reference/nodes/draggableproperty/) |  | Lets the user drag the node with the left button, inside the area and with the movement and the snapping of the [`DraggableProperty`](/reference/nodes/draggableproperty/); `null` means the node cannot be dragged. |
+| [label](#Node-property-label) <span class="joid-qualifier">signal</span> | [`Text`](/reference/text/text/) | `null`: no label | Text drawn centered over the node, after the node itself and before its children; `null` draws none. |
+| [draggable](#Node-property-draggable) <span class="joid-qualifier">signal</span> | [`DraggableProperty`](/reference/nodes/draggableproperty/) | `null`: the node cannot be dragged | Lets the user drag the node with the left button, inside the area and with the movement and the snapping of the [`DraggableProperty`](/reference/nodes/draggableproperty/); `null` means the node cannot be dragged. |
 
 <a id="Node-methods"></a>
 
@@ -259,7 +259,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [hasListener](#Node-method-hasListener)(EventType<?> type) | If `true`, the node has a listener for this event type. |
-| `boolean` | [isVisibleProperty](#Node-method-isVisibleProperty)() | The `visible` value of the node itself, without its parents and its clipping. |
+| `boolean` | [isVisibleProperty](#Node-method-isVisibleProperty)() | If `true`, the node itself is set visible, whatever its parents and its clipping. |
 | `boolean` | [isMounted](#Node-method-isMounted)() | If `true`, every `wait` condition of the node and of its parents holds. |
 | `int` | [getIndex](#Node-method-getIndex)() | The `zindex` of the node, or the highest value while it is dragged with `DraggableType.MOVE` so that it is drawn above its siblings. |
 | `T` | [getUi](#Node-method-getUi)() | The UI of the node, or the UI whose code is running ([`UI.getCurrent`](/reference/ui/ui/#UI-method-getCurrent)) when the node is not attached yet. |
@@ -379,7 +379,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | [onDragStart](#Node-event-onDragStart) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once a drag has started. |
 | [onDrag](#Node-event-onDrag) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs at every mouse move of the drag. |
 | [onDragDrop](#Node-event-onDragDrop) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs once the node has been dropped; the event holds the snap target, or `null`. |
-| [onDragSnap](#Node-event-onDragSnap) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`. |
+| [onDragSnap](#Node-event-onDragSnap) | [`EventListener<NodeDragEvent.Post<T>>`](/reference/events/nodedragevent-post/) | Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it. |
 
 ### Other events
 
@@ -417,7 +417,7 @@ A subclass calls it from its own constructor; [`Node.copy`](/reference/nodes/nod
 - `this x(Supplier<Double> x)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getX()` 
 
-**Default:** 
+**Default:** set at creation
 
 Horizontal position of the anchor point of the node, in design pixels, from the left edge of its parent (or of the canvas for a root or `ABSOLUTE` node).
 A writable signal is bound both ways: a drag or `move` writes the new position to it; a lambda or a read-only signal cannot be combined with a `MOVE` drag and throws an `IllegalStateException`.
@@ -431,7 +431,7 @@ A writable signal is bound both ways: a drag or `move` writes the new position t
 - `this y(Supplier<Double> y)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getY()` 
 
-**Default:** 
+**Default:** set at creation
 
 Vertical position of the anchor point of the node, in design pixels, from the top edge of its parent (or of the canvas for a root or `ABSOLUTE` node).
 It binds to a signal like `x`.
@@ -444,7 +444,7 @@ It binds to a signal like `x`.
 - `this width(Supplier<Double> width)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getWidth()` 
 
-**Default:** 
+**Default:** set at creation
 
 Width of the node, in design pixels.
 `0` lets a node that measures its content (text, image, flex, grid) take the width of its content.
@@ -457,7 +457,7 @@ Width of the node, in design pixels.
 - `this height(Supplier<Double> height)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getHeight()` 
 
-**Default:** 
+**Default:** set at creation
 
 Height of the node, in design pixels.
 `0` lets a node that measures its content take the height of its content.
@@ -481,7 +481,7 @@ Height of the node, in design pixels.
 - `this anchor(Align anchor)` <span class="joid-qualifier">fluent</span>
 - `this anchor(Supplier<Align> anchor)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
+**Default:** `Align.START`
 
 Sets `anchorX` and `anchorY` to the same value.
 
@@ -530,7 +530,7 @@ A value of `0` or below turns it off.
 - `this zindex(Supplier<Integer> zindex)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `int getZindex()` 
 
-**Default:** 
+**Default:** `0`
 
 Order of the node among its siblings: a higher value is drawn above and receives the input first.
 A negative value draws the child behind its parent.
@@ -543,7 +543,7 @@ A negative value draws the child behind its parent.
 - `this zlevel(Supplier<Double> zlevel)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getZlevel()` 
 
-**Default:** 
+**Default:** `0D`
 
 Depth of the node along the Z axis, added to the depth of its parent.
 
@@ -554,7 +554,7 @@ Depth of the node along the Z axis, added to the depth of its parent.
 - `this skeleton(Function<T,Node> skeleton)` <span class="joid-qualifier">fluent</span>
 - `Node getSkeleton()` 
 
-**Default:** 
+**Default:** `null`
 
 Placeholder node drawn instead of this node and its children while one of its `wait` conditions fails; the function receives the node and returns the placeholder, or `null` for the default skeleton.
 
@@ -602,7 +602,7 @@ If `false`, the node and its children let the mouse through to what is under the
 - `this cursor(Supplier<Cursor> cursor)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Cursor getCursor()` 
 
-**Default:** 
+**Default:** `null`: the cursor of the closest parent that sets one, `Cursor.DEFAULT` when none does
 
 Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one.
 
@@ -638,8 +638,6 @@ Easing of the hover progress.
 - `this hover(HoverSupplier supplier)` <span class="joid-qualifier">fluent</span>
 - `this hover(Supplier<List<String>> supplier)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
-
 Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover).
 Each call adds one more element.
 
@@ -674,7 +672,7 @@ Factor applied to the wheel: one notch scrolls 30 design pixels times this facto
 - `this scrollbar(BaseScrollbarNode scrollbar)` <span class="joid-qualifier">fluent</span>
 - `BaseScrollbarNode getScrollbar()` 
 
-**Default:** 
+**Default:** `null`
 
 Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and the content goes past the node.
 
@@ -686,7 +684,7 @@ Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and 
 - `this label(Supplier<Text> label)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Text getLabel()` 
 
-**Default:** 
+**Default:** `null`: no label
 
 Text drawn centered over the node, after the node itself and before its children; `null` draws none.
 
@@ -698,7 +696,7 @@ Text drawn centered over the node, after the node itself and before its children
 - `this draggable(Supplier<DraggableProperty> draggable)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `DraggableProperty getDraggable()` 
 
-**Default:** 
+**Default:** `null`: the node cannot be dragged
 
 Lets the user drag the node with the left button, inside the area and with the movement and the snapping of the [`DraggableProperty`](/reference/nodes/draggableproperty/); `null` means the node cannot be dragged.
 
@@ -1482,7 +1480,7 @@ If `true`, the node has a listener for this event type.
 
 `boolean isVisibleProperty()` 
 
-The `visible` value of the node itself, without its parents and its clipping.
+If `true`, the node itself is set visible, whatever its parents and its clipping.
 
 <a id="Node-method-isMounted"></a>
 
@@ -2157,7 +2155,7 @@ Adds a listener that runs once the node has been dropped; the event holds the sn
 
 `this onDragSnap(EventListener<NodeDragEvent.Post<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`.
+Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it.
 
 <a id="Node-event-onMove"></a>
 

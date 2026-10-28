@@ -44,17 +44,17 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [background](#FieldNode-property-background) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the text, over the whole field, with a `zindex` of `-1`; optional. |
-| [cursorColor](#FieldNode-property-cursorColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) |  | The color of the blinking cursor; `null` uses the color of `info`. |
+| [background](#FieldNode-property-background) | [`Node`](/reference/nodes/node/) | `null`: no background | The node drawn behind the text, over the whole field, with a `zindex` of `-1`; optional. |
+| [cursorColor](#FieldNode-property-cursorColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | `null`: the color of `info` | The color of the blinking cursor; `null` uses the color of `info`. |
 | [selectionColor](#FieldNode-property-selectionColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | `new Color(50, 152, 253, 100)` | The color of the rectangle drawn over the selected text. |
-| [placeholderColor](#FieldNode-property-placeholderColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) |  | The color of the placeholder; `null` uses the color of `info` at half its opacity. |
+| [placeholderColor](#FieldNode-property-placeholderColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | `null`: the color of `info` at half its opacity | The color of the placeholder; `null` uses the color of `info` at half its opacity. |
 
 ### Hover and tooltips
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [cursorMargin](#FieldNode-property-cursorMargin) <span class="joid-qualifier">signal</span> | `double` |  | The distance, in design pixels, that the field keeps between the cursor and the edge of the visible text when it scrolls to follow the cursor. |
-| [cursorPosition](#FieldNode-property-cursorPosition) | `int` |  | The index of the cursor in the text, kept within the text; a plain index is the start value. |
+| [cursorMargin](#FieldNode-property-cursorMargin) <span class="joid-qualifier">signal</span> | `double` | `0D` | The distance, in design pixels, that the field keeps between the cursor and the edge of the visible text when it scrolls to follow the cursor. |
+| [cursorPosition](#FieldNode-property-cursorPosition) | `int` | `0` | The index of the cursor in the text, kept within the text; a plain index is the start value. |
 
 ### Other properties
 
@@ -62,17 +62,17 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 |---|---|---|---|
 | [text](#FieldNode-property-text) | `String` | `""` | The text in the field. |
 | [placeholder](#FieldNode-property-placeholder) <span class="joid-qualifier">signal</span> | `String` | `""` | The text shown while the field is empty and has no focus. |
-| [info](#FieldNode-property-info) <span class="joid-qualifier">signal</span> | [`TextInfo`](/reference/text/textinfo/) |  | The font, the size and the color of the text, as a [`TextInfo`](/reference/text/textinfo/); required. |
+| [info](#FieldNode-property-info) <span class="joid-qualifier">signal</span> | [`TextInfo`](/reference/text/textinfo/) | none, `info(...)` is required before the attach | The font, the size and the color of the text, as a [`TextInfo`](/reference/text/textinfo/); required. |
 | [accept](#FieldNode-property-accept) | `Predicate<String>` | `text -> true` | A test that every edit of the user must pass: an edit typed, pasted, cut or deleted whose text fails it is refused, and the text stays as it was. |
 | [normalize](#FieldNode-property-normalize) | `UnaryOperator<String>` | `UnaryOperator.identity()` | A function applied to the text before the field reads a value from it, such as `String::trim`. |
-| [allowEmpty](#FieldNode-property-allowEmpty) <span class="joid-qualifier">signal</span> | `boolean` |  | If `true`, an empty field is valid and its value is `null`. |
+| [allowEmpty](#FieldNode-property-allowEmpty) <span class="joid-qualifier">signal</span> | `boolean` | `false` | If `true`, an empty field is valid and its value is `null`. |
 | [maxTextLength](#FieldNode-property-maxTextLength) <span class="joid-qualifier">signal</span> | `int` | no limit | The largest number of characters of the text; `-1` means no limit. |
-| [markup](#FieldNode-property-markup) <span class="joid-qualifier">signal</span> | `boolean` |  | If `true`, the text is read with the markups of `info`, so that the tags in the text style it; if `false`, the field shows the tags as typed. |
+| [markup](#FieldNode-property-markup) <span class="joid-qualifier">signal</span> | `boolean` | `false` | If `true`, the text is read with the markups of `info`, so that the tags in the text style it; if `false`, the field shows the tags as typed. |
 | [margin](#FieldNode-property-margin) <span class="joid-qualifier">signal</span> | `double` |  | Sets the four margins at once. |
-| [marginTop](#FieldNode-property-marginTop) <span class="joid-qualifier">signal</span> | `double` |  | The space, in design pixels, between the top edge and the text; a one-line field uses it with `alignY(START)` and to size a field of height `0`. |
-| [marginBottom](#FieldNode-property-marginBottom) <span class="joid-qualifier">signal</span> | `double` |  | The space, in design pixels, between the bottom edge and the text; a one-line field uses it with `alignY(END)` and to size a field of height `0`. |
-| [marginLeft](#FieldNode-property-marginLeft) <span class="joid-qualifier">signal</span> | `double` |  | The space, in design pixels, between the left edge and the text; the text is clipped there. |
-| [marginRight](#FieldNode-property-marginRight) <span class="joid-qualifier">signal</span> | `double` |  | The space, in design pixels, between the right edge and the text; the text is clipped there. |
+| [marginTop](#FieldNode-property-marginTop) <span class="joid-qualifier">signal</span> | `double` | `0D` | The space, in design pixels, between the top edge and the text; a one-line field uses it with `alignY(START)` and to size a field of height `0`. |
+| [marginBottom](#FieldNode-property-marginBottom) <span class="joid-qualifier">signal</span> | `double` | `0D` | The space, in design pixels, between the bottom edge and the text; a one-line field uses it with `alignY(END)` and to size a field of height `0`. |
+| [marginLeft](#FieldNode-property-marginLeft) <span class="joid-qualifier">signal</span> | `double` | `0D` | The space, in design pixels, between the left edge and the text; the text is clipped there. |
+| [marginRight](#FieldNode-property-marginRight) <span class="joid-qualifier">signal</span> | `double` | `0D` | The space, in design pixels, between the right edge and the text; the text is clipped there. |
 | [marginHorizontal](#FieldNode-property-marginHorizontal) <span class="joid-qualifier">signal</span> | `double` |  | Sets the left and the right margins at once. |
 | [marginVertical](#FieldNode-property-marginVertical) <span class="joid-qualifier">signal</span> | `double` |  | Sets the top and the bottom margins at once. |
 
@@ -87,7 +87,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 
 | Property | Default here | Inherited default |
 |---|---|---|
-| [cursor](/reference/nodes/node/#Node-property-cursor) | `Cursor.TEXT` | not read in `Node` |
+| [cursor](/reference/nodes/node/#Node-property-cursor) | `Cursor.TEXT` | `null` in `Node` |
 
 <a id="FieldNode-methods"></a>
 
@@ -218,7 +218,7 @@ Creates the field at `x`, `y` with a `width` and a `height` in design pixels, fr
 - `this background(Node background)` <span class="joid-qualifier">fluent</span>
 - `Node getBackground()` 
 
-**Default:** 
+**Default:** `null`: no background
 
 The node drawn behind the text, over the whole field, with a `zindex` of `-1`; optional.
 
@@ -230,7 +230,7 @@ The node drawn behind the text, over the whole field, with a `zindex` of `-1`; o
 - `this cursorColor(Supplier<Color> cursorColor)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Color getCursorColor()` 
 
-**Default:** 
+**Default:** `null`: the color of `info`
 
 The color of the blinking cursor; `null` uses the color of `info`.
 
@@ -254,7 +254,7 @@ The color of the rectangle drawn over the selected text.
 - `this placeholderColor(Supplier<Color> placeholderColor)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `Color getPlaceholderColor()` 
 
-**Default:** 
+**Default:** `null`: the color of `info` at half its opacity
 
 The color of the placeholder; `null` uses the color of `info` at half its opacity.
 
@@ -266,7 +266,7 @@ The color of the placeholder; `null` uses the color of `info` at half its opacit
 - `this cursorMargin(Supplier<Double> cursorMargin)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getCursorMargin()` 
 
-**Default:** 
+**Default:** `0D`
 
 The distance, in design pixels, that the field keeps between the cursor and the edge of the visible text when it scrolls to follow the cursor.
 
@@ -277,7 +277,7 @@ The distance, in design pixels, that the field keeps between the cursor and the 
 - `this cursorPosition(int cursorPosition)` <span class="joid-qualifier">fluent</span>
 - `int getCursorPosition()` 
 
-**Default:** 
+**Default:** `0`
 
 The index of the cursor in the text, kept within the text; a plain index is the start value.
 `getCursorPosition()` reads it.
@@ -316,7 +316,7 @@ The text shown while the field is empty and has no focus.
 - `this info(Supplier<TextInfo> info)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `TextInfo getInfo()` 
 
-**Default:** 
+**Default:** none, `info(...)` is required before the attach
 
 The font, the size and the color of the text, as a [`TextInfo`](/reference/text/textinfo/); required.
 
@@ -352,7 +352,7 @@ The field shows the normalized text when it loses the focus, and at once for a t
 - `this allowEmpty(Supplier<Boolean> allowEmpty)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `boolean isAllowEmpty()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, an empty field is valid and its value is `null`.
 If `false`, a field that the user empties takes back its last value when it loses the focus.
@@ -378,7 +378,7 @@ Typing and pasting stop at the limit, and a longer text from code is cut.
 - `this markup(Supplier<Boolean> markup)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `boolean isMarkup()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the text is read with the markups of `info`, so that the tags in the text style it; if `false`, the field shows the tags as typed.
 
@@ -388,8 +388,6 @@ If `true`, the text is read with the markups of `info`, so that the tags in the 
 
 - `this margin(double margin)` <span class="joid-qualifier">fluent</span>
 - `this margin(Supplier<Double> margin)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
-
-**Default:** 
 
 Sets the four margins at once.
 
@@ -401,7 +399,7 @@ Sets the four margins at once.
 - `this marginTop(Supplier<Double> marginTop)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getMarginTop()` 
 
-**Default:** 
+**Default:** `0D`
 
 The space, in design pixels, between the top edge and the text; a one-line field uses it with `alignY(START)` and to size a field of height `0`.
 
@@ -413,7 +411,7 @@ The space, in design pixels, between the top edge and the text; a one-line field
 - `this marginBottom(Supplier<Double> marginBottom)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getMarginBottom()` 
 
-**Default:** 
+**Default:** `0D`
 
 The space, in design pixels, between the bottom edge and the text; a one-line field uses it with `alignY(END)` and to size a field of height `0`.
 
@@ -425,7 +423,7 @@ The space, in design pixels, between the bottom edge and the text; a one-line fi
 - `this marginLeft(Supplier<Double> marginLeft)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getMarginLeft()` 
 
-**Default:** 
+**Default:** `0D`
 
 The space, in design pixels, between the left edge and the text; the text is clipped there.
 
@@ -437,7 +435,7 @@ The space, in design pixels, between the left edge and the text; the text is cli
 - `this marginRight(Supplier<Double> marginRight)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getMarginRight()` 
 
-**Default:** 
+**Default:** `0D`
 
 The space, in design pixels, between the right edge and the text; the text is clipped there.
 
@@ -448,8 +446,6 @@ The space, in design pixels, between the right edge and the text; the text is cl
 - `this marginHorizontal(double marginHorizontal)` <span class="joid-qualifier">fluent</span>
 - `this marginHorizontal(Supplier<Double> marginHorizontal)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
-
 Sets the left and the right margins at once.
 
 <a id="FieldNode-property-marginVertical"></a>
@@ -458,8 +454,6 @@ Sets the left and the right margins at once.
 
 - `this marginVertical(double marginVertical)` <span class="joid-qualifier">fluent</span>
 - `this marginVertical(Supplier<Double> marginVertical)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
-
-**Default:** 
 
 Sets the top and the bottom margins at once.
 

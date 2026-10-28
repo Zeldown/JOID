@@ -34,7 +34,7 @@ One series of a chart: a value for each label of the X axis.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [dataMap](#ChartNode-ChartData-property-dataMap) | `Map<String,Number>` |  | The values by label; setting it replaces the map. |
+| [dataMap](#ChartNode-ChartData-property-dataMap) | `Map<String,Number>` | set at creation | The values by label; setting it replaces the map. |
 
 <a id="ChartNode-ChartData-methods"></a>
 
@@ -86,7 +86,7 @@ Called by a subclass with the map of values by label.
 - `this dataMap(Map<String,Number> dataMap)` <span class="joid-qualifier">fluent</span>
 - `Map<String,Number> getDataMap()` 
 
-**Default:** 
+**Default:** set at creation
 
 The values by label; setting it replaces the map.
 

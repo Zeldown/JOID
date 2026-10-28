@@ -40,13 +40,13 @@ java -jar joid-tool-msdf-<version>.jar --font Montserrat-Regular.ttf --output fo
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [REVISION](#MsdfGenerator-constant-REVISION) | `1` |
-| `int` | [WIDTH](#MsdfGenerator-constant-WIDTH) | `2048` |
-| `int` | [HEIGHT](#MsdfGenerator-constant-HEIGHT) | `2048` |
-| `double` | [RANGE](#MsdfGenerator-constant-RANGE) | `24D` |
-| `String` | [CHARSET](#MsdfGenerator-constant-CHARSET) | `"[32, 563]"` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [REVISION](#MsdfGenerator-constant-REVISION) | `1` | The revision of the generator, part of the cache key of the atlases that JOID generates: a new revision generates them again. |
+| `int` | [WIDTH](#MsdfGenerator-constant-WIDTH) | `2048` | The default width of the atlas, in pixels. |
+| `int` | [HEIGHT](#MsdfGenerator-constant-HEIGHT) | `2048` | The default height of the atlas, in pixels. |
+| `double` | [RANGE](#MsdfGenerator-constant-RANGE) | `24D` | The default distance range, in pixels of the atlas. |
+| `String` | [CHARSET](#MsdfGenerator-constant-CHARSET) | `"[32, 563]"` | The default charset, the code points from 32 to 563: Basic Latin, Latin-1 Supplement, Latin Extended-A and most of Latin Extended-B. |
 
 ## Method details
 

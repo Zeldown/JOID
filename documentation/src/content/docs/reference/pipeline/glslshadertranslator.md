@@ -39,7 +39,7 @@ A stage that uses a [`ShaderFeature`](/reference/pipeline/shaderfeature/) the di
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [clampToBorder](#GlslShaderTranslator-property-clampToBorder) | `boolean` |  | If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over half a texel for a `LINEAR` filter. |
+| [clampToBorder](#GlslShaderTranslator-property-clampToBorder) | `boolean` | `false` | If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over half a texel for a `LINEAR` filter. |
 | [stencil](#GlslShaderTranslator-property-stencil) | [`StencilEmulation.Pass`](/reference/pipeline/stencilemulation-pass/) | `StencilEmulation.Pass.NONE` | Stencil emulation of the fragment stage: `NONE` adds nothing, `TEST` discards the fragments that fail the stencil comparison, `WRITE` outputs the updated stencil value instead of a color. |
 
 <a id="GlslShaderTranslator-methods"></a>
@@ -68,23 +68,23 @@ A stage that uses a [`ShaderFeature`](/reference/pipeline/shaderfeature/) the di
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `String` | [BLOCK](#GlslShaderTranslator-constant-BLOCK) | `"JoidUniforms"` |
-| `String` | [ALPHA_TEST](#GlslShaderTranslator-constant-ALPHA_TEST) | `"joid_AlphaTest"` |
-| `String` | [ALPHA_THRESHOLD](#GlslShaderTranslator-constant-ALPHA_THRESHOLD) | `"joid_AlphaThreshold"` |
-| `String` | [STENCIL](#GlslShaderTranslator-constant-STENCIL) | `"joid_Stencil"` |
-| `String` | [STENCIL_TEST](#GlslShaderTranslator-constant-STENCIL_TEST) | `"joid_StencilTest"` |
-| `String` | [STENCIL_MASK](#GlslShaderTranslator-constant-STENCIL_MASK) | `"joid_StencilMask"` |
-| `String` | [STENCIL_FAIL](#GlslShaderTranslator-constant-STENCIL_FAIL) | `"joid_StencilFail"` |
-| `String` | [STENCIL_PASS](#GlslShaderTranslator-constant-STENCIL_PASS) | `"joid_StencilPass"` |
-| `String` | [STENCIL_FUNCTION](#GlslShaderTranslator-constant-STENCIL_FUNCTION) | `"joid_StencilFunction"` |
-| `String` | [STENCIL_REFERENCE](#GlslShaderTranslator-constant-STENCIL_REFERENCE) | `"joid_StencilReference"` |
-| `String` | [LINE_WIDTH](#GlslShaderTranslator-constant-LINE_WIDTH) | `"joid_LineWidth"` |
-| `String` | [LINE_VIEWPORT](#GlslShaderTranslator-constant-LINE_VIEWPORT) | `"joid_LineViewport"` |
-| `String` | [VERTEX_COLOR](#GlslShaderTranslator-constant-VERTEX_COLOR) | `"joid_VertexColor"` |
-| `String` | [CURRENT_COLOR](#GlslShaderTranslator-constant-CURRENT_COLOR) | `"joid_CurrentColor"` |
-| `String` | [BORDER](#GlslShaderTranslator-constant-BORDER) | `"joid_Border_"` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `String` | [BLOCK](#GlslShaderTranslator-constant-BLOCK) | `"JoidUniforms"` | Name of the uniform block that holds every uniform under `UniformLayout.BLOCK`. |
+| `String` | [ALPHA_TEST](#GlslShaderTranslator-constant-ALPHA_TEST) | `"joid_AlphaTest"` | Name of the `int` uniform that turns on the alpha test: when it is not `0`, the fragment stage discards the fragments whose alpha is at most `ALPHA_THRESHOLD`. |
+| `String` | [ALPHA_THRESHOLD](#GlslShaderTranslator-constant-ALPHA_THRESHOLD) | `"joid_AlphaThreshold"` | Name of the `float` uniform that holds the alpha cutoff of the render state, written by [`Shader.builtins`](/reference/bridges/shader/#Shader-method-builtins). |
+| `String` | [STENCIL](#GlslShaderTranslator-constant-STENCIL) | `"joid_Stencil"` | Name of the sampler that holds the stencil values, one byte in the red channel, read at the position of the fragment. |
+| `String` | [STENCIL_TEST](#GlslShaderTranslator-constant-STENCIL_TEST) | `"joid_StencilTest"` | Name of the `int` uniform that turns on the stencil comparison of the `TEST` pass, written by [`StencilEmulation.write`](/reference/pipeline/stencilemulation/#StencilEmulation-method-write) with the other stencil uniforms. |
+| `String` | [STENCIL_MASK](#GlslShaderTranslator-constant-STENCIL_MASK) | `"joid_StencilMask"` | Name of the `int` uniform that holds the mask applied to the reference and to the stored value before the comparison. |
+| `String` | [STENCIL_FAIL](#GlslShaderTranslator-constant-STENCIL_FAIL) | `"joid_StencilFail"` | Name of the `int` uniform that holds the operation of the `WRITE` pass when the comparison fails, as the ordinal of [`StencilOperation`](/reference/pipeline/stenciloperation/). |
+| `String` | [STENCIL_PASS](#GlslShaderTranslator-constant-STENCIL_PASS) | `"joid_StencilPass"` | Name of the `int` uniform that holds the operation of the `WRITE` pass when the comparison passes, as the ordinal of [`StencilOperation`](/reference/pipeline/stenciloperation/). |
+| `String` | [STENCIL_FUNCTION](#GlslShaderTranslator-constant-STENCIL_FUNCTION) | `"joid_StencilFunction"` | Name of the `int` uniform that holds the comparison, as the ordinal of [`StencilFunction`](/reference/pipeline/stencilfunction/). |
+| `String` | [STENCIL_REFERENCE](#GlslShaderTranslator-constant-STENCIL_REFERENCE) | `"joid_StencilReference"` | Name of the `int` uniform that holds the reference of the comparison and of the `REPLACE` operation. |
+| `String` | [LINE_WIDTH](#GlslShaderTranslator-constant-LINE_WIDTH) | `"joid_LineWidth"` | Name of the `float` uniform of a line shader that holds the line width of the render state, in screen pixels: `lineWidth` multiplied by the scale of the [`PixelGrid`](/reference/pipeline/pixelgrid/). |
+| `String` | [LINE_VIEWPORT](#GlslShaderTranslator-constant-LINE_VIEWPORT) | `"joid_LineViewport"` | Name of the `vec2` uniform of a line shader that holds the size of the viewport in pixels, which turns the width of a line into clip space. |
+| `String` | [VERTEX_COLOR](#GlslShaderTranslator-constant-VERTEX_COLOR) | `"joid_VertexColor"` | Name of the `int` uniform that tells whether the vertex buffer carries colors: when it is `0`, every read of `aColor` gives `CURRENT_COLOR`. |
+| `String` | [CURRENT_COLOR](#GlslShaderTranslator-constant-CURRENT_COLOR) | `"joid_CurrentColor"` | Name of the `vec4` uniform that holds the current color of the render state, for the vertices without a color. |
+| `String` | [BORDER](#GlslShaderTranslator-constant-BORDER) | `"joid_Border_"` | Prefix of the `vec3` uniform of each sampler under `clampToBorder`, followed by the name of the sampler. |
 
 ## Creation details
 
@@ -106,7 +106,7 @@ Throws `IllegalArgumentException` when the layout is `BLOCK` and the dialect has
 - `this clampToBorder(boolean clampToBorder)` <span class="joid-qualifier">fluent</span>
 - `boolean isClampToBorder()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over half a texel for a `LINEAR` filter.
 The constructor of [`Shader`](/reference/bridges/shader/) turns it on when the render bridge cannot wrap to `CLAMP_TO_BORDER`.

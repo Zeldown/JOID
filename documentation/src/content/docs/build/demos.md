@@ -16,6 +16,7 @@ The core and every backend of a release come in three variants, and `./gradlew b
 The `-prod` and `-dev` jars are those of the applications ([Choose the dev or the prod jar](/use/get-started/installation/#choose-the-dev-or-the-prod-jar)); the `-demo` jar adds to the dev content the demo UIs with their fonts, models, textures and videos, and the demo windows, for backend authors only.
 
 The variants differ by package: `dev/joid/demo/**`, `assets/demo/**` and the `demo` packages of the base modules and of the backends leave the dev jar; the dev tools, `assets/dev/**` and the `snapshot` packages also leave the prod jar.
+To check a packaged jar, call [[JarCheck#run]] from a main of your own and run it on the jar with its libraries: it exits with `1` when the dev and demo modes do not match the variant.
 
 ## Modes
 

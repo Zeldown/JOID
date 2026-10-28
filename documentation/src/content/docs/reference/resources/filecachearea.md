@@ -56,9 +56,9 @@ The methods are thread-safe; call them off the render thread, since they touch t
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `String` | [MARKER](#FileCacheArea-constant-MARKER) | `".area"` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `String` | [MARKER](#FileCacheArea-constant-MARKER) | `".area"` | The name of the file, `.area`, that marks a folder of the cache folder as an area and holds its retention. |
 
 ## Creation details
 

@@ -31,15 +31,15 @@ Your code reaches a registry when it needs a bridge directly, to read one or to 
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`UIBridgeRegistry`](/reference/backends/uibridgeregistry/) | [UI](#BridgeHandler-constant-UI) | `new UIBridgeRegistry()` |
-| [`BridgeRegistry<IAudioBridge>`](/reference/bridges/bridgeregistry/) | [AUDIO](#BridgeHandler-constant-AUDIO) | `new BridgeRegistry<>("AUDIO")` |
-| [`BridgeRegistry<IClockBridge>`](/reference/bridges/bridgeregistry/) | [CLOCK](#BridgeHandler-constant-CLOCK) | `new BridgeRegistry<>("CLOCK")` |
-| [`BridgeRegistry<IWindowBridge>`](/reference/bridges/bridgeregistry/) | [WINDOW](#BridgeHandler-constant-WINDOW) | `new BridgeRegistry<>("WINDOW")` |
-| [`BridgeRegistry<IRenderBridge>`](/reference/bridges/bridgeregistry/) | [RENDER](#BridgeHandler-constant-RENDER) | `new BridgeRegistry<>("RENDER")` |
-| [`BridgeRegistry<IThreadBridge>`](/reference/bridges/bridgeregistry/) | [THREAD](#BridgeHandler-constant-THREAD) | `new BridgeRegistry<>("THREAD")` |
-| [`BridgeRegistry<ISignalReplayBridge>`](/reference/bridges/bridgeregistry/) | [SIGNAL_REPLAY](#BridgeHandler-constant-SIGNAL_REPLAY) | `new BridgeRegistry<>("SIGNAL_REPLAY")` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`UIBridgeRegistry`](/reference/backends/uibridgeregistry/) | [UI](#BridgeHandler-constant-UI) | `new UIBridgeRegistry()` | The UI bridges, which hold the open UIs, receive the input and draw every frame. |
+| [`BridgeRegistry<IAudioBridge>`](/reference/bridges/bridgeregistry/) | [AUDIO](#BridgeHandler-constant-AUDIO) | `new BridgeRegistry<>("AUDIO")` | The audio bridge that plays the sound of videos. |
+| [`BridgeRegistry<IClockBridge>`](/reference/bridges/bridgeregistry/) | [CLOCK](#BridgeHandler-constant-CLOCK) | `new BridgeRegistry<>("CLOCK")` | The clock that animations, tweens, media and drags read. |
+| [`BridgeRegistry<IWindowBridge>`](/reference/bridges/bridgeregistry/) | [WINDOW](#BridgeHandler-constant-WINDOW) | `new BridgeRegistry<>("WINDOW")` | The window bridge: size of the drawable surface, mouse position, held keys, clipboard and cursor. |
+| [`BridgeRegistry<IRenderBridge>`](/reference/bridges/bridgeregistry/) | [RENDER](#BridgeHandler-constant-RENDER) | `new BridgeRegistry<>("RENDER")` | The render bridge, which draws every pixel and creates the textures, framebuffers and shaders. |
+| [`BridgeRegistry<IThreadBridge>`](/reference/bridges/bridgeregistry/) | [THREAD](#BridgeHandler-constant-THREAD) | `new BridgeRegistry<>("THREAD")` | The thread bridge, which names the render thread and runs the tasks of other threads on it. |
+| [`BridgeRegistry<ISignalReplayBridge>`](/reference/bridges/bridgeregistry/) | [SIGNAL_REPLAY](#BridgeHandler-constant-SIGNAL_REPLAY) | `new BridgeRegistry<>("SIGNAL_REPLAY")` | The bridge that maps the names compiled in a reactive expression to the names that exist at run time. |
 
 ## Constant and field details
 

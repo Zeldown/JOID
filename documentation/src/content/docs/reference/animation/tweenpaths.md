@@ -21,10 +21,10 @@ The paths of JOID that join the waypoints of a tween.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`LinearTweenPath`](/reference/animation/lineartweenpath/) | [LINEAR](#TweenPaths-constant-LINEAR) | `new LinearTweenPath()` |
-| [`CatmullRomTweenPath`](/reference/animation/catmullromtweenpath/) | [CATMULL_ROM](#TweenPaths-constant-CATMULL_ROM) | `new CatmullRomTweenPath()` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`LinearTweenPath`](/reference/animation/lineartweenpath/) | [LINEAR](#TweenPaths-constant-LINEAR) | `new LinearTweenPath()` | Joins the points with straight segments: the motion changes direction sharply at each waypoint. |
+| [`CatmullRomTweenPath`](/reference/animation/catmullromtweenpath/) | [CATMULL_ROM](#TweenPaths-constant-CATMULL_ROM) | `new CatmullRomTweenPath()` | Joins the points with a smooth curve that passes through each of them; the default path of a tween. |
 
 ## Constant and field details
 

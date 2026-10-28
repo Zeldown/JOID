@@ -41,8 +41,8 @@ Attaching a slider without a thumb throws an `IllegalStateException`.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [track](#SliderNode-property-track) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the thumb, over the whole slider, with a `zindex` of `-1`; optional. |
-| [thumb](#SliderNode-property-thumb) | [`Node`](/reference/nodes/node/) |  | The node centered on the place of the value; required. |
+| [track](#SliderNode-property-track) | [`Node`](/reference/nodes/node/) | `null` | The node drawn behind the thumb, over the whole slider, with a `zindex` of `-1`; optional. |
+| [thumb](#SliderNode-property-thumb) | [`Node`](/reference/nodes/node/) | `null` | The node centered on the place of the value; required. |
 | [speed](#SliderNode-property-speed) <span class="joid-qualifier">signal</span> | `float` | `1F` | How fast the thumb reaches a value set from the code or a signal: the part of the remaining way that it covers in 1/60 s, at any frame rate. |
 
 <details>
@@ -70,7 +70,7 @@ Attaching a slider without a thumb throws an `IllegalStateException`.
 
 | Property | Default here | Inherited default |
 |---|---|---|
-| [inset](/reference/controls/baseslidernode/#BaseSliderNode-property-inset) | `this.thumb == null ? 0D : this.thumb.getWidth() / 2D` | not read in `BaseSliderNode` |
+| [inset](/reference/controls/baseslidernode/#BaseSliderNode-property-inset) | `this.thumb == null ? 0D : this.thumb.getWidth() / 2D` | `0D` in `BaseSliderNode` |
 
 <a id="SliderNode-methods"></a>
 
@@ -142,7 +142,7 @@ Creates the slider at `x`, `y` with a `width` and a `height` in design pixels, f
 - `this track(Node track)` <span class="joid-qualifier">fluent</span>
 - `Node getTrack()` 
 
-**Default:** 
+**Default:** `null`
 
 The node drawn behind the thumb, over the whole slider, with a `zindex` of `-1`; optional.
 
@@ -153,7 +153,7 @@ The node drawn behind the thumb, over the whole slider, with a `zindex` of `-1`;
 - `this thumb(Node thumb)` <span class="joid-qualifier">fluent</span>
 - `Node getThumb()` 
 
-**Default:** 
+**Default:** `null`
 
 The node centered on the place of the value; required.
 

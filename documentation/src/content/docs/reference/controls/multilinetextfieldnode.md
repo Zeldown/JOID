@@ -56,7 +56,7 @@ Enter starts a new line, Up and Down move the cursor between lines, and the whee
 | Property | Default here | Inherited default |
 |---|---|---|
 | [margin](/reference/controls/fieldnode/#FieldNode-property-margin) | `2D` | not read in `FieldNode` |
-| [cursorMargin](/reference/controls/fieldnode/#FieldNode-property-cursorMargin) | `super.getInfo() == null ? 0D : this.getLineHeight() * 2D` | not read in `FieldNode` |
+| [cursorMargin](/reference/controls/fieldnode/#FieldNode-property-cursorMargin) | `super.getInfo() == null ? 0D : this.getLineHeight() * 2D` | `0D` in `FieldNode` |
 
 <a id="MultilineTextFieldNode-methods"></a>
 

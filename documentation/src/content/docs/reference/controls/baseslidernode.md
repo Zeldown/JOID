@@ -40,7 +40,7 @@ Use [`IntegerSliderNode`](/reference/controls/integerslidernode/), [`DoubleSlide
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [inset](#BaseSliderNode-property-inset) <span class="joid-qualifier">signal</span> | `double` |  | The space, in design pixels, between each end of the node and the first or the last step. |
+| [inset](#BaseSliderNode-property-inset) <span class="joid-qualifier">signal</span> | `double` | `0D` | The space, in design pixels, between each end of the node and the first or the last step. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/basechoicenode/#BaseChoiceNode-properties"><code>BaseChoiceNode</code></a> (3)</summary>
@@ -126,7 +126,7 @@ Creates the slider at `x`, `y` with a `width` and a `height` in design pixels, f
 - `this inset(Supplier<Double> inset)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `double getInset()` 
 
-**Default:** 
+**Default:** `0D`
 
 The space, in design pixels, between each end of the node and the first or the last step.
 A press inside that space picks the first or the last step.

@@ -9,15 +9,15 @@ A writer who needs a term that is not listed adds it here.
 
 ## UI
 A class that extends [[UI]] and describes one interface: a screen, an overlay or a popup.
-JOID draws every open UI on top of the others in the order of their `zindex`.
+JOID draws the open UIs in three groups, the overlays below the screens, then the screens and the popups, then the overlays above the screens, ordered by `zindex` inside each group.
 See: /use/learn/describing-the-ui/uis/
 
 ## screen
-A UI that takes the whole window and receives the input first.
+A UI that is neither a popup nor an overlay: opening one closes the open screens and popups.
 See: /use/learn/describing-the-ui/uis/
 
 ## overlay
-A UI drawn over the screen, configured by [[UIDataOverlay]], that lets the input through or not.
+A UI that stays open while screens open and close, configured by [[UIDataOverlay]]: it is drawn below the screens unless its `render` sets `aboveScreens`, and it takes the input only when its `interaction` is active.
 Avoid: HUD
 See: /use/learn/describing-the-ui/overlays-and-popups/
 

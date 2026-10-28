@@ -39,8 +39,8 @@ MsdfFontLoader.load(OpenTypeMsdfSource.of("fonts/Logo.ttf").weight(FontWeight.BO
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [italic](#MsdfSource-property-italic) | `boolean` |  | If set, the face read by this source declares this style instead of the one of its file. |
-| [weight](#MsdfSource-property-weight) | [`FontWeight`](/reference/text/fontweight/) |  | If set, the face read by this source declares this [`FontWeight`](/reference/text/fontweight/) instead of the one of its file. |
+| [italic](#MsdfSource-property-italic) | `boolean` | `null` | If set, the face read by this source declares this style instead of the one of its file. |
+| [weight](#MsdfSource-property-weight) | [`FontWeight`](/reference/text/fontweight/) | `null` | If set, the face read by this source declares this [`FontWeight`](/reference/text/fontweight/) instead of the one of its file. |
 
 <a id="MsdfSource-methods"></a>
 
@@ -81,7 +81,7 @@ Creates a source, for a subclass.
 
 - `this italic(boolean italic)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `null`
 
 If set, the face read by this source declares this style instead of the one of its file.
 
@@ -91,7 +91,7 @@ If set, the face read by this source declares this style instead of the one of i
 
 - `this weight(FontWeight weight)` <span class="joid-qualifier">fluent</span>
 
-**Default:** 
+**Default:** `null`
 
 If set, the face read by this source declares this [`FontWeight`](/reference/text/fontweight/) instead of the one of its file.
 

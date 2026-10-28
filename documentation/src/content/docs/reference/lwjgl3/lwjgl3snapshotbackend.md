@@ -39,7 +39,7 @@ The system property `joid.snapshot.profile` picks a [`SnapshotProfile`](/referen
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [create](#Lwjgl3SnapshotBackend-method-create)(int width, int height) | Opens a hidden window of that size in pixels with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile. |
+| `void` | [create](#Lwjgl3SnapshotBackend-method-create)(int width, int height) | Opens a hidden window of that size, in GLFW window coordinates, with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile. |
 | `void` | [destroy](#Lwjgl3SnapshotBackend-method-destroy)() | Destroys the window and gives the registries back the bridges they had before `create`. |
 | `void` | [present](#Lwjgl3SnapshotBackend-method-present)() | Swaps the buffers of the window. |
 | [`SnapshotImage`](/reference/testing/snapshotimage/) | [capture](#Lwjgl3SnapshotBackend-method-capture)(int width, int height) | Returns the pixels of the back buffer. |
@@ -66,7 +66,7 @@ Creates the snapshot backend; the window and the surface are created when a run 
 
 `void create(int width, int height)` 
 
-Opens a hidden window of that size in pixels with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile.
+Opens a hidden window of that size, in GLFW window coordinates, with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile.
 
 <a id="Lwjgl3SnapshotBackend-method-destroy"></a>
 

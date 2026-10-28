@@ -40,8 +40,8 @@ Attaching a scrollbar without a thumb throws an `IllegalStateException`.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [track](#ScrollbarNode-property-track) | [`Node`](/reference/nodes/node/) |  | The node drawn behind the thumb, over the whole bar, with a `zindex` of `-1`; optional. |
-| [thumb](#ScrollbarNode-property-thumb) | [`Node`](/reference/nodes/node/) |  | The node that shows the visible part of the content: its length is `getThumbLength()` and its place follows `getProgress()`; required. |
+| [track](#ScrollbarNode-property-track) | [`Node`](/reference/nodes/node/) | `null` | The node drawn behind the thumb, over the whole bar, with a `zindex` of `-1`; optional. |
+| [thumb](#ScrollbarNode-property-thumb) | [`Node`](/reference/nodes/node/) | `null` | The node that shows the visible part of the content: its length is `getThumbLength()` and its place follows `getProgress()`; required. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/basescrollbarnode/#BaseScrollbarNode-properties"><code>BaseScrollbarNode</code></a> (2)</summary>
@@ -111,7 +111,7 @@ Creates the bar at `x`, `y` with a `width` and a `height` in design pixels, from
 - `this track(Node track)` <span class="joid-qualifier">fluent</span>
 - `Node getTrack()` 
 
-**Default:** 
+**Default:** `null`
 
 The node drawn behind the thumb, over the whole bar, with a `zindex` of `-1`; optional.
 
@@ -122,7 +122,7 @@ The node drawn behind the thumb, over the whole bar, with a `zindex` of `-1`; op
 - `this thumb(Node thumb)` <span class="joid-qualifier">fluent</span>
 - `Node getThumb()` 
 
-**Default:** 
+**Default:** `null`
 
 The node that shows the visible part of the content: its length is `getThumbLength()` and its place follows `getProgress()`; required.
 

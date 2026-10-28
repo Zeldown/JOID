@@ -47,6 +47,10 @@ public final class Coverage {
 		this.unknown.add(file + ": no documented member matches \"" + key + "\"");
 	}
 
+	public void masked(final String file, final String key, final String property) {
+		this.unknown.add(file + ": \"" + key + "\" is never shown, the property \"" + property + "\" shows the entry of another of its members");
+	}
+
 	public void broken(final String file, final String link) {
 		this.broken.add(file + ": " + link);
 	}

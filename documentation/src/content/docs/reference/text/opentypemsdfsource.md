@@ -64,9 +64,9 @@ It is stored in the `msdf` area of the cache folder under a hash of the font and
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [HEADER](#OpenTypeMsdfSource-constant-HEADER) | `4` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [HEADER](#OpenTypeMsdfSource-constant-HEADER) | `4` | The number of bytes `supports` needs: 4. |
 
 ## Creation details
 

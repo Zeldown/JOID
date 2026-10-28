@@ -103,11 +103,11 @@ A negative delta plays backward.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [INFINITY](#BaseTween-constant-INFINITY) | `-1` |
-| `float` | [delay](#BaseTween-field-delay) |  |
-| `float` | [duration](#BaseTween-field-duration) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [INFINITY](#BaseTween-constant-INFINITY) | `-1` | Repeat count that repeats forever (`-1`). |
+| `float` | [delay](#BaseTween-field-delay) |  | The time in ms before the first play; `delay(...)` adds to it. |
+| `float` | [duration](#BaseTween-field-duration) |  | The length of one play in ms; a timeline computes it from its children when it is built. |
 
 ## Creation details
 

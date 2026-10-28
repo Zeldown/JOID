@@ -17,18 +17,13 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Holds a value that nodes, derived signals and listeners follow, so the interface shows each change without rebuilding.
 
-![A text that reads "Clicks: 0" above a dark grey button; the pointer clicks the button three times, and the text counts up to "Clicks: 3".](/captures/reference-signals-counter.webp)
-
 ## Description
 
 A `Signal<T>` holds one value that changes while a UI is open: a count, a name, a list, a setting.
 A node property set from an expression that reads the signal with `get()` follows it: JOID computes the expression again after each change and the node shows the result.
 Use a signal for every value that the interface must show while it changes; keep plain fields for values that never change while the UI is open.
+[Hold a value that changes](/use/learn/interactivity/signals/#hold-a-value-that-changes) shows a counter that follows its clicks.
 
-```java file="com/example/reference/signals/CounterUI.java" region="counter"
-```
-
-Each click calls `increment()`, and the text node shows the value that `"Clicks: " + this.clicks.get()` gives with the current count.
 The typed signals add operations for their type: [`IntegerSignal`](/reference/signals/integersignal/), [`LongSignal`](/reference/signals/longsignal/), [`FloatSignal`](/reference/signals/floatsignal/), [`DoubleSignal`](/reference/signals/doublesignal/), [`BooleanSignal`](/reference/signals/booleansignal/), [`StringSignal`](/reference/signals/stringsignal/), [`ListSignal`](/reference/signals/listsignal/), [`SetSignal`](/reference/signals/setsignal/) and [`MapSignal`](/reference/signals/mapsignal/).
 `map(...)` and `Signal.from(...)` give a read-only [`ComputedSignal`](/reference/signals/computedsignal/) computed from other signals.
 

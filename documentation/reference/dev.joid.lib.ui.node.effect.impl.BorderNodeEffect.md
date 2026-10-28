@@ -22,6 +22,8 @@ Called by a subclass with suppliers of the color and of the width.
 Color of the border.
 The overload that takes a `Function` receives the node, so that the color can depend on its state, such as its focus.
 
+Default: set at creation, by `BorderNodeEffect.create(color, width)`
+
 ## width
 
 Thickness of the border, in design pixels; `0F` or less turns the effect off.

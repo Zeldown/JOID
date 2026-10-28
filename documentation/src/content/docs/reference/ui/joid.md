@@ -55,9 +55,9 @@ Entry point that opens and closes UIs, finds the open ones and runs code once JO
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `String` | [VERSION](#JOID-constant-VERSION) | `JOID.readVersion(JOID.class, "joid.properties")` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `String` | [VERSION](#JOID-constant-VERSION) | `JOID.readVersion(JOID.class, "joid.properties")` | Version of the JOID core on the classpath, read from its jar; `development` when the classes do not come from a released jar. |
 
 ## Creation details
 

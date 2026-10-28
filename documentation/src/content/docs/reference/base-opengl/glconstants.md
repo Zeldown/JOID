@@ -27,172 +27,172 @@ A binding passes them to OpenGL unchanged.
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| `int` | [ONE](#GlConstants-constant-ONE) | `1` |
-| `int` | [ZERO](#GlConstants-constant-ZERO) | `0` |
-| `int` | [TRUE](#GlConstants-constant-TRUE) | `1` |
-| `int` | [VERSION](#GlConstants-constant-VERSION) | `0x1F02` |
-| `int` | [RENDERER](#GlConstants-constant-RENDERER) | `0x1F01` |
-| `int` | [EXTENSIONS](#GlConstants-constant-EXTENSIONS) | `0x1F03` |
-| `int` | [CONTEXT_FLAGS](#GlConstants-constant-CONTEXT_FLAGS) | `0x821E` |
-| `int` | [NUM_EXTENSIONS](#GlConstants-constant-NUM_EXTENSIONS) | `0x821D` |
-| `int` | [MAX_TEXTURE_SIZE](#GlConstants-constant-MAX_TEXTURE_SIZE) | `0x0D33` |
-| `int` | [CONTEXT_PROFILE_MASK](#GlConstants-constant-CONTEXT_PROFILE_MASK) | `0x9126` |
-| `int` | [SHADING_LANGUAGE_VERSION](#GlConstants-constant-SHADING_LANGUAGE_VERSION) | `0x8B8C` |
-| `int` | [CONTEXT_CORE_PROFILE_BIT](#GlConstants-constant-CONTEXT_CORE_PROFILE_BIT) | `0x0001` |
-| `int` | [CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT](#GlConstants-constant-CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) | `0x0001` |
-| `int` | [BLEND](#GlConstants-constant-BLEND) | `0x0BE2` |
-| `int` | [CULL_FACE](#GlConstants-constant-CULL_FACE) | `0x0B44` |
-| `int` | [DEPTH_TEST](#GlConstants-constant-DEPTH_TEST) | `0x0B71` |
-| `int` | [LINE_SMOOTH](#GlConstants-constant-LINE_SMOOTH) | `0x0B20` |
-| `int` | [STENCIL_TEST](#GlConstants-constant-STENCIL_TEST) | `0x0B90` |
-| `int` | [SCISSOR_TEST](#GlConstants-constant-SCISSOR_TEST) | `0x0C11` |
-| `int` | [COLOR_BUFFER_BIT](#GlConstants-constant-COLOR_BUFFER_BIT) | `0x4000` |
-| `int` | [DEPTH_BUFFER_BIT](#GlConstants-constant-DEPTH_BUFFER_BIT) | `0x0100` |
-| `int` | [STENCIL_BUFFER_BIT](#GlConstants-constant-STENCIL_BUFFER_BIT) | `0x0400` |
-| `int` | [MIN](#GlConstants-constant-MIN) | `0x8007` |
-| `int` | [MAX](#GlConstants-constant-MAX) | `0x8008` |
-| `int` | [FUNC_ADD](#GlConstants-constant-FUNC_ADD) | `0x8006` |
-| `int` | [FUNC_SUBTRACT](#GlConstants-constant-FUNC_SUBTRACT) | `0x800A` |
-| `int` | [FUNC_REVERSE_SUBTRACT](#GlConstants-constant-FUNC_REVERSE_SUBTRACT) | `0x800B` |
-| `int` | [SRC_COLOR](#GlConstants-constant-SRC_COLOR) | `0x0300` |
-| `int` | [DST_COLOR](#GlConstants-constant-DST_COLOR) | `0x0306` |
-| `int` | [SRC_ALPHA](#GlConstants-constant-SRC_ALPHA) | `0x0302` |
-| `int` | [DST_ALPHA](#GlConstants-constant-DST_ALPHA) | `0x0304` |
-| `int` | [ONE_MINUS_SRC_COLOR](#GlConstants-constant-ONE_MINUS_SRC_COLOR) | `0x0301` |
-| `int` | [ONE_MINUS_DST_COLOR](#GlConstants-constant-ONE_MINUS_DST_COLOR) | `0x0307` |
-| `int` | [ONE_MINUS_SRC_ALPHA](#GlConstants-constant-ONE_MINUS_SRC_ALPHA) | `0x0303` |
-| `int` | [ONE_MINUS_DST_ALPHA](#GlConstants-constant-ONE_MINUS_DST_ALPHA) | `0x0305` |
-| `int` | [LESS](#GlConstants-constant-LESS) | `0x0201` |
-| `int` | [NEVER](#GlConstants-constant-NEVER) | `0x0200` |
-| `int` | [EQUAL](#GlConstants-constant-EQUAL) | `0x0202` |
-| `int` | [LEQUAL](#GlConstants-constant-LEQUAL) | `0x0203` |
-| `int` | [GEQUAL](#GlConstants-constant-GEQUAL) | `0x0206` |
-| `int` | [ALWAYS](#GlConstants-constant-ALWAYS) | `0x0207` |
-| `int` | [GREATER](#GlConstants-constant-GREATER) | `0x0204` |
-| `int` | [NOTEQUAL](#GlConstants-constant-NOTEQUAL) | `0x0205` |
-| `int` | [KEEP](#GlConstants-constant-KEEP) | `0x1E00` |
-| `int` | [INCR](#GlConstants-constant-INCR) | `0x1E02` |
-| `int` | [DECR](#GlConstants-constant-DECR) | `0x1E03` |
-| `int` | [INVERT](#GlConstants-constant-INVERT) | `0x150A` |
-| `int` | [REPLACE](#GlConstants-constant-REPLACE) | `0x1E01` |
-| `int` | [LINES](#GlConstants-constant-LINES) | `0x0001` |
-| `int` | [TRIANGLES](#GlConstants-constant-TRIANGLES) | `0x0004` |
-| `int` | [BYTE](#GlConstants-constant-BYTE) | `0x1400` |
-| `int` | [FLOAT](#GlConstants-constant-FLOAT) | `0x1406` |
-| `int` | [UNSIGNED_BYTE](#GlConstants-constant-UNSIGNED_BYTE) | `0x1401` |
-| `int` | [RGBA](#GlConstants-constant-RGBA) | `0x1908` |
-| `int` | [BGRA](#GlConstants-constant-BGRA) | `0x80E1` |
-| `int` | [RGBA8](#GlConstants-constant-RGBA8) | `0x8058` |
-| `int` | [UNSIGNED_INT_8_8_8_8_REV](#GlConstants-constant-UNSIGNED_INT_8_8_8_8_REV) | `0x8367` |
-| `int` | [TEXTURE0](#GlConstants-constant-TEXTURE0) | `0x84C0` |
-| `int` | [TEXTURE_2D](#GlConstants-constant-TEXTURE_2D) | `0x0DE1` |
-| `int` | [TEXTURE_WIDTH](#GlConstants-constant-TEXTURE_WIDTH) | `0x1000` |
-| `int` | [TEXTURE_HEIGHT](#GlConstants-constant-TEXTURE_HEIGHT) | `0x1001` |
-| `int` | [TEXTURE_WRAP_S](#GlConstants-constant-TEXTURE_WRAP_S) | `0x2802` |
-| `int` | [TEXTURE_WRAP_T](#GlConstants-constant-TEXTURE_WRAP_T) | `0x2803` |
-| `int` | [TEXTURE_MAX_LEVEL](#GlConstants-constant-TEXTURE_MAX_LEVEL) | `0x813D` |
-| `int` | [TEXTURE_BASE_LEVEL](#GlConstants-constant-TEXTURE_BASE_LEVEL) | `0x813C` |
-| `int` | [TEXTURE_MIN_FILTER](#GlConstants-constant-TEXTURE_MIN_FILTER) | `0x2801` |
-| `int` | [TEXTURE_MAG_FILTER](#GlConstants-constant-TEXTURE_MAG_FILTER) | `0x2800` |
-| `int` | [LINEAR](#GlConstants-constant-LINEAR) | `0x2601` |
-| `int` | [NEAREST](#GlConstants-constant-NEAREST) | `0x2600` |
-| `int` | [LINEAR_MIPMAP_LINEAR](#GlConstants-constant-LINEAR_MIPMAP_LINEAR) | `0x2703` |
-| `int` | [REPEAT](#GlConstants-constant-REPEAT) | `0x2901` |
-| `int` | [CLAMP_TO_EDGE](#GlConstants-constant-CLAMP_TO_EDGE) | `0x812F` |
-| `int` | [CLAMP_TO_BORDER](#GlConstants-constant-CLAMP_TO_BORDER) | `0x812D` |
-| `int` | [STREAM_DRAW](#GlConstants-constant-STREAM_DRAW) | `0x88E0` |
-| `int` | [ARRAY_BUFFER](#GlConstants-constant-ARRAY_BUFFER) | `0x8892` |
-| `int` | [LINK_STATUS](#GlConstants-constant-LINK_STATUS) | `0x8B82` |
-| `int` | [VERTEX_SHADER](#GlConstants-constant-VERTEX_SHADER) | `0x8B31` |
-| `int` | [COMPILE_STATUS](#GlConstants-constant-COMPILE_STATUS) | `0x8B81` |
-| `int` | [FRAGMENT_SHADER](#GlConstants-constant-FRAGMENT_SHADER) | `0x8B30` |
-| `int` | [BACK](#GlConstants-constant-BACK) | `0x0405` |
-| `int` | [FRAMEBUFFER](#GlConstants-constant-FRAMEBUFFER) | `0x8D40` |
-| `int` | [RENDERBUFFER](#GlConstants-constant-RENDERBUFFER) | `0x8D41` |
-| `int` | [READ_FRAMEBUFFER](#GlConstants-constant-READ_FRAMEBUFFER) | `0x8CA8` |
-| `int` | [DRAW_FRAMEBUFFER](#GlConstants-constant-DRAW_FRAMEBUFFER) | `0x8CA9` |
-| `int` | [DEPTH_ATTACHMENT](#GlConstants-constant-DEPTH_ATTACHMENT) | `0x8D00` |
-| `int` | [COLOR_ATTACHMENT0](#GlConstants-constant-COLOR_ATTACHMENT0) | `0x8CE0` |
-| `int` | [DEPTH_COMPONENT24](#GlConstants-constant-DEPTH_COMPONENT24) | `0x81A6` |
-| `int` | [READ_FRAMEBUFFER_BINDING](#GlConstants-constant-READ_FRAMEBUFFER_BINDING) | `0x8CAA` |
-| `int` | [DRAW_FRAMEBUFFER_BINDING](#GlConstants-constant-DRAW_FRAMEBUFFER_BINDING) | `0x8CA6` |
-| `int` | [READ_BUFFER](#GlConstants-constant-READ_BUFFER) | `0x0C02` |
-| `int` | [ACTIVE_TEXTURE](#GlConstants-constant-ACTIVE_TEXTURE) | `0x84E0` |
-| `int` | [CURRENT_PROGRAM](#GlConstants-constant-CURRENT_PROGRAM) | `0x8B8D` |
-| `int` | [SAMPLER_BINDING](#GlConstants-constant-SAMPLER_BINDING) | `0x8919` |
-| `int` | [TEXTURE_BINDING_2D](#GlConstants-constant-TEXTURE_BINDING_2D) | `0x8069` |
-| `int` | [ARRAY_BUFFER_BINDING](#GlConstants-constant-ARRAY_BUFFER_BINDING) | `0x8894` |
-| `int` | [RENDERBUFFER_BINDING](#GlConstants-constant-RENDERBUFFER_BINDING) | `0x8CA7` |
-| `int` | [VERTEX_ARRAY_BINDING](#GlConstants-constant-VERTEX_ARRAY_BINDING) | `0x85B5` |
-| `int` | [PIXEL_PACK_BUFFER_BINDING](#GlConstants-constant-PIXEL_PACK_BUFFER_BINDING) | `0x88ED` |
-| `int` | [PIXEL_UNPACK_BUFFER_BINDING](#GlConstants-constant-PIXEL_UNPACK_BUFFER_BINDING) | `0x88EF` |
-| `int` | [PIXEL_PACK_BUFFER](#GlConstants-constant-PIXEL_PACK_BUFFER) | `0x88EB` |
-| `int` | [PIXEL_UNPACK_BUFFER](#GlConstants-constant-PIXEL_UNPACK_BUFFER) | `0x88EC` |
-| `int` | [DEPTH_CLAMP](#GlConstants-constant-DEPTH_CLAMP) | `0x864F` |
-| `int` | [COLOR_LOGIC_OP](#GlConstants-constant-COLOR_LOGIC_OP) | `0x0BF2` |
-| `int` | [FRAMEBUFFER_SRGB](#GlConstants-constant-FRAMEBUFFER_SRGB) | `0x8DB9` |
-| `int` | [PRIMITIVE_RESTART](#GlConstants-constant-PRIMITIVE_RESTART) | `0x8F9D` |
-| `int` | [RASTERIZER_DISCARD](#GlConstants-constant-RASTERIZER_DISCARD) | `0x8C89` |
-| `int` | [POLYGON_OFFSET_FILL](#GlConstants-constant-POLYGON_OFFSET_FILL) | `0x8037` |
-| `int` | [BLEND_SRC_RGB](#GlConstants-constant-BLEND_SRC_RGB) | `0x80C9` |
-| `int` | [BLEND_DST_RGB](#GlConstants-constant-BLEND_DST_RGB) | `0x80C8` |
-| `int` | [BLEND_SRC_ALPHA](#GlConstants-constant-BLEND_SRC_ALPHA) | `0x80CB` |
-| `int` | [BLEND_DST_ALPHA](#GlConstants-constant-BLEND_DST_ALPHA) | `0x80CA` |
-| `int` | [BLEND_EQUATION_RGB](#GlConstants-constant-BLEND_EQUATION_RGB) | `0x8009` |
-| `int` | [BLEND_EQUATION_ALPHA](#GlConstants-constant-BLEND_EQUATION_ALPHA) | `0x883D` |
-| `int` | [VIEWPORT](#GlConstants-constant-VIEWPORT) | `0x0BA2` |
-| `int` | [LINE_WIDTH](#GlConstants-constant-LINE_WIDTH) | `0x0B21` |
-| `int` | [FRONT_FACE](#GlConstants-constant-FRONT_FACE) | `0x0B46` |
-| `int` | [POLYGON_MODE](#GlConstants-constant-POLYGON_MODE) | `0x0B40` |
-| `int` | [CULL_FACE_MODE](#GlConstants-constant-CULL_FACE_MODE) | `0x0B45` |
-| `int` | [COLOR_WRITEMASK](#GlConstants-constant-COLOR_WRITEMASK) | `0x0C23` |
-| `int` | [COLOR_CLEAR_VALUE](#GlConstants-constant-COLOR_CLEAR_VALUE) | `0x0C22` |
-| `int` | [DEPTH_FUNC](#GlConstants-constant-DEPTH_FUNC) | `0x0B74` |
-| `int` | [DEPTH_WRITEMASK](#GlConstants-constant-DEPTH_WRITEMASK) | `0x0B72` |
-| `int` | [DEPTH_CLEAR_VALUE](#GlConstants-constant-DEPTH_CLEAR_VALUE) | `0x0B73` |
-| `int` | [STENCIL_REF](#GlConstants-constant-STENCIL_REF) | `0x0B97` |
-| `int` | [STENCIL_FUNC](#GlConstants-constant-STENCIL_FUNC) | `0x0B92` |
-| `int` | [STENCIL_FAIL](#GlConstants-constant-STENCIL_FAIL) | `0x0B94` |
-| `int` | [STENCIL_BACK_REF](#GlConstants-constant-STENCIL_BACK_REF) | `0x8CA3` |
-| `int` | [STENCIL_WRITEMASK](#GlConstants-constant-STENCIL_WRITEMASK) | `0x0B98` |
-| `int` | [STENCIL_BACK_FUNC](#GlConstants-constant-STENCIL_BACK_FUNC) | `0x8800` |
-| `int` | [STENCIL_BACK_FAIL](#GlConstants-constant-STENCIL_BACK_FAIL) | `0x8801` |
-| `int` | [STENCIL_VALUE_MASK](#GlConstants-constant-STENCIL_VALUE_MASK) | `0x0B93` |
-| `int` | [STENCIL_CLEAR_VALUE](#GlConstants-constant-STENCIL_CLEAR_VALUE) | `0x0B91` |
-| `int` | [STENCIL_BACK_WRITEMASK](#GlConstants-constant-STENCIL_BACK_WRITEMASK) | `0x8CA5` |
-| `int` | [STENCIL_PASS_DEPTH_FAIL](#GlConstants-constant-STENCIL_PASS_DEPTH_FAIL) | `0x0B95` |
-| `int` | [STENCIL_PASS_DEPTH_PASS](#GlConstants-constant-STENCIL_PASS_DEPTH_PASS) | `0x0B96` |
-| `int` | [STENCIL_BACK_VALUE_MASK](#GlConstants-constant-STENCIL_BACK_VALUE_MASK) | `0x8CA4` |
-| `int` | [STENCIL_BACK_PASS_DEPTH_FAIL](#GlConstants-constant-STENCIL_BACK_PASS_DEPTH_FAIL) | `0x8802` |
-| `int` | [STENCIL_BACK_PASS_DEPTH_PASS](#GlConstants-constant-STENCIL_BACK_PASS_DEPTH_PASS) | `0x8803` |
-| `int` | [CCW](#GlConstants-constant-CCW) | `0x0901` |
-| `int` | [FILL](#GlConstants-constant-FILL) | `0x1B02` |
-| `int` | [FRONT](#GlConstants-constant-FRONT) | `0x0404` |
-| `int` | [FRONT_AND_BACK](#GlConstants-constant-FRONT_AND_BACK) | `0x0408` |
-| `int` | [PACK_ALIGNMENT](#GlConstants-constant-PACK_ALIGNMENT) | `0x0D05` |
-| `int` | [PACK_SKIP_ROWS](#GlConstants-constant-PACK_SKIP_ROWS) | `0x0D03` |
-| `int` | [PACK_ROW_LENGTH](#GlConstants-constant-PACK_ROW_LENGTH) | `0x0D02` |
-| `int` | [PACK_SKIP_PIXELS](#GlConstants-constant-PACK_SKIP_PIXELS) | `0x0D04` |
-| `int` | [UNPACK_ALIGNMENT](#GlConstants-constant-UNPACK_ALIGNMENT) | `0x0CF5` |
-| `int` | [UNPACK_SKIP_ROWS](#GlConstants-constant-UNPACK_SKIP_ROWS) | `0x0CF3` |
-| `int` | [UNPACK_ROW_LENGTH](#GlConstants-constant-UNPACK_ROW_LENGTH) | `0x0CF2` |
-| `int` | [UNPACK_SKIP_PIXELS](#GlConstants-constant-UNPACK_SKIP_PIXELS) | `0x0CF4` |
-| `int` | [CURRENT_VERTEX_ATTRIB](#GlConstants-constant-CURRENT_VERTEX_ATTRIB) | `0x8626` |
-| `int` | [VERTEX_ATTRIB_ARRAY_SIZE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_SIZE) | `0x8623` |
-| `int` | [VERTEX_ATTRIB_ARRAY_TYPE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_TYPE) | `0x8625` |
-| `int` | [VERTEX_ATTRIB_ARRAY_STRIDE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_STRIDE) | `0x8624` |
-| `int` | [VERTEX_ATTRIB_ARRAY_ENABLED](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_ENABLED) | `0x8622` |
-| `int` | [VERTEX_ATTRIB_ARRAY_POINTER](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_POINTER) | `0x8645` |
-| `int` | [VERTEX_ATTRIB_ARRAY_NORMALIZED](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_NORMALIZED) | `0x886A` |
-| `int` | [VERTEX_ATTRIB_ARRAY_BUFFER_BINDING](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_BUFFER_BINDING) | `0x889F` |
-| `int` | [FOG](#GlConstants-constant-FOG) | `0x0B60` |
-| `int` | [LIGHTING](#GlConstants-constant-LIGHTING) | `0x0B50` |
-| `int` | [ALPHA_TEST](#GlConstants-constant-ALPHA_TEST) | `0x0BC0` |
-| `int` | [COLOR_MATERIAL](#GlConstants-constant-COLOR_MATERIAL) | `0x0B57` |
-| `int` | [MODELVIEW_MATRIX](#GlConstants-constant-MODELVIEW_MATRIX) | `0x0BA6` |
-| `int` | [PROJECTION_MATRIX](#GlConstants-constant-PROJECTION_MATRIX) | `0x0BA7` |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| `int` | [ONE](#GlConstants-constant-ONE) | `1` | The value of `GL_ONE`, the integer `1`, as a blend factor or a boolean. |
+| `int` | [ZERO](#GlConstants-constant-ZERO) | `0` | The value of `GL_ZERO`, the integer `0`, as a blend factor or a boolean. |
+| `int` | [TRUE](#GlConstants-constant-TRUE) | `1` | The value of `GL_TRUE`, the integer `1`, as a blend factor or a boolean. |
+| `int` | [VERSION](#GlConstants-constant-VERSION) | `0x1F02` | The value of `GL_VERSION`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [RENDERER](#GlConstants-constant-RENDERER) | `0x1F01` | The value of `GL_RENDERER`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [EXTENSIONS](#GlConstants-constant-EXTENSIONS) | `0x1F03` | The value of `GL_EXTENSIONS`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [CONTEXT_FLAGS](#GlConstants-constant-CONTEXT_FLAGS) | `0x821E` | The value of `GL_CONTEXT_FLAGS`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [NUM_EXTENSIONS](#GlConstants-constant-NUM_EXTENSIONS) | `0x821D` | The value of `GL_NUM_EXTENSIONS`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [MAX_TEXTURE_SIZE](#GlConstants-constant-MAX_TEXTURE_SIZE) | `0x0D33` | The value of `GL_MAX_TEXTURE_SIZE`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [CONTEXT_PROFILE_MASK](#GlConstants-constant-CONTEXT_PROFILE_MASK) | `0x9126` | The value of `GL_CONTEXT_PROFILE_MASK`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [SHADING_LANGUAGE_VERSION](#GlConstants-constant-SHADING_LANGUAGE_VERSION) | `0x8B8C` | The value of `GL_SHADING_LANGUAGE_VERSION`, a name read with `glGetString` or `glGetInteger` to learn what the context offers. |
+| `int` | [CONTEXT_CORE_PROFILE_BIT](#GlConstants-constant-CONTEXT_CORE_PROFILE_BIT) | `0x0001` | The value of `GL_CONTEXT_CORE_PROFILE_BIT`, a bit of the profile mask or of the context flags. |
+| `int` | [CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT](#GlConstants-constant-CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) | `0x0001` | The value of `GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT`, a bit of the profile mask or of the context flags. |
+| `int` | [BLEND](#GlConstants-constant-BLEND) | `0x0BE2` | The value of `GL_BLEND`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [CULL_FACE](#GlConstants-constant-CULL_FACE) | `0x0B44` | The value of `GL_CULL_FACE`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [DEPTH_TEST](#GlConstants-constant-DEPTH_TEST) | `0x0B71` | The value of `GL_DEPTH_TEST`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [LINE_SMOOTH](#GlConstants-constant-LINE_SMOOTH) | `0x0B20` | The value of `GL_LINE_SMOOTH`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [STENCIL_TEST](#GlConstants-constant-STENCIL_TEST) | `0x0B90` | The value of `GL_STENCIL_TEST`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [SCISSOR_TEST](#GlConstants-constant-SCISSOR_TEST) | `0x0C11` | The value of `GL_SCISSOR_TEST`, a capability switched with `glEnable` and `glDisable`. |
+| `int` | [COLOR_BUFFER_BIT](#GlConstants-constant-COLOR_BUFFER_BIT) | `0x4000` | The value of `GL_COLOR_BUFFER_BIT`, a buffer bit of `glClear`. |
+| `int` | [DEPTH_BUFFER_BIT](#GlConstants-constant-DEPTH_BUFFER_BIT) | `0x0100` | The value of `GL_DEPTH_BUFFER_BIT`, a buffer bit of `glClear`. |
+| `int` | [STENCIL_BUFFER_BIT](#GlConstants-constant-STENCIL_BUFFER_BIT) | `0x0400` | The value of `GL_STENCIL_BUFFER_BIT`, a buffer bit of `glClear`. |
+| `int` | [MIN](#GlConstants-constant-MIN) | `0x8007` | The value of `GL_MIN`, a blend equation. |
+| `int` | [MAX](#GlConstants-constant-MAX) | `0x8008` | The value of `GL_MAX`, a blend equation. |
+| `int` | [FUNC_ADD](#GlConstants-constant-FUNC_ADD) | `0x8006` | The value of `GL_FUNC_ADD`, a blend equation. |
+| `int` | [FUNC_SUBTRACT](#GlConstants-constant-FUNC_SUBTRACT) | `0x800A` | The value of `GL_FUNC_SUBTRACT`, a blend equation. |
+| `int` | [FUNC_REVERSE_SUBTRACT](#GlConstants-constant-FUNC_REVERSE_SUBTRACT) | `0x800B` | The value of `GL_FUNC_REVERSE_SUBTRACT`, a blend equation. |
+| `int` | [SRC_COLOR](#GlConstants-constant-SRC_COLOR) | `0x0300` | The value of `GL_SRC_COLOR`, a blend factor. |
+| `int` | [DST_COLOR](#GlConstants-constant-DST_COLOR) | `0x0306` | The value of `GL_DST_COLOR`, a blend factor. |
+| `int` | [SRC_ALPHA](#GlConstants-constant-SRC_ALPHA) | `0x0302` | The value of `GL_SRC_ALPHA`, a blend factor. |
+| `int` | [DST_ALPHA](#GlConstants-constant-DST_ALPHA) | `0x0304` | The value of `GL_DST_ALPHA`, a blend factor. |
+| `int` | [ONE_MINUS_SRC_COLOR](#GlConstants-constant-ONE_MINUS_SRC_COLOR) | `0x0301` | The value of `GL_ONE_MINUS_SRC_COLOR`, a blend factor. |
+| `int` | [ONE_MINUS_DST_COLOR](#GlConstants-constant-ONE_MINUS_DST_COLOR) | `0x0307` | The value of `GL_ONE_MINUS_DST_COLOR`, a blend factor. |
+| `int` | [ONE_MINUS_SRC_ALPHA](#GlConstants-constant-ONE_MINUS_SRC_ALPHA) | `0x0303` | The value of `GL_ONE_MINUS_SRC_ALPHA`, a blend factor. |
+| `int` | [ONE_MINUS_DST_ALPHA](#GlConstants-constant-ONE_MINUS_DST_ALPHA) | `0x0305` | The value of `GL_ONE_MINUS_DST_ALPHA`, a blend factor. |
+| `int` | [LESS](#GlConstants-constant-LESS) | `0x0201` | The value of `GL_LESS`, a comparison function of the depth or stencil test. |
+| `int` | [NEVER](#GlConstants-constant-NEVER) | `0x0200` | The value of `GL_NEVER`, a comparison function of the depth or stencil test. |
+| `int` | [EQUAL](#GlConstants-constant-EQUAL) | `0x0202` | The value of `GL_EQUAL`, a comparison function of the depth or stencil test. |
+| `int` | [LEQUAL](#GlConstants-constant-LEQUAL) | `0x0203` | The value of `GL_LEQUAL`, a comparison function of the depth or stencil test. |
+| `int` | [GEQUAL](#GlConstants-constant-GEQUAL) | `0x0206` | The value of `GL_GEQUAL`, a comparison function of the depth or stencil test. |
+| `int` | [ALWAYS](#GlConstants-constant-ALWAYS) | `0x0207` | The value of `GL_ALWAYS`, a comparison function of the depth or stencil test. |
+| `int` | [GREATER](#GlConstants-constant-GREATER) | `0x0204` | The value of `GL_GREATER`, a comparison function of the depth or stencil test. |
+| `int` | [NOTEQUAL](#GlConstants-constant-NOTEQUAL) | `0x0205` | The value of `GL_NOTEQUAL`, a comparison function of the depth or stencil test. |
+| `int` | [KEEP](#GlConstants-constant-KEEP) | `0x1E00` | The value of `GL_KEEP`, a stencil operation. |
+| `int` | [INCR](#GlConstants-constant-INCR) | `0x1E02` | The value of `GL_INCR`, a stencil operation. |
+| `int` | [DECR](#GlConstants-constant-DECR) | `0x1E03` | The value of `GL_DECR`, a stencil operation. |
+| `int` | [INVERT](#GlConstants-constant-INVERT) | `0x150A` | The value of `GL_INVERT`, a stencil operation. |
+| `int` | [REPLACE](#GlConstants-constant-REPLACE) | `0x1E01` | The value of `GL_REPLACE`, a stencil operation. |
+| `int` | [LINES](#GlConstants-constant-LINES) | `0x0001` | The value of `GL_LINES`, a primitive of `glDrawArrays`. |
+| `int` | [TRIANGLES](#GlConstants-constant-TRIANGLES) | `0x0004` | The value of `GL_TRIANGLES`, a primitive of `glDrawArrays`. |
+| `int` | [BYTE](#GlConstants-constant-BYTE) | `0x1400` | The value of `GL_BYTE`, a component type of vertices or pixels. |
+| `int` | [FLOAT](#GlConstants-constant-FLOAT) | `0x1406` | The value of `GL_FLOAT`, a component type of vertices or pixels. |
+| `int` | [UNSIGNED_BYTE](#GlConstants-constant-UNSIGNED_BYTE) | `0x1401` | The value of `GL_UNSIGNED_BYTE`, a component type of vertices or pixels. |
+| `int` | [RGBA](#GlConstants-constant-RGBA) | `0x1908` | The value of `GL_RGBA`, a pixel format or internal format of a texture. |
+| `int` | [BGRA](#GlConstants-constant-BGRA) | `0x80E1` | The value of `GL_BGRA`, a pixel format or internal format of a texture. |
+| `int` | [RGBA8](#GlConstants-constant-RGBA8) | `0x8058` | The value of `GL_RGBA8`, a pixel format or internal format of a texture. |
+| `int` | [UNSIGNED_INT_8_8_8_8_REV](#GlConstants-constant-UNSIGNED_INT_8_8_8_8_REV) | `0x8367` | The value of `GL_UNSIGNED_INT_8_8_8_8_REV`, a pixel format or internal format of a texture. |
+| `int` | [TEXTURE0](#GlConstants-constant-TEXTURE0) | `0x84C0` | The value of `GL_TEXTURE0`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_2D](#GlConstants-constant-TEXTURE_2D) | `0x0DE1` | The value of `GL_TEXTURE_2D`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_WIDTH](#GlConstants-constant-TEXTURE_WIDTH) | `0x1000` | The value of `GL_TEXTURE_WIDTH`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_HEIGHT](#GlConstants-constant-TEXTURE_HEIGHT) | `0x1001` | The value of `GL_TEXTURE_HEIGHT`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_WRAP_S](#GlConstants-constant-TEXTURE_WRAP_S) | `0x2802` | The value of `GL_TEXTURE_WRAP_S`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_WRAP_T](#GlConstants-constant-TEXTURE_WRAP_T) | `0x2803` | The value of `GL_TEXTURE_WRAP_T`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_MAX_LEVEL](#GlConstants-constant-TEXTURE_MAX_LEVEL) | `0x813D` | The value of `GL_TEXTURE_MAX_LEVEL`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_BASE_LEVEL](#GlConstants-constant-TEXTURE_BASE_LEVEL) | `0x813C` | The value of `GL_TEXTURE_BASE_LEVEL`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_MIN_FILTER](#GlConstants-constant-TEXTURE_MIN_FILTER) | `0x2801` | The value of `GL_TEXTURE_MIN_FILTER`, a texture unit, target or parameter. |
+| `int` | [TEXTURE_MAG_FILTER](#GlConstants-constant-TEXTURE_MAG_FILTER) | `0x2800` | The value of `GL_TEXTURE_MAG_FILTER`, a texture unit, target or parameter. |
+| `int` | [LINEAR](#GlConstants-constant-LINEAR) | `0x2601` | The value of `GL_LINEAR`, a texture filter. |
+| `int` | [NEAREST](#GlConstants-constant-NEAREST) | `0x2600` | The value of `GL_NEAREST`, a texture filter. |
+| `int` | [LINEAR_MIPMAP_LINEAR](#GlConstants-constant-LINEAR_MIPMAP_LINEAR) | `0x2703` | The value of `GL_LINEAR_MIPMAP_LINEAR`, a texture filter. |
+| `int` | [REPEAT](#GlConstants-constant-REPEAT) | `0x2901` | The value of `GL_REPEAT`, a texture wrap mode. |
+| `int` | [CLAMP_TO_EDGE](#GlConstants-constant-CLAMP_TO_EDGE) | `0x812F` | The value of `GL_CLAMP_TO_EDGE`, a texture wrap mode. |
+| `int` | [CLAMP_TO_BORDER](#GlConstants-constant-CLAMP_TO_BORDER) | `0x812D` | The value of `GL_CLAMP_TO_BORDER`, a texture wrap mode. |
+| `int` | [STREAM_DRAW](#GlConstants-constant-STREAM_DRAW) | `0x88E0` | The value of `GL_STREAM_DRAW`, a buffer target or usage. |
+| `int` | [ARRAY_BUFFER](#GlConstants-constant-ARRAY_BUFFER) | `0x8892` | The value of `GL_ARRAY_BUFFER`, a buffer target or usage. |
+| `int` | [LINK_STATUS](#GlConstants-constant-LINK_STATUS) | `0x8B82` | The value of `GL_LINK_STATUS`, a shader stage or a status of shader compilation and linking. |
+| `int` | [VERTEX_SHADER](#GlConstants-constant-VERTEX_SHADER) | `0x8B31` | The value of `GL_VERTEX_SHADER`, a shader stage or a status of shader compilation and linking. |
+| `int` | [COMPILE_STATUS](#GlConstants-constant-COMPILE_STATUS) | `0x8B81` | The value of `GL_COMPILE_STATUS`, a shader stage or a status of shader compilation and linking. |
+| `int` | [FRAGMENT_SHADER](#GlConstants-constant-FRAGMENT_SHADER) | `0x8B30` | The value of `GL_FRAGMENT_SHADER`, a shader stage or a status of shader compilation and linking. |
+| `int` | [BACK](#GlConstants-constant-BACK) | `0x0405` | The value of `GL_BACK`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [FRAMEBUFFER](#GlConstants-constant-FRAMEBUFFER) | `0x8D40` | The value of `GL_FRAMEBUFFER`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [RENDERBUFFER](#GlConstants-constant-RENDERBUFFER) | `0x8D41` | The value of `GL_RENDERBUFFER`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [READ_FRAMEBUFFER](#GlConstants-constant-READ_FRAMEBUFFER) | `0x8CA8` | The value of `GL_READ_FRAMEBUFFER`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [DRAW_FRAMEBUFFER](#GlConstants-constant-DRAW_FRAMEBUFFER) | `0x8CA9` | The value of `GL_DRAW_FRAMEBUFFER`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [DEPTH_ATTACHMENT](#GlConstants-constant-DEPTH_ATTACHMENT) | `0x8D00` | The value of `GL_DEPTH_ATTACHMENT`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [COLOR_ATTACHMENT0](#GlConstants-constant-COLOR_ATTACHMENT0) | `0x8CE0` | The value of `GL_COLOR_ATTACHMENT0`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [DEPTH_COMPONENT24](#GlConstants-constant-DEPTH_COMPONENT24) | `0x81A6` | The value of `GL_DEPTH_COMPONENT24`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [READ_FRAMEBUFFER_BINDING](#GlConstants-constant-READ_FRAMEBUFFER_BINDING) | `0x8CAA` | The value of `GL_READ_FRAMEBUFFER_BINDING`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [DRAW_FRAMEBUFFER_BINDING](#GlConstants-constant-DRAW_FRAMEBUFFER_BINDING) | `0x8CA6` | The value of `GL_DRAW_FRAMEBUFFER_BINDING`, a framebuffer, renderbuffer or attachment name. |
+| `int` | [READ_BUFFER](#GlConstants-constant-READ_BUFFER) | `0x0C02` | The value of `GL_READ_BUFFER`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [ACTIVE_TEXTURE](#GlConstants-constant-ACTIVE_TEXTURE) | `0x84E0` | The value of `GL_ACTIVE_TEXTURE`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [CURRENT_PROGRAM](#GlConstants-constant-CURRENT_PROGRAM) | `0x8B8D` | The value of `GL_CURRENT_PROGRAM`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [SAMPLER_BINDING](#GlConstants-constant-SAMPLER_BINDING) | `0x8919` | The value of `GL_SAMPLER_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [TEXTURE_BINDING_2D](#GlConstants-constant-TEXTURE_BINDING_2D) | `0x8069` | The value of `GL_TEXTURE_BINDING_2D`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [ARRAY_BUFFER_BINDING](#GlConstants-constant-ARRAY_BUFFER_BINDING) | `0x8894` | The value of `GL_ARRAY_BUFFER_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [RENDERBUFFER_BINDING](#GlConstants-constant-RENDERBUFFER_BINDING) | `0x8CA7` | The value of `GL_RENDERBUFFER_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [VERTEX_ARRAY_BINDING](#GlConstants-constant-VERTEX_ARRAY_BINDING) | `0x85B5` | The value of `GL_VERTEX_ARRAY_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [PIXEL_PACK_BUFFER_BINDING](#GlConstants-constant-PIXEL_PACK_BUFFER_BINDING) | `0x88ED` | The value of `GL_PIXEL_PACK_BUFFER_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [PIXEL_UNPACK_BUFFER_BINDING](#GlConstants-constant-PIXEL_UNPACK_BUFFER_BINDING) | `0x88EF` | The value of `GL_PIXEL_UNPACK_BUFFER_BINDING`, a binding read with `glGetInteger` to save the state of a host. |
+| `int` | [PIXEL_PACK_BUFFER](#GlConstants-constant-PIXEL_PACK_BUFFER) | `0x88EB` | The value of `GL_PIXEL_PACK_BUFFER`, a pixel buffer target. |
+| `int` | [PIXEL_UNPACK_BUFFER](#GlConstants-constant-PIXEL_UNPACK_BUFFER) | `0x88EC` | The value of `GL_PIXEL_UNPACK_BUFFER`, a pixel buffer target. |
+| `int` | [DEPTH_CLAMP](#GlConstants-constant-DEPTH_CLAMP) | `0x864F` | The value of `GL_DEPTH_CLAMP`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [COLOR_LOGIC_OP](#GlConstants-constant-COLOR_LOGIC_OP) | `0x0BF2` | The value of `GL_COLOR_LOGIC_OP`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [FRAMEBUFFER_SRGB](#GlConstants-constant-FRAMEBUFFER_SRGB) | `0x8DB9` | The value of `GL_FRAMEBUFFER_SRGB`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [PRIMITIVE_RESTART](#GlConstants-constant-PRIMITIVE_RESTART) | `0x8F9D` | The value of `GL_PRIMITIVE_RESTART`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [RASTERIZER_DISCARD](#GlConstants-constant-RASTERIZER_DISCARD) | `0x8C89` | The value of `GL_RASTERIZER_DISCARD`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [POLYGON_OFFSET_FILL](#GlConstants-constant-POLYGON_OFFSET_FILL) | `0x8037` | The value of `GL_POLYGON_OFFSET_FILL`, a capability that a host may leave on, saved and reset around JOID. |
+| `int` | [BLEND_SRC_RGB](#GlConstants-constant-BLEND_SRC_RGB) | `0x80C9` | The value of `GL_BLEND_SRC_RGB`, a blend state read with `glGetInteger`. |
+| `int` | [BLEND_DST_RGB](#GlConstants-constant-BLEND_DST_RGB) | `0x80C8` | The value of `GL_BLEND_DST_RGB`, a blend state read with `glGetInteger`. |
+| `int` | [BLEND_SRC_ALPHA](#GlConstants-constant-BLEND_SRC_ALPHA) | `0x80CB` | The value of `GL_BLEND_SRC_ALPHA`, a blend state read with `glGetInteger`. |
+| `int` | [BLEND_DST_ALPHA](#GlConstants-constant-BLEND_DST_ALPHA) | `0x80CA` | The value of `GL_BLEND_DST_ALPHA`, a blend state read with `glGetInteger`. |
+| `int` | [BLEND_EQUATION_RGB](#GlConstants-constant-BLEND_EQUATION_RGB) | `0x8009` | The value of `GL_BLEND_EQUATION_RGB`, a blend state read with `glGetInteger`. |
+| `int` | [BLEND_EQUATION_ALPHA](#GlConstants-constant-BLEND_EQUATION_ALPHA) | `0x883D` | The value of `GL_BLEND_EQUATION_ALPHA`, a blend state read with `glGetInteger`. |
+| `int` | [VIEWPORT](#GlConstants-constant-VIEWPORT) | `0x0BA2` | The value of `GL_VIEWPORT`, a rasterizer state read with `glGet`. |
+| `int` | [LINE_WIDTH](#GlConstants-constant-LINE_WIDTH) | `0x0B21` | The value of `GL_LINE_WIDTH`, a rasterizer state read with `glGet`. |
+| `int` | [FRONT_FACE](#GlConstants-constant-FRONT_FACE) | `0x0B46` | The value of `GL_FRONT_FACE`, a rasterizer state read with `glGet`. |
+| `int` | [POLYGON_MODE](#GlConstants-constant-POLYGON_MODE) | `0x0B40` | The value of `GL_POLYGON_MODE`, a rasterizer state read with `glGet`. |
+| `int` | [CULL_FACE_MODE](#GlConstants-constant-CULL_FACE_MODE) | `0x0B45` | The value of `GL_CULL_FACE_MODE`, a rasterizer state read with `glGet`. |
+| `int` | [COLOR_WRITEMASK](#GlConstants-constant-COLOR_WRITEMASK) | `0x0C23` | The value of `GL_COLOR_WRITEMASK`, a rasterizer state read with `glGet`. |
+| `int` | [COLOR_CLEAR_VALUE](#GlConstants-constant-COLOR_CLEAR_VALUE) | `0x0C22` | The value of `GL_COLOR_CLEAR_VALUE`, a rasterizer state read with `glGet`. |
+| `int` | [DEPTH_FUNC](#GlConstants-constant-DEPTH_FUNC) | `0x0B74` | The value of `GL_DEPTH_FUNC`, a depth state read with `glGet`. |
+| `int` | [DEPTH_WRITEMASK](#GlConstants-constant-DEPTH_WRITEMASK) | `0x0B72` | The value of `GL_DEPTH_WRITEMASK`, a depth state read with `glGet`. |
+| `int` | [DEPTH_CLEAR_VALUE](#GlConstants-constant-DEPTH_CLEAR_VALUE) | `0x0B73` | The value of `GL_DEPTH_CLEAR_VALUE`, a depth state read with `glGet`. |
+| `int` | [STENCIL_REF](#GlConstants-constant-STENCIL_REF) | `0x0B97` | The value of `GL_STENCIL_REF`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_FUNC](#GlConstants-constant-STENCIL_FUNC) | `0x0B92` | The value of `GL_STENCIL_FUNC`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_FAIL](#GlConstants-constant-STENCIL_FAIL) | `0x0B94` | The value of `GL_STENCIL_FAIL`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_REF](#GlConstants-constant-STENCIL_BACK_REF) | `0x8CA3` | The value of `GL_STENCIL_BACK_REF`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_WRITEMASK](#GlConstants-constant-STENCIL_WRITEMASK) | `0x0B98` | The value of `GL_STENCIL_WRITEMASK`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_FUNC](#GlConstants-constant-STENCIL_BACK_FUNC) | `0x8800` | The value of `GL_STENCIL_BACK_FUNC`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_FAIL](#GlConstants-constant-STENCIL_BACK_FAIL) | `0x8801` | The value of `GL_STENCIL_BACK_FAIL`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_VALUE_MASK](#GlConstants-constant-STENCIL_VALUE_MASK) | `0x0B93` | The value of `GL_STENCIL_VALUE_MASK`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_CLEAR_VALUE](#GlConstants-constant-STENCIL_CLEAR_VALUE) | `0x0B91` | The value of `GL_STENCIL_CLEAR_VALUE`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_WRITEMASK](#GlConstants-constant-STENCIL_BACK_WRITEMASK) | `0x8CA5` | The value of `GL_STENCIL_BACK_WRITEMASK`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_PASS_DEPTH_FAIL](#GlConstants-constant-STENCIL_PASS_DEPTH_FAIL) | `0x0B95` | The value of `GL_STENCIL_PASS_DEPTH_FAIL`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_PASS_DEPTH_PASS](#GlConstants-constant-STENCIL_PASS_DEPTH_PASS) | `0x0B96` | The value of `GL_STENCIL_PASS_DEPTH_PASS`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_VALUE_MASK](#GlConstants-constant-STENCIL_BACK_VALUE_MASK) | `0x8CA4` | The value of `GL_STENCIL_BACK_VALUE_MASK`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_PASS_DEPTH_FAIL](#GlConstants-constant-STENCIL_BACK_PASS_DEPTH_FAIL) | `0x8802` | The value of `GL_STENCIL_BACK_PASS_DEPTH_FAIL`, a stencil state read with `glGetInteger`. |
+| `int` | [STENCIL_BACK_PASS_DEPTH_PASS](#GlConstants-constant-STENCIL_BACK_PASS_DEPTH_PASS) | `0x8803` | The value of `GL_STENCIL_BACK_PASS_DEPTH_PASS`, a stencil state read with `glGetInteger`. |
+| `int` | [CCW](#GlConstants-constant-CCW) | `0x0901` | The value of `GL_CCW`, a face or polygon mode value. |
+| `int` | [FILL](#GlConstants-constant-FILL) | `0x1B02` | The value of `GL_FILL`, a face or polygon mode value. |
+| `int` | [FRONT](#GlConstants-constant-FRONT) | `0x0404` | The value of `GL_FRONT`, a face or polygon mode value. |
+| `int` | [FRONT_AND_BACK](#GlConstants-constant-FRONT_AND_BACK) | `0x0408` | The value of `GL_FRONT_AND_BACK`, a face or polygon mode value. |
+| `int` | [PACK_ALIGNMENT](#GlConstants-constant-PACK_ALIGNMENT) | `0x0D05` | The value of `GL_PACK_ALIGNMENT`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [PACK_SKIP_ROWS](#GlConstants-constant-PACK_SKIP_ROWS) | `0x0D03` | The value of `GL_PACK_SKIP_ROWS`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [PACK_ROW_LENGTH](#GlConstants-constant-PACK_ROW_LENGTH) | `0x0D02` | The value of `GL_PACK_ROW_LENGTH`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [PACK_SKIP_PIXELS](#GlConstants-constant-PACK_SKIP_PIXELS) | `0x0D04` | The value of `GL_PACK_SKIP_PIXELS`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [UNPACK_ALIGNMENT](#GlConstants-constant-UNPACK_ALIGNMENT) | `0x0CF5` | The value of `GL_UNPACK_ALIGNMENT`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [UNPACK_SKIP_ROWS](#GlConstants-constant-UNPACK_SKIP_ROWS) | `0x0CF3` | The value of `GL_UNPACK_SKIP_ROWS`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [UNPACK_ROW_LENGTH](#GlConstants-constant-UNPACK_ROW_LENGTH) | `0x0CF2` | The value of `GL_UNPACK_ROW_LENGTH`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [UNPACK_SKIP_PIXELS](#GlConstants-constant-UNPACK_SKIP_PIXELS) | `0x0CF4` | The value of `GL_UNPACK_SKIP_PIXELS`, a pixel storage parameter of `glPixelStorei`. |
+| `int` | [CURRENT_VERTEX_ATTRIB](#GlConstants-constant-CURRENT_VERTEX_ATTRIB) | `0x8626` | The value of `GL_CURRENT_VERTEX_ATTRIB`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_SIZE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_SIZE) | `0x8623` | The value of `GL_VERTEX_ATTRIB_ARRAY_SIZE`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_TYPE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_TYPE) | `0x8625` | The value of `GL_VERTEX_ATTRIB_ARRAY_TYPE`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_STRIDE](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_STRIDE) | `0x8624` | The value of `GL_VERTEX_ATTRIB_ARRAY_STRIDE`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_ENABLED](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_ENABLED) | `0x8622` | The value of `GL_VERTEX_ATTRIB_ARRAY_ENABLED`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_POINTER](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_POINTER) | `0x8645` | The value of `GL_VERTEX_ATTRIB_ARRAY_POINTER`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_NORMALIZED](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_NORMALIZED) | `0x886A` | The value of `GL_VERTEX_ATTRIB_ARRAY_NORMALIZED`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [VERTEX_ATTRIB_ARRAY_BUFFER_BINDING](#GlConstants-constant-VERTEX_ATTRIB_ARRAY_BUFFER_BINDING) | `0x889F` | The value of `GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING`, a vertex attribute state read with `glGetVertexAttrib`. |
+| `int` | [FOG](#GlConstants-constant-FOG) | `0x0B60` | The value of `GL_FOG`, a capability of the fixed pipeline, reset for a host that uses it. |
+| `int` | [LIGHTING](#GlConstants-constant-LIGHTING) | `0x0B50` | The value of `GL_LIGHTING`, a capability of the fixed pipeline, reset for a host that uses it. |
+| `int` | [ALPHA_TEST](#GlConstants-constant-ALPHA_TEST) | `0x0BC0` | The value of `GL_ALPHA_TEST`, a capability of the fixed pipeline, reset for a host that uses it. |
+| `int` | [COLOR_MATERIAL](#GlConstants-constant-COLOR_MATERIAL) | `0x0B57` | The value of `GL_COLOR_MATERIAL`, a capability of the fixed pipeline, reset for a host that uses it. |
+| `int` | [MODELVIEW_MATRIX](#GlConstants-constant-MODELVIEW_MATRIX) | `0x0BA6` | The value of `GL_MODELVIEW_MATRIX`, a matrix of the fixed pipeline read with `glGetFloat`. |
+| `int` | [PROJECTION_MATRIX](#GlConstants-constant-PROJECTION_MATRIX) | `0x0BA7` | The value of `GL_PROJECTION_MATRIX`, a matrix of the fixed pipeline read with `glGetFloat`. |
 
 ## Constant and field details
 

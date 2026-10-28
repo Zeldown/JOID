@@ -31,10 +31,6 @@ If `true`, the playback starts again at the end.
 
 If `true`, the playback starts by itself once the resource is loaded.
 
-## isLoop()
-
-If `true`, the playback loops.
-
 ## isPaused()
 
 If `true`, the playback is paused.
@@ -42,10 +38,6 @@ If `true`, the playback is paused.
 ## isPlaying()
 
 If `true`, the playback is running.
-
-## isAutoplay()
-
-If `true`, the playback starts by itself once loaded.
 
 ## getDuration()
 

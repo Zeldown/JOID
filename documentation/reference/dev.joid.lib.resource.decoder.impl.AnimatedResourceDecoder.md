@@ -17,6 +17,8 @@ Creates a decoder that reads `asset` with `reader`.
 If `true`, the animation plays forever; if `false`, once.
 Without a call, the loop count stored in the file applies.
 
+Default: the loop count stored in the file
+
 ## autoplay
 
 If `true`, the animation starts once it is uploaded.

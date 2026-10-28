@@ -17,6 +17,8 @@ Creates the field at `x`, `y` with a `width` and a `height` in design pixels, fr
 
 The node drawn behind the text, over the whole field, with a `zindex` of `-1`; optional.
 
+Default: `null`: no background
+
 ## text
 
 The text in the field.
@@ -31,9 +33,13 @@ The text shown while the field is empty and has no focus.
 
 The font, the size and the color of the text, as a [[TextInfo]]; required.
 
+Default: none, `info(...)` is required before the attach
+
 ## cursorColor
 
 The color of the blinking cursor; `null` uses the color of `info`.
+
+Default: `null`: the color of `info`
 
 ## selectionColor
 
@@ -42,6 +48,8 @@ The color of the rectangle drawn over the selected text.
 ## placeholderColor
 
 The color of the placeholder; `null` uses the color of `info` at half its opacity.
+
+Default: `null`: the color of `info` at half its opacity
 
 ## accept
 

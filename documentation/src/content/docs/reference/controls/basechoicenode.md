@@ -40,9 +40,9 @@ Attaching a choice without options throws an `IllegalStateException`.
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [values](#BaseChoiceNode-property-values) <span class="joid-qualifier">signal</span> | `V...` |  | The options, at least one, in their order on screen. |
-| [value](#BaseChoiceNode-property-value) | `V` |  | The selected option. |
-| [valueIndex](#BaseChoiceNode-property-valueIndex) | `int` |  | The index of the selected option in the options. |
+| [values](#BaseChoiceNode-property-values) <span class="joid-qualifier">signal</span> | `V...` | none, `values(...)` is required before the attach | The options, at least one, in their order on screen. |
+| [value](#BaseChoiceNode-property-value) | `V` | the first option | The selected option. |
+| [valueIndex](#BaseChoiceNode-property-valueIndex) | `int` | `0`, the first option | The index of the selected option in the options. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -109,7 +109,7 @@ Creates the choice at `x`, `y` with a `width` and a `height` in design pixels, f
 - `this values(V... values)` <span class="joid-qualifier">fluent</span>
 - `this values(Supplier<List<V>> values)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-**Default:** 
+**Default:** none, `values(...)` is required before the attach
 
 The options, at least one, in their order on screen.
 The reactive setter takes a `Supplier` of a list, and the choice builds its options again each time the list changes.
@@ -123,7 +123,7 @@ An empty list throws an `IllegalArgumentException`.
 - `this value(Signal<V> value)` <span class="joid-qualifier">fluent</span>
 - `V getValue()` 
 
-**Default:** 
+**Default:** the first option
 
 **Throws:**
 
@@ -140,7 +140,7 @@ A plain value is the start value, and throws an `IllegalArgumentException` when 
 - `this valueIndex(Signal<Integer> valueIndex)` <span class="joid-qualifier">fluent</span>
 - `int getValueIndex()` 
 
-**Default:** 
+**Default:** `0`, the first option
 
 The index of the selected option in the options.
 A plain index is the start value, and throws an `IllegalArgumentException` when it is out of the options; an [`IntegerSignal`](/reference/signals/integersignal/) binds the index both ways.

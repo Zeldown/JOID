@@ -20,6 +20,8 @@ The id under which the data is cached and named in the warnings.
 
 The [[IResourceDecoder]] that reads the data; `decoder(IResourceDecoder)` sets it and calls its `init`.
 
+Default: set at creation; `null` until the format is detected
+
 ## assetSource
 
 Where the data reads its asset when it detects its format: `assetSource(Supplier)` sets it, read again on each detection, so that a reload finds a file that appeared since.

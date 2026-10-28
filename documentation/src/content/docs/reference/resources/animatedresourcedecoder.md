@@ -39,7 +39,7 @@ The time follows the JOID clock, so the animation keeps its pace whatever the fr
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [loop](#AnimatedResourceDecoder-property-loop) | `boolean` |  | If `true`, the animation plays forever; if `false`, once. |
+| [loop](#AnimatedResourceDecoder-property-loop) | `boolean` | the loop count stored in the file | If `true`, the animation plays forever; if `false`, once. |
 | [autoplay](#AnimatedResourceDecoder-property-autoplay) | `boolean` | `true` | If `true`, the animation starts once it is uploaded. |
 
 <a id="AnimatedResourceDecoder-methods"></a>
@@ -104,7 +104,7 @@ Creates a decoder that reads `asset` with `reader`.
 - `this loop(boolean loop)` <span class="joid-qualifier">fluent</span>
 - `boolean isLoop()` 
 
-**Default:** 
+**Default:** the loop count stored in the file
 
 If `true`, the animation plays forever; if `false`, once.
 Without a call, the loop count stored in the file applies.

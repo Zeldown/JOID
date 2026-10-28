@@ -51,9 +51,9 @@ The stencil applies to the window only: the core never uses a stencil in a frame
 
 ## Constants and fields
 
-| Type | Name | Value |
-|---|---|---|
-| [`StencilState`](/reference/pipeline/stencilstate/) | [DISABLED](#StencilState-constant-DISABLED) |  |
+| Type | Name | Value | Summary |
+|---|---|---|---|
+| [`StencilState`](/reference/pipeline/stencilstate/) | [DISABLED](#StencilState-constant-DISABLED) |  | The state with the stencil off, the stencil of a fresh render state. |
 
 ## Creation details
 

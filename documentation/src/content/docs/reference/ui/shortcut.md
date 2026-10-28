@@ -39,10 +39,10 @@ The shortcuts of the visible and enabled nodes come first, from the front-most, 
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [alt](#Shortcut-property-alt) | `boolean` |  | If `true`, the shortcut fires only while Alt is down; if `false`, only while it is up. |
-| [ctrl](#Shortcut-property-ctrl) | `boolean` |  | If `true`, the shortcut fires only while Control is down; if `false`, only while it is up. |
-| [shift](#Shortcut-property-shift) | `boolean` |  | If `true`, the shortcut fires only while Shift is down; if `false`, only while it is up. |
-| [overrideFocus](#Shortcut-property-overrideFocus) | `boolean` |  | If `true`, the shortcut fires before the nodes see the key, even when a text field has the focus. |
+| [alt](#Shortcut-property-alt) | `boolean` | `false` | If `true`, the shortcut fires only while Alt is down; if `false`, only while it is up. |
+| [ctrl](#Shortcut-property-ctrl) | `boolean` | `false` | If `true`, the shortcut fires only while Control is down; if `false`, only while it is up. |
+| [shift](#Shortcut-property-shift) | `boolean` | `false` | If `true`, the shortcut fires only while Shift is down; if `false`, only while it is up. |
+| [overrideFocus](#Shortcut-property-overrideFocus) | `boolean` | `false` | If `true`, the shortcut fires before the nodes see the key, even when a text field has the focus. |
 
 <a id="Shortcut-methods"></a>
 
@@ -90,7 +90,7 @@ In dev mode, a value that no resolver knows prints a warning; the shortcut fires
 - `this alt(boolean alt)` <span class="joid-qualifier">fluent</span>
 - `boolean isAlt()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the shortcut fires only while Alt is down; if `false`, only while it is up.
 
@@ -101,7 +101,7 @@ If `true`, the shortcut fires only while Alt is down; if `false`, only while it 
 - `this ctrl(boolean ctrl)` <span class="joid-qualifier">fluent</span>
 - `boolean isCtrl()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the shortcut fires only while Control is down; if `false`, only while it is up.
 
@@ -112,7 +112,7 @@ If `true`, the shortcut fires only while Control is down; if `false`, only while
 - `this shift(boolean shift)` <span class="joid-qualifier">fluent</span>
 - `boolean isShift()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the shortcut fires only while Shift is down; if `false`, only while it is up.
 
@@ -123,7 +123,7 @@ If `true`, the shortcut fires only while Shift is down; if `false`, only while i
 - `this overrideFocus(boolean overrideFocus)` <span class="joid-qualifier">fluent</span>
 - `boolean isOverrideFocus()` 
 
-**Default:** 
+**Default:** `false`
 
 If `true`, the shortcut fires before the nodes see the key, even when a text field has the focus.
 

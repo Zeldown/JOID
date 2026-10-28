@@ -95,6 +95,8 @@ If `false`, the node and its children let the mouse through to what is under the
 
 Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one.
 
+Default: `null`: the cursor of the closest parent that sets one, `Cursor.DEFAULT` when none does
+
 ## hoverDuration
 
 Time, in ms, that the hover progress takes to go from `0` to `1` and back.
@@ -124,9 +126,13 @@ Scrollbar that scrolls this node; it is drawn when the overflow is `SCROLL` and 
 
 Text drawn centered over the node, after the node itself and before its children; `null` draws none.
 
+Default: `null`: no label
+
 ## draggable
 
 Lets the user drag the node with the left button, inside the area and with the movement and the snapping of the [[DraggableProperty]]; `null` means the node cannot be dragged.
+
+Default: `null`: the node cannot be dragged
 
 ## load(UI)
 
@@ -524,7 +530,7 @@ Adds a listener that runs once the node has been dropped; the event holds the sn
 
 ## onDragSnap(EventListener)
 
-Adds a listener that runs when the node is dropped on one of its snap targets, after `onDragDrop`.
+Adds a listener that runs when the node is dropped on one of its snap targets, before `onDragDrop`; a `beforeDragDrop` listener that cancels skips it.
 
 ## isDragging()
 
@@ -656,7 +662,7 @@ If `true`, the node has a listener for this event type.
 
 ## isVisibleProperty()
 
-The `visible` value of the node itself, without its parents and its clipping.
+If `true`, the node itself is set visible, whatever its parents and its clipping.
 
 ## getIndex()
 

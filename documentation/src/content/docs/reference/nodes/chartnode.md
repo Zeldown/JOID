@@ -39,8 +39,8 @@ It waits until it has data and every series has a value, drawing its skeleton me
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [xAxis](#ChartNode-property-xAxis) <span class="joid-qualifier">signal</span> | [`XChartAxis`](/reference/nodes/chartnode-chartaxis-xchartaxis/) |  | The X axis: its labels and the series of the chart. |
-| [yAxis](#ChartNode-property-yAxis) <span class="joid-qualifier">signal</span> | [`YChartAxis`](/reference/nodes/chartnode-chartaxis-ychartaxis/) |  | The Y axis: its name and the prefix and suffix of its values. |
+| [xAxis](#ChartNode-property-xAxis) <span class="joid-qualifier">signal</span> | [`XChartAxis`](/reference/nodes/chartnode-chartaxis-xchartaxis/) | `null` | The X axis: its labels and the series of the chart. |
+| [yAxis](#ChartNode-property-yAxis) <span class="joid-qualifier">signal</span> | [`YChartAxis`](/reference/nodes/chartnode-chartaxis-ychartaxis/) | `null` | The Y axis: its name and the prefix and suffix of its values. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -120,7 +120,7 @@ The chart throws an `IllegalStateException` when it is attached without an X axi
 - `this xAxis(Supplier<XChartAxis> xAxis)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `XChartAxis getXAxis()` 
 
-**Default:** 
+**Default:** `null`
 
 The X axis: its labels and the series of the chart.
 
@@ -132,7 +132,7 @@ The X axis: its labels and the series of the chart.
 - `this yAxis(Supplier<YChartAxis> yAxis)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 - `YChartAxis getYAxis()` 
 
-**Default:** 
+**Default:** `null`
 
 The Y axis: its name and the prefix and suffix of its values.
 

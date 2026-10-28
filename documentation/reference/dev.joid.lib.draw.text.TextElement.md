@@ -19,9 +19,13 @@ Creates an element showing the value of `text`, styled by `info`.
 
 The value of the element: `getText()` returns it as a string after the modifier; `text(Object)` and `text(Supplier)` set it.
 
+Default: set at creation, by `TextElement.create(text, info)`
+
 ## info
 
 The [[TextInfo]] that styles the element: font, size, color, weight and spacing.
+
+Default: set at creation, by `TextElement.create(text, info)`
 
 ## modifier
 

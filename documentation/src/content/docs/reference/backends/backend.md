@@ -43,8 +43,8 @@ A backend author extends it and implements the `create...` hooks, which `registe
 | Property | Type | Default | Summary |
 |---|---|---|---|
 | [audio](#Backend-property-audio) | `boolean` | `true` | If `false`, `register()` registers no audio bridge and opens no audio device: videos play their picture without sound. |
-| [dataDir](#Backend-property-dataDir) | `File` |  | Sets the folder where JOID writes the data of the application; it wins over the `joid.data` system property. |
-| [cacheDir](#Backend-property-cacheDir) | `File` |  | Sets the folder where JOID writes the caches it can rebuild; it wins over the `joid.cache` system property. |
+| [dataDir](#Backend-property-dataDir) | `File` | `null`: the `joid.data` system property, else the folder `joid` in the working directory ([Where JOID stores files](/use/learn/running/files/#find-the-folders)) | Sets the folder where JOID writes the data of the application; it wins over the `joid.data` system property. |
+| [cacheDir](#Backend-property-cacheDir) | `File` | `null`: the `joid.cache` system property, else a folder `joid` in the cache folder of the system ([Where JOID stores files](/use/learn/running/files/#find-the-folders)) | Sets the folder where JOID writes the caches it can rebuild; it wins over the `joid.cache` system property. |
 
 <a id="Backend-methods"></a>
 
@@ -98,7 +98,7 @@ If `false`, `register()` registers no audio bridge and opens no audio device: vi
 - `this dataDir(File dataDir)` <span class="joid-qualifier">fluent</span>
 - `File getDataDir()` 
 
-**Default:** 
+**Default:** `null`: the `joid.data` system property, else the folder `joid` in the working directory ([Where JOID stores files](/use/learn/running/files/#find-the-folders))
 
 Sets the folder where JOID writes the data of the application; it wins over the `joid.data` system property.
 
@@ -109,7 +109,7 @@ Sets the folder where JOID writes the data of the application; it wins over the 
 - `this cacheDir(File cacheDir)` <span class="joid-qualifier">fluent</span>
 - `File getCacheDir()` 
 
-**Default:** 
+**Default:** `null`: the `joid.cache` system property, else a folder `joid` in the cache folder of the system ([Where JOID stores files](/use/learn/running/files/#find-the-folders))
 
 Sets the folder where JOID writes the caches it can rebuild; it wins over the `joid.cache` system property.
 
