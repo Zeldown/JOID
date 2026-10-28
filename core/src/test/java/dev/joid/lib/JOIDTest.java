@@ -160,9 +160,22 @@ public class JOIDTest {
 		final File saved = new File(new File(this.folder.getRoot(), "store"), "exit.store");
 		Assert.assertEquals("{\"volume\":3}", new String(Files.readAllBytes(property.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals("{\"value\":\"kept\"}", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
-		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
-		this.bridges.getUi().remove(settings);
-		settings.dispose();
+	}
+
+	@Test
+	public void closesTheOpenedUisWithoutAskingThemOnShutdown() throws ReflectiveOperationException {
+		final List<String> events = new ArrayList<>();
+		final MenuUI menu = new MenuUI();
+		menu.onClose(event -> events.add("onClose"));
+		this.bridges.open(menu);
+
+		final Method shutdown = JOID.class.getDeclaredMethod("shutdown");
+		shutdown.setAccessible(true);
+		shutdown.invoke(null);
+		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
+		Assert.assertEquals(0, menu.closes);
+		Assert.assertEquals(1, menu.detaches);
+		Assert.assertEquals(Arrays.asList("onClose"), events);
 	}
 
 	@Test
