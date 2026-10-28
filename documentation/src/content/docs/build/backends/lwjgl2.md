@@ -64,8 +64,7 @@ Without JNA, the cursor stays the default one, with one warning in dev mode.
 
 ### Context
 
-Create the `Display` with a 24-bit depth buffer and an 8-bit stencil buffer.
-OpenGL 2.1 to 4.x contexts work, with the framebuffer objects of OpenGL 3.0 or of an extension ([base-opengl](/build/base-modules/opengl/)).
+The `Display` and the OpenGL context that the backend needs are on [Check the prerequisites](/use/learn/running/backends/#check-the-prerequisites).
 
 ## Tests
 

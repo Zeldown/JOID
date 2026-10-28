@@ -33,16 +33,6 @@ For a window of its own, an application uses [[WindowVulkanHost]], which also ow
 | [[VulkanShaderTranslator]], [[VulkanShaderCompiler]], [[VulkanShader]] | GLSL 4.50 with the `binding` and `location` qualifiers of SPIR-V, compiled by shaderc at run time. |
 | [[VulkanTexture]], [[VulkanFrameBuffer]], [[VulkanImage]] | Images with staging uploads and linear mip blits, and offscreen targets with a color and a depth image. |
 
-The loop of an application begins a frame of the host, runs the JOID frame, and ends the frame of the host, which submits and presents:
-
-```java fragment
-host.beginFrame();
-backend.frame();
-host.endFrame();
-```
-
-At the end, `backend.destroy()` releases the renderer, then `host.destroy()` the device.
-
 ## What differs
 
 ### Render passes start lazily
@@ -67,8 +57,7 @@ A shader that does not compile prints one warning and is not drawn, as on OpenGL
 ### Requirements
 
 The device must support Vulkan 1.3: [[VulkanRenderBridge]] throws an `IllegalStateException` that asks for `VK_API_VERSION_1_3` otherwise.
-The window is created without a client API (`GLFW_CLIENT_API` set to `GLFW_NO_API`).
-LWJGL needs a larger stack for the renderer: set `Configuration.STACK_SIZE` (the `org.lwjgl.system.stackSize` property) to 1024 KB before the backend starts.
+The window, the stack size and the loop that the backend needs are on [Start the other backends](/use/learn/running/backends/#start-the-other-backends).
 
 ### Drawings of the host
 

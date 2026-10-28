@@ -21,14 +21,7 @@ Your two hooks: `drawPrimitive` receives each draw with the state of that moment
 
 ## A frame
 
-[[UIBridgeRegistry#frame]] runs each frame; [The frame lifecycle](/use/in-depth/frame-lifecycle/) shows the same frame from the side of the UIs and the nodes.
-For the render bridge, a frame is:
-
-1. `screen(width, height)` when the window size changed, which targets the window ([Render bridge](/build/bridges/render/#provided) lists what it sets).
-2. The updates of the UIs, outside the frame of the bridge: they can create, fill and delete textures, framebuffers and shaders.
-3. `beginFrame()`, which calls `beginFrameCommands()`.
-4. The clears of `drawBackground()` on the lowest UI bridge, then every draw of every UI bridge.
-5. `endFrame()`, which calls `submitFrameCommands()`.
+For the render bridge, a frame of [[UIBridgeRegistry#frame]] is `screen(...)` on a resize, the updates of the UIs outside the frame, then `beginFrame()`, the draws of every UI bridge and `endFrame()` ([Render bridge](/build/bridges/render/#provided), [The frame lifecycle](/use/in-depth/frame-lifecycle/)).
 
 ## A draw call
 
