@@ -3,9 +3,13 @@ package com.example.capture;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 
@@ -29,13 +34,13 @@ import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import dev.joid.test.snapshot.SnapshotRunner;
+import dev.joid.test.snapshot.SnapshotWindowBridge;
 
 public final class DocCapture {
-
-	private static final int[] POINTER_X = {0, 0, 6, 10, 14, 11, 18};
-	private static final int[] POINTER_Y = {0, 25, 19, 29, 27, 18, 18};
 
 	private static final Color POINTER_FILL    = new Color(231, 233, 238);
 	private static final Color POINTER_RING    = new Color(91, 140, 255);
@@ -61,11 +66,12 @@ public final class DocCapture {
 		output.mkdirs();
 		final double[] mouse = {-5000D, -5000D};
 		final List<String> failures = new ArrayList<>();
-		final SnapshotRunner runner = SnapshotRunner.start(new Lwjgl3SnapshotBackend());
+		final CursorBackend backend = new CursorBackend(new Lwjgl3SnapshotBackend());
+		final SnapshotRunner runner = SnapshotRunner.start(backend);
 		try {
 			for (final File file : files) {
 				try {
-					DocCapture.capture(runner, file, output, mouse);
+					DocCapture.capture(runner, backend, file, output, mouse);
 				} catch (final RuntimeException | Error exception) {
 					exception.printStackTrace();
 					failures.add(file.getName() + " " + exception);
@@ -82,7 +88,7 @@ public final class DocCapture {
 		System.exit(failures.isEmpty() ? 0 : 1);
 	}
 
-	private static void capture(final SnapshotRunner runner, final File file, final File output, final double[] mouse) throws IOException {
+	private static void capture(final SnapshotRunner runner, final CursorBackend backend, final File file, final File output, final double[] mouse) throws IOException {
 		final List<String> commands = DocCapture.stage(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
 		final Map<String, Pointer> pointers = DocCapture.trackPointer(commands, mouse);
 		final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
@@ -92,7 +98,7 @@ public final class DocCapture {
 		int count = 0;
 		for (final List<String> part : DocCapture.split(commands)) {
 			final Map<String, SnapshotImage> shots = runner.execute(part.toArray(new String[0]));
-			DocCapture.write(shots, output, pointers, masks, mirrors);
+			DocCapture.write(shots, backend, output, pointers, masks, mirrors);
 			count += shots.size();
 		}
 		System.out.println(file.getName() + " -> " + count + " shots");
@@ -146,14 +152,16 @@ public final class DocCapture {
 		return parts;
 	}
 
-	private static void write(final Map<String, SnapshotImage> shots, final File output, final Map<String, Pointer> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
+	private static void write(final Map<String, SnapshotImage> shots, final CursorBackend backend, final File output, final Map<String, Pointer> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
+		final Map<String, Cursor> cursors = new HashMap<>();
+		shots.forEach((name, snapshot) -> cursors.put(name, backend.getCursor(snapshot)));
 		shots.entrySet().parallelStream().forEach(shot -> {
 			final SnapshotImage snapshot = shot.getValue();
 			final BufferedImage image = new BufferedImage(snapshot.getWidth(), snapshot.getHeight(), BufferedImage.TYPE_INT_RGB);
 			image.setRGB(0, 0, snapshot.getWidth(), snapshot.getHeight(), snapshot.getPixels(), 0, snapshot.getWidth());
 			DocCapture.paintMasks(image, masks.get(shot.getKey()));
 			DocCapture.paintMirrors(image, mirrors.get(shot.getKey()));
-			DocCapture.drawPointer(image, pointers.get(shot.getKey()));
+			DocCapture.drawPointer(image, pointers.get(shot.getKey()), cursors.get(shot.getKey()));
 			try {
 				ImageIO.write(image, "png", new File(output, shot.getKey() + ".png"));
 			} catch (final IOException exception) {
@@ -260,7 +268,7 @@ public final class DocCapture {
 		return counts.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0xFF0E1014);
 	}
 
-	private static void drawPointer(final BufferedImage image, final Pointer pointer) {
+	private static void drawPointer(final BufferedImage image, final Pointer pointer, final Cursor cursor) {
 		if (pointer == null) {
 			return;
 		}
@@ -271,23 +279,76 @@ public final class DocCapture {
 			return;
 		}
 
-		final Polygon arrow = new Polygon();
-		for (int index = 0; index < DocCapture.POINTER_X.length; index++) {
-			arrow.addPoint(x + DocCapture.POINTER_X[index], y + DocCapture.POINTER_Y[index]);
-		}
-
+		final Shape shape = AffineTransform.getTranslateInstance(x, y).createTransformedShape(DocCapture.getCursorShape(cursor == null ? Cursor.DEFAULT : cursor));
 		final Graphics2D graphics = image.createGraphics();
 		try {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			DocCapture.drawPress(graphics, pointer);
 			graphics.setColor(DocCapture.POINTER_FILL);
-			graphics.fillPolygon(arrow);
+			graphics.fill(shape);
 			graphics.setColor(DocCapture.POINTER_OUTLINE);
 			graphics.setStroke(new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-			graphics.drawPolygon(arrow);
+			graphics.draw(shape);
 		} finally {
 			graphics.dispose();
 		}
+	}
+
+	private static Shape getCursorShape(final Cursor cursor) {
+		switch (cursor) {
+		case POINTER:
+			return DocCapture.createHand();
+		case TEXT:
+			return DocCapture.createPolygon(-5D, -12D, 5D, -12D, 5D, -9.5D, 1.25D, -9.5D, 1.25D, 9.5D, 5D, 9.5D, 5D, 12D, -5D, 12D, -5D, 9.5D, -1.25D, 9.5D, -1.25D, -9.5D, -5D, -9.5D);
+		case CROSSHAIR:
+			return DocCapture.createPolygon(-1.25D, -11D, 1.25D, -11D, 1.25D, -1.25D, 11D, -1.25D, 11D, 1.25D, 1.25D, 1.25D, 1.25D, 11D, -1.25D, 11D, -1.25D, 1.25D, -11D, 1.25D, -11D, -1.25D, -1.25D, -1.25D);
+		case MOVE:
+			return DocCapture.createPolygon(0D, -13D, 5.5D, -7.5D, 2.25D, -7.5D, 2.25D, -2.25D, 7.5D, -2.25D, 7.5D, -5.5D, 13D, 0D, 7.5D, 5.5D, 7.5D, 2.25D, 2.25D, 2.25D, 2.25D, 7.5D, 5.5D, 7.5D, 0D, 13D, -5.5D, 7.5D, -2.25D, 7.5D, -2.25D, 2.25D, -7.5D, 2.25D, -7.5D, 5.5D, -13D, 0D, -7.5D, -5.5D, -7.5D, -2.25D, -2.25D, -2.25D, -2.25D, -7.5D, -5.5D, -7.5D);
+		case NOT_ALLOWED:
+			return DocCapture.createForbidden();
+		case RESIZE_EW:
+			return DocCapture.createDoubleArrow(0D);
+		case RESIZE_NS:
+			return DocCapture.createDoubleArrow(90D);
+		case RESIZE_NWSE:
+			return DocCapture.createDoubleArrow(45D);
+		case RESIZE_NESW:
+			return DocCapture.createDoubleArrow(-45D);
+		default:
+			return DocCapture.createPolygon(0D, 0D, 0D, 25D, 6D, 19D, 10D, 29D, 14D, 27D, 11D, 18D, 18D, 18D);
+		}
+	}
+
+	private static Shape createHand() {
+		final Area hand = new Area(new RoundRectangle2D.Double(-2.5D, 0D, 5D, 16D, 5D, 5D));
+		hand.add(new Area(new RoundRectangle2D.Double(2.5D, 7D, 4.5D, 11D, 4.5D, 4.5D)));
+		hand.add(new Area(new RoundRectangle2D.Double(7D, 8.5D, 4.5D, 10D, 4.5D, 4.5D)));
+		hand.add(new Area(new RoundRectangle2D.Double(11.5D, 10D, 4.5D, 9D, 4.5D, 4.5D)));
+		hand.add(new Area(new RoundRectangle2D.Double(-2.5D, 13D, 18.5D, 13D, 8D, 8D)));
+		hand.add(new Area(AffineTransform.getRotateInstance(Math.toRadians(-40D), -2D, 21D).createTransformedShape(new RoundRectangle2D.Double(-4.5D, 11D, 4.5D, 11D, 4.5D, 4.5D))));
+		return hand;
+	}
+
+	private static Shape createForbidden() {
+		final Area forbidden = new Area(new Ellipse2D.Double(-10D, -10D, 20D, 20D));
+		forbidden.subtract(new Area(new Ellipse2D.Double(-7D, -7D, 14D, 14D)));
+		forbidden.add(new Area(AffineTransform.getRotateInstance(Math.toRadians(45D)).createTransformedShape(new RoundRectangle2D.Double(-8.5D, -1.5D, 17D, 3D, 1D, 1D))));
+		return forbidden;
+	}
+
+	private static Shape createDoubleArrow(final double angle) {
+		return AffineTransform.getRotateInstance(Math.toRadians(angle)).createTransformedShape(DocCapture.createPolygon(-12D, 0D, -6.5D, -5.5D, -6.5D, -2.25D, 6.5D, -2.25D, 6.5D, -5.5D, 12D, 0D, 6.5D, 5.5D, 6.5D, 2.25D, -6.5D, 2.25D, -6.5D, 5.5D));
+	}
+
+	private static Shape createPolygon(final double... points) {
+		final Path2D polygon = new Path2D.Double();
+		polygon.moveTo(points[0], points[1]);
+		for (int index = 2; index < points.length; index += 2) {
+			polygon.lineTo(points[index], points[index + 1]);
+		}
+		polygon.closePath();
+		return polygon;
 	}
 
 	private static void drawPress(final Graphics2D graphics, final Pointer pointer) {
@@ -338,6 +399,48 @@ public final class DocCapture {
 			this.pressY = pressY;
 			this.pressAge = pressAge;
 			this.held = held;
+		}
+
+	}
+
+	private static final class CursorBackend implements ISnapshotBackend {
+
+		private final ISnapshotBackend           backend;
+		private final Map<SnapshotImage, Cursor> cursors = new WeakHashMap<>();
+
+		private CursorBackend(final ISnapshotBackend backend) {
+			this.backend = backend;
+		}
+
+		@Override
+		public void create(final int width, final int height) {
+			this.backend.create(width, height);
+		}
+
+		@Override
+		public void destroy() {
+			this.backend.destroy();
+		}
+
+		@Override
+		public void present() {
+			this.backend.present();
+		}
+
+		@Override
+		public SnapshotImage capture(final int width, final int height) {
+			final SnapshotImage image = this.backend.capture(width, height);
+			this.cursors.put(image, ((SnapshotWindowBridge) BridgeHandler.WINDOW.get()).getCursor());
+			return image;
+		}
+
+		@Override
+		public String getRenderer() {
+			return this.backend.getRenderer();
+		}
+
+		private Cursor getCursor(final SnapshotImage image) {
+			return this.cursors.get(image);
 		}
 
 	}

@@ -11,6 +11,7 @@ const RAW = join(DOCUMENTATION, 'examples', 'build', 'captures', 'raw');
 const OUTPUT = join(DOCUMENTATION, 'public', 'captures');
 const DIRECTIVE = /^#\s*(crop|pad|still|hold|quality|keys)\s+(\S+)\s+(.*)$/;
 const FILM = /^#\s*film\s+(\S+)(?:\s+(\d+))?\s*$/;
+const TWEENS = { resizeto: 'resize', zoomto: 'zoom', scaleto: 'scale' };
 
 const args = process.argv.slice(2);
 const only = args.filter((arg) => !arg.startsWith('--'));
@@ -54,6 +55,7 @@ function typedName(text) {
 function expand(file, films) {
 	const output = [];
 	const mouse = { x: -5000, y: -5000 };
+	const view = { resize: [1920, 1080], zoom: [1], scale: [1] };
 	let film = null;
 
 	const label = () => {
@@ -115,6 +117,7 @@ function expand(file, films) {
 		if (parts[0] === 'ui') {
 			mouse.x = -5000;
 			mouse.y = -5000;
+			view.zoom = [1];
 		}
 		if (film !== null && parts[0] === 'type') {
 			film.keys.push({ label: typedName(line.trim().slice(5)), start: film.time, end: film.time + 400 });
@@ -134,8 +137,23 @@ function expand(file, films) {
 			const from = { ...mouse };
 			const to = { x: Number(parts[1]), y: Number(parts[2]) };
 			advance(Number(parts[3]), (duration, progress) => `moveto ${coordinate(from.x + (to.x - from.x) * progress)} ${coordinate(from.y + (to.y - from.y) * progress)} ${duration}`);
+		} else if (TWEENS[parts[0]]) {
+			const setting = TWEENS[parts[0]];
+			const from = view[setting];
+			const to = from.map((_, index) => Number(parts[index + 1]));
+			const duration = Number(parts[to.length + 1]);
+			const value = (progress) => from.map((start, index) => (setting === 'resize' ? Math.round(start + (to[index] - start) * progress) : coordinate(start + (to[index] - start) * progress))).join(' ');
+			if (film === null) {
+				output.push(`wait ${duration}`, `${setting} ${value(1)}`);
+			} else {
+				advance(duration, (step, progress) => `wait ${step}\r\n${setting} ${value(progress)}`);
+			}
+			view[setting] = to;
 		} else {
 			output.push(line);
+		}
+		if (view[parts[0]]) {
+			view[parts[0]] = parts.slice(1, view[parts[0]].length + 1).map(Number);
 		}
 		if (parts[0] === 'move' || parts[0] === 'moveto') {
 			mouse.x = Number(parts[1]);
@@ -216,21 +234,47 @@ function escape(text) {
 	return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
+function badgeWidth(label) {
+	return Math.max(34, Math.round(label.length * 9.5 + 24));
+}
+
+function badge(label, left, top) {
+	const width = badgeWidth(label);
+	return `<rect x="${left}" y="${top + 3}" width="${width}" height="32" rx="9" fill="#262B35"/>`
+		+ `<rect x="${left}" y="${top}" width="${width}" height="32" rx="9" fill="#171A21" stroke="#3A4150" stroke-width="1.5"/>`
+		+ `<text x="${left + width / 2}" y="${top + 21.5}" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="16" fill="#E7E9EE" text-anchor="middle">${escape(label)}</text>`;
+}
+
 async function keyed(image, label, region, position) {
 	if (!label) {
 		return image.png().toBuffer();
 	}
-	const width = Math.max(34, Math.round(label.length * 9.5 + 24));
-	const height = 32;
+	const width = badgeWidth(label);
 	const left = position ? position[0] : region.width - width - 14;
-	const top = position ? position[1] : region.height - height - 14;
-	const badge = `<svg xmlns="http://www.w3.org/2000/svg" width="${width + 4}" height="${height + 6}">`
-		+ `<rect x="2" y="5" width="${width}" height="${height}" rx="9" fill="#262B35"/>`
-		+ `<rect x="2" y="2" width="${width}" height="${height}" rx="9" fill="#171A21" stroke="#3A4150" stroke-width="1.5"/>`
-		+ `<text x="${2 + width / 2}" y="${2 + height / 2 + 5.5}" font-family="Segoe UI, Arial, sans-serif" font-weight="600" font-size="16" fill="#E7E9EE" text-anchor="middle">${escape(label)}</text>`
-		+ '</svg>';
+	const top = position ? position[1] : region.height - 32 - 14;
+	const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width + 4}" height="38">${badge(label, 2, 2)}</svg>`;
 	const base = await image.png().toBuffer();
-	return sharp(base).composite([{ input: Buffer.from(badge), left: Math.max(0, left - 2), top: Math.max(0, top - 2) }]).png().toBuffer();
+	return sharp(base).composite([{ input: Buffer.from(svg), left: Math.max(0, left - 2), top: Math.max(0, top - 2) }]).png().toBuffer();
+}
+
+async function framed(frames) {
+	const sizes = await Promise.all(frames.map((frame) => sharp(frame).metadata()));
+	if (sizes.every((size) => size.width === sizes[0].width && size.height === sizes[0].height)) {
+		return frames;
+	}
+	const width = Math.max(...sizes.map((size) => size.width)) + 48;
+	const height = Math.max(...sizes.map((size) => size.height)) + 88;
+	return Promise.all(frames.map((frame, index) => {
+		const right = 24 + sizes[index].width;
+		const bottom = 24 + sizes[index].height;
+		const label = `${sizes[index].width} × ${sizes[index].height}`;
+		const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">`
+			+ `<rect x="23" y="23" width="${right - 22}" height="${bottom - 22}" fill="none" stroke="#3A4150" stroke-width="2"/>`
+			+ `<circle cx="${right}" cy="${bottom}" r="6" fill="#262B35" stroke="#8B93A3" stroke-width="1.5"/>`
+			+ badge(label, right - badgeWidth(label), bottom + 16)
+			+ '</svg>';
+		return sharp({ create: { width, height, channels: 3, background: '#0E1014' } }).composite([{ input: frame, left: 24, top: 24 }, { input: Buffer.from(svg), left: 0, top: 0 }]).png().toBuffer();
+	}));
 }
 
 async function main() {
@@ -248,12 +292,17 @@ async function main() {
 	}
 
 	mkdirSync(OUTPUT, { recursive: true });
-	for (const [name, frames] of groups) {
+	for (const [name, files] of groups) {
 		const setting = settings[name] ?? {};
+		const film = films[name];
+		const frames = film ? await framed(files) : files;
 		let region;
 		if (setting.crop) {
 			const [left, top, width, height] = setting.crop;
 			region = { left, top, width, height };
+		} else if (frames !== files) {
+			const { width, height } = await sharp(frames[0]).metadata();
+			region = { left: 0, top: 0, width, height };
 		} else {
 			const pad = setting.pad?.[0] ?? 32;
 			let box = null;
@@ -266,7 +315,6 @@ async function main() {
 
 		const target = join(OUTPUT, `${name}.webp`);
 		rmSync(join(OUTPUT, `${name}.still.webp`), { force: true });
-		const film = films[name];
 		if (!film) {
 			await sharp(frames[0]).extract(region).webp({ lossless: true, effort: 6 }).toFile(target);
 		} else {
