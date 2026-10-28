@@ -17,10 +17,10 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 public class PlaylistUI extends UI {
 
 	private static final Color HOVER   = new Color(54, 61, 77).lock();
-	private static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color SHADOW  = new Color(0, 0, 0, 153).lock();
 
 	private final StringSignal moved = new StringSignal("none");
 

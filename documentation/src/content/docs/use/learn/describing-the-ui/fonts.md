@@ -25,6 +25,7 @@ Pass every face you use, regular, bold, italic, in one call:
 
 The family works in any [[TextInfo]] style: `TextInfo.create(AppFonts.MONTSERRAT, 32F)` ([Text](/use/learn/describing-the-ui/text/#describe-a-style)).
 Keep your fonts in one class, and load each family once, after the backend is registered ([Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready)).
+A `static final` field loads when its class is first used: use `AppFonts` only after `register()`, as the UIs do.
 
 Each face is a `.ttf` or `.otf` file, or an `.msdf` atlas made in advance.
 `load(...)` takes it as a path in the classpath or on the disk, a URL with its scheme, a `File` or an `InputStream`.

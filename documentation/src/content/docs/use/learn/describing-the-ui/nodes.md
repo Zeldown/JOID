@@ -124,8 +124,8 @@ The setters that every node has, such as `visible`, `onClick` or `attach`, retur
 So call the setters of the type first, then the shared ones:
 
 ```java fragment
-RectNode.create(0, 0, 100, 100).visible(true).color(new Color(91, 140, 255)); // ✗ visible returns a Node: no color
-RectNode.create(0, 0, 100, 100).color(new Color(91, 140, 255)).visible(true); // ✓ the RectNode setters come first
+RectNode.create(0, 0, 100, 100).visible(true).color(ProfileUI.ACCENT); // ✗ visible returns a Node: no color
+RectNode.create(0, 0, 100, 100).color(ProfileUI.ACCENT).visible(true); // ✓ the RectNode setters come first
 ```
 
 When the order cannot change, give the type to the shared setter: `.<RectNode>visible(true).color(...)`.
@@ -187,7 +187,7 @@ This line does not compile.
 Make it compile without changing what it does.
 
 ```java fragment
-CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(new Color(91, 140, 255)).attach(this);
+CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(ProfileUI.ACCENT).attach(this);
 ```
 
 <details>
@@ -196,7 +196,7 @@ CircleNode.create(0, 0, 40).onClick(event -> JOID.close(this)).color(new Color(9
 `onClick` is shared by every node: call `color` first.
 
 ```java fragment
-CircleNode.create(0, 0, 40).color(new Color(91, 140, 255)).onClick(event -> JOID.close(this)).attach(this);
+CircleNode.create(0, 0, 40).color(ProfileUI.ACCENT).onClick(event -> JOID.close(this)).attach(this);
 ```
 
 </details>

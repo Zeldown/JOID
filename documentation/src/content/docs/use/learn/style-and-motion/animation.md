@@ -49,7 +49,8 @@ A `TweenAnimator` moves one `float` over time:
 2. `sequence(600F, 1F, ...)` describes a step: reach `1F` in 600 ms with the [[TweenEquations#CUBIC_OUT]] easing.
 3. `start()` starts it: JOID advances it on every frame until the step ends.
 
-An animator is a signal of its own: `get()` reads its value, and the lambdas of the setters read it on every frame.
+An animator is a signal of its own: `get()` reads its value, and an expression that reads it, such as `y(140D - 60D * appear.get())`, follows it.
+Prefer that expression to a lambda: JOID computes it only while the animator moves, where a lambda runs on every frame, even after the animation ends.
 It is read-only: `set(...)` throws, [[TweenAnimator#value]] puts a value at once and drops the steps, and [[TweenAnimator#clear]] stops it and puts it back to `0F`.
 
 ## Shape the motion with easing
@@ -195,7 +196,7 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 ## Recap
 
 - Pick the tool from the motion: the **hover progress** for hover, a **`TweenAnimator`** for a value from A to B, **`lerpByFramerate`** for a moving target, the **tween engine** for values of your own.
-- An **animator** is a read-only signal that JOID advances after `start()`; setters read it in a lambda.
+- An **animator** is a read-only signal that JOID advances after `start()`; setters follow it in an expression.
 - **Easing**: `OUT` for what appears or reacts, `IN` for what leaves, `IN_OUT` for back and forth; **`TweenEquations.of`** finds one by name.
 - **`push`** chains steps, **`repeat`** and **`repeatYoyo`** replay them, set before `start()`; `sequence(...)` again replays from the current value.
 - An animator that repeats forever runs until you **`clear()`** it.

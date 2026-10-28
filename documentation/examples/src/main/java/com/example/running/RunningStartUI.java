@@ -12,17 +12,21 @@ import dev.joid.lib.utils.align.Align;
 
 public class RunningStartUI extends UI {
 
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(Color.decode("#E7E9EE"));
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(RunningStartUI.TEXT);
 
 		RectNode
 		.create(680, 390, 560, 300)
-		.color(Color.decode("#171A21"))
+		.color(RunningStartUI.SURFACE)
 		.body(card -> {
 			RectNode
 			.create(180, 110, 200, 80)
-			.color(Color.decode("#262B35"))
+			.color(RunningStartUI.ELEMENT)
 			.hover(() -> "Opens the settings")
 			.body(rect -> TextNode.create(0, 0, 200, 80).text(Text.create("Settings", info).align(Align.CENTER)).attach(rect))
 			.attach(card);

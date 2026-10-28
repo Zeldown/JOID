@@ -114,7 +114,7 @@ When the file holds invalid JSON, or when `fromJson` throws, JOID renames the fi
 A file that cannot be read at all is left in place, and the store starts from `init()`.
 
 :::caution
-Close the UIs before the program ends: a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+A process that is killed or crashes saves nothing: call `save()` on a store that must survive a crash, at the moment its values change.
 :::
 
 ## Remember a field of a UI

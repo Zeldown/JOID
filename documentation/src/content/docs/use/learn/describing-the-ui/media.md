@@ -223,6 +223,7 @@ ResourceNode.create(0, 0, 512, 512).resource(Resource.of(VulkanBorrowedTexture.o
 
 JOID draws the texture where it is: it never copies it, never writes into it and never deletes it.
 It calls a supplier each time it draws, so the node follows your renderer when it replaces its texture, after a resize for example.
+
 The size of the resource is the size of the texture, read at each draw.
 A texture that does not exist when the resource first loads makes the resource fail.
 A Vulkan image must be on the device of the backend, in the `SHADER_READ_ONLY_OPTIMAL` layout whenever JOID draws it.
@@ -241,7 +242,7 @@ JOID recognizes a file by its first bytes, never by its name:
 Sound plays only as the track of a video: an audio file alone is not a resource.
 HEIF and AVIF images are recognized but not decoded: the resource fails with an error that says so.
 To read another format, write your own decoder ([Custom formats](/use/learn/going-further/custom-formats/)).
-To draw a resource in your own drawing code, see [Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry).
+To draw a resource in your own drawing code, see [Draw an image](/use/learn/going-further/drawing-resources-and-transforms/#draw-an-image).
 
 ## Recap
 

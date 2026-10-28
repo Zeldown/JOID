@@ -128,7 +128,7 @@ At a zoom of `0.8D`, the whole UI is drawn at 80 % of its size, around the cente
 </figure>
 
 [[UI#getZoom]] reads the zoom shown; `1D` is the size of the fit.
-The zoom shown stays between `0.1D` and `1D`, and goes up to the size of the fit when the interface scale is below `1D`.
+The zoom shown stays between `0.1D` and `1D`; with an interface scale below `1D`, it can rise to `1 / scale`, which draws the UI at the size of the fit.
 
 - [[UI#zoom(double)]] sets the zoom, like any setter; [[UI#zoom(Signal)]] ties it to a signal, both ways.
   A value beyond the bounds stays asked for: `zoom(1.5D)` shows `1D` until the interface scale allows more.
@@ -141,7 +141,6 @@ A change by the user, `zoomTo` or `zoomBy` asks the [[UI#beforeZoom]] listeners 
 ```
 
 Here the zoom never goes below `0.5D`: the listener cancels any change below it.
-The listeners run only for a zoom that changes what is shown: a request that the bounds clamp to the current zoom runs none of them.
 
 ## Recap
 

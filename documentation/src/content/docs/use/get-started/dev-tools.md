@@ -91,7 +91,7 @@ The console tells you each step, and every reload, by a shortcut or by hot reloa
 JOID loads no new code itself: start your application in debug mode from your IDE, so that the IDE replaces the method bodies when you compile, and hot reload runs the new `init()`.
 A change that the JVM cannot swap, such as an added field or an added method, needs a restart.
 
-When the classes of a UI come from neither a folder nor a jar file, JOID prints `[JOID] Hot reload is off for …: its classes are not loaded from a folder or a jar file` once.
+When the classes of a UI come from neither a folder nor a jar file, JOID prints `[JOID] Hot reload is off for …: its classes are not loaded from a folder or a jar file, run it from one of them to reload it` once.
 
 ## Find slow loads and slow frames
 

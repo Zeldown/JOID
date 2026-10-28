@@ -55,7 +55,7 @@ A pulled derived value is referenced by its readers alone, so the garbage collec
 A setter can receive a [[Text]] built from a signal, as in `text(Text.create("Clicks: " + clicks.get(), info))`, not the signal itself.
 JOID still follows it:
 
-1. While JOID runs `init()` of a UI, the body of a node or the init of a node, every `get()` made outside a derived value goes to a short list of recent reads of the thread.
+1. While JOID runs your code (`init()` of a UI, a body, the init of a node, a listener, a task, a shortcut or a watch), every `get()` made outside a derived value goes to a short list of recent reads of the thread.
 2. The value overload of a setter passes its value to `Signal.from(value)`.
    With no recent read, the value is a constant, and nothing more happens.
 3. Otherwise, JOID finds the line of your code that called the setter, reads the bytecode of its class, and isolates the instructions that compute the argument.
@@ -63,6 +63,7 @@ JOID still follows it:
 5. When both match, the expression becomes a derived value that runs these instructions on each change; otherwise the value stays fixed, and the dev jar prints `[JOID] … but cannot follow it: …` with the reason and the fix.
 
 The rules of [What JOID follows](/use/learn/interactivity/signals/#what-joid-follows) come from this replay.
+
 The replay runs outside your method: a field of your class is read again each time, and a signal held by a local variable, or returned by a getter of one, is found from the reads.
 The same goes for a variable that the lambda of a `body` uses.
 Any other local variable has no value in the replay: inside a text, JOID finds it in the text it received, but in a calculation with a signal, in a condition, or after a condition on a signal, nothing gives it back, and the expression stays fixed.

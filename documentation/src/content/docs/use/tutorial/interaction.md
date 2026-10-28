@@ -72,7 +72,7 @@ Give each statistic card a tooltip with `hover(...)`:
 ```java file="com/example/tutorial/interaction/MenuUI.java" region="grid" ins={8,17,26}
 ```
 
-The window bridge draws the tooltips, and it needs a text style for them, because JOID ships no font.
+The window bridge, the part of the backend that shows your UIs in the window, draws the tooltips, and it needs a text style for them, because JOID ships no font.
 Set it in `Main`, right after `register()`:
 
 ```java file="com/example/tutorial/interaction/Main.java" region="tooltips"

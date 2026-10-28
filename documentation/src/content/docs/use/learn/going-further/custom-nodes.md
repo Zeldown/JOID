@@ -114,6 +114,7 @@ Its color is a property: a value setter and a `Supplier` setter, like every prop
 A `Supplier` that reads signals is computed again only when one of them changes; [Signals](/use/learn/interactivity/signals/) explains when JOID computes a value again.
 The value setter passes its argument to [[Signal#from]], which gives a constant that `follow` applies once and does not keep.
 The first argument names the property: a second call with the same name replaces the first source.
+
 [[Node#start]] applies a plain value once and drops the source of the property, and [[Node#bind]] binds the property to a writable signal both ways, [[Node#bindNullable]] when the signal can hold `null`.
 When the node changes such a property itself, [[Node#sync]] writes the new value back to the bound signal; a value that the user changes belongs in an [[InteractiveValue]] instead ([Hold a value that the user changes](#hold-a-value-that-the-user-changes)).
 
@@ -136,6 +137,7 @@ The hook receives every press that reaches the node, wherever the pointer is.
 `isHovered()` tells whether the pointer is on the node, `event.isConsumed()` whether a node in front already took the press, and `event.consume()` stops it for the nodes behind and the UIs below.
 The children in front of the node and its own `handleMousePressed` listeners hear the press first; [Events](/use/learn/interactivity/events/) explains this path and consumption.
 The other input hooks follow the same pattern.
+
 A node scrolled out of the area of its container receives no input, unless [[Node#holdsInput]] returns `true`: override it to keep the input while a gesture of the node goes on, as a focused text field does.
 
 ## Hold a value that the user changes
@@ -261,7 +263,7 @@ Add a button that calls `reset()` on the swatch, and show how many times `onRese
 Keep the swatch in a local variable, call `swatch.reset()` from the `onClick` of a [[RectNode]], and count in `onReset`:
 
 ```java fragment
-swatch.onReset(event -> resets.set(resets.get() + 1));
+swatch.onReset(event -> resets.increment());
 ```
 
 </details>

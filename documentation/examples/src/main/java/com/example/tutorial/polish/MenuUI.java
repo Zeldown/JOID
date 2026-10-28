@@ -114,7 +114,7 @@ public class MenuUI extends UI {
 		.effect(ShadowNodeEffect.create(Theme.SHADOW, 40F).offsetY(12D))
 		// #endregion
 		// #region slide
-		.y(() -> 160D + 80D * (1D - intro.get()))
+		.y(160D + 80D * (1D - intro.get()))
 		// #endregion
 		.body(panel -> {
 			TextNode.create(48, 40).text(Text.create("Profile", heading)).attach(panel);

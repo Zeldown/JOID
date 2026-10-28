@@ -1,8 +1,26 @@
 archivesBaseName = "joid-documentation-examples"
 
+sourceSets {
+    main {
+        java {
+            exclude 'com/example/running/Lwjgl2App.java'
+        }
+    }
+    lwjgl2 {
+        java {
+            srcDir 'src/main/java'
+            include 'com/example/running/Lwjgl2App.java'
+        }
+        compileClasspath += sourceSets.main.output
+    }
+}
+
 dependencies {
     compile project(':backend-lwjgl3')
+    compile project(':backend-vulkan')
     compile project(':tool-testkit')
+
+    lwjgl2Compile project(':backend-lwjgl2')
 }
 
 jar.enabled = false
@@ -85,7 +103,7 @@ dependencies {
 task ecj(type: JavaExec) {
     group = 'JOID'
     description = 'Compiles the examples with the Eclipse compiler and the settings of the repository, and fails on any warning.'
-    dependsOn 'compileJava'
+    dependsOn 'compileJava', 'compileLwjgl2Java'
     def output = new ByteArrayOutputStream()
     main = 'org.eclipse.jdt.internal.compiler.batch.Main'
     classpath = configurations.ecj
@@ -94,10 +112,23 @@ task ecj(type: JavaExec) {
     ignoreExitValue = true
     doFirst {
         def lombok = configurations.compile.find { jar -> jar.name.startsWith('lombok-') }
+        def sources = file("$buildDir/ecj/main.txt")
+        sources.parentFile.mkdirs()
+        sources.text = sourceSets.main.java.files*.absolutePath.join('\n')
         jvmArgs "-javaagent:${lombok.absolutePath}=ECJ"
-        args '-1.8', '-encoding', 'UTF-8', '-proceedOnError', '-properties', file('ecj.prefs').absolutePath, '-d', 'none', '-cp', sourceSets.main.compileClasspath.asPath, file('src/main/java').absolutePath
+        args '-1.8', '-encoding', 'UTF-8', '-proceedOnError', '-properties', file('ecj.prefs').absolutePath, '-d', 'none', '-cp', sourceSets.main.compileClasspath.asPath, "@${sources.absolutePath}"
     }
     doLast {
+        def lombok = configurations.compile.find { jar -> jar.name.startsWith('lombok-') }
+        javaexec {
+            main = 'org.eclipse.jdt.internal.compiler.batch.Main'
+            classpath = configurations.ecj
+            standardOutput = output
+            errorOutput = output
+            ignoreExitValue = true
+            jvmArgs "-javaagent:${lombok.absolutePath}=ECJ"
+            args(['-1.8', '-encoding', 'UTF-8', '-proceedOnError', '-properties', file('ecj.prefs').absolutePath, '-d', 'none', '-cp', sourceSets.lwjgl2.compileClasspath.asPath] + sourceSets.lwjgl2.java.files*.absolutePath)
+        }
         def text = output.toString('UTF-8')
         if (text.contains('WARNING in') || text.contains('ERROR in')) {
             throw new GradleException("The examples do not compile cleanly with ecj:\n" + text)

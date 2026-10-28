@@ -84,7 +84,7 @@ Build the suppliers that read the node inside [[Node#self]], which hands you the
 </figure>
 
 `hoverValue(max)` is the hover progress of the node scaled to `max` ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
-An [animator](/use/learn/style-and-motion/animation/) drives an effect the same way: `RoundedNodeEffect.create(() -> 40F * appear.get())`.
+An [animator](/use/learn/style-and-motion/animation/) drives an effect through an expression: `RoundedNodeEffect.create(40F * appear.get())`.
 
 ## Round a node with its children
 

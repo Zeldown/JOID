@@ -21,6 +21,7 @@ Learn the pattern once on this page, then the options of each control.
 
 A control is abstract: its look comes from its parts, the nodes that draw its box, its track or its thumb.
 The controls of this page get their parts where they are created, in an empty subclass of the control, such as a [[CheckboxNode]] created with `new CheckboxNode(...) {}`, followed by the setters of the parts; [Give your controls a look](/use/learn/going-further/ui-kit/) gathers them in reusable skins, and [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts of each control.
+A part created with a size of `0` takes the size that the control gives it; a part with a size keeps it, and the control centers or moves it ([Skin a control with parts](/use/learn/going-further/ui-kit/#skin-a-control-with-parts)).
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
 ```
@@ -105,6 +106,7 @@ While the value asked for is not one of its options, a choice (switch, selector,
 An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the value asked for, the smaller one on a tie: `50` on `range(0, 10)` shows `10`.
 Any other choice keeps its current value, or shows its first option when the current one is gone too.
 The [[BaseChoiceNode#fallback]] hook picks that value, for a choice of your own.
+
 The order of the setters does not matter either: `value(7)` before `values(...)` gives the same control as after it.
 
 ## Know the order of a change
@@ -117,7 +119,7 @@ One change of a control runs its steps in this order:
 4. the `onChange` listeners of the controls, in the order of the changes.
 
 In an `onChange` listener, every node bound to the same signal already shows the new value.
-When a listener corrects the value, such as `if (event.getValue() > 50) slider.change(50)`, the listeners receive `0 > 80`, then `80 > 50`: the last `onChange` always gives the final value.
+When a listener corrects the value, such as `if (event.getValue() > 50) slider.change(50)`, the listeners receive the change from `0` to `80`, then from `80` to `50`: the last `onChange` always gives the final value.
 Inside your own [[Signal#batch]], `onChange` runs at once, and the nodes bound to the signal follow when the batch ends ([Derived values](/use/learn/state/derived-values/)).
 
 ## Turn an option on or off

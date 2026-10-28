@@ -52,8 +52,7 @@ The rounded corner, circle, border and blur [effects](/use/learn/style-and-motio
 Each pass costs a draw of the visible area of the node, and a blur costs two passes, one horizontal and one vertical.
 Shadows, masks and transforms draw in place and cost much less.
 
-JOID keeps the off-screen images in a pool shared by every node, one set per level of nested effects, with sides rounded up to a power of two.
-A set grows when a larger area needs it, so a node whose size animates reuses the same images, and JOID releases a set 5 seconds after its last use.
+The effects draw into targets borrowed from the [[FrameBufferPool]], reused from frame to frame and released 5 seconds after their last use ([Borrow a temporary target](/use/learn/going-further/framebuffers-and-models/#borrow-a-temporary-target)).
 
 ## Once: resources, fonts and shaders
 

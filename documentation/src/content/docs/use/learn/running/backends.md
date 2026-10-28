@@ -95,40 +95,20 @@ The program stays the same; only the window, the backend and the way you show a 
 
 **Vulkan.** Raise the stack size of LWJGL before anything else, create the window without an OpenGL context, and give the backend a [[WindowVulkanHost]], which owns the device and the swapchain of the window:
 
-```java fragment
-Configuration.STACK_SIZE.set(1024);
-GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
-final WindowVulkanHost host = WindowVulkanHost.create(window);
-final VulkanBackend backend = VulkanBackend.create(window, host).register();
-host.beginFrame();
+```java file="com/example/running/VulkanApp.java" title="VulkanApp.java"
 ```
 
-Each frame of the loop draws between `beginFrame()` and `endFrame()` of the host; `endFrame()` shows the image on the window:
-
-```java fragment
-backend.frame();
-host.endFrame();
-host.beginFrame();
-```
-
-After the loop, call `destroy()` on the backend, then on the host.
+- Each frame of the loop draws between `beginFrame()` and `endFrame()` of the host, so the first frame begins right after `register()`.
+- `endFrame()` shows the image on the window, and `beginFrame()` starts the next one at once.
+- After the loop, `destroy()` releases the backend, then the host.
 
 **LWJGL 2.** Call [[Lwjgl2Natives#install]] before the `Display` exists: it extracts the LWJGL 2 natives into the [cache folder](/use/learn/running/files/), unless `org.lwjgl.librarypath` or `java.library.path` already provides them.
 Register the backend once the `Display` exists:
 
-```java fragment
-Lwjgl2Natives.install();
-Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
-final Lwjgl2Backend backend = Lwjgl2Backend.create().register();
+```java file="com/example/running/Lwjgl2App.java" title="Lwjgl2App.java"
 ```
 
-LWJGL 2 has no input callbacks, so read the input at the start of each frame:
-
-```java fragment
-Lwjgl2InputForwarder.poll();
-backend.frame();
-Display.update();
-```
+LWJGL 2 has no input callbacks, so [[Lwjgl2InputForwarder#poll]] reads the input at the start of each frame.
 
 ## What register() does
 
@@ -167,7 +147,8 @@ Before `register()`, JOID keeps that code and runs it at the end of `register()`
 Once the backend is registered, the code runs at once on the render thread, or at the start of the next frame when you call `onReady` from another thread.
 `JOID.inst().isReady()` tells you which case you are in.
 
-Code that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next `onReady` code still runs.
+Code given before `register()` that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next `onReady` code still runs.
+Once JOID is ready, the exception reaches the caller on the render thread, and code sent from another thread prints `[JOID] A task sent to the render thread from another thread failed (…)`.
 
 ## Style the window bridge
 
