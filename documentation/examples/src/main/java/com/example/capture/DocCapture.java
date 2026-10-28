@@ -376,8 +376,11 @@ public final class DocCapture {
 
 	private static void drawRing(final Graphics2D graphics, final double x, final double y, final double radius, final double alpha) {
 		final Ellipse2D ring = new Ellipse2D.Double(x - radius, y - radius, radius * 2D, radius * 2D);
-		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_OUTLINE, alpha * 0.9D));
-		graphics.setStroke(new BasicStroke(6F));
+		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_OUTLINE, alpha));
+		graphics.setStroke(new BasicStroke(8F));
+		graphics.draw(ring);
+		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_FILL, alpha));
+		graphics.setStroke(new BasicStroke(5F));
 		graphics.draw(ring);
 		graphics.setColor(DocCapture.withAlpha(DocCapture.POINTER_RING, alpha));
 		graphics.setStroke(new BasicStroke(3F));
