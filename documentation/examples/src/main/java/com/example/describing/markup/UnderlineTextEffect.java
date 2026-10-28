@@ -7,9 +7,13 @@ import dev.joid.lib.font.effect.ITextGlyph;
 // #region class
 public final class UnderlineTextEffect implements ITextEffect {
 
-	public static final UnderlineTextEffect INSTANCE = new UnderlineTextEffect();
+	private static final UnderlineTextEffect INSTANCE = new UnderlineTextEffect();
 
 	private UnderlineTextEffect() {}
+
+	public static UnderlineTextEffect inst() {
+		return UnderlineTextEffect.INSTANCE;
+	}
 
 	@Override
 	public void decorate(final ITextGlyph glyph) {

@@ -9,9 +9,13 @@ public final class HighlightTextEffect implements ITextEffect {
 
 	private static final Color HOVER = new Color(54, 61, 77).lock();
 
-	public static final HighlightTextEffect INSTANCE = new HighlightTextEffect();
+	private static final HighlightTextEffect INSTANCE = new HighlightTextEffect();
 
 	private HighlightTextEffect() {}
+
+	public static HighlightTextEffect inst() {
+		return HighlightTextEffect.INSTANCE;
+	}
 
 	// #region background
 	@Override

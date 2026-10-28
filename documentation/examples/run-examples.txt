@@ -18,7 +18,7 @@ call com.example.describing.fonts.AppFonts MONTSERRAT
 skip com.example.describing.media.MediaSources reads a URL and a file of the disk that the runner does not have
 skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer
 call com.example.further.FontsSources LIGHT
-call com.example.describing.markup.HighlightTextEffect INSTANCE
+call com.example.describing.markup.HighlightTextEffect inst
 skip com.example.running.RunningApp creates its own GLFW window and loop
 skip com.example.running.VulkanApp creates its own GLFW window and Vulkan loop
 skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapshot backend, run by the exampleTests task

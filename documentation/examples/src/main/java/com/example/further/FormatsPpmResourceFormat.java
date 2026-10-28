@@ -14,7 +14,7 @@ public class FormatsPpmResourceFormat implements IResourceFormat {
 
 	@Override
 	public IResourceDecoder decoder(final Asset asset, final byte[] header) {
-		return new FormatsPpmResourceDecoder(asset);
+		return FormatsPpmResourceDecoder.create(asset);
 	}
 
 }

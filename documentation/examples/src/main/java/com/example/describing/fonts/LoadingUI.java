@@ -25,6 +25,7 @@ public class LoadingUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(LoadingUI.ELEMENT, 1.5F))
 		.attach(this);
+
 		MsdfFontLoader
 		.load("fonts/Montserrat/Montserrat-Regular.ttf")
 		.thenAccept(font -> {

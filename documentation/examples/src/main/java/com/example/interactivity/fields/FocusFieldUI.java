@@ -46,10 +46,17 @@ public class FocusFieldUI extends UI {
 					event.cancel();
 				}
 			})
-			.background(RectNode
-			.create(0, 0, 0, 0)
-			.color(FocusFieldUI.ELEMENT)
-			.effect(BorderNodeEffect.create(FocusFieldUI.ACCENT, 2F).mode(BorderMode.IN).width(() -> this.focused.get() ? 2F : 0F)))
+			.background(
+				RectNode
+				.create(0, 0, 0, 0)
+				.color(FocusFieldUI.ELEMENT)
+				.effect(
+					BorderNodeEffect
+					.create(FocusFieldUI.ACCENT, 2F)
+					.mode(BorderMode.IN)
+					.width(() -> this.focused.get() ? 2F : 0F)
+				)
+			)
 			.marginHorizontal(12D)
 			.attach(card);
 			RectNode

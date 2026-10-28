@@ -13,8 +13,12 @@ public class FormatsPpmResourceDecoder implements IResourceDecoder {
 
 	private final Asset asset;
 
-	public FormatsPpmResourceDecoder(final Asset asset) {
+	protected FormatsPpmResourceDecoder(final Asset asset) {
 		this.asset = asset;
+	}
+
+	public static FormatsPpmResourceDecoder create(final Asset asset) {
+		return new FormatsPpmResourceDecoder(asset);
 	}
 
 	@Override
