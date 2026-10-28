@@ -2,7 +2,7 @@
 summary: Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout.
 ---
 
-The table needs no GLFW call except the layout, so a backend whose engine reports GLFW key codes reuses it.
+Its position table needs no GLFW call, so a backend whose engine reports GLFW key codes reuses it; `getKey` reads the layout through GLFW.
 
 Learn: [Keys](/build/base-modules/glfw/#keys).
 
