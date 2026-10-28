@@ -30,17 +30,13 @@ Video: an excerpt of <a href="https://studio.blender.org/films/charge/">Charge</
 
 ## 1. Add the player
 
-[[ResourcePlayerNode]] draws a resource that plays: an animated image or a video.
-Give it the video, then the playback options:
+Start from the [[ResourcePlayerNode]] of [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos), here with the video, its proportions kept, in a loop, with the sound at 80 %.
+The variable `player` keeps the node for the next steps:
 
 ```java file="com/example/guides/VideoGuideUI.java" region="player"
 ```
 
-`CONTAIN` keeps the proportions of the video inside the node, `loop(true)` starts it again at the end, and `volume(0.8F)` plays the sound at 80 %.
-The variable `player` keeps the node for the next steps.
-
-The first video that a machine plays makes JOID download its FFmpeg natives into the cache folder; until they are ready, the node shows its skeleton.
-[Play videos without network access](/use/get-started/installation/#play-videos-without-network-access) shows how to ship them with your application instead.
+Until the FFmpeg natives of the first video are ready, the node shows its skeleton ([Play videos on every machine](/use/learn/describing-the-ui/media/#play-videos-on-every-machine)).
 
 **Check:** run the UI: the video plays in the center of the window, with its sound, and starts again when it ends.
 
@@ -56,8 +52,7 @@ A width given as a lambda reads it on every frame and turns it into a bar:
 
 ## 3. Pause and play
 
-`toggle()` pauses the video on its current frame, or plays it again from there.
-The label reads `isPlaying()` on every frame, so it always names the next action:
+`toggle()` pauses or plays the video, and the label reads `isPlaying()` on every frame, so it always names the next action:
 
 ```java file="com/example/guides/VideoGuideUI.java" region="button"
 ```

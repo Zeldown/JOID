@@ -26,7 +26,7 @@ It works like [`Signal`](/reference/signals/signal/) and adds `toggle()`.
 - [Position and size](/use/learn/describing-the-ui/position-and-size/)
 - [Custom nodes](/use/learn/going-further/custom-nodes/)
 - [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)
-- [Copy a mockup](/use/guides/copy-a-mockup/)
+- [Build a settings screen](/use/guides/build-a-settings-screen/)
 
 ## Creation
 

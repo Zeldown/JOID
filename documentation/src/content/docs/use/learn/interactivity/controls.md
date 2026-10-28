@@ -210,7 +210,6 @@ A slider is a choice whose options sit along a track: a press on the track jumps
 | [[StringSliderNode]] | `values(...)` of texts or of the constants of an enum, and `value(constant)` |
 
 [[BaseSliderNode#inset]] keeps the first and the last step away from the ends, by half the thumb by default.
-A range builds no list: `range(1, Integer.MAX_VALUE)` costs nothing.
 [[SliderNode#speed]] eases the thumb to a new value, and `1F`, the default, moves it at once; [[BaseSliderNode#isSliding]] is `true` during a drag.
 
 ## Show a progress

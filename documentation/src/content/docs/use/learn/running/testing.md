@@ -85,7 +85,6 @@ Other commands type text, press keys, scroll, resize the window, zoom, turn the 
 - `getPixels()` counts the pixels whose largest channel difference is above the tolerance;
 - `getMaximum()` gives the largest channel difference found, from `0` to `255`.
 
-Two pictures of different sizes differ on every pixel.
 `isSame(other)` checks that two pictures are identical.
 
 To create a reference, let the test write the shot once, check it by eye, then copy it into your test resources.

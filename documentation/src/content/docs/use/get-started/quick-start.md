@@ -184,7 +184,7 @@ Read [Signals](/use/learn/interactivity/signals/), then [Derived values](/use/le
 ## Remember a value
 
 A field annotated with [[UIProperty]] keeps its value from one run to the next.
-JOID saves it when the UI closes, which `closeAll()` does after the loop of `Main` and of the launcher ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
+JOID saves it when the UI closes ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)):
 
 ```java file="com/example/start/TourUI.java" region="property"
 ```

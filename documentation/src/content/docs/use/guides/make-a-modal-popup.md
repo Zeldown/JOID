@@ -59,8 +59,8 @@ The Delete button of the popup runs the action, then closes the popup with [[JOI
 
 ## 4. Force an answer
 
-Add `closeable = false` to the `@UIData` of the popup: `Escape` then leaves it open, and `JOID.close` still closes it.
-The color of the backdrop is `backgroundColor` of the same annotation ([Configure a UI](/use/learn/describing-the-ui/uis/#configure-a-ui)), and the opening and closing animations are the `transition` of `@UIDataPopup` ([Transitions](/use/learn/style-and-motion/transitions/)).
+Add `closeable = false` to the `@UIData` of the popup, so that only its buttons close it ([Configure a UI](/use/learn/describing-the-ui/uis/#configure-a-ui)).
+The color of the backdrop is `backgroundColor` of the same annotation, and the opening and closing animations are the `transition` of `@UIDataPopup` ([Transitions](/use/learn/style-and-motion/transitions/)).
 
 **Check:** with `closeable = false`, `Escape` leaves the popup open.
 
