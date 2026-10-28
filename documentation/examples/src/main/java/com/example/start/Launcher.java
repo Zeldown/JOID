@@ -17,6 +17,8 @@ import dev.joid.lib.ui.core.UI;
 
 public final class Launcher {
 
+	private static final Color TEXT = new Color(231, 233, 238).lock();
+
 	private Launcher() {}
 
 	public static void main(final String[] arguments) throws ReflectiveOperationException {
@@ -35,7 +37,7 @@ public final class Launcher {
 		GL.createCapabilities();
 		final Lwjgl3Backend backend = Lwjgl3Backend.create(window).register();
 		final WindowUIBridge bridge = BridgeHandler.UI.getBridge(WindowUIBridge.class);
-		bridge.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Color.WHITE));
+		bridge.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Launcher.TEXT));
 
 		JOID.open(Class.forName(arguments[0]).asSubclass(UI.class).getConstructor().newInstance());
 		while (!GLFW.glfwWindowShouldClose(window)) {

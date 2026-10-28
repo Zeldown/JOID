@@ -7,7 +7,7 @@ shot running-backends-start
 move 1180 650
 # film running-backends-tooltip
 wait 300
-moveto 975 550 500
+moveto 905 545 500
 wait 1400
 moveto 1180 650 500
 wait 400
