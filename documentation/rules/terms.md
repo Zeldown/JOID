@@ -62,6 +62,18 @@ See: /use/learn/describing-the-ui/design-canvas/
 A factor that the UI bridge applies on top of the canvas scaling, to make every UI larger or smaller.
 See: /use/learn/describing-the-ui/design-canvas/
 
+## viewport
+The window measured in design pixels: the window divided by the factor that fits the 1920 × 1080 canvas in it; what exceeds the canvas forms the bands.
+See: /use/learn/describing-the-ui/design-canvas/
+
+## view
+The part of the design canvas, and of the space around it, that the window shows, in design pixels: `getViewX`, `getViewY`, `getViewWidth` and `getViewHeight` of a UI.
+See: /use/learn/describing-the-ui/design-canvas/
+
+## zoom
+A factor of one UI, set by [[UI#zoom]], that scales it around its anchor on top of the interface scale.
+See: /use/learn/describing-the-ui/design-canvas/
+
 ## signal
 A value holder that the interface follows: a node property set from a signal shows its new value from the next frame after the signal changes.
 See: /use/learn/interactivity/signals/

@@ -386,6 +386,22 @@ The bridge that holds the open UIs, routes the input to them and draws them ever
 
 See [Embedding JOID](/use/learn/running/embedding/).
 
+<a id="term-view"></a>
+
+### view
+
+The part of the design canvas, and of the space around it, that the window shows, in design pixels: `getViewX`, `getViewY`, `getViewWidth` and `getViewHeight` of a UI.
+
+See [The design canvas](/use/learn/describing-the-ui/design-canvas/).
+
+<a id="term-viewport"></a>
+
+### viewport
+
+The window measured in design pixels: the window divided by the factor that fits the 1920 × 1080 canvas in it; what exceeds the canvas forms the bands.
+
+See [The design canvas](/use/learn/describing-the-ui/design-canvas/).
+
 <a id="term-window-bridge"></a>
 
 ### window bridge
@@ -401,3 +417,11 @@ See [Window bridge](/build/bridges/window/).
 The [[WindowUIBridge]], the UI bridge that the backend registers by default: it clears the window to the window background and draws text tooltips.
 
 See [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge).
+
+<a id="term-zoom"></a>
+
+### zoom
+
+A factor of one UI, set by [[UI#zoom]], that scales it around its anchor on top of the interface scale.
+
+See [The design canvas](/use/learn/describing-the-ui/design-canvas/).
