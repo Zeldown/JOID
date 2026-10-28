@@ -9,14 +9,13 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.WatchProperty;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class KitGuideUI extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 
 	// #region state
 	private final Signal<IGuideKit> kit     = new Signal<>(new PlainGuideKit());
@@ -26,7 +25,7 @@ public class KitGuideUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(KitGuideUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(KitGuideUI.TEXT);
 
 		// #region screen
 		RectNode
@@ -44,14 +43,14 @@ public class KitGuideUI extends UI {
 		// #region switch
 		RectNode
 		.create(600, 710, 340, 70)
-		.color(Color.WHITE)
+		.color(KitGuideUI.ELEMENT)
 		.label(Text.create("Plain kit", info))
 		.onClick(event -> this.kit.set(new PlainGuideKit()))
 		.attach(this);
 
 		RectNode
 		.create(980, 710, 340, 70)
-		.color(Color.WHITE)
+		.color(KitGuideUI.ELEMENT)
 		.label(Text.create("Round kit", info))
 		.onClick(event -> this.kit.set(new RoundGuideKit()))
 		.attach(this);

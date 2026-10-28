@@ -10,14 +10,15 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 @UIData(background = true)
 public class ProfileUI extends UI {
 
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
 
 	@Override
 	public void init() {
 		RectNode
 		.create(760, 390, 400, 300)
-		.color(ProfileUI.PLACEHOLDER)
-		.hoveredColor(Color.WHITE)
+		.color(ProfileUI.SURFACE)
+		.hoveredColor(ProfileUI.ELEMENT)
 		.onClick(event -> JOID.close(this))
 		.attach(this);
 	}

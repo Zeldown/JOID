@@ -13,7 +13,7 @@ This guide writes a badge effect: a dot on the top-right corner of a node, shown
 
 <figure>
 
-![A white rounded button labeled Inbox, with a grey dot on its top-right corner; the pointer clicks the button, and the dot disappears](/captures/guides-effect-badge.webp)
+![A dark rounded button labeled Inbox, with a blue dot on its top-right corner; the pointer clicks the button, and the dot disappears](/captures/guides-effect-badge.webp)
 
 <figcaption>
 The badge that the effect draws over the button, until a click sets the count to zero.
@@ -74,7 +74,7 @@ The count of unread messages is an [[IntegerSignal]] that starts at 3:
 ```java file="com/example/guides/EffectGuideUI.java" region="use"
 ```
 
-**Check:** run the UI: the Inbox button shows a grey dot; a click sets the count to zero, `shouldApply` returns `false`, and the dot disappears.
+**Check:** run the UI: the Inbox button shows a blue dot; a click sets the count to zero, `shouldApply` returns `false`, and the dot disappears.
 
 ## If it does not work
 

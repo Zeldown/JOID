@@ -1,7 +1,7 @@
 # crop guides-settings-screen 660 340 600 220
 # still guides-settings-screen 100
 ui com.example.guides.SettingsGuideUI
-move 800 535
+move 800 520
 # film guides-settings-screen 60
 wait 300
 moveto 1145 500 400
@@ -24,5 +24,5 @@ press LEFT
 moveto 1145 500 400
 release LEFT
 wait 400
-moveto 800 535 400
+moveto 800 520 400
 wait 300

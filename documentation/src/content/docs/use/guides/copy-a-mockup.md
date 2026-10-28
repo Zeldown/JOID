@@ -13,7 +13,7 @@ This guide turns those values into nodes without conversion, then lays the mocku
 
 <figure>
 
-![A white rounded card with a soft shadow: a light grey circle for the avatar, the name Ada Lovelace in bold, the role Analyst, and a rounded Follow button](/captures/guides-mockup-card.webp)
+![A dark rounded card with a soft shadow: a dark grey circle for the avatar, the name Ada Lovelace in bold, the role Analyst, and a rounded blue Follow button](/captures/guides-mockup-card.webp)
 
 <figcaption>
 A profile card copied from a 1920 × 1080 mockup.
@@ -80,7 +80,7 @@ Resize the window: the mockup and the UI scale together, because both live on th
 
 <figure>
 
-![The same card; the exported mockup appears over it at half opacity, then disappears: the card, the circle and the button of the mockup land exactly on those of the UI, and grey bars mark the place of the name and of the role](/captures/guides-mockup-overlay.webp)
+![The same card; the exported mockup, light grey, appears over it at half opacity, then disappears: the card, the circle and the button of the mockup land exactly on those of the UI, and grey bars mark the place of the name and of the role](/captures/guides-mockup-overlay.webp)
 
 <figcaption>
 `F2` shows and hides the mockup over the UI: a shape that keeps a single edge is copied pixel for pixel.

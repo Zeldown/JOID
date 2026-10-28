@@ -13,7 +13,7 @@ This guide shows a looping video, a bar that follows its progress, and a button 
 
 <figure>
 
-![An 800 by 450 video playing in the center of the screen, a thin grey progress bar under it that grows with the video, and a white button that the pointer clicks twice: it reads Pause, then Play while the video stops, then Pause again](/captures/guides-video.webp)
+![An 800 by 450 video playing in the center of the screen, a thin blue progress bar under it that grows with the video, and a dark grey button that the pointer clicks twice: it reads Pause, then Play while the video stops, then Pause again](/captures/guides-video.webp)
 
 <figcaption>
 The bar and the label of the button follow the video on every frame.
@@ -52,7 +52,7 @@ A width given as a lambda reads it on every frame and turns it into a bar:
 ```java file="com/example/guides/VideoGuideUI.java" region="progress"
 ```
 
-**Check:** the grey bar grows under the video, and empties when the video loops.
+**Check:** the blue bar grows under the video, and empties when the video loops.
 
 ## 3. Pause and play
 

@@ -7,6 +7,8 @@ import dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNode;
 // #region kit
 public class RoundGuideKit implements IGuideKit {
 
+	private static final Color SURFACE = new Color(54, 61, 77).lock();
+
 	@Override
 	public CheckboxNode checkbox(final double x, final double y) {
 		return RoundGuideCheckboxNode.create(x, y, 50, 50);
@@ -19,7 +21,7 @@ public class RoundGuideKit implements IGuideKit {
 
 	@Override
 	public Color getSurface() {
-		return Color.WHITE;
+		return RoundGuideKit.SURFACE;
 	}
 
 }

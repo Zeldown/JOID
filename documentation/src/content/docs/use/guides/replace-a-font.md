@@ -13,7 +13,7 @@ This guide loads one family once, defines the text styles of the application fro
 
 <figure>
 
-![A white card with the title Settings in bold, a line of regular text and a grey Save button in white text; the pointer rests on the button, and a dark tooltip that reads Saves the settings appears under it](/captures/guides-font-card.webp)
+![A dark card with the title Settings in bold, a line of regular text and a blue Save button in dark text; the pointer rests on the button, and a dark tooltip that reads Saves the settings appears under it](/captures/guides-font-card.webp)
 
 <figcaption>
 One family in two weights, for the title, the body text, the button and the tooltip.
@@ -53,12 +53,12 @@ A text that needs a variant asks the style for a modified copy, such as `withCol
 
 ## 3. Use the styles in your UIs
 
-Every text takes one of the styles, and the white text of the button starts from a copy:
+Every text takes one of the styles, and the dark text of the button starts from a copy:
 
 ```java file="com/example/guides/FontGuideUI.java" region="use"
 ```
 
-**Check:** the title is bold, the body text regular, and the text of the button white.
+**Check:** the title is bold, the body text regular, and the text of the button dark.
 
 ## 4. Use the font for the tooltips
 
