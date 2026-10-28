@@ -1,6 +1,6 @@
 ---
 title: "Catalog"
-description: "Every node, control, effect, transition, easing curve and text effect with a capture, and every cursor in a table."
+description: "Every node, control, effect, transition, easing curve, text effect and cursor with a capture."
 genre: reference
 tableOfContents:
   maxHeadingLevel: 2
@@ -286,18 +286,48 @@ Text modifiers change the characters before layout.
 
 ## Cursors
 
-The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.
+The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system, and each card shows a plain drawing of the shape.
 [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.
 
-| Cursor | What the system shows, and when to use it |
-|---|---|
-| [`DEFAULT`](/reference/input/cursor/#Cursor-value-DEFAULT) | The usual arrow. |
-| [`POINTER`](/reference/input/cursor/#Cursor-value-POINTER) | A hand: something that reacts to a click. |
-| [`TEXT`](/reference/input/cursor/#Cursor-value-TEXT) | An I-beam: text that you select or type. |
-| [`CROSSHAIR`](/reference/input/cursor/#Cursor-value-CROSSHAIR) | A cross: a precise point to pick. |
-| [`MOVE`](/reference/input/cursor/#Cursor-value-MOVE) | Four arrows: something that you move. |
-| [`NOT_ALLOWED`](/reference/input/cursor/#Cursor-value-NOT_ALLOWED) | A crossed circle: an action that is refused here. |
-| [`RESIZE_EW`](/reference/input/cursor/#Cursor-value-RESIZE_EW) | A left-right arrow: a horizontal resize. |
-| [`RESIZE_NS`](/reference/input/cursor/#Cursor-value-RESIZE_NS) | An up-down arrow: a vertical resize. |
-| [`RESIZE_NWSE`](/reference/input/cursor/#Cursor-value-RESIZE_NWSE) | A diagonal arrow from the top left to the bottom right: a corner resize. |
-| [`RESIZE_NESW`](/reference/input/cursor/#Cursor-value-RESIZE_NESW) | A diagonal arrow from the top right to the bottom left: a corner resize. |
+<div class="joid-catalog">
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-default.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as an arrow" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-DEFAULT"><code>DEFAULT</code></a><span>The usual arrow.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-DEFAULT">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-pointer.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a hand with a raised finger" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-POINTER"><code>POINTER</code></a><span>A hand: something that reacts to a click.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-POINTER">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-text.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as an I-beam" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-TEXT"><code>TEXT</code></a><span>An I-beam: text that you select or type.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-TEXT">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-crosshair.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a thin cross" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-CROSSHAIR"><code>CROSSHAIR</code></a><span>A cross: a precise point to pick.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-CROSSHAIR">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-move.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as four arrows" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-MOVE"><code>MOVE</code></a><span>Four arrows: something that you move.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-MOVE">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-not-allowed.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a crossed circle" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-NOT_ALLOWED"><code>NOT_ALLOWED</code></a><span>A crossed circle: an action that is refused here.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-NOT_ALLOWED">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-resize-ew.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a left-right arrow" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-RESIZE_EW"><code>RESIZE_EW</code></a><span>A left-right arrow: a horizontal resize.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-RESIZE_EW">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-resize-ns.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as an up-down arrow" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-RESIZE_NS"><code>RESIZE_NS</code></a><span>An up-down arrow: a vertical resize.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-RESIZE_NS">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-resize-nwse.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top left to the bottom right" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-RESIZE_NWSE"><code>RESIZE_NWSE</code></a><span>A diagonal arrow from the top left to the bottom right: a corner resize.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-RESIZE_NWSE">Reference</a></small></figcaption>
+</figure>
+<figure class="joid-card">
+<img src="/captures/catalog-cursors-resize-nesw.webp" alt="A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top right to the bottom left" loading="lazy" width="364" height="324" />
+<figcaption><a href="/reference/input/cursor/#Cursor-value-RESIZE_NESW"><code>RESIZE_NESW</code></a><span>A diagonal arrow from the top right to the bottom left: a corner resize.</span><small><a href="/use/learn/interactivity/hover-and-tooltips/">Learn</a> · <a href="/reference/input/cursor/#Cursor-value-RESIZE_NESW">Reference</a></small></figcaption>
+</figure>
+</div>

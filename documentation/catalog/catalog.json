@@ -812,84 +812,120 @@
 		{
 			"id": "cursors",
 			"title": "Cursors",
-			"scene": null,
-			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.\n[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.",
+			"scene": "com.example.catalog.CursorsCatalogUI",
+			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system, and each card shows a plain drawing of the shape.\n[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.",
 			"complete": "dev.joid.lib.input.cursor.Cursor",
 			"cards": [
 				{
 					"name": "DEFAULT",
 					"reference": "Cursor#DEFAULT",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "The usual arrow."
+					"text": "The usual arrow.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "POINTER",
 					"reference": "Cursor#POINTER",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A hand: something that reacts to a click."
+					"text": "A hand: something that reacts to a click.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a hand with a raised finger",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "TEXT",
 					"reference": "Cursor#TEXT",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "An I-beam: text that you select or type."
+					"text": "An I-beam: text that you select or type.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an I-beam",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "CROSSHAIR",
 					"reference": "Cursor#CROSSHAIR",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A cross: a precise point to pick."
+					"text": "A cross: a precise point to pick.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a thin cross",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "MOVE",
 					"reference": "Cursor#MOVE",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "Four arrows: something that you move."
+					"text": "Four arrows: something that you move.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as four arrows",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "NOT_ALLOWED",
 					"reference": "Cursor#NOT_ALLOWED",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A crossed circle: an action that is refused here."
+					"text": "A crossed circle: an action that is refused here.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a crossed circle",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_EW",
 					"reference": "Cursor#RESIZE_EW",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A left-right arrow: a horizontal resize."
+					"text": "A left-right arrow: a horizontal resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a left-right arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NS",
 					"reference": "Cursor#RESIZE_NS",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "An up-down arrow: a vertical resize."
+					"text": "An up-down arrow: a vertical resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an up-down arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NWSE",
 					"reference": "Cursor#RESIZE_NWSE",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A diagonal arrow from the top left to the bottom right: a corner resize."
+					"text": "A diagonal arrow from the top left to the bottom right: a corner resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top left to the bottom right",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NESW",
 					"reference": "Cursor#RESIZE_NESW",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A diagonal arrow from the top right to the bottom left: a corner resize."
+					"text": "A diagonal arrow from the top right to the bottom left: a corner resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top right to the bottom left",
+					"pointer": [
+						170,
+						150
+					]
 				}
-			],
-			"columns": [
-				"Cursor",
-				"What the system shows, and when to use it"
 			]
 		}
 	]
