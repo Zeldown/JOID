@@ -144,7 +144,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `boolean` | [isInitialized](#UI-method-isInitialized)() | If `true`, `init()` has run since the UI opened or since the last `reload()`. |
 | `double` | [getFps](#UI-method-getFps)() | Frames per second of the UI, measured over the last second. |
 | `long` | [getRenderTime](#UI-method-getRenderTime)() | Time that the last frame of the UI took to draw, in nanoseconds. |
-| `double` | [getFrameTime](#UI-method-getFrameTime)() | Time between the last two frames of the UI, in ms; `1000 / 60` before the first frame. |
+| `double` | [getFrameTime](#UI-method-getFrameTime)() | Time between the last two drawn frames of the UI, in ms: `0` until the UI first draws, `1000 / 60` on its first frame. |
 | `boolean` | [isOnTop](#UI-method-isOnTop)() | If `true`, the UI is the first to receive the input among the screens and popups of its bridge, or among its overlays for an overlay. |
 | [`Node`](/reference/nodes/node/) | [getDevNode](#UI-method-getDevNode)() | The dev panel of the UI, created at its first load in dev mode; `null` outside dev mode. |
 
@@ -648,7 +648,8 @@ Time that the last frame of the UI took to draw, in nanoseconds.
 
 `double getFrameTime()` 
 
-Time between the last two frames of the UI, in ms; `1000 / 60` before the first frame.
+Time between the last two drawn frames of the UI, in ms: `0` until the UI first draws, `1000 / 60` on its first frame.
+After the UI closes and opens again on the same instance, its first frame measures the time since the last frame drawn before the close.
 
 <a id="UI-method-isOnTop"></a>
 

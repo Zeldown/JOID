@@ -2,7 +2,7 @@
 summary: The part of the render state that a pipeline object bakes in, as a value that a backend uses as the key of its pipeline cache.
 ---
 
-An API with immutable pipelines can bake the blending, the depth, the culling, the color writes and the topology into them; the Vulkan backend keeps the culling, the depth and the stencil dynamic, and keys its cache on the rest.
+An API with immutable pipelines can bake the blending, the depth, the culling, the color writes and the topology into them; the Vulkan backend sets the culling, the depth and the stencil as dynamic states, and still keys its cache on the whole key.
 `PipelineKey` gathers those values for one draw, normalized so that equal pipelines get equal keys: a disabled blending is always `BlendState.DISABLED`, and the depth writes are off without the depth test.
 Two keys with the same values are equal and have the same hash.
 

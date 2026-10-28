@@ -25,7 +25,7 @@ You use it through its subclasses: create a node with the factory of its class, 
 ```java file="com/example/reference/CardUI.java" region="node"
 ```
 
-A node is placed relative to its parent, in design pixels; its children are drawn over it in the order of their `zindex` and receive the input before it.
+A node is placed relative to its parent, in design pixels; its children are drawn in the order of their `zindex`, over it, except those of negative `zindex`, drawn behind it; the children in front receive the input before it.
 Most setters also take a `Supplier` or a signal, so that the property follows a value that changes.
 To draw a node of your own, extend a node class and override the hooks of [`INode`](/reference/nodes/inode/).
 JOID calls every hook and every listener of a node on the render thread.
