@@ -56,7 +56,8 @@ The time starts again at 0 each time the card joins the UI, here when the UI ope
 </figcaption>
 </figure>
 
-[[UI#getFrameTime]] gives the time since the previous frame in milliseconds, so the card adds the elapsed seconds on every frame.
+[[BridgeHandler#CLOCK]] gives the time of JOID in milliseconds, the clock that drives animations: the card shows the seconds since it joined the UI.
+[[UI#getFrameTime]] gives the time since the previous frame, for a value that moves at a speed; the first frame after the same instance opens again counts the time that it stayed closed.
 
 JOID first updates every node of every open UI, then draws them all.
 Inside a UI, the children are updated before their parent, and the `update()` of the UI runs after its nodes.
@@ -141,16 +142,16 @@ Show how many times the frame card of `LifecycleUI` joined the UI.
 
 </details>
 
-**Pause the timer.**
-Make the timer of `LifecycleUI` stop while the card is hidden with `visible(false)`.
+**Count the drawn frames.**
+Make the timer card of `LifecycleUI` count the frames that it draws, so that the count stops while the card is hidden with `visible(false)`.
 
 <details>
 <summary>Solution</summary>
 
-`onUpdate` runs for a hidden node too, while the drawing listeners do not: add the frame time in `onDraw` instead.
+`onUpdate` runs for a hidden node too, while the drawing listeners do not: count in `onDraw`, in an `int` field of the UI.
 
 ```java fragment
-.onDraw(event -> this.open += super.getFrameTime() / 1000D)
+.onDraw(event -> this.frames++)
 ```
 
 </details>

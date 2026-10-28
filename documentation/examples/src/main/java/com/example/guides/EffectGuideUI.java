@@ -32,7 +32,6 @@ public class EffectGuideUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(EffectGuideUI.ELEMENT, 1.5F))
 		.label(Text.create("Inbox", info))
-		.effect(RoundedNodeEffect.create(16F))
 		.effect(BadgeNodeEffect.create(EffectGuideUI.ACCENT).shown(unread.get() > 0))
 		.onClick(event -> unread.set(0))
 		.attach(this);
