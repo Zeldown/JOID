@@ -4,6 +4,7 @@
 # crop quick-start-image 480 20 460 340
 # crop quick-start-effects 940 20 460 340
 # crop quick-start-animation 1400 20 460 340
+# still quick-start-animation 52
 # crop quick-start-click 20 360 460 340
 # still quick-start-click 90
 ui com.example.start.CounterUI

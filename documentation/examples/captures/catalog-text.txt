@@ -4,6 +4,7 @@ wait 100
 # crop catalog-text-wave-effect 28 28 364 324
 shot catalog-text-wave-effect
 # crop catalog-text-rainbow-effect 398 28 364 324
+# still catalog-text-rainbow-effect 49
 ui com.example.catalog.TextCatalogUI
 wait 100
 # film catalog-text-rainbow-effect 60

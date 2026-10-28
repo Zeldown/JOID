@@ -1,9 +1,14 @@
 # crop style-appear 120 40 380 320
+# still style-appear 48
 # hold style-appear 1300
 # crop style-loop 580 80 400 140
+# still style-loop 61
 # crop style-click 1040 70 480 280
+# still style-click 97
 # crop style-follow 120 460 920 200
+# still style-follow 37
 # crop style-easing 140 740 560 100
+# still style-easing 33
 # hold style-follow 600
 ui com.example.style.AnimationUI
 move 1700 950

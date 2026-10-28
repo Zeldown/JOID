@@ -25,6 +25,7 @@ moveto 1700 480 500
 wait 300
 cut
 # crop state-property 1040 130 840 440
+# still state-property 200
 ui com.example.state.SettingsUI
 move 1500 500
 wait 300

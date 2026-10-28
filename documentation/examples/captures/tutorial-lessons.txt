@@ -5,11 +5,14 @@
 # crop tutorial-interaction-hover 740 140 1040 800
 # still tutorial-interaction-hover 40
 # crop tutorial-polish 700 120 1120 950
+# still tutorial-polish 54
 # hold tutorial-polish 1500
 # crop tutorial-polish-hand 120 380 460 360
+# still tutorial-polish-hand 60
 # crop tutorial-interaction-popup 80 80 1120 560
 # still tutorial-interaction-popup 90
 # crop tutorial-state 80 80 1120 560
+# still tutorial-state 250
 # crop tutorial-settings 80 80 1120 560
 # still tutorial-settings 50
 # crop tutorial-overview 80 80 1120 590

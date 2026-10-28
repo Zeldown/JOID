@@ -116,6 +116,7 @@ moveto 650 350 400
 wait 300
 cut
 # crop start-dev-zoom 0 0 960 540
+# still start-dev-zoom 100
 ui com.example.start.CounterUI
 move 820 440
 wait 300

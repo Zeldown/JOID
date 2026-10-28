@@ -86,6 +86,7 @@ release LEFT
 wait 500
 cut
 # crop catalog-controls-checkboxnode 1138 28 364 324
+# still catalog-controls-checkboxnode 60
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1440 295
@@ -115,6 +116,7 @@ moveto 1440 295 500
 wait 300
 cut
 # crop catalog-controls-togglenode 1508 28 364 324
+# still catalog-controls-togglenode 119
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1810 295
@@ -144,6 +146,7 @@ moveto 1810 295 500
 wait 300
 cut
 # crop catalog-controls-switchnode 28 368 364 324
+# still catalog-controls-switchnode 57
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 330 635
@@ -198,6 +201,7 @@ moveto 700 635 500
 wait 300
 cut
 # crop catalog-controls-integerslidernode 768 368 364 324
+# still catalog-controls-integerslidernode 100
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1070 635
@@ -217,6 +221,7 @@ moveto 1070 635 500
 wait 300
 cut
 # crop catalog-controls-doubleslidernode 1138 368 364 324
+# still catalog-controls-doubleslidernode 94
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1440 635
@@ -234,6 +239,7 @@ moveto 1440 635 500
 wait 300
 cut
 # crop catalog-controls-stringslidernode 1508 368 364 324
+# still catalog-controls-stringslidernode 105
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 1810 635
@@ -257,6 +263,7 @@ moveto 1810 635 500
 wait 300
 cut
 # crop catalog-controls-scrollbarnode 28 708 364 324
+# still catalog-controls-scrollbarnode 98
 ui com.example.catalog.ControlsCatalogUI
 wait 100
 move 330 975

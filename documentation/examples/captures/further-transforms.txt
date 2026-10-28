@@ -11,6 +11,7 @@ shot further-transforms-state
 # crop further-transforms-blend 1280 380 540 340
 shot further-transforms-blend
 # crop further-transforms-spin 660 360 600 360
+# still further-transforms-spin 49
 ui com.example.further.PivotSpinUI
 # film further-transforms-spin 60
 wait 3000

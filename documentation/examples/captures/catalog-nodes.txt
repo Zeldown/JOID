@@ -56,6 +56,7 @@ cut
 # crop catalog-nodes-modelnode 398 368 364 324
 shot catalog-nodes-modelnode
 # crop catalog-nodes-modelviewernode 768 368 364 324
+# still catalog-nodes-modelviewernode 160
 ui com.example.catalog.NodesCatalogUI
 wait 100
 move 1070 635

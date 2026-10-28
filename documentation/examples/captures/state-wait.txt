@@ -1,4 +1,5 @@
 # crop state-wait 640 370 640 340
+# still state-wait 90
 ui com.example.state.WaitUI
 # film state-wait
 wait 3000

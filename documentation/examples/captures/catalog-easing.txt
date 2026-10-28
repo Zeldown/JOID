@@ -2,66 +2,77 @@
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # crop catalog-easing-lineartweenequation 28 28 364 324
+# still catalog-easing-lineartweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-lineartweenequation 60
 wait 2000
 cut
 # crop catalog-easing-quadtweenequation 398 28 364 324
+# still catalog-easing-quadtweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-quadtweenequation 60
 wait 2000
 cut
 # crop catalog-easing-cubictweenequation 768 28 364 324
+# still catalog-easing-cubictweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-cubictweenequation 60
 wait 2000
 cut
 # crop catalog-easing-quarttweenequation 1138 28 364 324
+# still catalog-easing-quarttweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-quarttweenequation 60
 wait 2000
 cut
 # crop catalog-easing-quinttweenequation 1508 28 364 324
+# still catalog-easing-quinttweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-quinttweenequation 60
 wait 2000
 cut
 # crop catalog-easing-sinetweenequation 28 368 364 324
+# still catalog-easing-sinetweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-sinetweenequation 60
 wait 2000
 cut
 # crop catalog-easing-expotweenequation 398 368 364 324
+# still catalog-easing-expotweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-expotweenequation 60
 wait 2000
 cut
 # crop catalog-easing-circtweenequation 768 368 364 324
+# still catalog-easing-circtweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-circtweenequation 60
 wait 2000
 cut
 # crop catalog-easing-backtweenequation 1138 368 364 324
+# still catalog-easing-backtweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-backtweenequation 60
 wait 2000
 cut
 # crop catalog-easing-bouncetweenequation 1508 368 364 324
+# still catalog-easing-bouncetweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-bouncetweenequation 60
 wait 2000
 cut
 # crop catalog-easing-elastictweenequation 28 708 364 324
+# still catalog-easing-elastictweenequation 44
 ui com.example.catalog.EasingCatalogUI
 wait 100
 # film catalog-easing-elastictweenequation 60

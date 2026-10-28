@@ -1,6 +1,7 @@
 # crop interactivity-keys 640 420 640 240
 # still interactivity-keys 60
 # crop interactivity-walk 640 370 640 340
+# still interactivity-walk 45
 # crop interactivity-shortcut 640 370 640 340
 # still interactivity-shortcut 140
 ui com.example.interactivity.keyboard.KeysUI

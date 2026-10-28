@@ -5,6 +5,7 @@ shot further-effects-shadow
 # crop further-effects-invert 680 80 540 160
 shot further-effects-invert
 # crop further-effects-lift 360 60 280 220
+# still further-effects-lift 60
 move 610 236
 # film further-effects-lift 60
 wait 200

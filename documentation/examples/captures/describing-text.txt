@@ -33,6 +33,7 @@ wait 800
 moveto 1200 555 500
 wait 300
 # crop describing-text-flow 440 270 1040 540
+# still describing-text-flow 120
 ui com.example.describing.text.ModesFlowUI
 # film describing-text-flow 60
 wait 4000

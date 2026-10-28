@@ -129,7 +129,8 @@
 						"wait 2000",
 						"moveto 290 255 400",
 						"wait 200"
-					]
+					],
+					"still": 160
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.layout.ContainerNode",
@@ -323,7 +324,8 @@
 						"wait 466",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 60
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.toggle.ToggleNode",
@@ -358,7 +360,8 @@
 						"wait 466",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 119
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.choice.SwitchNode",
@@ -387,7 +390,8 @@
 						"wait 700",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 57
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.selector.SelectorNode",
@@ -447,7 +451,8 @@
 						"wait 400",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 100
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode",
@@ -470,7 +475,8 @@
 						"wait 400",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 94
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.StringSliderNode",
@@ -499,7 +505,8 @@
 						"wait 500",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 105
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode",
@@ -524,7 +531,8 @@
 						"wait 500",
 						"moveto 290 255 400",
 						"wait 300"
-					]
+					],
+					"still": 98
 				}
 			]
 		},
@@ -617,77 +625,88 @@
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Linear easing curve, a straight blue line across a dark grey frame that marks 0 and 1, with a dot that runs along it",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuadTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quad easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CubicTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Cubic easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuartTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quart easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuintTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quint easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.SineTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Sine easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ExpoTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Expo easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CircTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Circ easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BackTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Back easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BounceTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Bounce easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ElasticTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Elastic easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				}
 			]
 		},
@@ -712,7 +731,8 @@
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "The words Every glyph, whose letters cycle through the colors of the rainbow",
 					"film": 2967,
-					"fps": 60
+					"fps": 60,
+					"still": 49
 				},
 				{
 					"name": "Underline effect",

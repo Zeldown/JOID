@@ -1,6 +1,9 @@
 # crop interactivity-drag 640 320 640 440
+# still interactivity-drag 85
 # crop interactivity-snap 540 320 840 440
+# still interactivity-snap 85
 # crop interactivity-copy 540 320 840 440
+# still interactivity-copy 100
 ui com.example.interactivity.drag.DragUI
 move 740 420
 # film interactivity-drag 60
@@ -33,6 +36,7 @@ release LEFT
 wait 1000
 cut
 # crop interactivity-drag-bounds 640 320 800 520
+# still interactivity-drag-bounds 107
 ui com.example.interactivity.drag.DragUI
 move 1000 700
 # film interactivity-drag-bounds 60
@@ -51,6 +55,7 @@ moveto 1000 700 400
 wait 300
 cut
 # crop interactivity-handle 540 320 840 440
+# still interactivity-handle 214
 ui com.example.interactivity.drag.HandleUI
 move 1150 650
 # film interactivity-handle 60
