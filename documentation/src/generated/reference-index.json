@@ -14220,7 +14220,7 @@
       "kind": "class",
       "abstract": false,
       "family": "bridges",
-      "summary": "The resolver that turns a `BufferedImage` into a resource, one resource per image.",
+      "summary": "The resolver that turns a `BufferedImage` into a resource; every resource of one image shares its decoded data.",
       "ancestors": [
         "dev.joid.lib.resource.resolver.IResourceResolver"
       ],
@@ -14242,7 +14242,7 @@
       "kind": "class",
       "abstract": false,
       "family": "bridges",
-      "summary": "The resolver that turns a `BufferedImage` into a resource, one resource per image.",
+      "summary": "The resolver that turns a `BufferedImage` into a resource; every resource of one image shares its decoded data.",
       "ancestors": [
         "dev.joid.lib.resource.resolver.IResourceResolver"
       ],
