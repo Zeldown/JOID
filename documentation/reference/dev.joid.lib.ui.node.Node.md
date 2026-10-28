@@ -636,7 +636,7 @@ If `true`, every `wait` condition of the node and of its parents holds.
 
 ## onMount(EventListener)
 
-Adds a listener that runs on the first frame where the node is drawn mounted, again after each detach.
+Adds a listener that runs on each frame where the node becomes mounted: the first frame where it is drawn mounted, then again after a detach or after a `wait` condition stopped holding.
 
 ## watch(Signal,WatchProperty[])
 

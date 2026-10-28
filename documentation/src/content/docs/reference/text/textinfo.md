@@ -21,8 +21,8 @@ The style of a text, with its font, size, weight, color, spacing, shadow, markup
 Create one per style with `create(font, fontSize)` and keep it in a field: every text node and [`DrawText`](/reference/text/drawtext/) call takes one.
 
 ```java fragment
-final TextInfo title = TextInfo.create(font, 32F).weight(FontWeight.BOLD).color(Color.decode("#999999"));
-final TextInfo faded = title.withColor(Color.decode("#DDDDDD"));
+final TextInfo title = TextInfo.create(font, 32F).weight(FontWeight.BOLD).color(Color.decode("#E7E9EE"));
+final TextInfo faded = title.withColor(Color.decode("#8B93A3"));
 ```
 
 The plain setters (`color`, `fontSize`…) change this style in place; the `withX` methods return a changed copy and leave this one unchanged, which a locked style requires: a plain setter on a locked style throws `IllegalStateException`.

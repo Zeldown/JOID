@@ -18,7 +18,7 @@ A hidden, undecorated GLFW window of a fixed size, on which the snapshot backend
 
 ## Description
 
-It ships in the dev and demo jars of the backends, not in the prod jar of base-glfw.
+It ships in the dev and demo jars of the backends; the published `joid-base-glfw` jar does not hold it.
 
 ## Learn more
 

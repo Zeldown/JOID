@@ -56,7 +56,7 @@ It draws the tooltip.
 
 ## closeAll()
 
-Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
+Disposes and removes every UI of the bridge: their `onClose` listeners (never `beforeClose`) and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
 Call it after your loop: [Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
 
 ## forceOpen(UI)
@@ -65,7 +65,7 @@ Closes every UI of the bridge with `closeAll()`, then opens the UI.
 
 ## replace(UI,UI)
 
-Disposes and removes the first UI and adds the second, without transition or close listener.
+Disposes the first UI (its `onClose` listeners and the `onDetach` listeners of its nodes run, its stores and remembered fields are saved), removes it and adds the second, without transition and without `beforeClose`.
 
 ## getInterfaceScale(UI)
 

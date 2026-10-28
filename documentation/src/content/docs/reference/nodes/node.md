@@ -354,7 +354,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | [onInit](#Node-event-onInit) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the node is loaded into a UI, after `init`. |
 | [onRender](#Node-event-onRender) | [`EventListener<NodeDrawEvent<T>>`](/reference/events/nodedrawevent/) | Adds a listener that runs at the end of the drawing of the node, after its children and its layers. |
 | [onDraw](#Node-event-onDraw) | [`EventListener<NodeDrawEvent<T>>`](/reference/events/nodedrawevent/) | Adds a listener that runs after the node has drawn itself, before its label and its children in front. |
-| [onMount](#Node-event-onMount) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs on the first frame where the node is drawn mounted, again after each detach. |
+| [onMount](#Node-event-onMount) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs on each frame where the node becomes mounted: the first frame where it is drawn mounted, then again after a detach or after a `wait` condition stopped holding. |
 
 ### Hover and tooltips
 
@@ -2077,7 +2077,7 @@ Adds a listener that runs after the node has drawn itself, before its label and 
 
 `this onMount(EventListener<NodeEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that runs on the first frame where the node is drawn mounted, again after each detach.
+Adds a listener that runs on each frame where the node becomes mounted: the first frame where it is drawn mounted, then again after a detach or after a `wait` condition stopped holding.
 
 <a id="Node-event-onHoverStart"></a>
 
