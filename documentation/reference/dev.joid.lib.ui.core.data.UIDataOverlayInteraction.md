@@ -1,5 +1,5 @@
 ---
-summary: Whether an overlay receives the input and what it lets through, set in the interaction option of @UIDataOverlay.
+summary: Whether an overlay receives the input and what it lets through, set in the interaction option of `@UIDataOverlay`.
 ---
 An overlay that receives the input gets it before the screen when it is drawn above it.
 The `cancel` options decide whether an input that a node of the overlay consumed still reaches the host application.

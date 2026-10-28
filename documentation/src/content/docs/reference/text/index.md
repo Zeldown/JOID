@@ -17,42 +17,42 @@ Learn: [Text](/use/learn/describing-the-ui/text/), [Fonts](/use/learn/describing
 | [`BinaryMsdfSource`](/reference/text/binarymsdfsource/) | class | Reads a face from a .msdf file made by the msdf tool of JOID, with no generation at load time. |
 | [`BitmapCell`](/reference/text/bitmapcell/) | class | The rectangle of a texture that holds one glyph of a bitmap font, and where that glyph sits in its line. |
 | [`BitmapFont`](/reference/text/bitmapfont/) | class | Base class of the pixel fonts, glyph fonts drawn from texture cells at an exact bitmap size. |
-| [`BitmapTextRenderer`](/reference/text/bitmaptextrenderer/) | class | Base class of the text renderers of pixel fonts, which draws each glyph from the BitmapCell you return. |
+| [`BitmapTextRenderer`](/reference/text/bitmaptextrenderer/) | class | Base class of the text renderers of pixel fonts, which draws each glyph from the `BitmapCell` you return. |
 | [`DevFont`](/reference/text/devfont/) | class | The font of the dev tools, Montserrat in its nine weights, loaded at startup in dev mode only. |
 | [`DrawText`](/reference/text/drawtext/) | class | Draws and measures text, on one line or wrapped in a box. |
 | [`FontBounds`](/reference/text/fontbounds/) | class | The width and the height of a drawn or measured text, in design pixels. |
 | [`FontFamily`](/reference/text/fontfamily/) | class | The faces of one font, by weight and style, from which a text picks the face it draws with. |
 | [`FontWeight`](/reference/text/fontweight/) | enum | The nine standard font weights, from 100 (thin) to 900 (black). |
-| [`GlyphFont`](/reference/text/glyphfont/) | class | Base class of the fonts made of glyphs, which hold a FontFamily of faces. |
+| [`GlyphFont`](/reference/text/glyphfont/) | class | Base class of the fonts made of glyphs, which hold a `FontFamily` of faces. |
 | [`GlyphLayout`](/reference/text/glyphlayout/) | class | A string laid out on one line, as the list of its glyph placements and its width. |
-| [`GlyphPlacement`](/reference/text/glyphplacement/) | class | The place of one character in a GlyphLayout, with the font, the face and the style it draws with. |
+| [`GlyphPlacement`](/reference/text/glyphplacement/) | class | The place of one character in a `GlyphLayout`, with the font, the face and the style it draws with. |
 | [`GlyphTextRenderer`](/reference/text/glyphtextrenderer/) | class | Base class of the text renderers of glyph fonts, which lays out, kerns, styles and shadows the text and leaves the drawing of each glyph to you. |
 | [`IFont`](/reference/text/ifont/) | interface | A font that JOID can draw, which names the text renderer that measures and draws it. |
 | [`IFontFace`](/reference/text/ifontface/) | interface | One face of a glyph font, a weight and a style, with its metrics on 1 of the font size. |
-| [`IMsdfSource`](/reference/text/imsdfsource/) | interface | A source that reads one MsdfFontFace, from a font file or from anything else. |
+| [`IMsdfSource`](/reference/text/imsdfsource/) | interface | A source that reads one `MsdfFontFace`, from a font file or from anything else. |
 | [`ITextConverter`](/reference/text/itextconverter/) | interface | Turns a value of a type of yours into the string that a text shows. |
 | [`ITextEffect`](/reference/text/itexteffect/) | interface | An effect on the glyphs of a text, which can move, recolor or replace each glyph and draw behind or over it. |
-| [`ITextGlyph`](/reference/text/itextglyph/) | interface | One laid-out glyph as an ITextEffect sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change. |
+| [`ITextGlyph`](/reference/text/itextglyph/) | interface | One laid-out glyph as an `ITextEffect` sees it, with its place, its metrics in design pixels, and the codepoint, color and offset an effect can change. |
 | [`ITextMarkup`](/reference/text/itextmarkup/) | interface | A markup tag that a text reads inline, such as a bold or a color tag, which changes the style of the characters after it. |
 | [`ITextRenderer`](/reference/text/itextrenderer/) | interface | Measures and draws the strings of one kind of font. |
 | [`MsdfAtlas`](/reference/text/msdfatlas/) | class | The size of an MSDF atlas image, the em size it was generated at and its distance range. |
 | [`MsdfBounds`](/reference/text/msdfbounds/) | class | A rectangle of an MSDF glyph, either on 1 of the em with Y up or in pixels of the atlas. |
 | [`MsdfFont`](/reference/text/msdffont/) | class | A font drawn from multi-channel signed distance fields, sharp at every size, with one face per weight and style. |
-| [`MsdfFontFace`](/reference/text/msdffontface/) | class | One face of an MsdfFont, with its atlas texture, its metrics, its glyphs and its kerning. |
-| [`MsdfFontLoader`](/reference/text/msdffontloader/) | class | Loads an MSDF font from the files of its faces, in the background, and completes a future with the MsdfFont. |
+| [`MsdfFontFace`](/reference/text/msdffontface/) | class | One face of an `MsdfFont`, with its atlas texture, its metrics, its glyphs and its kerning. |
+| [`MsdfFontLoader`](/reference/text/msdffontloader/) | class | Loads an MSDF font from the files of its faces, in the background, and completes a future with the `MsdfFont`. |
 | [`MsdfGlyph`](/reference/text/msdfglyph/) | class | One glyph of an MSDF face, with its advance and where it sits on the line and in the atlas. |
 | [`MsdfMetrics`](/reference/text/msdfmetrics/) | class | The vertical metrics of an MSDF face, on 1 of the em. |
 | [`MsdfSource`](/reference/text/msdfsource/) | class | Base class of the MSDF sources, which can override the weight and the style that the file declares. |
-| [`MsdfTextRenderer`](/reference/text/msdftextrenderer/) | class | The text renderer of every MsdfFont, which draws each glyph from the distance field of its face. |
+| [`MsdfTextRenderer`](/reference/text/msdftextrenderer/) | class | The text renderer of every `MsdfFont`, which draws each glyph from the distance field of its face. |
 | [`OpenTypeMsdfSource`](/reference/text/opentypemsdfsource/) | class | Reads a face from a TrueType or OpenType file, generating its MSDF atlas into the cache folder on the first load. |
 | [`Text`](/reference/text/text/) | class | A run of text made of one or more elements, each with its own style, plus the alignment, overflow marker and modifier of the whole run. |
 | [`TextConverter`](/reference/text/textconverter/) | class | The registry of the text converters, which turns any value into the string a text shows. |
-| [`TextElement`](/reference/text/textelement/) | class | One styled part of a Text, with its value, its TextInfo and its own modifier. |
-| [`TextGlyph`](/reference/text/textglyph/) | class | The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and the font it comes from. |
+| [`TextElement`](/reference/text/textelement/) | class | One styled part of a `Text`, with its value, its `TextInfo` and its own modifier. |
+| [`TextGlyph`](/reference/text/textglyph/) | class | The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face and the font it comes from. |
 | [`TextInfo`](/reference/text/textinfo/) | class | The style of a text, with its font, size, weight, color, spacing, shadow, markups and effects, and the measures it gives. |
 | [`TextMarkup`](/reference/text/textmarkup/) | class | The registry of the markup tags that every text reads, and the helpers that find the tags in a string. |
 | [`TextMode`](/reference/text/textmode/) | enum | How a text fits a box, on one line, cut, wrapped, or wrapped and clipped. |
 | [`TextModifier`](/reference/text/textmodifier/) | interface | Changes the characters a text shows, such as its case, without changing its value. |
-| [`TextOverflow`](/reference/text/textoverflow/) | enum | The marker that ends a text cut to fit a box with TextMode.OVERFLOW. |
+| [`TextOverflow`](/reference/text/textoverflow/) | enum | The marker that ends a text cut to fit a box with `TextMode.OVERFLOW`. |
 | [`TextStyle`](/reference/text/textstyle/) | class | The running style of the characters while a text is laid out, which markup tags change as they are read. |
 

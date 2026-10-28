@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ObjTextureCoordinate`<br/>
 **Package:** `dev.joid.lib.obj.data` · **Module:** `core` · **Source:** [ObjTextureCoordinate.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/obj/data/ObjTextureCoordinate.java)
 
-A texture coordinate of an ObjModel, on 1 of the texture.
+A texture coordinate of an `ObjModel`, on 1 of the texture.
 
 ## Learn more
 

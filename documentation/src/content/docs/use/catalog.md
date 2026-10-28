@@ -27,7 +27,7 @@ The nodes that draw shapes, text, images, media, charts and 3D models, and the n
 </figure>
 <figure class="joid-card">
 <img src="/captures/catalog-nodes-textnode.webp" alt="The word Text in light grey, centered on a dark card" loading="lazy" width="364" height="324" />
-<figcaption><a href="/reference/nodes/textnode/"><code>TextNode</code></a><span>Draws a Text in its bounds, and takes the size of the text when no size is declared.</span><small><a href="/use/learn/describing-the-ui/text/">Learn</a> · <a href="/reference/nodes/textnode/">Reference</a></small></figcaption>
+<figcaption><a href="/reference/nodes/textnode/"><code>TextNode</code></a><span>Draws a <code>Text</code> in its bounds, and takes the size of the text when no size is declared.</span><small><a href="/use/learn/describing-the-ui/text/">Learn</a> · <a href="/reference/nodes/textnode/">Reference</a></small></figcaption>
 </figure>
 <figure class="joid-card">
 <img src="/captures/catalog-nodes-resourcenode.webp" alt="A light grey placeholder image crossed by two diagonals, on a dark card" loading="lazy" width="364" height="324" />

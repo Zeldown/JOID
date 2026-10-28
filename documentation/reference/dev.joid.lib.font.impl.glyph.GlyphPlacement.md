@@ -1,5 +1,5 @@
 ---
-summary: The place of one character in a GlyphLayout, with the font, the face and the style it draws with.
+summary: The place of one character in a `GlyphLayout`, with the font, the face and the style it draws with.
 ---
 
 Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).

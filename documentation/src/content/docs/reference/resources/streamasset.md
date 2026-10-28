@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`Asset`](/reference/resources/asset/)<br/>
 **Package:** `dev.joid.lib.asset.impl` · **Module:** `core` · **Source:** [StreamAsset.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/asset/impl/StreamAsset.java)
 
-An asset read once from an InputStream and kept in memory, so that it can be read again.
+An asset read once from an `InputStream` and kept in memory, so that it can be read again.
 
 ## Description
 

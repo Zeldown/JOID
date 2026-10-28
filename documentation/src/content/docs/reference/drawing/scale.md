@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class Scale`<br/>
 **Package:** `dev.joid.lib.render.transform` · **Module:** `core` · **Source:** [Scale.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/render/transform/Scale.java)
 
-The factors of a scale in a Transformation, one per axis, fixed or read from a supplier.
+The factors of a scale in a `Transformation`, one per axis, fixed or read from a supplier.
 
 ## Description
 

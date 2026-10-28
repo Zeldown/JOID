@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`IAssetLocator`](/reference/resources/iassetlocator/)<br/>
 **Package:** `dev.joid.lib.asset.locator.impl` · **Module:** `core` · **Source:** [StringAssetLocator.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/asset/locator/impl/StringAssetLocator.java)
 
-The built-in locator that turns a String into a URL, classpath or file asset.
+The built-in locator that turns a `String` into a URL, classpath or file asset.
 
 ## Learn more
 

@@ -19,18 +19,18 @@ Learn: [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui), [Overlays and po
 | [`AnnotationValues`](/reference/annotations/annotationvalues/) | class | Copies the values of an annotation into the object that holds the same options, through its setters. |
 | [`UIData`](/reference/annotations/uidata/) | annotation | Annotation that configures how a UI is drawn, receives the input and closes. |
 | [`UIDataDebug`](/reference/annotations/uidatadebug/) | annotation | Annotation that turns off, for one UI, the profiler and the hot reload of dev mode. |
-| [`UIDataDebugObject`](/reference/annotations/uidatadebugobject/) | class | The dev-mode options of @UIDataDebug for a running UI. |
-| [`UIDataObject`](/reference/annotations/uidataobject/) | class | The options of @UIData for a running UI, read from the annotation and changed by its setters. |
+| [`UIDataDebugObject`](/reference/annotations/uidatadebugobject/) | class | The dev-mode options of `@UIDataDebug` for a running UI. |
+| [`UIDataObject`](/reference/annotations/uidataobject/) | class | The options of `@UIData` for a running UI, read from the annotation and changed by its setters. |
 | [`UIDataOverlay`](/reference/annotations/uidataoverlay/) | annotation | Annotation that makes a UI an overlay, drawn with the screens instead of replacing them. |
-| [`UIDataOverlayInteraction`](/reference/annotations/uidataoverlayinteraction/) | annotation | Whether an overlay receives the input and what it lets through, set in the interaction option of @UIDataOverlay. |
+| [`UIDataOverlayInteraction`](/reference/annotations/uidataoverlayinteraction/) | annotation | Whether an overlay receives the input and what it lets through, set in the interaction option of `@UIDataOverlay`. |
 | [`UIDataOverlayInteractionObject`](/reference/annotations/uidataoverlayinteractionobject/) | class | The input options of an overlay for a running UI. |
-| [`UIDataOverlayObject`](/reference/annotations/uidataoverlayobject/) | class | The overlay options of @UIDataOverlay for a running UI. |
-| [`UIDataOverlayRender`](/reference/annotations/uidataoverlayrender/) | annotation | When an overlay is drawn, set in the render option of @UIDataOverlay. |
+| [`UIDataOverlayObject`](/reference/annotations/uidataoverlayobject/) | class | The overlay options of `@UIDataOverlay` for a running UI. |
+| [`UIDataOverlayRender`](/reference/annotations/uidataoverlayrender/) | annotation | When an overlay is drawn, set in the render option of `@UIDataOverlay`. |
 | [`UIDataOverlayRenderObject`](/reference/annotations/uidataoverlayrenderobject/) | class | The drawing options of an overlay for a running UI. |
 | [`UIDataPopup`](/reference/annotations/uidatapopup/) | annotation | Annotation that makes a UI a popup, opened above the current screen with an opening and a closing transition. |
-| [`UIDataPopupObject`](/reference/annotations/uidatapopupobject/) | class | The popup options of @UIDataPopup for a running UI. |
+| [`UIDataPopupObject`](/reference/annotations/uidatapopupobject/) | class | The popup options of `@UIDataPopup` for a running UI. |
 | [`UIDataScale`](/reference/annotations/uidatascale/) | annotation | Annotation that sets how the interface scale of the UI bridge applies to a UI. |
-| [`UIDataScaleObject`](/reference/annotations/uidatascaleobject/) | class | The interface-scale options of @UIDataScale for a running UI. |
+| [`UIDataScaleObject`](/reference/annotations/uidatascaleobject/) | class | The interface-scale options of `@UIDataScale` for a running UI. |
 
 ## Supporting types
 

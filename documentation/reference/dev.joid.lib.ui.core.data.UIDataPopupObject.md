@@ -1,5 +1,5 @@
 ---
-summary: The popup options of @UIDataPopup for a running UI.
+summary: The popup options of `@UIDataPopup` for a running UI.
 ---
 [[UI#getPopup]] returns it.
 A change of the transition applies from the next frame, unless [[UI#transition]] has set a transition of its own.

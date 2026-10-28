@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`ITextGlyph`](/reference/text/itextglyph/)<br/>
 **Package:** `dev.joid.lib.font.impl.glyph` · **Module:** `core` · **Source:** [TextGlyph.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/glyph/TextGlyph.java)
 
-The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and the font it comes from.
+The `ITextGlyph` that a `GlyphTextRenderer` lays out and draws, with the face and the font it comes from.
 
 ## Description
 

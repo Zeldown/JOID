@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIPropertyHook`<br/>
 **Package:** `dev.joid.lib.ui.core.hook.property` · **Module:** `core` · **Source:** [UIPropertyHook.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/hook/property/UIPropertyHook.java)
 
-Reads and writes the @UIProperty fields of a UI in its property file.
+Reads and writes the `@UIProperty` fields of a UI in its property file.
 
 ## Description
 

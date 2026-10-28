@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIDataDebugObject`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataDebugObject.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataDebugObject.java)
 
-The dev-mode options of @UIDataDebug for a running UI.
+The dev-mode options of `@UIDataDebug` for a running UI.
 
 ## Description
 

@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ResourceData`<br/>
 **Package:** `dev.joid.lib.resource` · **Module:** `core` · **Source:** [ResourceData.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/resource/ResourceData.java)
 
-The shared state of one resource, its decoder, pixels, textures, size and errors, behind every Resource handle on the same input.
+The shared state of one resource, its decoder, pixels, textures, size and errors, behind every `Resource` handle on the same input.
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-summary: The built-in locator that turns a File into a FileAsset.
+summary: The built-in locator that turns a `File` into a `FileAsset`.
 ---
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).

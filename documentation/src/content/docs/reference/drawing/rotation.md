@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class Rotation`<br/>
 **Package:** `dev.joid.lib.render.transform` · **Module:** `core` · **Source:** [Rotation.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/render/transform/Rotation.java)
 
-The axis of a rotation in a Transformation, as yaw, pitch and roll components.
+The axis of a rotation in a `Transformation`, as yaw, pitch and roll components.
 
 ## Description
 

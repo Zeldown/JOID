@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIDataScaleObject`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataScaleObject.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataScaleObject.java)
 
-The interface-scale options of @UIDataScale for a running UI.
+The interface-scale options of `@UIDataScale` for a running UI.
 
 ## Description
 

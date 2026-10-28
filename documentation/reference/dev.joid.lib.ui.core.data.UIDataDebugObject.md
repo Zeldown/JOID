@@ -1,5 +1,5 @@
 ---
-summary: The dev-mode options of @UIDataDebug for a running UI.
+summary: The dev-mode options of `@UIDataDebug` for a running UI.
 ---
 [[UI#getDebug]] returns it.
 Each option has a getter and a setter of the same name, such as `hotreload()` and `hotreload(boolean)`.

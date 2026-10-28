@@ -1,5 +1,5 @@
 ---
-summary: Base class of the text renderers of pixel fonts, which draws each glyph from the BitmapCell you return.
+summary: Base class of the text renderers of pixel fonts, which draws each glyph from the `BitmapCell` you return.
 ---
 
 Extend it for your [[BitmapFont]] and implement `getCell`; layout, markups, effects, shadows and colors come from [[GlyphTextRenderer]].

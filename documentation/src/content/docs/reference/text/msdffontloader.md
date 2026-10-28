@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class MsdfFontLoader`<br/>
 **Package:** `dev.joid.lib.font.impl.msdf` · **Module:** `core` · **Source:** [MsdfFontLoader.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/msdf/MsdfFontLoader.java)
 
-Loads an MSDF font from the files of its faces, in the background, and completes a future with the MsdfFont.
+Loads an MSDF font from the files of its faces, in the background, and completes a future with the `MsdfFont`.
 
 ## Description
 

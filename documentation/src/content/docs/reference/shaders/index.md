@@ -16,14 +16,14 @@ Learn: [Shaders](/use/learn/going-further/shaders/).
 
 | Type | Kind | Summary |
 |---|---|---|
-| [`BlurShader`](/reference/shaders/blurshader/) | class | The shader of the one-axis blur that BlurShaderPass runs. |
+| [`BlurShader`](/reference/shaders/blurshader/) | class | The shader of the one-axis blur that `BlurShaderPass` runs. |
 | [`BlurShaderPass`](/reference/shaders/blurshaderpass/) | class | Blurs the previous result along one axis; chain a horizontal and a vertical pass for a full blur. |
-| [`BorderShader`](/reference/shaders/bordershader/) | class | The shader of the outline that BorderShaderPass draws around the alpha of a texture. |
+| [`BorderShader`](/reference/shaders/bordershader/) | class | The shader of the outline that `BorderShaderPass` draws around the alpha of a texture. |
 | [`BorderShaderPass`](/reference/shaders/bordershaderpass/) | class | Outlines the shape of the previous result with a colored stroke that follows its alpha, rounded corners included. |
 | [`CircleShader`](/reference/shaders/circleshader/) | class | The shader of discs, which masks what is drawn outside a circle with a smooth edge. |
 | [`CircleShaderPass`](/reference/shaders/circleshaderpass/) | class | Keeps only the disc of the previous result, with a smooth edge. |
 | [`GradientShader`](/reference/shaders/gradientshader/) | class | The shader of linear gradients, which colors what is drawn along a line between two stops. |
-| [`IShaderPass`](/reference/shaders/ishaderpass/) | interface | One step of a ShaderPipeline, which binds a shader that reads the previous result as a texture. |
+| [`IShaderPass`](/reference/shaders/ishaderpass/) | interface | One step of a `ShaderPipeline`, which binds a shader that reads the previous result as a texture. |
 | [`RoundedShader`](/reference/shaders/roundedshader/) | class | The shader of rounded rectangles and rounded borders, which masks what is drawn outside a rounded box. |
 | [`RoundedShaderPass`](/reference/shaders/roundedshaderpass/) | class | Keeps only a rounded rectangle of the previous result, with smooth corners. |
 | [`ShaderFillType`](/reference/shaders/shaderfilltype/) | enum | What the rounded and circle shaders mask: the texture tinted by the color, the texture alone, or the color alone. |

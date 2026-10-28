@@ -1,5 +1,5 @@
 ---
-summary: The two stops and the direction of a linear gradient, carried by a gradient Color.
+summary: The two stops and the direction of a linear gradient, carried by a gradient `Color`.
 ---
 
 You rarely build one yourself: [[Color#toGradient]] and [[Color#decode]] with `gradient(...)` create the gradient color for you.

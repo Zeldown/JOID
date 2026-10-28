@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`GlyphTextRenderer<MsdfFontFace>`](/reference/text/glyphtextrenderer/)<br/>
 **Package:** `dev.joid.lib.font.impl.msdf` · **Module:** `core` · **Source:** [MsdfTextRenderer.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/msdf/MsdfTextRenderer.java)
 
-The text renderer of every MsdfFont, which draws each glyph from the distance field of its face.
+The text renderer of every `MsdfFont`, which draws each glyph from the distance field of its face.
 
 ## Description
 

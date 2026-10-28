@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ObjVertex`<br/>
 **Package:** `dev.joid.lib.obj.data` · **Module:** `core` · **Source:** [ObjVertex.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/obj/data/ObjVertex.java)
 
-A point or a normal of an ObjModel, in model units.
+A point or a normal of an `ObjModel`, in model units.
 
 ## Learn more
 

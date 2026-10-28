@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`GlyphTextRenderer<F>`](/reference/text/glyphtextrenderer/)<br/>
 **Package:** `dev.joid.lib.font.impl.bitmap` · **Module:** `core` · **Source:** [BitmapTextRenderer.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/bitmap/BitmapTextRenderer.java)
 
-Base class of the text renderers of pixel fonts, which draws each glyph from the BitmapCell you return.
+Base class of the text renderers of pixel fonts, which draws each glyph from the `BitmapCell` you return.
 
 ## Description
 

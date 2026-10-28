@@ -1,5 +1,5 @@
 ---
-summary: A point or a normal of an ObjModel, in model units.
+summary: A point or a normal of an `ObjModel`, in model units.
 ---
 
 Learn: [3D models](/use/learn/going-further/3d-models/).

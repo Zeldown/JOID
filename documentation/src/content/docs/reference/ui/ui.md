@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`IIndexedElement`](/reference/utilities/iindexedelement/)<br/>
 **Package:** `dev.joid.lib.ui.core` · **Module:** `core` · **Source:** [UI.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/UI.java)
 
-Base class of a screen, an overlay or a popup that builds its node tree in init() and draws it on the design canvas.
+Base class of a screen, an overlay or a popup that builds its node tree in `init()` and draws it on the design canvas.
 
 ## Description
 

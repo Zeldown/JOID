@@ -1,5 +1,5 @@
 ---
-summary: The shader of the one-axis blur that BlurShaderPass runs.
+summary: The shader of the one-axis blur that `BlurShaderPass` runs.
 ---
 
 Learn: [Shaders](/use/learn/going-further/shaders/).

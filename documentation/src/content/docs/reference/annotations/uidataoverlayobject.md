@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class UIDataOverlayObject`<br/>
 **Package:** `dev.joid.lib.ui.core.data` · **Module:** `core` · **Source:** [UIDataOverlayObject.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/core/data/UIDataOverlayObject.java)
 
-The overlay options of @UIDataOverlay for a running UI.
+The overlay options of `@UIDataOverlay` for a running UI.
 
 ## Description
 

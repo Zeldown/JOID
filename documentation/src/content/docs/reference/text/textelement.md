@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class TextElement`<br/>
 **Package:** `dev.joid.lib.draw.text` · **Module:** `core` · **Source:** [TextElement.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/draw/text/TextElement.java)
 
-One styled part of a Text, with its value, its TextInfo and its own modifier.
+One styled part of a `Text`, with its value, its `TextInfo` and its own modifier.
 
 ## Description
 

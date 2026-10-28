@@ -30,7 +30,7 @@ Learn: [Nodes and the tree](/use/learn/describing-the-ui/nodes/), [Position and 
 | [`RectNode`](/reference/nodes/rectnode/) | class | Draws a filled rectangle on its bounds, with an optional border, and colors that fade on hover. |
 | [`ResourceNode`](/reference/nodes/resourcenode/) | class | Draws an image resource in its bounds, tinted by a color, with an optional image that fades in on hover. |
 | [`ResourcePlayerNode`](/reference/nodes/resourceplayernode/) | class | Plays a video or an animated image in its bounds, with its sound, and controls the playback. |
-| [`TextNode`](/reference/nodes/textnode/) | class | Draws a Text in its bounds, and takes the size of the text when no size is declared. |
+| [`TextNode`](/reference/nodes/textnode/) | class | Draws a `Text` in its bounds, and takes the size of the text when no size is declared. |
 
 ## Related types
 

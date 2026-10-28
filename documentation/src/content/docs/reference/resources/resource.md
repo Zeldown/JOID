@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class Resource`<br/>
 **Package:** `dev.joid.lib.resource` · **Module:** `core` · **Source:** [Resource.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/resource/Resource.java)
 
-An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or DrawResource.
+An image, an animated image, a vector image or a video, loaded in the background and drawn by a resource node or `DrawResource`.
 
 ## Description
 

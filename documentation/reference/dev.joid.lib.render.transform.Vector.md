@@ -1,5 +1,5 @@
 ---
-summary: A 3D offset or pivot of a Transformation, in design pixels, fixed or read from suppliers.
+summary: A 3D offset or pivot of a `Transformation`, in design pixels, fixed or read from suppliers.
 ---
 
 Each coordinate is read each time the transformation is applied.

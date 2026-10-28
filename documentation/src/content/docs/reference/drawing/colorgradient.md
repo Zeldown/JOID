@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class ColorGradient`<br/>
 **Package:** `dev.joid.lib.color` · **Module:** `core` · **Source:** [ColorGradient.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/color/ColorGradient.java)
 
-The two stops and the direction of a linear gradient, carried by a gradient Color.
+The two stops and the direction of a linear gradient, carried by a gradient `Color`.
 
 ## Description
 

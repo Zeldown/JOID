@@ -1,5 +1,5 @@
 ---
-summary: An asset read once from an InputStream and kept in memory, so that it can be read again.
+summary: An asset read once from an `InputStream` and kept in memory, so that it can be read again.
 ---
 
 An `InputStream` gives one; its id is `stream_` followed by a counter, so two streams never share a cache entry.

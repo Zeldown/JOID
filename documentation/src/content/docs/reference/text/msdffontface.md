@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`IFontFace`](/reference/text/ifontface/)<br/>
 **Package:** `dev.joid.lib.font.impl.msdf` · **Module:** `core` · **Source:** [MsdfFontFace.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/msdf/MsdfFontFace.java)
 
-One face of an MsdfFont, with its atlas texture, its metrics, its glyphs and its kerning.
+One face of an `MsdfFont`, with its atlas texture, its metrics, its glyphs and its kerning.
 
 ## Description
 

@@ -1,5 +1,5 @@
 ---
-summary: Loads an MSDF font from the files of its faces, in the background, and completes a future with the MsdfFont.
+summary: Loads an MSDF font from the files of its faces, in the background, and completes a future with the `MsdfFont`.
 ---
 
 Load each font once, when your application starts, and keep the [[MsdfFont]] in a field:

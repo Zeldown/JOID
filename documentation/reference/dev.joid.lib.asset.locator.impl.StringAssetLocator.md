@@ -1,5 +1,5 @@
 ---
-summary: The built-in locator that turns a String into a URL, classpath or file asset.
+summary: The built-in locator that turns a `String` into a URL, classpath or file asset.
 ---
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).

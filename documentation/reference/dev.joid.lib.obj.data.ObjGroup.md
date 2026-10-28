@@ -1,5 +1,5 @@
 ---
-summary: A named group of triangles of an ObjModel, drawn in one batch.
+summary: A named group of triangles of an `ObjModel`, drawn in one batch.
 ---
 
 Learn: [3D models](/use/learn/going-further/3d-models/).

@@ -1,5 +1,5 @@
 ---
-summary: A source that reads one MsdfFontFace, from a font file or from anything else.
+summary: A source that reads one `MsdfFontFace`, from a font file or from anything else.
 ---
 
 Pass one to [[MsdfFontLoader#load]] in place of a file.

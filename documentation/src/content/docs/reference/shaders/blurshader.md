@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`ShaderProgram`](/reference/shaders/shaderprogram/)<br/>
 **Package:** `dev.joid.lib.shader.impl` · **Module:** `core` · **Source:** [BlurShader.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/shader/impl/BlurShader.java)
 
-The shader of the one-axis blur that BlurShaderPass runs.
+The shader of the one-axis blur that `BlurShaderPass` runs.
 
 ## Learn more
 

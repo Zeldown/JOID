@@ -1,5 +1,5 @@
 ---
-summary: The interface-scale options of @UIDataScale for a running UI.
+summary: The interface-scale options of `@UIDataScale` for a running UI.
 ---
 [[UI#getScale]] returns it; a change applies from the next frame.
 

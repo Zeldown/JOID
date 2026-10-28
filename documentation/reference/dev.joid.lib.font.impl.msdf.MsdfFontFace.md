@@ -1,5 +1,5 @@
 ---
-summary: One face of an MsdfFont, with its atlas texture, its metrics, its glyphs and its kerning.
+summary: One face of an `MsdfFont`, with its atlas texture, its metrics, its glyphs and its kerning.
 ---
 
 An [[IMsdfSource]] reads it; [[MsdfFontLoader]] does that for you.

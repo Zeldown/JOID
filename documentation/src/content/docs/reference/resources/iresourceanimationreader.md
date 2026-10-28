@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`ApngResourceAnimationReader`](/reference/resources/apngresourceanimationreader/), [`GifResourceAnimationReader`](/reference/resources/gifresourceanimationreader/), [`WebpResourceAnimationReader`](/reference/resources/webpresourceanimationreader/)<br/>
 **Package:** `dev.joid.lib.resource.animation` · **Module:** `core` · **Source:** [IResourceAnimationReader.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/resource/animation/IResourceAnimationReader.java)
 
-Reads every frame of an animated image file into a ResourceAnimation.
+Reads every frame of an animated image file into a `ResourceAnimation`.
 
 ## Description
 

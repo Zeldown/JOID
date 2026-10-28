@@ -1,5 +1,5 @@
 ---
-summary: One step of a ShaderPipeline, which binds a shader that reads the previous result as a texture.
+summary: One step of a `ShaderPipeline`, which binds a shader that reads the previous result as a texture.
 ---
 
 Implement it for a shader effect of your own, or return it from the shader passes of a node effect.

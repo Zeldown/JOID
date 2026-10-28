@@ -1,5 +1,5 @@
 ---
-summary: One triangle of an ObjModel, with its vertices, its optional texture coordinates and normals, and the normal of its plane.
+summary: One triangle of an `ObjModel`, with its vertices, its optional texture coordinates and normals, and the normal of its plane.
 ---
 
 Learn: [3D models](/use/learn/going-further/3d-models/).

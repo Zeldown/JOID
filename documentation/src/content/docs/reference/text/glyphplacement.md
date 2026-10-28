@@ -13,7 +13,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 `final class GlyphPlacement<F extends IFontFace>`<br/>
 **Package:** `dev.joid.lib.font.impl.glyph` · **Module:** `core` · **Source:** [GlyphPlacement.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/glyph/GlyphPlacement.java)
 
-The place of one character in a GlyphLayout, with the font, the face and the style it draws with.
+The place of one character in a `GlyphLayout`, with the font, the face and the style it draws with.
 
 ## Learn more
 

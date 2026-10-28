@@ -1,5 +1,5 @@
 ---
-summary: The marker that ends a text cut to fit a box with TextMode.OVERFLOW.
+summary: The marker that ends a text cut to fit a box with `TextMode.OVERFLOW`.
 ---
 
 Learn: [Text](/use/learn/describing-the-ui/text/).

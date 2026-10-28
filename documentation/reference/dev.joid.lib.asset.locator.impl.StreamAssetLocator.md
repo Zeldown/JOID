@@ -1,5 +1,5 @@
 ---
-summary: The built-in locator that turns an InputStream into a StreamAsset.
+summary: The built-in locator that turns an `InputStream` into a `StreamAsset`.
 ---
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).

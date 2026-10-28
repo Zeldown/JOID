@@ -15,7 +15,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`BitmapFont`](/reference/text/bitmapfont/), [`MsdfFont`](/reference/text/msdffont/)<br/>
 **Package:** `dev.joid.lib.font.impl.glyph` · **Module:** `core` · **Source:** [GlyphFont.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/font/impl/glyph/GlyphFont.java)
 
-Base class of the fonts made of glyphs, which hold a FontFamily of faces.
+Base class of the fonts made of glyphs, which hold a `FontFamily` of faces.
 
 ## Description
 

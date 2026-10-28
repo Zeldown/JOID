@@ -26,9 +26,9 @@ Learn: [UIs](/use/learn/describing-the-ui/uis/), [Transitions](/use/learn/style-
 | [`Transition`](/reference/ui/transition/) | class | The pair of steps that a UI plays when it opens and when it closes. |
 | [`TransitionDrawing`](/reference/ui/transitiondrawing/) | interface | Function that draws a UI for a progress of its transition step, around the body that draws its nodes. |
 | [`TransitionStep`](/reference/ui/transitionstep/) | class | One step of a transition, opening or closing, that animates a progress from 0 to 1 and draws the UI through its drawing. |
-| [`UI`](/reference/ui/ui/) | class | Base class of a screen, an overlay or a popup that builds its node tree in init() and draws it on the design canvas. |
+| [`UI`](/reference/ui/ui/) | class | Base class of a screen, an overlay or a popup that builds its node tree in `init()` and draws it on the design canvas. |
 | [`UIProperty`](/reference/ui/uiproperty/) | annotation | Annotation that makes JOID remember a field of a UI on disk, from one run of the application to the next. |
-| [`UIPropertyHook`](/reference/ui/uipropertyhook/) | class | Reads and writes the @UIProperty fields of a UI in its property file. |
+| [`UIPropertyHook`](/reference/ui/uipropertyhook/) | class | Reads and writes the `@UIProperty` fields of a UI in its property file. |
 | [`UIStore`](/reference/ui/uistore/) | class | Base class of a store, a container of values that lives as long as its scope and that several UIs can share. |
 | [`UIStoreData`](/reference/ui/uistoredata/) | annotation | Annotation that gives a store its scope and the name of its file. |
 | [`UIStoreHook`](/reference/ui/uistorehook/) | class | Creates, caches, saves and destroys the stores that the UIs use. |
