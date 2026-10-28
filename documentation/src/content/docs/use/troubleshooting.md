@@ -22,7 +22,7 @@ Run your application with the dev jar while you look for a problem: JOID then pr
 1. Open your first UI after the `register()` of the backend.
 2. In code that does not control the startup order, such as a library, give the call to `JOID.onReady(...)` ([Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready)).
 
-## My node does not appear
+## A node does not appear
 
 1. **It is not attached.** A node shows only once attached, to the UI with `attach(this)` or to a parent node ([Nodes and the tree](/use/learn/describing-the-ui/nodes/)).
 2. **It is created in the constructor of the UI.** Create every node in `init()` ([UIs](/use/learn/describing-the-ui/uis/)).
@@ -32,7 +32,7 @@ Run your application with the dev jar while you look for a problem: JOID then pr
 
 With the dev jar, the inspector shows which nodes sit under the mouse ([Dev tools](/use/get-started/dev-tools/)).
 
-## My text does not appear
+## A text does not appear
 
 1. **The text has the color of its background.** The color of a text is in its [[TextInfo]], black by default.
 2. **The characters are not in the font.** A generated atlas holds the characters from U+0020 to U+0233 ([MSDF text](/use/in-depth/msdf-text/#what-the-atlas-holds)).
@@ -40,7 +40,13 @@ With the dev jar, the inspector shows which nodes sit under the mouse ([Dev tool
 
 JOID ships no font for your application: [Fonts](/use/learn/describing-the-ui/fonts/) shows how to load yours.
 
-## My image shows a checkerboard, or nothing
+## Text or edges look blurry
+
+1. **The window is much smaller than the canvas.** JOID scales the 1920 × 1080 canvas to fit the window, so a font size of 24 design pixels draws at 16 screen pixels in a window of 1280 × 720: size the texts for the smallest window you support ([The design canvas](/use/learn/describing-the-ui/design-canvas/#place-nodes-on-the-canvas), [Small text](/use/in-depth/msdf-text/#small-text)).
+2. **An image is drawn larger than its source.** Scaling an image up blurs it: give a source as large as the largest window shows it ([Show an image](/use/learn/describing-the-ui/media/#show-an-image)) and use [[Resource#nearest]] for pixel art ([Fit, tint and crop](/use/learn/describing-the-ui/media/#fit-tint-and-crop)).
+3. **The node is rotated or drawn in 3D.** JOID smooths its edges over one screen pixel instead of snapping them to the pixel grid ([Rotated and 3D drawing is not snapped](/use/in-depth/pixel-alignment/#rotated-and-3d-drawing-is-not-snapped)).
+
+## An image shows a checkerboard, or nothing
 
 1. **The resource cannot be read.** In dev mode, JOID draws a magenta and black checkerboard in its place and prints `[JOID] The resource … cannot be read: …` with the cause; with the prod jar, it draws nothing.
 2. **The path is wrong.** A path without a scheme is read from the classpath, then as a file; a URL needs its scheme, such as `https:`.
@@ -55,7 +61,7 @@ A node follows a value only when JOID can compute it again ([Signals](/use/learn
 3. **The signal object was replaced.** A node follows the signal it read: give the existing signal a value with `set(...)` instead of creating another signal.
 4. **The number of nodes depends on the value.** Rows that follow a list need a rebuild ([Rebuilding the tree](/use/learn/state/rebuilding/)).
 
-## My click does nothing
+## A click does nothing
 
 1. **Another node is on top.** The press goes to the topmost node under the pointer, and a node drawn above yours takes it ([Events](/use/learn/interactivity/events/)).
 2. **The node is disabled**, or a parent is: `enabled(false)` turns off its reactions.
@@ -72,13 +78,13 @@ Give it one with `hoverInfo(...)` ([Style the window bridge](/use/learn/running/
 The first time a font loads on a machine, JOID generates its atlas and keeps it in the cache folder; later launches read it back ([What happens when a font loads](/use/in-depth/msdf-text/#what-happens-when-a-font-loads)).
 The first video also downloads the FFmpeg natives into the cache folder ([Show a video](/use/guides/show-a-video/)).
 
-## My settings are lost after a restart
+## Settings are lost after a restart
 
 1. **The program was killed.** JOID saves stores and properties when a UI closes and when the JVM shuts down normally; a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 2. **The store is not permanent.** Only a store of scope `PERMANENT` writes a file ([Stores and remembered properties](/use/learn/state/stores-and-properties/)).
 3. **The working directory changed.** The data folder is relative to the working directory by default ([Where JOID stores files](/use/learn/running/files/)).
 
-## Escape closes my screen
+## Escape closes the screen
 
 A screen and a popup close on `Escape` unless a node consumes the key first.
 Set `closeable = false` in the `@UIData` of the UI ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.example.ExampleFont;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
@@ -29,6 +30,7 @@ public class LifecycleUI extends UI {
 
 	private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor(ThreadUtils.daemonFactory("poll"));
 
+	private long               start;
 	private double             open;
 	private volatile long      checks;
 	private ScheduledFuture<?> poll;
@@ -43,8 +45,8 @@ public class LifecycleUI extends UI {
 		.color(LifecycleUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
-		.onInit(event -> this.open = 0D)
-		.onUpdate(event -> this.open += super.getFrameTime() / 1000D)
+		.onInit(event -> this.start = BridgeHandler.CLOCK.get().currentTimeMillis())
+		.onUpdate(event -> this.open = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 1000D)
 		.body(card -> TextNode
 		.create(300, 80)
 		.text(Text.create(() -> String.format("%.1f s", this.open), info))

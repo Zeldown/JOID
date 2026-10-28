@@ -100,7 +100,6 @@ Opening a screen closes the open screens first, with the popups open above them:
 
 `MenuUI` closes, then `EditorUI` opens.
 When a UI that must close refuses, the new screen does not open; in dev mode, JOID prints a warning that names both UIs.
-Opening a UI that is already open brings it to the top instead.
 
 [[JOID#forceOpen]] closes every open UI without asking them, then opens the new one:
 

@@ -1,6 +1,6 @@
 ---
 title: "Flex layout"
-description: "Line children up in a column or a row with FlexNode: gaps, alignment, size and scrolling."
+description: "Line children up in a column or a row with FlexNode: gaps, alignment and size."
 genre: learn
 sidebar:
   order: 8
@@ -12,8 +12,7 @@ A [[FlexNode]] does it for you: it stacks its children in a column or a row on e
 **You will learn**
 - How to stack children in a column or a row, with a gap between them
 - How to align children across the line, or shift one of them
-- How a flex node takes its size, and how to make it scroll
-- How hidden and removed children leave the line
+- How a flex node takes its size
 - How to nest rows inside a column
 
 ## Stack children in a column
@@ -34,6 +33,7 @@ Every child is created at (0, 0): the column gives each one its place, in the or
 
 [[FlexNode#margin]] is the gap between two children, in design pixels; there is none before the first child nor after the last.
 The column is a [layout node](/use/learn/describing-the-ui/layout/#know-who-places-a-child): it places its children again on every frame, so a child that grows pushes the next ones down.
+A hidden, removed or `ABSOLUTE` child gets no place in the line ([Know who places a child](/use/learn/describing-the-ui/layout/#know-who-places-a-child)), and the next children close the gap from the next frame.
 
 ## Line children up in a row
 
@@ -108,27 +108,7 @@ The column measures 170 design pixels, three bars and two gaps, and the panel fo
 </figcaption>
 </figure>
 
-A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node).
-
-## Scroll a long list
-
-Give the column a length and an [[OverflowProperty]] other than `NONE`: the content scrolls or is clipped.
-
-```java file="com/example/describing/flex/FlexCasesUI.java" region="scroll"
-```
-
-<figure>
-
-![On a dark card, a column of blue and dark grey bars cut off near the bottom of the card; the wheel moves them up so that the next bars come into view, then moves them back down](/captures/describing-flex-scroll.webp)
-
-<figcaption>
-The column stays 260 design pixels high, and its eight bars scroll inside it.
-</figcaption>
-</figure>
-
-## Know when a child leaves the line
-
-A hidden, removed or `ABSOLUTE` child gets no place in the line ([Know who places a child](/use/learn/describing-the-ui/layout/#know-who-places-a-child)), and the next children close the gap from the next frame.
+A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node): with an [[OverflowProperty]] other than `NONE`, it stays fixed and the children scroll inside it.
 
 ## Nest rows inside a column
 
@@ -156,7 +136,6 @@ A row that the user can drag into another order is a [[ReorderableFlexNode]] ([R
 - **`align`** places every child across the line; without it, each child keeps its own cross position.
 - The own **offset** of a child adds to its place; along the line, it moves that child only.
 - A length of **0** follows the content; a declared length follows the **rule of the layout nodes**.
-- Hidden, removed and `ABSOLUTE` children **leave no gap**.
 
 ## Try it
 

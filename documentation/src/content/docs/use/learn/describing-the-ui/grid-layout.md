@@ -1,6 +1,6 @@
 ---
 title: "Grid layout"
-description: "Fill rows of cells that wrap at a width with GridNode: gaps, row alignment, height and scrolling."
+description: "Fill rows of cells that wrap at a width with GridNode: gaps, row alignment and height."
 genre: learn
 sidebar:
   order: 9
@@ -13,7 +13,7 @@ A [[GridNode]] fills a row from left to right, starts the next row when the widt
 - How to fill rows of cells that wrap at the width of the grid
 - How to space the cells on each axis
 - How to align each row, and how rows of different heights stack
-- How a grid takes its height, and how to make it scroll
+- How a grid takes its height
 
 ## Fill rows that wrap
 
@@ -34,6 +34,7 @@ Four squares and their gaps fit in 360 design pixels: the fifth starts the secon
 A cell goes on the current row while the row, gaps included, stays within the width of the grid; otherwise it starts a new row.
 A cell wider than the grid gets a row of its own.
 The cells keep their own size, and take their places in the order you attach them, again on every frame: the grid is a [layout node](/use/learn/describing-the-ui/layout/#know-who-places-a-child).
+A hidden, removed or `ABSOLUTE` child gets no cell, and the next cells move up from the next frame.
 
 ## Space the cells
 
@@ -92,21 +93,7 @@ The dark grey cell sets the height of the first row; the cells of a row are alig
 ## Let the grid take its height
 
 A grid created with a height of 0 takes the height of its rows, gaps included, and keeps the width you gave it.
-A height that you give follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node), here a fixed height with an overflow, which lets the rows scroll.
-
-```java file="com/example/describing/grid/GridCasesUI.java" region="scroll"
-```
-
-<figure>
-
-![On a dark card, rows of blue and dark grey squares cut off near the bottom of the card; the wheel moves them up so that the next rows come into view, then moves them back down](/captures/describing-grid-scroll.webp)
-
-<figcaption>
-The grid stays 260 design pixels high, and its five rows scroll inside it.
-</figcaption>
-</figure>
-
-A hidden, removed or `ABSOLUTE` child gets no cell ([Know who places a child](/use/learn/describing-the-ui/layout/#know-who-places-a-child)), and the next cells move up from the next frame.
+A height that you give follows the [rule of the layout nodes](/use/learn/describing-the-ui/layout/#scroll-a-node): with an overflow other than `NONE`, it stays fixed and the rows scroll inside it.
 
 ## Recap
 

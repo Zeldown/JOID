@@ -48,7 +48,7 @@ For one key that goes down, the order is:
 2. the nodes, from the front to the back, as for a press ([Follow an input through the tree](/use/learn/interactivity/events/#follow-an-input-through-the-tree)); a focused text field consumes every key;
 3. the `handle` listeners of the UI;
 4. the other shortcuts;
-5. the keys of the UI itself, in [dev mode](/use/get-started/dev-tools/) only: the zoom (Ctrl or Alt with `+` and `-`, on a [zoomable](/use/learn/describing-the-ui/uis/) UI), the reload and the inspector.
+5. the shortcuts of [dev mode](/use/get-started/dev-tools/) (zoom, reload, inspector), in dev mode only.
 
 Each step runs only when the key is not consumed yet.
 

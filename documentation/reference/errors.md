@@ -636,7 +636,7 @@ Check that the file can still be read, and that it is not damaged: [Play animate
 With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
 The cause follows the colon; the [[Resource#onError]] listeners receive it.
 
-Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [My image shows a checkerboard or nothing](/use/troubleshooting/#my-image-shows-a-checkerboard-or-nothing).
+Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [An image shows a checkerboard or nothing](/use/troubleshooting/#an-image-shows-a-checkerboard-or-nothing).
 
 ## warning [JOID] The video … plays without sound (…), register an audio bridge and check the audio device
 

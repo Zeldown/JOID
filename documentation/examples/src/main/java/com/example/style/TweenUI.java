@@ -5,6 +5,7 @@ import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -22,6 +23,7 @@ public class TweenUI extends UI {
 
 	private float x;
 	private float y;
+	private long  last;
 	// #endregion
 
 	@Override
@@ -30,6 +32,7 @@ public class TweenUI extends UI {
 		this.manager.killAll();
 		this.x = 0F;
 		this.y = 0F;
+		this.last = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		Timeline
 		.sequence()
@@ -56,7 +59,9 @@ public class TweenUI extends UI {
 	// #region update
 	@Override
 	public void update() {
-		this.manager.update((float) super.getFrameTime());
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.manager.update(now - this.last);
+		this.last = now;
 	}
 	// #endregion
 

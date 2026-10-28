@@ -95,7 +95,7 @@ A tooltip follows the pointer while it stays over the card.
 Quit closes the menu, but the loop of `Main` keeps running on an empty window.
 Stop the loop when no menu is open anymore:
 
-```java file="com/example/tutorial/interaction/Main.java" title="Main.java" ins={10-12,33-34,37}
+```java file="com/example/tutorial/interaction/Main.java" title="Main.java" ins={12,33-34,37,43}
 ```
 
 The highlighted lines are every change to `Main` in this lesson, the tooltip style of step 4 included.

@@ -185,6 +185,7 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 </figure>
 
 `killAll()` comes first because `init()` runs again at each opening and reload, and the previous timeline would keep playing next to the fresh one.
+`update()` advances the manager by the time since its previous call, read on [[BridgeHandler#CLOCK]]; `init()` resets `last`, so the time that the UI stays closed does not count.
 
 - `Tween.to(getter, setter, ms)` goes from the current value to `target(...)`, `Tween.from(...)` comes from `target(...)` to the current value, `Tween.set(...)` applies `target(...)` at once, and `Tween.call(listener)` runs code when a timeline reaches it.
 - `targetRelative(...)` adds an offset to the start value, and `waypoint(...)` adds values to pass through, on a smooth curve, or on straight segments with [[TweenPaths#LINEAR]] given to `path(...)`; a path of your own implements [[ITweenPath]].

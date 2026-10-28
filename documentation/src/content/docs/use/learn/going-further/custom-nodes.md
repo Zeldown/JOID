@@ -50,11 +50,6 @@ It draws in the coordinates of the parent: the node sits at `getX()`, `getY()`, 
 
 ## Override the hooks you need
 
-The stamp of [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/) creates a framebuffer in `draw` and releases it when it leaves its UI:
-
-```java file="com/example/further/StampNode.java" region="detach"
-```
-
 [[Node]] implements [[INode]], whose hooks JOID calls at each step of the life of a node.
 Every hook does nothing by default, except `drawSkeleton`; override only the ones your node needs:
 
@@ -68,6 +63,8 @@ Every hook does nothing by default, except `drawSkeleton`; override only the one
 | `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll` | For every mouse event that reaches the node. |
 | `keyPressed`, `keyReleased`, `charTyped` | For every key and every typed character that reach the node. |
 | `detach()` | When the node leaves its UI, after its children. Release here what `init` or `draw` acquired. |
+
+[Draw once, reuse every frame](/use/learn/going-further/framebuffers-and-models/#draw-once-reuse-every-frame) shows a node that deletes its framebuffer in `detach()`.
 
 An exception thrown by `update` or `detach` is printed once as a warning, and the next frames go on.
 [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) places each step in the life of a node, and [The frame lifecycle](/use/in-depth/frame-lifecycle/) places `draw` among the children, the effects and the layers.
@@ -187,9 +184,8 @@ An event that is not the change of a value, such as a reset, needs an [[EventTyp
 ```java file="com/example/further/SwatchNode.java" region="reset"
 ```
 
-`EventType.create(name)` creates the type once, in a static field; JOID prints the name in the warning of a listener that fails.
+`EventType.create(name)` creates the type once, in a static field.
 [[Node#listen]] adds a listener of that type, and `fire(type, supplier)` builds the event and calls the listeners.
-JOID builds the event only when the node has a listener of that type.
 
 The event is a [[NodeEvent]] that carries the node.
 For an event that carries a change, use [[NodeChangeEvent]], whose `Pre` form a listener can cancel.

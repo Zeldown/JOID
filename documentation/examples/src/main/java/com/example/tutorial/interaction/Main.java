@@ -44,6 +44,7 @@ public final class Main {
 		}
 		// #endregion
 
+		bridge.closeAll();
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
 	}
