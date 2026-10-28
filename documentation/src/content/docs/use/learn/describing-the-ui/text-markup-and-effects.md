@@ -133,12 +133,7 @@ Write an effect that draws a grey rectangle under each glyph, from the top of th
 
 Draw in `background`, before the glyphs: the ascender and the descender are measured from the baseline.
 
-```java fragment
-public void background(final ITextGlyph glyph) {
-	final double top = glyph.getBaseline() - glyph.getAscender();
-	final double bottom = glyph.getBaseline() - glyph.getDescender();
-	DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), bottom - top, new Color(54, 61, 77));
-}
+```java file="com/example/describing/markup/HighlightTextEffect.java" region="background"
 ```
 
 </details>
