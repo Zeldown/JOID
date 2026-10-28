@@ -40,7 +40,7 @@ Inspect is on when the panel shows.
 
 <figure>
 
-![A small dark card titled Profile; F3, shown in a badge, brings up the dev panel in the bottom-right corner of the window; the pointer rests on its Inspect icon, which shows the tooltip "[I] Inspect", then drags the panel by its frame rate toward the card and back to its corner, and F3 hides it again](/captures/start-dev-move.webp)
+![A small dark card titled Profile; F3, shown in a badge, brings up the dev panel in the bottom-right corner of the window; the pointer rests on its Inspect icon, which shows the tooltip "[I] Inspect", clicks the Reload icon, labelled "[R] Reload", which reloads the UI, then drags the panel by its frame rate toward the card and back to its corner, and F3 hides it again](/captures/start-dev-move.webp)
 
 <figcaption>
 The panel stays out of the way: drag it off the part of the UI that you are checking.
@@ -49,7 +49,7 @@ The panel stays out of the way: drag it off the part of the UI that you are chec
 
 <figure>
 
-![The Profile card, drawn large; the pointer moves onto its title, which gets a dashed blue frame under a dark label that reads TextNode and 0.00ms, then onto the blue bar, labelled RectNode; while Ctrl is held, shown in a badge, the frame jumps to the whole card behind the bar](/captures/start-dev-inspect.webp)
+![The Profile card, drawn large; the pointer moves onto its title, which gets a dashed blue frame under a dark label that reads TextNode and 0.00ms, then onto the blue bar, labelled RectNode; while Ctrl is held, shown in a badge, the frame jumps to the whole card behind the bar; I, shown in a badge, turns Inspect off and the frame disappears from the bar under the pointer, and a second I brings it back](/captures/start-dev-inspect.webp)
 
 <figcaption>
 With Inspect on, the node under the pointer is outlined and named, with its render time in milliseconds; `Ctrl` reaches the node behind it.
@@ -67,7 +67,7 @@ With Inspect on, the node under the pointer is outlined and named, with its rend
 
 <figure>
 
-![The Profile card and the dev panel; a click on the card locks it, a dashed blue frame stays around it and the panel grows to list its bounds, x 760, y 330, width 200 and height 240; the wheel, shown in a badge, scrolls the list down to the hierarchy and the two children, TextNode and FlexNode; a click on FlexNode moves the lock to the column of bars; Enter, shown in a badge, locks the card again, and a right click unlocks it](/captures/start-dev-panel.webp)
+![The Profile card and the dev panel; a click on the card locks it, a dashed blue frame stays around it and the panel grows to list its bounds, x 760, y 330, width 200 and height 240; the wheel, shown in a badge, scrolls the list down to the hierarchy and the two children, TextNode and FlexNode; a click on FlexNode moves the lock to the column of bars; Enter, shown in a badge, locks the card again, the wheel scrolls its list down to Properties, which gives the color, hoveredColor and borderColor of the card with their values, and a right click unlocks it](/captures/start-dev-panel.webp)
 
 <figcaption>
 A locked node shows where it is, what listens to it and what it holds: walk down to a child or up to the parent to find the node that is off.
@@ -87,7 +87,7 @@ The dev mode adds zoom shortcuts to every zoomable UI: `Ctrl` or `Alt` with `+` 
 
 <figure>
 
-![The blue Clicks button of the counter; Ctrl + -, shown in a badge, makes the whole UI smaller twice, then Ctrl + = brings it back to its size in two steps](/captures/start-dev-zoom.webp)
+![The blue Clicks button of the counter; Ctrl + -, shown in a badge, makes the whole UI smaller twice, then Ctrl + = brings it back to its size in two steps; while Alt is held, shown in a badge, the wheel makes it slightly smaller, then brings it back](/captures/start-dev-zoom.webp)
 
 <figcaption>
 Zoom a UI to check it smaller or larger without changing its code or the window.
