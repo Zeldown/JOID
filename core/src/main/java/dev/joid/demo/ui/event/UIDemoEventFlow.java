@@ -4,6 +4,7 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.control.scrollbar.DemoScrollbarNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
@@ -221,6 +222,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.create(40, 40, 160, 120)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
+			.scrollbar(DemoScrollbarNode.create(148, 0, 12, 120))
 			.scrollY(scroll)
 			.beforeScroll(event -> {
 				if (event.getOffset() < -120D) {
