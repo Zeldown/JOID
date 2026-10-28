@@ -2,15 +2,7 @@
 summary: Collects vertices with optional texture coordinates, colors and normals, and sends them to the render bridge in one draw.
 ---
 
-Start a shape, give it its vertices, then draw it:
-
-```java fragment
-final Tessellator tessellator = Tessellator.inst();
-tessellator.start(DrawMode.TRIANGLES);
-tessellator.addVertexWithUV(0D, 0D, 0D, 0D, 0D);
-...
-tessellator.draw();
-```
+Start a shape, give it its vertices, then draw it ([Build your own geometry](/use/learn/going-further/framebuffers-and-models/#build-your-own-geometry)).
 
 It draws with the current render state: the bound texture, the bound shader and the current color, which tints the vertices.
 A texture coordinate, a color or a normal applies to every vertex added after it, until you set another one.

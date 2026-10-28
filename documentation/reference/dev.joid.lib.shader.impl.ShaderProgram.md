@@ -2,13 +2,7 @@
 summary: Base class of a shader of your own, loaded from JOID GLSL sources and created on the render bridge the first time it is used.
 ---
 
-Extend it with a singleton, load the sources in the constructor, and draw through `use` so that the previous shader and blending come back afterwards:
-
-```java fragment
-private InvertShader() {
-	super.load("shaders/invert.vsh", "shaders/invert.fsh");
-}
-```
+Extend it with a singleton, load the sources in the constructor, and draw through `use` so that the previous shader and blending come back afterwards ([Write a shader](/use/learn/going-further/shaders/#write-a-shader)).
 
 A source that cannot be read or compiled warns once and makes the shader unavailable: what it draws is skipped instead of failing the frame.
 Create and use it on the render thread.

@@ -2,12 +2,7 @@
 summary: Draws something into an offscreen framebuffer, runs it through a chain of shader passes, and draws the result in place.
 ---
 
-A node effect such as a blur or a rounded mask goes through it; call it yourself in a node layer or a custom node:
-
-```java fragment
-final Runnable image = () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, this.photo);
-ShaderPipeline.render(0D, 0D, 200D, 200D, image, BlurShaderPass.create(12F, true), BlurShaderPass.create(12F, false));
-```
+A node effect such as a blur or a rounded mask goes through it; call it yourself in a node layer or a custom node ([Post-process with shader passes](/use/learn/going-further/shaders/#post-process-with-shader-passes)).
 
 The area grows by the largest [[IShaderPass#expansion]] of the passes, and only its part visible on screen is rendered, at the resolution of the screen.
 Each pass reads the result of the previous one; the last pass draws on screen with premultiplied blending.

@@ -2,9 +2,7 @@
 summary: The audio bridge of OpenAL, whose streaming sources call OpenAL through a binding.
 ---
 
-```java fragment
-final AlAudioBridge audio = AlAudioBridge.create(Lwjgl3AlBinding.inst()).ownContext(false);
-```
+Create it with the binding of your library ([Create the bridge](/build/base-modules/openal/#create-the-bridge)).
 
 Learn: [Create the bridge](/build/base-modules/openal/#create-the-bridge).
 

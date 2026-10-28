@@ -17,12 +17,7 @@ An image, an animated image, a vector image or a video, loaded in the background
 
 ## Description
 
-Create one from a path, a URL, a `File`, a stream or an [`Asset`](/reference/resources/asset/), and give it to a resource node:
-
-```java fragment
-final Resource logo = Resource.of("images/logo.png").nearest();
-final Resource trailer = Resource.of("https://example.com/trailer.mp4").onError((resource, error) -> this.retry());
-```
+Create one from a path, a URL, a `File`, a stream or an [`Asset`](/reference/resources/asset/), and give it to a resource node ([Load from the jar, the disk or the web](/use/learn/describing-the-ui/media/#load-from-the-jar-the-disk-or-the-web)).
 
 A `Resource` is a light handle: every handle of the same input shares one [`ResourceData`](/reference/resources/resourcedata/) through the cache of its [`ResourceBuilder`](/reference/resources/resourcebuilder/), so loading the same file twice decodes it once.
 Its own settings (interpolation, mipmaps, region, blocking) belong to the handle.

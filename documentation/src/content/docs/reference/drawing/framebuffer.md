@@ -17,12 +17,7 @@ An offscreen image that you draw into once and then draw as many times as you wa
 
 ## Description
 
-Fill it with your own drawing, then draw it where you need it; it keeps its content until you fill it again.
-
-```java fragment
-final FrameBuffer cache = FrameBuffer.create(256, 256, TextureFilter.LINEAR).fill(() -> this.drawScene());
-cache.draw(x, y, 128D, 128D);
-```
+Fill it with your own drawing, then draw it where you need it; it keeps its content until you fill it again ([Draw once, reuse every frame](/use/learn/going-further/framebuffers-and-models/#draw-once-reuse-every-frame)).
 
 A framebuffer holds GPU memory: create it on the render thread and call `delete()` when you are done with it.
 
