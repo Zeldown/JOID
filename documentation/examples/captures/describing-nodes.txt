@@ -7,6 +7,7 @@ ui com.example.describing.nodes.ProfileUI
 wait 100
 shot describing-nodes-profile
 # crop describing-nodes-build 640 270 640 260
+# still describing-nodes-build 146
 ui com.example.describing.nodes.TreeEditUI
 move 1160 470
 wait 300
@@ -38,6 +39,7 @@ moveto 1160 470 400
 wait 300
 cut
 # crop describing-nodes-front 640 520 500 210
+# still describing-nodes-front 108
 ui com.example.describing.nodes.TreeEditUI
 move 1080 610
 wait 300

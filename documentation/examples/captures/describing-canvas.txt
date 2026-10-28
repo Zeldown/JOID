@@ -1,7 +1,12 @@
 # crop describing-canvas-diagram 360 290 1200 500
 # crop describing-canvas-scale 0 0 960 540
+# still describing-canvas-scale 150
 # crop describing-canvas-zoom 0 0 960 540
+# still describing-canvas-zoom 120
 # crop describing-canvas-convert-diagram 300 290 1320 500
+# still describing-canvas-resize 122
+# still describing-canvas-pinned 124
+# still describing-canvas-convert 180
 ui com.example.describing.canvas.CanvasDiagramUI
 wait 100
 shot describing-canvas-diagram

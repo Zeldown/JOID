@@ -7,6 +7,7 @@ shot further-shaders-pipeline
 # crop further-shaders-invert 560 320 400 160
 shot further-shaders-invert
 # crop further-shaders-wave 60 60 440 160
+# still further-shaders-wave 60
 # film further-shaders-wave 60
 wait 2000
 cut

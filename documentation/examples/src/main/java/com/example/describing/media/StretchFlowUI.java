@@ -27,7 +27,7 @@ public class StretchFlowUI extends UI {
 		final StretchType[] types = {StretchType.STRETCH, StretchType.CONTAIN, StretchType.COVER};
 
 		RectNode
-		.create(490, 340, 940, 400)
+		.create(490, 340, 940, 360)
 		.color(CaptureStyle.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(CaptureStyle.STROKE, 1.5F))
@@ -35,21 +35,21 @@ public class StretchFlowUI extends UI {
 			for (int i = 0; i < types.length; i++) {
 				final double center = 170D + i * 300D;
 				RectNode
-				.create(center, 190, 180, 180)
+				.create(center, 170, 180, 180)
 				.color(CaptureStyle.STROKE)
 				.anchor(Align.CENTER)
 				.width(() -> this.getBoxWidth())
 				.height(() -> this.getBoxHeight())
 				.attach(card);
 				ResourceNode
-				.create(center, 190, 180, 180)
+				.create(center, 170, 180, 180)
 				.resource(image)
 				.stretch(types[i])
 				.anchor(Align.CENTER)
 				.width(() -> this.getBoxWidth())
 				.height(() -> this.getBoxHeight())
 				.attach(card);
-				TextNode.create(center, 350).text(Text.create(types[i].name(), caption)).anchor(Align.CENTER).attach(card);
+				TextNode.create(center, 330).text(Text.create(types[i].name(), caption)).anchor(Align.CENTER).attach(card);
 			}
 		})
 		.attach(this);

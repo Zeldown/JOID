@@ -1,4 +1,11 @@
 # crop describing-markup-lines 540 295 840 490
+# crop describing-markup-sweep 590 460 740 160
+# still describing-markup-sweep 30
 ui com.example.describing.markup.MarkupUI
 wait 100
 shot describing-markup-lines
+ui com.example.describing.markup.SweepUI
+wait 100
+# film describing-markup-sweep 60
+wait 2400
+cut

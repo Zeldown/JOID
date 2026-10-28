@@ -7,6 +7,7 @@ ui com.example.describing.layout.OverflowUI
 wait 100
 shot describing-layout-overflow
 # crop describing-layout-scroll 700 290 520 480
+# still describing-layout-scroll 70
 ui com.example.describing.layout.FeedUI
 wait 100
 move 960 480
@@ -18,6 +19,7 @@ scroll 8
 wait 1500
 cut
 # crop describing-layout-feed 700 290 520 480
+# still describing-layout-feed 200
 ui com.example.describing.layout.FeedUI
 wait 100
 move 960 480
@@ -38,6 +40,7 @@ moveto 960 480 400
 wait 100
 cut
 # crop describing-layout-scrollbar 700 340 520 400
+# still describing-layout-scrollbar 144
 ui com.example.describing.layout.ScrollbarUI
 wait 100
 move 1060 560

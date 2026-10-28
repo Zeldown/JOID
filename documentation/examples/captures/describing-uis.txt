@@ -3,6 +3,7 @@ ui com.example.describing.uis.MenuUI
 wait 100
 shot describing-uis-menu
 # crop describing-uis-rebuild 730 390 460 200
+# still describing-uis-rebuild 74
 ui com.example.describing.uis.ReloadUI
 move 1120 550
 # film describing-uis-rebuild
@@ -24,6 +25,7 @@ moveto 1120 550 400
 wait 300
 cut
 # crop describing-uis-replace 740 320 440 440
+# still describing-uis-replace 136
 ui com.example.describing.uis.MenuUI
 move 1140 730
 # film describing-uis-replace 60

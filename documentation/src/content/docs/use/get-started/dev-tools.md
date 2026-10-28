@@ -67,7 +67,7 @@ With Inspect on, the node under the pointer is outlined and named, with its rend
 
 <figure>
 
-![The Profile card and the dev panel; a click on the card locks it, a dashed blue frame stays around it and the panel grows to list its bounds, x 760, y 330, width 200 and height 240; the wheel, shown in a badge, scrolls the list down to the hierarchy and the two children, TextNode and FlexNode; a click on FlexNode moves the lock to the column of bars; Enter, shown in a badge, locks the card again, the wheel scrolls its list down to Properties, which gives the color, hoveredColor and borderColor of the card with their values, and a right click unlocks it](/captures/start-dev-panel.webp)
+![The Profile card and the dev panel; a click on the card locks it, a dashed blue frame stays around it and the panel grows to list its bounds, x 760, y 330, width 200 and height 240, and its listeners, onClick 1; the wheel, shown in a badge, scrolls the list down to the hierarchy and the two children, TextNode and FlexNode; a click on FlexNode moves the lock to the column of bars; Enter, shown in a badge, locks the card again, and a right click unlocks it](/captures/start-dev-panel.webp)
 
 <figcaption>
 A locked node shows where it is, what listens to it and what it holds: walk down to a child or up to the parent to find the node that is off.

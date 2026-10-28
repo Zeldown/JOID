@@ -117,7 +117,7 @@ A color derived from them changes with them: `Color.RAINBOW.darker()` is a darke
 
 <figure>
 
-![Three shapes on a dark card for six seconds: a square cycles twice through the hues, a second square follows the same hues, darker, and a wide rectangle pulses three times between two dark greys.](/captures/style-live.webp)
+![Three shapes on a dark card for six seconds: a square cycles twice through the hues, a second square follows the same hues, darker, and a wide rectangle pulses faintly between two dark greys so close that the change barely shows, the shade of a loading placeholder.](/captures/style-live.webp)
 
 <figcaption>
 No animator and no signal drive these nodes: the colors read the clock of JOID on every frame.

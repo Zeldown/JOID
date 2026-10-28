@@ -162,6 +162,7 @@ wait 500
 moveto 1120 650 400
 wait 300
 # crop interactivity-checkbox 540 320 840 440
+# still interactivity-checkbox 46
 ui com.example.interactivity.controls.SettingsUI
 move 1200 690
 # film interactivity-checkbox
@@ -178,6 +179,7 @@ moveto 1200 690 500
 wait 300
 cut
 # crop interactivity-toggle 80 120 860 290
+# still interactivity-toggle 98
 ui com.example.interactivity.controls.ChoicesUI
 move 620 330
 # film interactivity-toggle 60

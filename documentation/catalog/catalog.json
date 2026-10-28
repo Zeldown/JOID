@@ -118,18 +118,19 @@
 					],
 					"fps": 60,
 					"steps": [
-						"wait 200",
-						"moveto 150 150 400",
+						"wait 100",
+						"moveto 150 150 300",
 						"wait 100",
 						"press LEFT",
-						"moveto 260 150 700",
+						"moveto 260 150 600",
 						"wait 100",
-						"moveto 150 150 700",
+						"moveto 150 150 600",
 						"release LEFT",
 						"wait 2000",
-						"moveto 290 255 400",
-						"wait 200"
-					]
+						"moveto 290 255 300",
+						"wait 100"
+					],
+					"still": 70
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.layout.ContainerNode",
@@ -323,7 +324,8 @@
 						"wait 466",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 60
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.toggle.ToggleNode",
@@ -358,7 +360,8 @@
 						"wait 466",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 119
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.choice.SwitchNode",
@@ -387,7 +390,8 @@
 						"wait 700",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 57
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.selector.SelectorNode",
@@ -447,7 +451,8 @@
 						"wait 400",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 100
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode",
@@ -470,7 +475,8 @@
 						"wait 400",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 94
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.StringSliderNode",
@@ -499,7 +505,8 @@
 						"wait 500",
 						"moveto 290 255 500",
 						"wait 300"
-					]
+					],
+					"still": 105
 				},
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode",
@@ -524,7 +531,8 @@
 						"wait 500",
 						"moveto 290 255 400",
 						"wait 300"
-					]
+					],
+					"still": 98
 				}
 			]
 		},
@@ -617,77 +625,88 @@
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Linear easing curve, a straight blue line across a dark grey frame that marks 0 and 1, with a dot that runs along it",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuadTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quad easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CubicTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Cubic easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuartTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quart easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.QuintTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Quint easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.SineTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Sine easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ExpoTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Expo easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.CircTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Circ easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BackTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Back easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.BounceTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Bounce easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				},
 				{
 					"type": "dev.joid.lib.animation.tween.equation.ElasticTweenEquation",
 					"learn": "use/learn/style-and-motion/animation",
 					"alt": "The Elastic easing curves in a dark grey frame that marks 0 and 1: IN in blue, OUT in light grey, IN_OUT in grey, named under the curves, with one dot per curve that runs along it from the start to the end",
 					"film": 2000,
-					"fps": 60
+					"fps": 60,
+					"still": 44
 				}
 			]
 		},
@@ -712,7 +731,8 @@
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "The words Every glyph, whose letters cycle through the colors of the rainbow",
 					"film": 2967,
-					"fps": 60
+					"fps": 60,
+					"still": 49
 				},
 				{
 					"name": "Underline effect",
@@ -792,84 +812,120 @@
 		{
 			"id": "cursors",
 			"title": "Cursors",
-			"scene": null,
-			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.\n[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.",
+			"scene": "com.example.catalog.CursorsCatalogUI",
+			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system, and each card shows a plain drawing of the shape.\n[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.",
 			"complete": "dev.joid.lib.input.cursor.Cursor",
 			"cards": [
 				{
 					"name": "DEFAULT",
 					"reference": "Cursor#DEFAULT",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "The usual arrow."
+					"text": "The usual arrow.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "POINTER",
 					"reference": "Cursor#POINTER",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A hand: something that reacts to a click."
+					"text": "A hand: something that reacts to a click.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a hand with a raised finger",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "TEXT",
 					"reference": "Cursor#TEXT",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "An I-beam: text that you select or type."
+					"text": "An I-beam: text that you select or type.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an I-beam",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "CROSSHAIR",
 					"reference": "Cursor#CROSSHAIR",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A cross: a precise point to pick."
+					"text": "A cross: a precise point to pick.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a thin cross",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "MOVE",
 					"reference": "Cursor#MOVE",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "Four arrows: something that you move."
+					"text": "Four arrows: something that you move.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as four arrows",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "NOT_ALLOWED",
 					"reference": "Cursor#NOT_ALLOWED",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A crossed circle: an action that is refused here."
+					"text": "A crossed circle: an action that is refused here.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a crossed circle",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_EW",
 					"reference": "Cursor#RESIZE_EW",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A left-right arrow: a horizontal resize."
+					"text": "A left-right arrow: a horizontal resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a left-right arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NS",
 					"reference": "Cursor#RESIZE_NS",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "An up-down arrow: a vertical resize."
+					"text": "An up-down arrow: a vertical resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as an up-down arrow",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NWSE",
 					"reference": "Cursor#RESIZE_NWSE",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A diagonal arrow from the top left to the bottom right: a corner resize."
+					"text": "A diagonal arrow from the top left to the bottom right: a corner resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top left to the bottom right",
+					"pointer": [
+						170,
+						150
+					]
 				},
 				{
 					"name": "RESIZE_NESW",
 					"reference": "Cursor#RESIZE_NESW",
 					"learn": "use/learn/interactivity/hover-and-tooltips",
-					"capture": false,
-					"text": "A diagonal arrow from the top right to the bottom left: a corner resize."
+					"text": "A diagonal arrow from the top right to the bottom left: a corner resize.",
+					"alt": "A dark grey tile on a dark card, with the pointer resting on it drawn as a diagonal arrow from the top right to the bottom left",
+					"pointer": [
+						170,
+						150
+					]
 				}
-			],
-			"columns": [
-				"Cursor",
-				"What the system shows, and when to use it"
 			]
 		}
 	]

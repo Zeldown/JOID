@@ -2,6 +2,7 @@
 # crop style-derive 340 390 1240 300
 # crop style-gradient 340 740 1240 300
 # crop style-live 540 380 840 320
+# still style-live 16
 ui com.example.style.ColorsUI
 wait 100
 shot style-create

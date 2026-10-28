@@ -11,6 +11,7 @@ ui com.example.depth.MsdfTextUI
 wait 100
 shot depth-msdf-text
 # crop depth-msdf-zoom 640 320 640 440
+# still depth-msdf-zoom 120
 ui com.example.depth.MsdfZoomUI
 # film depth-msdf-zoom 60
 wait 4000
@@ -24,6 +25,7 @@ ui com.example.depth.PixelAlignmentUI
 wait 100
 shot depth-pixel-alignment
 # crop depth-pixel-motion 640 330 660 390
+# still depth-pixel-motion 22
 ui com.example.depth.PixelMotionUI
 # film depth-pixel-motion 60
 wait 4000
