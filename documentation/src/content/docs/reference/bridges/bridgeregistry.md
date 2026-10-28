@@ -24,6 +24,7 @@ Registering and unregistering are synchronized and publish a new read-only list,
 ## Learn more
 
 - [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)
+- [The bridges](/build/bridges/#priorities-order-a-registry)
 
 ## Creation
 

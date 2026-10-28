@@ -154,7 +154,7 @@ export function generateCatalog() {
 			writeFileSync(join(SCENARIOS, `catalog-${section.id}.txt`), `${scenario(section).join('\n')}\n`);
 		}
 	}
-	writeFileSync(PAGE, `${page(catalog, index)}\n`);
+	writeFileSync(PAGE, `${page(catalog, index).trimEnd()}\n`);
 }
 
 export function checkCatalog() {

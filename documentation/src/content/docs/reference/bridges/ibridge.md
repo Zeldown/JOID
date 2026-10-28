@@ -21,6 +21,10 @@ The marker interface of every bridge, the type that a `BridgeRegistry` holds.
 Every bridge contract extends `IBridge`: UI, window, render, audio, thread, clock and signal replay.
 It declares no method.
 
+## Learn more
+
+- [The bridges](/build/bridges/)
+
 ---
 
 <small>`fluent` returns the instance, typed for chaining · `factory` creates an instance · `signal` also accepts a value that follows signals, as a signal, an expression or a lambda ([When does JOID compute this value again?](/use/learn/interactivity/signals/#ask-when-does-joid-compute-this-value-again)) · `hook` called by JOID, override it · `abstract` you implement it · `default` interface method with a body · `static` called on the class · `protected` visible to subclasses</small>
