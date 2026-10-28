@@ -20,6 +20,10 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	private final NativeCursor nativeCursor = NativeCursor.forPlatform();
 
+	public Lwjgl2WindowBridge() {
+		Mouse.setClipMouseCoordinatesToWindow(false);
+	}
+
 	@Override
 	public int getWidth() {
 		return Math.round(Display.getWidth() * Display.getPixelScaleFactor());
