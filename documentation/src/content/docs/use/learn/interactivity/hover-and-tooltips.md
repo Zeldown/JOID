@@ -34,7 +34,7 @@ The color follows the hover progress, both when the pointer enters and when it l
 </figure>
 
 The hover progress runs from `0F` (not hovered) to `1F` (hovered).
-[[Node#hoverValue]] multiplies a value by it, to animate any property of your own; the progress changes without a signal, so the setter takes a lambda:
+[[Node#hoverValue]] multiplies a value by it, to animate any property of your own; `hoverValue` is a method of the node, not a signal of yours, so give the setter a lambda:
 
 ```java file="com/example/interactivity/hover/HoverUI.java" region="value"
 ```
@@ -169,7 +169,7 @@ Make the "Shop" button of `HoverUI` grow from `220` to `260` px wide while it is
 <details>
 <summary>Solution</summary>
 
-The hover progress changes without a signal, so the width is a lambda that reads it:
+`hoverValue` is read in a lambda, on every frame:
 
 ```java fragment
 .<RectNode>width(() -> 220D + rect.hoverValue(40F))

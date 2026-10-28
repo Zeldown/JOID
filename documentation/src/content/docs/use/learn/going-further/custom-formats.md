@@ -114,7 +114,7 @@ When the frames of your format cover only part of the image, as in a GIF, compos
 ## Recap
 
 - `Resource.of(...)` goes through the **resolvers**, the **asset locators**, then the **resource formats**; the last registered entry is asked first.
-- An **`IAssetLocator`** turns an input of your own into an `Asset`; when it throws, the resource fails.
+- An **`IAssetLocator`** turns an input of your own into an `Asset`; an `IllegalArgumentException` for a string makes the resource fail like a missing file, and any other exception reaches the caller.
 - An **`IResourceFormat`** recognizes a file from its first 4 096 bytes and returns a **decoder**.
 - A **decoder** prepares its textures, **decodes in the background**, then uploads on the render thread.
 - An **`IResourceAnimationReader`** turns a file into frames, played by an **`AnimatedResourceDecoder`**.
