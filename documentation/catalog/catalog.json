@@ -76,17 +76,17 @@
 					],
 					"fps": 60,
 					"steps": [
-						"wait 300",
-						"moveto 150 150 500",
 						"wait 200",
+						"moveto 150 150 400",
+						"wait 100",
 						"press LEFT",
-						"moveto 260 150 900",
-						"wait 200",
-						"moveto 150 150 900",
+						"moveto 260 150 700",
+						"wait 100",
+						"moveto 150 150 700",
 						"release LEFT",
-						"wait 600",
-						"moveto 290 255 500",
-						"wait 600"
+						"wait 300",
+						"moveto 290 255 400",
+						"wait 200"
 					]
 				},
 				{
@@ -538,16 +538,17 @@
 				"wait 700"
 			],
 			"crop": [
-				790,
-				390,
-				340,
-				300
+				780,
+				380,
+				360,
+				320
 			],
 			"cards": [
 				{
 					"type": "dev.joid.lib.ui.core.transition.PopTransition",
 					"learn": "use/learn/style-and-motion/transitions",
-					"alt": "A popup grows into view on a dark card, stays open, then shrinks away when Escape closes it"
+					"alt": "A popup grows into view on a dark card, stays open, then shrinks away when Escape closes it",
+					"still": 60
 				}
 			]
 		},

@@ -21,6 +21,7 @@ public class TextCatalogUI extends CatalogUI {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 30F).color(CatalogUI.TEXT);
+		final TextInfo small = TextInfo.create(ExampleFont.REGULAR, 26F).color(CatalogUI.TEXT);
 		final ITextEffect[] effects = {new WaveTextEffect(), new RainbowTextEffect(), UnderlineTextEffect.INSTANCE, new HighlightTextEffect(), new ScrambleTextEffect()};
 		final TextModifier[] modifiers = {TextModifier.UPPER_CASE, TextModifier.LOWER_CASE, TextModifier.CAPITALIZE, TextModifier.WORD_CAPITALIZE, TextModifier.CAMEL_CASE, TextModifier.UPPER_CAMEL_CASE, TextModifier.SNAKE_CASE};
 
@@ -34,7 +35,7 @@ public class TextCatalogUI extends CatalogUI {
 
 		for (int i = 0; i < modifiers.length; i++) {
 			final TextModifier modifier = modifiers[i];
-			super.card(6 + i).body(card -> TextNode.create(0, 0, 340, 300).text(Text.create("hello joid world", info).align(Align.CENTER).modifier(modifier)).attach(card)).attach(this);
+			super.card(6 + i).body(card -> TextNode.create(0, 0, 340, 300).text(Text.create("hello joid world", small).align(Align.CENTER).modifier(modifier)).attach(card)).attach(this);
 		}
 	}
 
