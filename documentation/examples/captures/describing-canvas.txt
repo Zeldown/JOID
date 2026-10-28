@@ -53,27 +53,20 @@ wait 1000
 moveto 700 470 500
 wait 300
 cut
+resize 640 360
 ui com.example.describing.canvas.ConvertSceneUI
-move 600 360
 # film describing-canvas-convert 60
-wait 300
-resizeto 1200 400 700
-wait 150
-moveto 744 324 400
-wait 100
-press LEFT
-release LEFT
 wait 400
+resizeto 720 240 700
+wait 400
+key DIGIT_3
+wait 800
 zoomto 0.5 600
 wait 300
 zoomto 1 600
-wait 100
-moveto 844 324 400
-wait 100
-press LEFT
-release LEFT
-wait 300
-moveto 600 360 400
-resizeto 960 540 700
-wait 200
+wait 400
+key DIGIT_2
+wait 600
+resizeto 640 360 700
+wait 500
 cut

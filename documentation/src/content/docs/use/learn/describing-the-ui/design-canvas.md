@@ -101,7 +101,7 @@ The default window UI bridge gives 1; a UI bridge of your own gives another valu
 
 <figure>
 
-![Two cards against the left and right edges of a window, at mid-height, Default on the left and Limit 1.5 on the right. The interface scale goes from 1 to 2 and back: the left card grows to twice its size, the right card stops at one and a half times its size, then both shrink back.](/captures/describing-canvas-scale.webp)
+![Two cards against the left and right edges of a window, at mid-height, Default on the left and Limit 1.5 on the right. The interface scale, given by a badge at the bottom left, goes from 1 to 2 and back: the left card grows to twice its size, the right card stops at one and a half times its size, then both shrink back.](/captures/describing-canvas-scale.webp)
 
 <figcaption>
 A limit caps the size of a UI, whatever scale the application asks for: `GaugeUI` stops at 1.5, while the UI without `@UIDataScale` reaches 2.
@@ -191,7 +191,7 @@ The same point, (1560, 300), on several windows:
 
 <figure>
 
-![A window, drawn as an outline, shows a dark design canvas with its corners labelled "0, 0" and "1920, 1080", a blue dot labelled "1560, 300", a grey anchor dot in its middle and three buttons, START, CENTER and END, with CENTER in blue. The window widens to three times as wide as it is high and bands appear on both sides of the canvas; the pointer clicks END and the canvas moves against the right edge with its anchor; the zoom goes down to 0.5 and the canvas shrinks toward the right edge, then grows back; the pointer clicks CENTER and the window returns to 16:9. A badge under the window gives the anchor, the zoom and the screen position of the blue dot: (780, 150), then (822, 111), (1067, 111), (1133, 156) and back.](/captures/describing-canvas-convert.webp)
+![A window, drawn as an outline, shows a dark design canvas with its corners labelled "0, 0" and "1920, 1080", a blue dot labelled "1560, 300", a grey anchor dot in its middle and three boxes, 1 START, 2 CENTER and 3 END, with CENTER in blue. The window widens to three times as wide as it is high and bands appear on both sides of the canvas; the key 3, shown in a badge, sets the anchor to END, END turns blue and the canvas moves against the right edge with its anchor; the zoom goes down to 0.5 and the canvas shrinks toward the right edge, then grows back; the key 2 sets the anchor back to CENTER and the window returns to 16:9. A badge under the window gives the anchor, the zoom and the screen position of the blue dot: (520, 100), then (493, 67), (640, 67), (680, 93) at a zoom of 0.5, (640, 67), (493, 67) and back to (520, 100).](/captures/describing-canvas-convert.webp)
 
 <figcaption>
 The dot keeps its design position, (1560, 300), while its screen position follows the window, the anchor and the zoom.
