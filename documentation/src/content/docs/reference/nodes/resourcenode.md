@@ -22,7 +22,7 @@ Draws an image resource in its bounds, tinted by a color, with an optional image
 
 The node waits for its resource: it draws its skeleton until the image is loaded.
 Without a declared size it takes the size of the image; with one declared size, it keeps the ratio of the image on the other axis.
-A resource that fails to load shows a checkerboard of 64 × 64 design pixels when no size is declared.
+A resource that fails to load takes 64 × 64 design pixels when no size is declared, and draws a magenta and black checkerboard there in dev mode, nothing in production.
 
 ## Learn more
 

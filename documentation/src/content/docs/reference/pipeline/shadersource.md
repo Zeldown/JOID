@@ -25,6 +25,7 @@ A [`ShaderProgram`](/reference/shaders/shaderprogram/) reads both of its stages 
 
 - [Shaders](/use/learn/going-further/shaders/)
 - [Shader translation](/build/shader-translation/#from-source-to-program)
+- [Architecture and layers](/build/architecture/)
 
 ## Creation
 
