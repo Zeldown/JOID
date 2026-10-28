@@ -8,26 +8,31 @@ import dev.joid.lib.draw.text.TextElement;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 public class RunsUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color DARK        = new Color(85, 85, 85);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	private int clicks;
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(RunsUI.INK);
-		final TextInfo bold = info.withWeight(FontWeight.BOLD).withColor(RunsUI.DARK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(RunsUI.TEXT);
+		final TextInfo bold = info.withWeight(FontWeight.BOLD).withColor(RunsUI.ACCENT);
 
 		RectNode
 		.create(610, 340, 700, 400)
-		.color(RunsUI.PLACEHOLDER)
+		.color(RunsUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(RunsUI.ELEMENT, 1.5F))
 		.body(card -> {
 			// #region runs
 			TextNode
@@ -38,7 +43,7 @@ public class RunsUI extends UI {
 			// #region supplier
 			RectNode
 			.create(50, 140, 400, 80)
-			.color(Color.WHITE)
+			.color(RunsUI.ELEMENT)
 			.onClick(event -> this.clicks++)
 			.body(button -> {
 				TextNode
@@ -52,7 +57,7 @@ public class RunsUI extends UI {
 			final String label = "Settings";
 			RectNode
 			.create(50, 270, info.aw(label, 48D), info.ah(24D))
-			.color(Color.WHITE)
+			.color(RunsUI.ELEMENT)
 			.body(box -> TextNode.create(24, 12).text(Text.create(label, info)).attach(box))
 			.attach(card);
 			// #endregion

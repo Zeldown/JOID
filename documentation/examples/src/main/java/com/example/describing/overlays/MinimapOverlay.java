@@ -19,7 +19,8 @@ import dev.joid.lib.utils.align.Align;
 )
 public class MinimapOverlay extends UI {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	private double zoom = 1D;
 
@@ -27,11 +28,11 @@ public class MinimapOverlay extends UI {
 	public void init() {
 		RectNode
 		.create(1560, 40, 320, 320)
-		.color(Color.WHITE)
+		.color(MinimapOverlay.SURFACE)
 		.onClick(event -> this.zoom = this.zoom == 1D ? 2D : 1D)
 		.body(map -> CircleNode
 			.create(160, 160, 40)
-			.color(MinimapOverlay.INK)
+			.color(MinimapOverlay.ACCENT)
 			.width(() -> 40D * this.zoom)
 			.height(() -> 40D * this.zoom)
 			.anchor(Align.CENTER)

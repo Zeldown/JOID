@@ -1,14 +1,14 @@
 ui com.example.describing.grid.GridCasesUI
 wait 100
-# crop describing-grid-wrap 60 100 400 300
+# crop describing-grid-wrap 40 80 440 340
 shot describing-grid-wrap
-# crop describing-grid-margins 520 100 400 300
+# crop describing-grid-margins 500 80 440 340
 shot describing-grid-margins
-# crop describing-grid-align 980 100 400 300
+# crop describing-grid-align 960 80 440 340
 shot describing-grid-align
-# crop describing-grid-rows 1440 100 400 300
+# crop describing-grid-rows 1420 80 440 340
 shot describing-grid-rows
-# crop describing-grid-scroll 60 460 400 300
+# crop describing-grid-scroll 40 440 440 340
 move 260 610
 # film describing-grid-scroll 60
 wait 300

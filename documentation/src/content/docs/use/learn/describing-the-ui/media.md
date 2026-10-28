@@ -28,7 +28,7 @@ A [[Resource]] is something JOID can draw, made by [[Resource#of]], and a [[Reso
 
 <figure>
 
-![On a light grey card, two rows of placeholder images framed in grey with a cross. First row: the image at its natural size, a smaller copy with the same proportions, and a dark grey tinted copy. Second row: the image stretched into a square, contained in a square between two white bands, and covering a square, then the top-left quarter of the image enlarged.](/captures/describing-media-gallery.webp)
+![On a dark card, two rows of light grey placeholder images framed in grey with a cross. First row: the image at its natural size, a smaller copy with the same proportions, and a copy tinted darker. Second row: the image stretched into a square, contained in a square between two dark grey bands, and covering a square, then the top-left quarter of the image enlarged.](/captures/describing-media-gallery.webp)
 
 <figcaption>
 One image, many ways to draw it: natural size, proportional size, tint, the three fits and a crop.
@@ -144,7 +144,7 @@ A [[ResourcePlayerNode]] plays a resource that moves: an animated image, or a vi
 
 <figure>
 
-![On a white card, a light grey animated image where a grey square slides from left to right, then starts again from the left](/captures/describing-media-animation.webp)
+![On a dark card, a light grey animated image where a grey square slides from left to right, then starts again from the left](/captures/describing-media-animation.webp)
 
 <figcaption>
 The player starts the GIF on its own and loops it; a click pauses it or plays it again.

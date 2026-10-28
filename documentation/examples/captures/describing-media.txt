@@ -1,4 +1,4 @@
-# crop describing-media-gallery 430 300 1060 480
+# crop describing-media-gallery 410 280 1100 520
 ui com.example.describing.media.GalleryUI
 wait 500
 shot describing-media-gallery

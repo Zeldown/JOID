@@ -35,7 +35,7 @@ The style names a font that your application loads once: [Fonts](/use/learn/desc
 
 <figure>
 
-![A light grey card with Hello JOID in large bold dark grey letters, a grey sentence in regular weight below it, and a small spaced caption in capitals at the bottom](/captures/describing-text-styles.webp)
+![A dark card with Hello JOID in large bold light letters, a grey sentence in regular weight below it, and a small spaced caption in capitals at the bottom](/captures/describing-text-styles.webp)
 
 <figcaption>
 Three styles from one font: a bold title, a body, and a smaller caption with spaced letters.
@@ -80,7 +80,7 @@ Any node can also carry a label: [[Node#label]] draws a `Text` centered on the n
 
 <figure>
 
-![A light grey card with two white buttons, the word Play centered in the first and Settings centered in the second](/captures/describing-text-align.webp)
+![A dark card with two dark grey buttons, the word Play centered in the first and Settings centered in the second](/captures/describing-text-align.webp)
 
 <figcaption>
 A centered text node and a label give the same result.
@@ -98,10 +98,10 @@ A [[TextMode]], given to [[TextNode#mode]], changes that inside the width of the
 
 <figure>
 
-![Four white boxes one line high with the same sentence. OVERFLOW: one line cut with an ellipsis at the edge of the box. SPLIT: the sentence wrapped on two lines, the second below the box. NORMAL: one line that goes beyond the box. BOX: wrapped, only the first line, which fits in the box, is drawn.](/captures/describing-text-modes.webp)
+![Four dark grey boxes one line high with the same sentence, in two rows: OVERFLOW, one line cut with an ellipsis at the edge of the box, and SPLIT, the sentence wrapped on two lines, the second below the box; then BOX, wrapped, only the first line, which fits in the box, is drawn; then NORMAL, one line that goes beyond the box.](/captures/describing-text-modes.webp)
 
 <figcaption>
-The same sentence in four boxes of the same size: cut, wrapped and grown, untouched, or wrapped and clipped.
+The same sentence in four boxes of the same size: cut, wrapped onto a second line below the box, wrapped and clipped, or untouched.
 </figcaption>
 </figure>
 
@@ -134,7 +134,7 @@ JOID calls it each time it measures or draws the text, so the text follows your 
 
 <figure>
 
-![A light grey card with Welcome back, Ada on its first line, Ada in bold, a white button that the pointer clicks three times, its text going from Clicks: 0 to Clicks: 3, and a white box that fits the word Settings](/captures/describing-text-runs.webp)
+![A dark card with Welcome back, Ada on its first line, Ada in bold and blue, a dark grey button that the pointer clicks three times, its text going from Clicks: 0 to Clicks: 3, and a dark grey box that fits the word Settings](/captures/describing-text-runs.webp)
 
 <figcaption>
 Two runs on one line, a text that counts the clicks of its button, and a box sized from its label.

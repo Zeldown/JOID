@@ -25,7 +25,7 @@ A [[FlexNode]] does it for you: it stacks its children in a column or a row on e
 
 <figure>
 
-![On a light grey card, four grey bars of different widths, stacked from the top with an equal gap between them](/captures/describing-flex-column.webp)
+![On a dark card, four blue bars of different widths, stacked from the top with an equal gap between them](/captures/describing-flex-column.webp)
 
 <figcaption>
 Every child is created at (0, 0): the column gives each one its place, in the order you attach them.
@@ -44,7 +44,7 @@ The column is a [layout node](/use/learn/describing-the-ui/layout/#know-who-plac
 
 <figure>
 
-![On a light grey card, four grey bars of different widths and heights, side by side from the left, all touching the top](/captures/describing-flex-row.webp)
+![On a dark card, four blue bars of different widths and heights, side by side from the left, all touching the top](/captures/describing-flex-row.webp)
 
 <figcaption>
 A row works like a column turned on its side: the children follow each other from left to right.
@@ -62,7 +62,7 @@ A row works like a column turned on its side: the children follow each other fro
 
 <figure>
 
-![On a light grey card, four grey bars of different widths, stacked and centered on the width of the card](/captures/describing-flex-align.webp)
+![On a dark card, four blue bars of different widths, stacked and centered on the width of the card](/captures/describing-flex-align.webp)
 
 <figcaption>
 `Align.CENTER` centers each bar on the 360 design pixels of the column.
@@ -81,10 +81,10 @@ The own position of a child adds to the place that the flex node gives it:
 
 <figure>
 
-![Three bars in a column on a light grey background: the white middle bar sits 40 design pixels right of the grey ones and 30 lower than its place, and overlaps the grey bar below it, which keeps its place](/captures/describing-flex-offset.webp)
+![Three bars in a column on a dark card: the dark grey middle bar sits 40 design pixels right of the blue ones and 30 lower than its place, and overlaps the blue bar below it, which keeps its place](/captures/describing-flex-offset.webp)
 
 <figcaption>
-The white bar, created at (40, 30), moves 40 design pixels right and 30 down, and the bar after it does not move.
+The dark grey bar, created at (40, 30), moves 40 design pixels right and 30 down, and the bar after it does not move.
 </figcaption>
 </figure>
 
@@ -94,14 +94,14 @@ Across the line, the offset applies only while `align` is not set: an alignment 
 ## Let the flex node take its size
 
 A flex node created with a length of 0 along its line takes the length of its content: a column as high as its children and their gaps, a row as wide.
-Here a white panel reads the height of the column to wrap it:
+Here a dark grey panel reads the height of the column to wrap it:
 
 ```java file="com/example/describing/flex/FlexCasesUI.java" region="grow"
 ```
 
 <figure>
 
-![On a light grey card, a white panel that wraps three grey bars with an even white margin around them](/captures/describing-flex-grow.webp)
+![On a dark card, a dark grey panel that wraps three blue bars with an even margin around them](/captures/describing-flex-grow.webp)
 
 <figcaption>
 The column measures 170 design pixels, three bars and two gaps, and the panel follows it.
@@ -119,7 +119,7 @@ Give the column a length and an [[OverflowProperty]] other than `NONE`: the cont
 
 <figure>
 
-![On a light grey card, a column of grey and white bars cut off near the bottom of the card; the wheel moves them up so that the next bars come into view, then moves them back down](/captures/describing-flex-scroll.webp)
+![On a dark card, a column of blue and dark grey bars cut off near the bottom of the card; the wheel moves them up so that the next bars come into view, then moves them back down](/captures/describing-flex-scroll.webp)
 
 <figcaption>
 The column stays 260 design pixels high, and its eight bars scroll inside it.
@@ -139,7 +139,7 @@ A flex node is a node like any other: a column of rows builds a list whose lines
 
 <figure>
 
-![On a light grey card, three lines stacked from the top: each line is a white disc followed by a grey label, Sound, Music and Subtitles, centered on the disc](/captures/describing-flex-list.webp)
+![On a dark card, three lines stacked from the top: each line is a blue disc followed by a light label, Sound, Music and Subtitles, centered on the disc](/captures/describing-flex-list.webp)
 
 <figcaption>
 Each row centers its disc and its label on its 90 design pixels; the column stacks the rows.

@@ -25,7 +25,7 @@ The lambda of `body` receives the parent, already sized, so its children can use
 
 <figure>
 
-![A light grey panel with a grey header bar across its whole width and a white button centered near its bottom edge](/captures/describing-position-panel.webp)
+![A dark panel with rounded corners and a thin border, a blue header bar across its whole width and a dark grey button centered near its bottom edge](/captures/describing-position-panel.webp)
 
 <figcaption>
 The header takes the width of the panel and the button is centered from it: change the panel and both follow at the next build.
@@ -59,7 +59,7 @@ The position of a node names its top-left corner by default.
 
 <figure>
 
-![A light grey card crossed by a dark vertical line. Three bars share the same x: the first starts on the line, the second is centered on it, the third ends on it.](/captures/describing-position-anchors.webp)
+![A dark card crossed by a grey vertical line. Three bars share the same x: the first starts on the line, the second is centered on it, the third ends on it.](/captures/describing-position-anchors.webp)
 
 <figcaption>
 The three bars have the same x; their anchor decides which of their points sits on it.
@@ -77,7 +77,7 @@ When the size of an anchored node changes, the anchored point stays where it is:
 ```java file="com/example/describing/position/PanelUI.java" region="absolute"
 ```
 
-The white square sits at (20, 20) on the canvas, not at (20, 20) in the panel.
+The dark grey square sits at (20, 20) on the canvas, not at (20, 20) in the panel.
 It stays a child: it is drawn, hidden and removed with its parent, but layout nodes skip it and it does not count in the size of their content ([Layout](/use/learn/describing-the-ui/layout/)).
 
 ## Choose what is drawn on top
@@ -90,7 +90,7 @@ Siblings are drawn in attach order, the last on top, and the mouse reaches the t
 
 <figure>
 
-![A light grey card with three overlapping squares: the dark grey one on the left is drawn above the grey one in the middle, and a small dark grey square peeks out from behind the top-left corner of the white square on the right.](/captures/describing-position-order.webp)
+![A dark card with three overlapping squares: the grey one on the left is drawn above the blue one in the middle, and a small grey square peeks out from behind the top-left corner of the dark grey square on the right.](/captures/describing-position-order.webp)
 
 <figcaption>
 `zindex(1)` raises the first square above the second; `zindex(-1)` puts the small square behind its own parent.
@@ -106,14 +106,14 @@ The order of whole UIs is another `zindex`, set on the UI ([Overlays and popups]
 
 ## Hide or disable a node
 
-`shown` is a [[BooleanSignal]] field of the UI: `visible(this.shown)` follows it, and the white square toggles it ([Signals](/use/learn/interactivity/signals/)).
+`shown` is a [[BooleanSignal]] field of the UI: `visible(this.shown)` follows it, and the Toggle square toggles it ([Signals](/use/learn/interactivity/signals/)).
 
 ```java file="com/example/describing/position/HideUI.java" region="hide"
 ```
 
 <figure>
 
-![Two grey squares and a white one in a row; the pointer rests on the second grey square, which keeps its color, then clicks the white square twice: the first grey square disappears, then comes back](/captures/describing-position-hide.webp)
+![Three squares in a row, labelled Shown, Disabled and Toggle: two blue ones and a grey one. The pointer rests on the Shown square, which lights up, then on the Disabled square, which keeps its color, then clicks Toggle: the Shown square disappears, and nothing lights up when the pointer rests where it was; a second click on Toggle brings it back](/captures/describing-position-hide.webp)
 
 <figcaption>
 The hidden square is neither drawn nor clickable; the disabled one is drawn but shows no hover.
@@ -135,7 +135,7 @@ The hidden square is neither drawn nor clickable; the disabled one is drawn but 
 
 <figure>
 
-![A light grey card with three tiles in a row: two white tiles holding a grey disc, and a dark grey tile holding a grey disc.](/captures/describing-position-copy.webp)
+![A dark card with three tiles in a row: two dark grey tiles holding a blue disc, and a grey tile holding a blue disc.](/captures/describing-position-copy.webp)
 
 <figcaption>
 Each copy starts from the tile, then its own setters move it or change its color.

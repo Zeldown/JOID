@@ -13,6 +13,8 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -20,8 +22,10 @@ import dev.joid.lib.utils.thread.ThreadUtils;
 
 public class LifecycleUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color TEXT    = new Color(231, 233, 238).lock();
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor(ThreadUtils.daemonFactory("poll"));
 
@@ -31,12 +35,14 @@ public class LifecycleUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(LifecycleUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(LifecycleUI.TEXT);
 
 		// #region timer
 		RectNode
 		.create(660, 290, 600, 160)
-		.color(LifecycleUI.PLACEHOLDER)
+		.color(LifecycleUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
 		.onInit(event -> this.open = 0D)
 		.onUpdate(event -> this.open += super.getFrameTime() / 1000D)
 		.body(card -> TextNode
@@ -50,7 +56,9 @@ public class LifecycleUI extends UI {
 		// #region draw
 		RectNode
 		.create(760, 480, 400, 120)
-		.color(LifecycleUI.PLACEHOLDER)
+		.color(LifecycleUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
 		.body(card -> TextNode
 			.create(200, 60)
 			.text(Text.create("Underlined", info))
@@ -58,7 +66,7 @@ public class LifecycleUI extends UI {
 			.onDraw(event -> {
 				final Node node = event.getNode();
 				final double bottom = node.getY() + node.getHeight();
-				DrawUtils.SHAPE.drawRect(node.getX(), bottom + 4D, node.getWidth(), 4D, LifecycleUI.INK);
+				DrawUtils.SHAPE.drawRect(node.getX(), bottom + 4D, node.getWidth(), 4D, LifecycleUI.ACCENT);
 			})
 			.attach(card))
 		.attach(this);
@@ -67,7 +75,9 @@ public class LifecycleUI extends UI {
 		// #region release
 		RectNode
 		.create(660, 630, 600, 160)
-		.color(LifecycleUI.PLACEHOLDER)
+		.color(LifecycleUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(LifecycleUI.ELEMENT, 1.5F))
 		.onInit(event -> this.poll = LifecycleUI.EXECUTOR.scheduleAtFixedRate(() -> this.checks++, 0L, 5L, TimeUnit.SECONDS))
 		.onDetach(event -> this.poll.cancel(false))
 		.body(card -> TextNode

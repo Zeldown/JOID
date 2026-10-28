@@ -6,16 +6,17 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class EdgesUI extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color DARK        = new Color(85, 85, 85);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color ELEMENT = new Color(38, 43, 53).lock();
+	private static final Color SURFACE = new Color(23, 26, 33).lock();
+	private static final Color MUTED   = new Color(139, 147, 163).lock();
+	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
 		// #region view
 		RectNode
 		.create(0, 0, 0, 0)
-		.color(EdgesUI.PLACEHOLDER)
+		.color(EdgesUI.ELEMENT)
 		.x(() -> super.getViewX())
 		.y(() -> super.getViewY())
 		.width(() -> super.getViewWidth())
@@ -24,14 +25,14 @@ public class EdgesUI extends UI {
 		// #endregion
 
 		// #region canvas
-		RectNode.create(0, 0, 1920, 1080).color(Color.WHITE).attach(this);
-		RectNode.create(660, 340, 600, 400).color(EdgesUI.INK).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(EdgesUI.SURFACE).attach(this);
+		RectNode.create(660, 340, 600, 400).color(EdgesUI.ACCENT).attach(this);
 		// #endregion
 
 		// #region edges
 		RectNode
 		.create(0, 0, 0, 120)
-		.color(EdgesUI.DARK)
+		.color(EdgesUI.MUTED)
 		.x(() -> super.getViewX())
 		.y(() -> super.getViewY())
 		.width(() -> super.getViewWidth())
@@ -39,7 +40,7 @@ public class EdgesUI extends UI {
 
 		RectNode
 		.create(0, 0, 80, 80)
-		.color(EdgesUI.INK)
+		.color(EdgesUI.ACCENT)
 		.x(() -> super.getViewX() + super.getViewWidth() - 100D)
 		.y(() -> super.getViewY() + 20D)
 		.attach(this);

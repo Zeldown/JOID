@@ -24,7 +24,7 @@ A [[GridNode]] fills a row from left to right, starts the next row when the widt
 
 <figure>
 
-![On a light grey card, nine grey squares: two full rows of four, then a single square on a third row, all aligned to the left](/captures/describing-grid-wrap.webp)
+![On a dark card, nine blue squares: two full rows of four, then a single square on a third row, all aligned to the left](/captures/describing-grid-wrap.webp)
 
 <figcaption>
 Four squares and their gaps fit in 360 design pixels: the fifth starts the second row.
@@ -45,7 +45,7 @@ The cells keep their own size, and take their places in the order you attach the
 
 <figure>
 
-![On a light grey card, two rows of four grey squares, with wide gaps between the squares of a row and a thin gap between the rows](/captures/describing-grid-margins.webp)
+![On a dark card, two rows of four blue squares, with wide gaps between the squares of a row and a thin gap between the rows](/captures/describing-grid-margins.webp)
 
 <figcaption>
 20 design pixels between the cells of a row, 5 between the rows.
@@ -63,7 +63,7 @@ There is no gap before the first cell nor after the last one of a row.
 
 <figure>
 
-![On a light grey card, a full row of four grey squares, and below it a row of two squares centered under them](/captures/describing-grid-align.webp)
+![On a dark card, a full row of four blue squares, and below it a row of two squares centered under them](/captures/describing-grid-align.webp)
 
 <figcaption>
 `Align.CENTER` centers the full row and the short last row each on its own width.
@@ -82,10 +82,10 @@ A row is as high as its tallest cell, and the next row starts below it:
 
 <figure>
 
-![On a light grey card, a first row of three cells of the same width and different heights, the white one tallest, then a second row of two wider grey cells that starts below the white cell](/captures/describing-grid-rows.webp)
+![On a dark card, a first row of three cells of the same width and different heights, the dark grey one tallest, then a second row of two wider blue cells that starts below the dark grey cell](/captures/describing-grid-rows.webp)
 
 <figcaption>
-The white cell sets the height of the first row; the cells of a row are aligned at its top.
+The dark grey cell sets the height of the first row; the cells of a row are aligned at its top.
 </figcaption>
 </figure>
 
@@ -99,7 +99,7 @@ A height that you give follows the [rule of the layout nodes](/use/learn/describ
 
 <figure>
 
-![On a light grey card, rows of grey and white squares cut off near the bottom of the card; the wheel moves them up so that the next rows come into view, then moves them back down](/captures/describing-grid-scroll.webp)
+![On a dark card, rows of blue and dark grey squares cut off near the bottom of the card; the wheel moves them up so that the next rows come into view, then moves them back down](/captures/describing-grid-scroll.webp)
 
 <figcaption>
 The grid stays 260 design pixels high, and its five rows scroll inside it.

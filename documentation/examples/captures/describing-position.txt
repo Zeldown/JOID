@@ -1,34 +1,40 @@
-# crop describing-position-panel 560 290 800 500
+# crop describing-position-panel 530 260 860 550
 ui com.example.describing.position.PanelUI
 wait 100
 shot describing-position-panel
-# crop describing-position-anchors 660 340 600 400
+# crop describing-position-anchors 640 320 640 440
 ui com.example.describing.position.AnchorUI
 wait 100
 shot describing-position-anchors
-# crop describing-position-order 660 340 600 400
+# crop describing-position-order 640 320 640 440
 ui com.example.describing.position.OrderUI
 wait 100
 shot describing-position-order
-# crop describing-position-copy 560 390 800 300
+# crop describing-position-copy 540 370 840 340
 ui com.example.describing.position.CopyUI
 wait 100
 shot describing-position-copy
-# crop describing-position-hide 640 420 640 220
+# crop describing-position-hide 640 420 640 280
 ui com.example.describing.position.HideUI
-move 1000 635
+move 1000 660
 # film describing-position-hide
 wait 300
-moveto 960 590 500
+moveto 750 530 500
 wait 600
-moveto 1170 590 400
+moveto 960 530 400
+wait 600
+moveto 1170 530 400
 wait 150
 press LEFT
 release LEFT
 wait 800
+moveto 750 530 400
+wait 600
+moveto 1170 530 400
+wait 150
 press LEFT
 release LEFT
 wait 700
-moveto 1000 635 400
+moveto 1000 660 400
 wait 300
 cut

@@ -2,7 +2,7 @@
 ui com.example.describing.lifecycle.LifecycleDiagramUI
 wait 100
 shot describing-lifecycle-flow
-# crop describing-lifecycle-draw 760 480 400 120
+# crop describing-lifecycle-draw 740 460 440 160
 mask 660 290 600 160
 mask 660 630 600 160
 ui com.example.describing.lifecycle.LifecycleUI

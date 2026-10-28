@@ -43,7 +43,7 @@ It holds children, so that they move, hide and clip together:
 
 <figure>
 
-![On a light grey card, two identical groups, the second one lower and further right: each is a white disc followed by a grey bar and a shorter white bar](/captures/describing-layout-group.webp)
+![On a dark card, two identical groups, the second one lower and further right: each is a dark grey disc followed by a blue bar and a shorter dark grey bar](/captures/describing-layout-group.webp)
 
 <figcaption>
 Each group is one container: its position moves the disc and the two bars at once.
@@ -68,7 +68,7 @@ A container sized 0 still draws its children, since a node does not clip by defa
 
 <figure>
 
-![Two white panels side by side on a light grey card, each holding the same grey bar that is wider than the panel: on the left the bar stops at the edge of the panel, on the right it continues over the card](/captures/describing-layout-overflow.webp)
+![Two dark grey panels side by side on a dark card, each holding the same blue bar that is wider than the panel: on the left the bar stops at the edge of the panel, on the right it continues over the card](/captures/describing-layout-overflow.webp)
 
 <figcaption>
 The same child, clipped by `HIDDEN` on the left and drawn whole with `NONE` on the right.
@@ -87,7 +87,7 @@ With `NONE`, the node counts the children that go past it in its own extent, so 
 
 <figure>
 
-![A white panel shows the first four grey rows of a list; the wheel moves the list up so that the next rows come into view, then moves it back down](/captures/describing-layout-scroll.webp)
+![A dark grey panel shows the first four blue rows of a list; the wheel moves the list up so that the next rows come into view, then moves it back down](/captures/describing-layout-scroll.webp)
 
 <figcaption>
 The panel keeps its size: the wheel moves its eight rows inside it.

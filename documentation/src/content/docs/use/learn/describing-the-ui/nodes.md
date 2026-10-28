@@ -40,7 +40,7 @@ Most setters also take a `Supplier`, so that the property follows a value that c
 
 <figure>
 
-![A light grey card with a grey header bar, and below it a white panel holding a light grey disc and two light grey lines of different lengths](/captures/describing-nodes-profile.webp)
+![A dark card with a blue header bar, and below it a dark grey panel holding a grey disc and two grey lines of different lengths](/captures/describing-nodes-profile.webp)
 
 <figcaption>
 The code reads like the result: each body holds what is drawn inside its node.
@@ -101,7 +101,7 @@ Attaching a node that is already attached to the same parent moves it to the end
 ```java file="com/example/describing/nodes/ToolbarUI.java" region="front"
 ```
 
-The grey rectangle is attached first, then the white one covers it; attaching the grey one again puts it on top.
+The blue rectangle is attached first, then the dark grey one covers it; attaching the blue one again puts it on top.
 To keep a node above or below its siblings whatever the attach order, give it a `zindex` ([Position and size](/use/learn/describing-the-ui/position-and-size/#choose-what-is-drawn-on-top)).
 
 ## Read the tree
@@ -202,7 +202,7 @@ CircleNode.create(0, 0, 40).color(Color.WHITE).onClick(event -> JOID.close(this)
 </details>
 
 **Raise on click.**
-Make each white button of the toolbar come to the front of its siblings when it is clicked.
+Make each dark grey button of the toolbar come to the front of its siblings when it is clicked.
 
 <details>
 <summary>Solution</summary>

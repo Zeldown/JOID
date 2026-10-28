@@ -2,13 +2,13 @@ package com.example.describing.flex;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(background = true, backgroundColor = "#DDDDDD")
 public class ToolbarUI extends UI {
+
+	private static final Color ACCENT = new Color(91, 140, 255).lock();
 
 	@Override
 	public void init() {
@@ -19,7 +19,7 @@ public class ToolbarUI extends UI {
 		.align(Align.CENTER)
 		.body(flex -> {
 			for (int i = 0; i < 5; i++) {
-				RectNode.create(0, 0, 60, 60).color(Color.WHITE).attach(flex);
+				RectNode.create(0, 0, 60, 60).color(ToolbarUI.ACCENT).attach(flex);
 			}
 		})
 		.attach(this);
