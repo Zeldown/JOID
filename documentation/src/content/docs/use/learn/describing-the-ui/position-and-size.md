@@ -67,6 +67,16 @@ The three bars have the same x; their anchor decides which of their points sits 
 </figure>
 
 When the size of an anchored node changes, the anchored point stays where it is: a node anchored at its center grows on both sides.
+
+<figure>
+
+![The same three bars, whose widths grow and shrink together: the first grows to the right of the line, the second on both sides of it, the third to its left.](/captures/describing-position-grow.webp)
+
+<figcaption>
+Choose the anchor by the point that must stay put when the size of the node changes.
+</figcaption>
+</figure>
+
 [[Align]] `CENTER` on both axes centers a node on its position, the usual way to center a text.
 `getX()` and `getY()` return the top-left corner where the node is drawn, after its anchor and its layout; [[Node#getDefaultX]] and [[Node#getDefaultY]] return the values you set.
 

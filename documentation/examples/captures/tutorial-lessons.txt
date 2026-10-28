@@ -6,6 +6,7 @@
 # still tutorial-interaction-hover 40
 # crop tutorial-polish 700 120 1120 950
 # hold tutorial-polish 1500
+# crop tutorial-polish-hand 120 380 460 360
 # crop tutorial-interaction-popup 96 100 760 460
 # still tutorial-interaction-popup 90
 # crop tutorial-state 80 80 1120 560
@@ -37,6 +38,16 @@ cut
 ui com.example.tutorial.polish.MenuUI
 # film tutorial-polish 60
 wait 900
+cut
+move 540 400
+# film tutorial-polish-hand 60
+wait 300
+moveto 300 460 500
+wait 700
+moveto 300 560 400
+wait 700
+moveto 540 400 500
+wait 400
 cut
 resize 1280 720
 ui com.example.tutorial.interaction.MenuUI

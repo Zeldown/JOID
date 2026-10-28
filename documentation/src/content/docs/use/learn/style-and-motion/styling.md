@@ -105,6 +105,19 @@ Two presets change with the clock of JOID:
 - `Color.LOADING` pulses slowly between two dark greys, for loading placeholders ([Rebuilding the tree](/use/learn/state/rebuilding/#wait-for-data-before-showing-a-node)).
 
 A color derived from them changes with them: `Color.RAINBOW.darker()` is a darker rainbow, and `Color.LOADING.withAlpha(0.5F)` a half-transparent pulse.
+
+```java file="com/example/style/LiveColorsUI.java" region="live"
+```
+
+<figure>
+
+![Three shapes on a dark card for six seconds: a square cycles twice through the hues, a second square follows the same hues, darker, and a wide rectangle pulses three times between two dark greys.](/captures/style-live.webp)
+
+<figcaption>
+No animator and no signal drive these nodes: the colors read the clock of JOID on every frame.
+</figcaption>
+</figure>
+
 `Color.RAINBOW()` and `Color.LOADING()` return the shade of this instant, as a color that stays put.
 
 ## Recap

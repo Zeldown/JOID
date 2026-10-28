@@ -64,6 +64,15 @@ Do the same for the buttons of `SettingsUI`, with a radius of 12, and round its 
 Move the pointer over a button: it turns into a hand.
 Open the settings: the card and its buttons are rounded too.
 
+<figure>
+
+![The Play, Settings and Quit buttons of Starfall, with rounded corners; the pointer moves onto Play, then onto Settings, and turns into a hand over each, then back into an arrow beside them.](/captures/tutorial-polish-hand.webp)
+
+<figcaption>
+The hand tells the player that the buttons react to a click.
+</figcaption>
+</figure>
+
 ## 3. Slide the panel in
 
 A [[TweenAnimator]] moves a value over time.
