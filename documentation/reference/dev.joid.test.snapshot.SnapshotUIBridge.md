@@ -1,5 +1,5 @@
 ---
-summary: The UI bridge of the snapshot runner: a window bridge with a `#323232` background and an interface scale that the scenarios set.
+summary: The UI bridge of the snapshot runner: a window UI bridge with a `#323232` window background and an interface scale that the scenarios set.
 ---
 
 Learn: [Testing your UIs](/use/learn/running/testing/).

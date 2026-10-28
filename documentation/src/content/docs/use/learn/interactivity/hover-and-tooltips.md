@@ -99,7 +99,7 @@ The supplier of a tooltip runs on every frame the tooltip shows, so the line is 
 </figure>
 
 A supplier that returns `null`, or an empty list, shows no tooltip on that frame.
-The UI bridge draws text tooltips, with the font of [[WindowUIBridge#hoverInfo]]: set it once when you start JOID ([Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)).
+The UI bridge draws text tooltips, with the font of [[WindowUIBridge#hoverInfo]]: set it once when you start JOID ([Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)).
 
 A tooltip can also be made of nodes, or of your own drawing.
 [[NodeHoverElement]] shows a node, and its factory says where:

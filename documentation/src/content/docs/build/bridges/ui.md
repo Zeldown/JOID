@@ -7,7 +7,7 @@ sidebar:
 ---
 
 A UI bridge holds a set of open UIs, lays them out, draws them each frame and hands them the input.
-Every backend registers a default one, a [[WindowUIBridge]], whose settings are on [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge).
+Every backend registers a default one, a [[WindowUIBridge]], whose settings are on [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge).
 Write your own when some UIs must live apart from the others (above them, at another scale), when a host must react to the opening of a screen, or when the window background belongs to the host.
 How JOID orders several bridges and routes the UIs, the input and the cursor across them is on [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own).
 

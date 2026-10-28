@@ -20,7 +20,7 @@ The default UI bridge, which clears the window to a color every frame and draws 
 ## Description
 
 The backend registers one when no UI bridge was registered before it.
-Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text, as [Style the window bridge](/use/learn/running/backends/#style-the-window-bridge) shows.
+Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors and its tooltip text, as [Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge) shows.
 
 ## Learn more
 
@@ -34,7 +34,7 @@ Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`WindowUIBridge`](/reference/backends/windowuibridge/) | [create](#WindowUIBridge-factory-create)() <span class="joid-qualifier">factory</span> | Creates a window bridge with its default colors and no tooltip text style. |
+| [`WindowUIBridge`](/reference/backends/windowuibridge/) | [create](#WindowUIBridge-factory-create)() <span class="joid-qualifier">factory</span> | Creates a window UI bridge with its default colors and no tooltip text style. |
 |  | [WindowUIBridge](#WindowUIBridge-constructor)() <span class="joid-qualifier">protected</span> | Creates the bridge with its default colors, for a subclass. |
 
 <a id="WindowUIBridge-properties"></a>
@@ -91,7 +91,7 @@ Get it from `BridgeHandler.UI.getBridge(WindowUIBridge.class)` to set its colors
 
 `WindowUIBridge create()` <span class="joid-qualifier">factory</span>
 
-Creates a window bridge with its default colors and no tooltip text style.
+Creates a window UI bridge with its default colors and no tooltip text style.
 
 <a id="WindowUIBridge-constructor"></a>
 

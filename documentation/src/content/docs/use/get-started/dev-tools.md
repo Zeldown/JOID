@@ -118,7 +118,7 @@ While the UI runs, [[UI#getDebug]] changes the same settings: `super.getDebug().
 ## Read the warnings
 
 When JOID cannot do what your code asks, it prints a line that starts with `[JOID]` on the error output, most of the time once per cause.
-For example: a setter that cannot follow its signals, a shader that the driver refuses, a resource that cannot be read, a font weight that the font does not have, a window bridge without a tooltip style.
+For example: a setter that cannot follow its signals, a shader that the driver refuses, a resource that cannot be read, a font weight that the font does not have, a window UI bridge without a tooltip style.
 
 Most warnings print with the dev jar only.
 The dev mode also draws a resource that cannot be read as a magenta and black checkerboard, where the prod jar draws nothing ([Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded)).

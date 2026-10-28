@@ -16,7 +16,7 @@ The core and every backend of a release come in three variants, and `./gradlew b
 The `-prod` and `-dev` jars are those of the applications ([Choose the dev or the prod jar](/use/get-started/installation/#choose-the-dev-or-the-prod-jar)); the `-demo` jar adds to the dev content the demo UIs with their fonts, models, textures and videos, and the demo windows, for backend authors only.
 
 The variants differ by package: `dev/joid/demo/**`, `assets/demo/**` and the `demo` packages of the base modules and of the backends leave the dev jar; the dev tools, `assets/dev/**` and the `snapshot` packages also leave the prod jar.
-To check a packaged jar, call [[JarCheck#run]] from a main of your own and run it on the jar with its libraries: it exits with `1` when the dev and demo modes do not match the variant.
+To check a packaged jar, call [[JarCheck#run]] from a main of your own and run it on the jar with its libraries: it registers your backend, draws 60 frames of a UI, then exits with `0`, or with `1` when the modes do not match the variant, a stack trace is printed or the UI closed.
 
 ## Modes
 
@@ -43,10 +43,10 @@ Each official backend has a launcher in its demo jar: run its main class with th
 | Your backend | `./gradlew runDemo` in the template | the `DemoWindow` of `src/demo/java` |
 
 Each official launcher opens a 1920×1080 resizable window titled `JOID - Demo (<backend>)`, registers itself as the UI bridge, then registers the backend, opens the menu and runs the loop.
-Registered first, the launcher is the only UI bridge: the backend adds no window bridge of its own, and the window shows the dark grey background of the demos.
+Registered first, the launcher is the only UI bridge: `registerDefaults()` finds the UI registry filled and adds no [[WindowUIBridge]], so the window shows the dark grey window background of the demos.
 The `DemoWindow` of the template opens no window: it registers itself the same way, then calls `frame()` until you give it the loop of your engine ([Run it](/build/writing-a-backend/#run-it)).
 
-The launchers are UI bridges: `DemoUIBridge`, a [[WindowUIBridge]] with a dark grey background and the dev font for its tooltips, opens the menu in `start()` through its `openMenu()` hook.
+The launchers are UI bridges: `DemoUIBridge`, a [[WindowUIBridge]] with a dark grey window background and the dev font for its tooltips, opens the menu in `start()` through its `openMenu()` hook.
 The GLFW launchers share `GlfwDemoWindow` of base-glfw, whose subclass names the backend, sets the window hints, registers the backend and presents each frame.
 
 In the demos:

@@ -1,6 +1,6 @@
 ---
 title: "SnapshotUIBridge"
-description: "The UI bridge of the snapshot runner: a window bridge with a #323232 background and an interface scale that the scenarios set."
+description: "The UI bridge of the snapshot runner: a window UI bridge with a #323232 window background and an interface scale that the scenarios set."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Extends:** [`WindowUIBridge`](/reference/backends/windowuibridge/)<br/>
 **Package:** `dev.joid.test.snapshot` · **Module:** `tool-testkit` · **Source:** [SnapshotUIBridge.java](https://github.com/Zeldown/JOID/blob/main/tool/testkit/src/main/java/dev/joid/test/snapshot/SnapshotUIBridge.java)
 
-The UI bridge of the snapshot runner: a window bridge with a `#323232` background and an interface scale that the scenarios set.
+The UI bridge of the snapshot runner: a window UI bridge with a `#323232` window background and an interface scale that the scenarios set.
 
 ## Learn more
 

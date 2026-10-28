@@ -83,8 +83,8 @@ Effects follow the node, its size and its children.
 They are the right tools for a look that no node gives, and the most code to maintain.
 [Custom nodes](/use/learn/going-further/custom-nodes/), [Shaders](/use/learn/going-further/shaders/)
 
-**Do** give the window bridge a text style for the tooltips when your UIs use them.
-[Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)
+**Do** give the window UI bridge a text style for the tooltips when your UIs use them.
+[Style the window UI bridge](/use/learn/running/backends/#style-the-window-ui-bridge)
 
 ## Building and shipping
 

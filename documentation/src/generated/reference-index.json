@@ -36656,7 +36656,7 @@
       "kind": "class",
       "abstract": false,
       "family": "testing",
-      "summary": "The UI bridge of the snapshot runner: a window bridge with a `#323232` background and an interface scale that the scenarios set.",
+      "summary": "The UI bridge of the snapshot runner: a window UI bridge with a `#323232` window background and an interface scale that the scenarios set.",
       "ancestors": [
         "dev.joid.lib.bridge.ui.WindowUIBridge",
         "dev.joid.lib.bridge.ui.StackUIBridge",
@@ -36682,7 +36682,7 @@
       "kind": "class",
       "abstract": false,
       "family": "testing",
-      "summary": "The UI bridge of the snapshot runner: a window bridge with a `#323232` background and an interface scale that the scenarios set.",
+      "summary": "The UI bridge of the snapshot runner: a window UI bridge with a `#323232` window background and an interface scale that the scenarios set.",
       "ancestors": [
         "dev.joid.lib.bridge.ui.WindowUIBridge",
         "dev.joid.lib.bridge.ui.StackUIBridge",
