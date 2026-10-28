@@ -23,7 +23,12 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import com.example.ExampleFont;
+
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.WindowUIBridge;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.test.snapshot.SnapshotImage;
 import dev.joid.test.snapshot.SnapshotRunner;
 
@@ -82,6 +87,7 @@ public final class DocCapture {
 		final Map<String, Pointer> pointers = DocCapture.trackPointer(commands, mouse);
 		final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
 		final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
+		BridgeHandler.UI.getBridge(WindowUIBridge.class).hoverInfo(TextInfo.create(ExampleFont.REGULAR, DocCapture.getTooltipSize(commands)).color(CaptureStyle.TEXT));
 		output.mkdirs();
 		int count = 0;
 		for (final List<String> part : DocCapture.split(commands)) {
@@ -109,6 +115,10 @@ public final class DocCapture {
 
 	private static boolean isBare(final List<String> commands) {
 		return commands.stream().anyMatch(line -> line.trim().equals("# bare"));
+	}
+
+	private static float getTooltipSize(final List<String> commands) {
+		return commands.stream().map(String::trim).filter(line -> line.startsWith("# tooltip ")).map(line -> Float.parseFloat(line.substring(10).trim())).findFirst().orElse(20F);
 	}
 
 	private static List<List<String>> split(final List<String> commands) {

@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Hides every pixel of a node and its children outside a rectangle, or outside the opaque part of an image.
 
-![A blue to light grey gradient window inside a dark grey rectangle with a blue outline: the dark grey part is the rest of the node, which the mask hides](/captures/catalog-effects-masknodeeffect.webp)
+![A dark grey frame with a blue outline marks the bounds of a node; the mask keeps only a blue to light grey gradient window in its middle](/captures/catalog-effects-masknodeeffect.webp)
 
 ## Description
 

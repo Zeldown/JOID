@@ -10,7 +10,7 @@ In this lesson the menu reacts: buttons light up under the pointer, Settings ope
 
 <figure>
 
-![The left of the Starfall menu: the pointer moves onto the Settings button, which lights up, and clicks it; a settings popup opens over the darkened menu, a dark card titled Settings with the lines Music: on and Volume: 80 % and a Close button, which the pointer clicks to close it](/captures/tutorial-interaction-popup.webp)
+![The Starfall menu and its profile panel: the pointer moves onto the Settings button, which lights up, and clicks it; a settings popup opens over the darkened menu, a dark card titled Settings with the lines Music: on and Volume: 80 % and a Close button, which the pointer clicks to close it](/captures/tutorial-interaction-popup.webp)
 
 <figcaption>
 The result of this lesson: a click on Settings opens a popup above the menu.

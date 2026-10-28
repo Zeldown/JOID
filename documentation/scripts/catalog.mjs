@@ -12,7 +12,7 @@ const SCENARIOS = join(DOCUMENTATION, 'examples', 'captures');
 const CAPTURES = join(DOCUMENTATION, 'public', 'captures');
 const EXAMPLES = 'https://github.com/Zeldown/JOID/blob/main/documentation/examples/src/main/java/';
 const SKINS = '/use/learn/going-further/ui-kit/';
-const CARD = { width: 340, height: 300, columns: 5, x: 40, y: 40, stepX: 370, stepY: 340, margin: 10 };
+const CARD = { width: 340, height: 300, columns: 5, x: 40, y: 40, stepX: 370, stepY: 340, margin: 12 };
 
 export function loadCatalog() {
 	return JSON.parse(readFileSync(CATALOG, 'utf-8'));
@@ -132,7 +132,7 @@ function page(catalog, index) {
 		for (const card of section.cards) {
 			const { url, entry } = reference(card, index);
 			const shot = shotName(section, card);
-			const img = `<img src="/captures/${shot}.webp" alt="${escape(card.alt)}" loading="lazy" width="360" height="320" />`;
+			const img = `<img src="/captures/${shot}.webp" alt="${escape(card.alt)}" loading="lazy" width="364" height="324" />`;
 			const still = existsSync(join(CAPTURES, `${shot}.still.webp`)) ? filmMarkup(`/captures/${shot}.webp`, `/captures/${shot}.still.webp`, img) : img;
 			const image = card.capture !== false && existsSync(join(CAPTURES, `${shot}.webp`)) ? still : `<div class="joid-card-empty" aria-hidden="true">${nameMarkup(card)}</div>`;
 			const summary = card.type ? entry.summary : '';

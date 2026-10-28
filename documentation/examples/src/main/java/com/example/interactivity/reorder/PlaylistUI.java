@@ -29,7 +29,7 @@ public class PlaylistUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(PlaylistUI.TEXT);
 
 		RectNode
-		.create(660, 240, 600, 600)
+		.create(660, 240, 600, 550)
 		.color(PlaylistUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(PlaylistUI.ELEMENT, 1.5F))

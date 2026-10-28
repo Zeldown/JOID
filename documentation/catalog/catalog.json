@@ -514,7 +514,7 @@
 				{
 					"type": "dev.joid.lib.ui.node.effect.impl.MaskNodeEffect",
 					"learn": "use/learn/style-and-motion/effects",
-					"alt": "A blue to light grey gradient window inside a dark grey rectangle with a blue outline: the dark grey part is the rest of the node, which the mask hides"
+					"alt": "A dark grey frame with a blue outline marks the bounds of a node; the mask keeps only a blue to light grey gradient window in its middle"
 				},
 				{
 					"type": "dev.joid.lib.ui.node.effect.impl.TransformNodeEffect",

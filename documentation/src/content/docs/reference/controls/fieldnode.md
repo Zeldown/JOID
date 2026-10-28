@@ -28,6 +28,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 
 - [UI kit](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control)
 - [Text fields](/use/learn/interactivity/text-fields/)
+- [Keyboard and shortcuts](/use/learn/interactivity/keyboard/)
 
 ## Creation
 

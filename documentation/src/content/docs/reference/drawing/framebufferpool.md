@@ -24,6 +24,7 @@ Each draw of a UI bridge calls `releaseUnused()`, so a host that draws through t
 ## Learn more
 
 - [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/)
+- [Performance](/use/in-depth/performance/)
 
 <a id="FrameBufferPool-methods"></a>
 

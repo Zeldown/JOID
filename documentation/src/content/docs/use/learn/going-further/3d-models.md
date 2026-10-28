@@ -41,8 +41,10 @@ A [[ModelNode]] draws its model centered in its bounds:
 
 ![Two grey and white textured cubes seen at an angle, with a blue Turn button under the first one and a Yaw text under the second; the pointer clicks Turn eight times, and the first cube turns at each click until it has made a full turn, then drags the second cube right and back, which turns under the mouse and back while the Yaw text follows](/captures/further-3d-models-cubes.webp)
 
-<figcaption>Both nodes share one model.
-The first one turns by 45 degrees on each click of the button; the second one turns under the mouse.</figcaption>
+<figcaption>
+Both nodes share one model.
+The first one turns by 45 degrees on each click of the button; the second one turns under the mouse.
+</figcaption>
 </figure>
 
 | Property | Effect |

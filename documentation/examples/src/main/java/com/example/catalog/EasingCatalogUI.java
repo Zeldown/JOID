@@ -78,7 +78,7 @@ public class EasingCatalogUI extends CatalogUI {
 				}
 			}
 
-			final double unit = Math.min(super.getHeight(), 240D / (max - min));
+			final double unit = super.getHeight() / (max - min);
 			final double middle = super.getY() + super.getHeight() / 2D + unit * (max + min) / 2D;
 			DrawUtils.SHAPE.drawBorder(super.getX(), middle - unit, super.getWidth(), unit, CaptureStyle.STROKE, 2D);
 			for (int i = 0; i < this.equations.length; i++) {

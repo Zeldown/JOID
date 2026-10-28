@@ -63,6 +63,7 @@ public class EffectsUI extends UI {
 		.attach(this);
 		// #endregion
 
+		// #region priority
 		RectNode
 		.create(250, 480, 200, 200)
 		.color(EffectsUI.ACCENT.withAlpha(0.3F))
@@ -75,7 +76,6 @@ public class EffectsUI extends UI {
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(20D, Rotation.ROLL)))
 		.attach(this);
 
-		// #region priority
 		RectNode
 		.create(250, 480, 200, 200)
 		.color(EffectsUI.ACTIVE)

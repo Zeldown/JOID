@@ -6,6 +6,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -23,6 +25,8 @@ public class RunningStartUI extends UI {
 		RectNode
 		.create(680, 390, 560, 300)
 		.color(RunningStartUI.SURFACE)
+		.effect(RoundedNodeEffect.create(12F))
+		.effect(BorderNodeEffect.create(RunningStartUI.ELEMENT, 1.5F))
 		.body(card -> {
 			RectNode
 			.create(180, 110, 200, 80)

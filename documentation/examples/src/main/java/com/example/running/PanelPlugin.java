@@ -9,13 +9,15 @@ import dev.joid.lib.font.TextInfo;
 
 public final class PanelPlugin {
 
+	private static final Color TEXT = new Color(231, 233, 238).lock();
+
 	private PanelPlugin() {}
 
 	// #region ready
 	public static void install() {
 		JOID.onReady(() -> {
 			final PanelUIBridge panels = PanelUIBridge.create();
-			panels.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Color.WHITE));
+			panels.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(PanelPlugin.TEXT));
 			BridgeHandler.UI.register(panels, 10);
 			JOID.open(new RunningPanelUI());
 		});

@@ -82,7 +82,8 @@ public class TooltipUI extends UI {
 			.create(180, 140, 200, 60)
 			.color(TooltipUI.ELEMENT)
 			.hover(CustomHoverElement.follow((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawRoundedBorder(-24D, -24D, 48D, 48D, TooltipUI.ACCENT, 24F, 3D);
+				DrawUtils.SHAPE.drawRect(-16D, -1.5D, 32D, 3D, TooltipUI.ACCENT);
+				DrawUtils.SHAPE.drawRect(-1.5D, -16D, 3D, 32D, TooltipUI.ACCENT);
 			}))
 			.label(Text.create("Target", info))
 			.attach(card);

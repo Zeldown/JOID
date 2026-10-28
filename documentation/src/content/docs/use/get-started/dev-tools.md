@@ -39,7 +39,7 @@ Its three buttons are Inspect, Reload and Grid, next to the frame rate of the UI
 
 <figure>
 
-![The counter, a blue Clicks button at its center, and the dark dev panel in the bottom-right corner, with its Inspect, Reload and Grid icons and a frame rate; while the pointer is on the button, the button is outlined with a dashed blue frame under a dark label that reads RectNode](/captures/start-dev-inspect.webp)
+![The counter, a blue Clicks button at its center, and the dark dev panel in the bottom-right corner, with its Inspect, Reload and Grid icons; while the pointer is on the button, the button is outlined with a dashed blue frame under a dark label that reads RectNode](/captures/start-dev-inspect.webp)
 
 <figcaption>
 With Inspect on, the node under the pointer is outlined and named.

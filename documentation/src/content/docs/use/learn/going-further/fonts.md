@@ -69,8 +69,10 @@ Load the font once, then use it like any other:
 
 ![GAME OVER in large pixel-art letters, then Press any key and Synthetic bold in smaller ones, the last line thicker](/captures/further-fonts-pixel.webp)
 
-<figcaption>The same 8 × 8 atlas at 64 and 24 design pixels.
-The last line asks for a bold weight that the family does not have, and the renderer draws a synthetic bold.</figcaption>
+<figcaption>
+The same 8 × 8 atlas at 64 and 24 design pixels.
+The last line asks for a bold weight that the family does not have, and the renderer draws a synthetic bold.
+</figcaption>
 </figure>
 
 A bitmap font keeps the size you ask for: at 64 design pixels and a bitmap size of 8, a font pixel is 8 design pixels wide.

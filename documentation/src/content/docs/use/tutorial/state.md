@@ -10,7 +10,7 @@ In this lesson Play starts a round, and the whole panel follows: the number of g
 
 <figure>
 
-![The profile panel, with no round yet, while Play, left of the frame, is clicked three times: at each round the cards Games, Best and Total and the list of recent rounds follow, up to Round 3, Round 2 and Round 1 with their points](/captures/tutorial-state.webp)
+![The Starfall menu and its profile panel, with no round yet; the pointer clicks Play three times: at each round the cards Games, Best and Total and the list of recent rounds follow, up to Round 3, Round 2 and Round 1 with their points](/captures/tutorial-state.webp)
 
 <figcaption>
 The result of this lesson: no line of code updates the panel, it follows the rounds.

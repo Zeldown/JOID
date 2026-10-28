@@ -15,6 +15,8 @@ import dev.joid.lib.font.TextInfo;
 
 public final class HostApp {
 
+	private static final Color TEXT = new Color(231, 233, 238).lock();
+
 	private static boolean paused;
 
 	private HostApp() {}
@@ -38,7 +40,7 @@ public final class HostApp {
 		final SceneUIBridge bridge = SceneUIBridge.create();
 		BridgeHandler.UI.register(bridge);
 		final Lwjgl3Backend backend = Lwjgl3Backend.create(window).register();
-		bridge.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(Color.WHITE));
+		bridge.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(HostApp.TEXT));
 		// #endregion
 
 		// #region loop

@@ -29,6 +29,7 @@ public class SettingsUI extends UI {
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(SettingsUI.TEXT);
 		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(SettingsUI.ON_ACCENT);
+		final TextInfo sign = TextInfo.create(ExampleFont.REGULAR, 44F).color(SettingsUI.ON_ACCENT);
 		// #region use
 		final SettingsStore settings = super.useStore(SettingsStore.class, SettingsStore::new);
 		// #endregion
@@ -46,14 +47,14 @@ public class SettingsUI extends UI {
 			.create(60, 60, 120, 60)
 			.color(SettingsUI.ACCENT)
 			.onClick(event -> settings.getVolume().decrement())
-			.label(Text.create("-", label))
+			.label(Text.create("-", sign))
 			.attach(card);
 			// #region bind
 			RectNode
 			.create(200, 60, 120, 60)
 			.color(SettingsUI.ACCENT)
 			.onClick(event -> settings.getVolume().increment())
-			.label(Text.create("+", label))
+			.label(Text.create("+", sign))
 			.attach(card);
 			TextNode
 			.create(360, 72)

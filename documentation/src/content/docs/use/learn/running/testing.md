@@ -55,8 +55,10 @@ A [[SnapshotImage]] holds the pixels as ARGB `int` values, row after row, from t
 
 ![A dark grey Play button on a dark background](/captures/running-testing-menu.webp)
 
-<figcaption>The middle of `menu.png`.
-The test writes the whole 1920×1080 window.</figcaption>
+<figcaption>
+The middle of `menu.png`.
+The test writes the whole 1920×1080 window.
+</figcaption>
 </figure>
 
 ## Drive the UI with commands
