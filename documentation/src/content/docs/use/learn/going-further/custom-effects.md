@@ -136,14 +136,22 @@ Give the hard shadow the light blue [[Color]] `new Color(125, 164, 255)` and an 
 
 </details>
 
-**Lift only when enabled and hovered.**
-The lift already follows the hover; make a disabled node keep its place even while it is hovered.
+**Lift only with Shift.**
+Make the node lift under the pointer only while the user holds the left Shift key.
 
 <details>
 <summary>Solution</summary>
 
-It already does: `shouldApply` returns `false` for a disabled node, so JOID skips `draw` for it.
-Call `enabled(false)` on the node to see it.
+JOID asks `shouldApply` on every frame, so it can read the keyboard: [[Key#isDown]] tells whether a key is held.
+
+```java fragment
+@Override
+public boolean shouldApply(final Node node) {
+	return node.isEnabled() && Key.LEFT_SHIFT.isDown();
+}
+```
+
+While Shift is up, JOID skips `draw`, and the node keeps its place under the pointer.
 
 </details>
 

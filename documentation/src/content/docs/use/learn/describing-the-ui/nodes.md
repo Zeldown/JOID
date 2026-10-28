@@ -140,6 +140,9 @@ In the middle of a chain, the node has no variable yet.
 Here the height of the bar follows its width.
 Unlike `body`, which JOID runs again when it rebuilds the children, `self` runs once.
 
+The same type argument types the node that `body`, `self` and the listeners receive: in the middle of a chain, their lambda receives a plain `Node`.
+`.<RectNode>onClick(event -> event.getNode().color(...))` gives the listener a `RectNode`, so that it can call the setters of the type.
+
 ## Know where each node is taught
 
 The [Catalog](/use/catalog/) shows every node with a capture.

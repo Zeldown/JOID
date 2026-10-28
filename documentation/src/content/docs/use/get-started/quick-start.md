@@ -233,6 +233,8 @@ The animator goes from 0 to 1 in 800 ms, then plays back and forth forever.
 </figcaption>
 </figure>
 
+An animator that repeats forever keeps running after its UI closes: the full file stops it with `slide.clear()` when its card detaches ([Chain, repeat and replay](/use/learn/style-and-motion/animation/#chain-repeat-and-replay)).
+
 Read [Animation](/use/learn/style-and-motion/animation/), then [Transitions](/use/learn/style-and-motion/transitions/) to animate a UI when it opens and closes.
 
 ## Open a popup

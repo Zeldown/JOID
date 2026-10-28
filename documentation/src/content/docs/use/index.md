@@ -25,6 +25,8 @@ The label is a lambda because its style changes with the state too ([What JOID f
 </figcaption>
 </figure>
 
+The dotted background, the pointer, its click rings and the key badges of the captures come from the capture tool: your window has none of them and clears to the background of its window bridge, black by default ([Style the window bridge](/use/learn/running/backends/#style-the-window-bridge)).
+
 `ExampleFont` loads the font of the examples ([Quick Start](/use/get-started/quick-start/#run-any-example-of-this-documentation)).
 
 The [Quick Start](/use/get-started/quick-start/) writes a smaller screen line by line and runs it in a window.

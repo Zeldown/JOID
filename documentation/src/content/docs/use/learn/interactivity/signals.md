@@ -82,7 +82,7 @@ The lambda reads the time from [[BridgeHandler]]`.CLOCK`, the clock of JOID, whi
 
 A signal is itself a `Supplier`, so every reactive setter accepts it.
 A signal or a [derived value](/use/learn/state/derived-values/) keeps its value and computes it again only after a change of its signals.
-A lambda or a method reference runs its code each time: `visible(shown::get)` is a method reference, so pass `shown` itself.
+A lambda or a method reference runs its code on every frame, for every node that uses it: `visible(shown::get)` is a method reference, so pass `shown` itself.
 
 The rule follows from the question.
 A value that depends on signals is an expression that reads them, or the signal itself.
@@ -94,11 +94,6 @@ Calling a setter again replaces what it followed: `width(200D)` after `width(40D
 
 Some setters take a `Signal` in place of a `Supplier`: the value of a control, the position of a node (`x(...)`, `y(...)`), its scroll.
 The user changes these values too, so the node writes them back into the signal: a signal given there is bound both ways ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal)).
-
-:::tip
-Prefer an expression, or the signal itself, to a lambda for a value that depends on signals.
-An expression is computed only when a signal changes, a lambda on every frame of every node that uses it.
-:::
 
 ## What JOID follows
 

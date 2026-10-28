@@ -110,7 +110,7 @@ Register the backend once the `Display` exists:
 
 LWJGL 2 has no input callbacks, so [[Lwjgl2InputForwarder#poll]] reads the input at the start of each frame.
 
-## What register() does
+## Know what happens at register()
 
 `register()` runs these steps in this order:
 
