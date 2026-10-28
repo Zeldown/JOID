@@ -67,7 +67,7 @@ The pointer hovers the frontmost node under it that is interactive, and every pa
 
 <figure>
 
-![The pointer moves across a dark grey area and a blue dot follows it; the text under the area reads "Entries: 1"](/captures/interactivity-enter.webp)
+![The pointer moves across a dark grey area and a blue dot follows it; the text under the area goes from "Entries: 0" to "Entries: 1" as the pointer enters](/captures/interactivity-enter.webp)
 
 <figcaption>
 The dot follows the pointer through `onHover`, and goes back to the center through `onHoverEnd`.

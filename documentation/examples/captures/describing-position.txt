@@ -20,21 +20,21 @@ move 1000 660
 # film describing-position-hide
 wait 300
 moveto 750 530 500
-wait 600
+wait 400
 moveto 960 530 400
-wait 600
+wait 400
 moveto 1170 530 400
 wait 150
 press LEFT
 release LEFT
-wait 800
+wait 600
 moveto 750 530 400
-wait 600
+wait 400
 moveto 1170 530 400
 wait 150
 press LEFT
 release LEFT
-wait 700
+wait 500
 moveto 1000 660 400
 wait 300
 cut

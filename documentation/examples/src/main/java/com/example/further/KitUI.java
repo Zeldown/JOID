@@ -18,7 +18,7 @@ public class KitUI extends UI {
 
 		KitSwitchNode.<String>create(100, 260, 300, 50).values("Low", "Medium", "High").value("Medium").attach(this);
 
-		KitPillToggleNode.create(100, 350, 80, 40).attach(this);
+		KitPillToggleNode.create(100, 350, 80, 40).toggle(true).attach(this);
 		// #endregion
 	}
 

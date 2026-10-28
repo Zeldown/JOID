@@ -1,4 +1,4 @@
-# crop style-tween 640 320 640 440
+# crop style-tween 640 320 640 480
 ui com.example.style.TweenUI
 move 1700 950
 # film style-tween 60

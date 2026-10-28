@@ -8,5 +8,5 @@ shot further-transforms-pivot
 shot further-transforms-matrix
 # crop further-transforms-state 830 440 240 220
 shot further-transforms-state
-# crop further-transforms-blend 1410 440 280 220
+# crop further-transforms-blend 1280 380 540 340
 shot further-transforms-blend

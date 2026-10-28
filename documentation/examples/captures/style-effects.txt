@@ -11,12 +11,12 @@ shot style-stack
 shot style-scope
 shot style-priority
 shot style-clip
-move 560 380
+move 935 305
 wait 100
 # film style-effect-hover 60
 wait 200
 moveto 760 190 200
 wait 700
-moveto 560 380 300
+moveto 935 305 300
 wait 700
 cut

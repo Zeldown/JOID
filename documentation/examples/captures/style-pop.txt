@@ -1,4 +1,4 @@
-# crop style-pop 660 340 600 400
+# crop style-pop 540 140 840 570
 # hold style-pop 1100
 # still style-pop 32
 ui com.example.style.MenuUI
