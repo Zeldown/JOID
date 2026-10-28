@@ -58,7 +58,7 @@ Override `registerDefaults()` with a call to `super.registerDefaults()` first, s
 `register()` runs once: a second call throws an `IllegalStateException`.
 
 The build of the template writes the version of JOID it compiles against into `backend.properties`, in the package that `backendPackage` names: keep that package equal to the package of your [[Backend]] subclass.
-`register()` reads that file and throws an `IllegalStateException` when the loaded JOID has another major version; without the file, as when you run from your IDE before any build, it checks nothing.
+The constructor of [[Backend]] reads that file, and `register()` throws an `IllegalStateException` when the loaded JOID has another major version; without the file, as when you run from your IDE before any build, it checks nothing.
 
 The application creates the backend, configures it, and calls `register()` once the engine is ready to draw, then [[Backend#frame]] in its loop.
 The setters of [[Backend]] return the type of their target, so an application calls the setters of your subclass first and the common ones after:
@@ -129,7 +129,8 @@ Without audio, delete the `createAudioBridge()` override of the template: the de
 
 `registerDefaults()` fills the registries that several parties share.
 The example registers a resource resolver, so that [[Resource#of]] accepts the sprites of the engine ([Resource resolvers](/build/resource-resolvers/)).
-Nothing else belongs to the backend: an application or a plugin adds its markups, locators or other bridges itself, before or after `register()`.
+Register there every registry that your host feeds, as the table of [Feed the core, never the interface](/build/architecture/#feed-the-core-never-the-interface) lists: resource resolvers, asset locators, key resolvers, text converters.
+Markups and UI bridges belong to the application, which adds them before or after `register()`.
 
 ## Forward the input
 
