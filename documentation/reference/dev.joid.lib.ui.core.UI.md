@@ -209,7 +209,7 @@ The `zindex` of the UI, which orders it among the open UIs of its bridge.
 
 ## getZoom()
 
-The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed.
+The zoom of the UI as it is shown, within the bounds of the interface scale, `1D` when it is not zoomed.
 
 ## getWindowWidth()
 

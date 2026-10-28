@@ -146,12 +146,14 @@ The node measures its new content on the next frame, and the wheel scrolls furth
 
 ```java fragment
 .overflow(OverflowProperty.SCROLL)
-.scrollbar(KitScrollbarNode.create(0, 168, 360, 12))
+.scrollbar(new ScrollbarNode(0, 168, 360, 12) {}
+.track(RectNode.create(0, 0, 0, 0).color(FeedUI.ELEMENT))
+.thumb(RectNode.create(0, 0, 0, 0).color(FeedUI.ACCENT)))
 ```
 
-`KitScrollbarNode` stands for your skin of [[ScrollbarNode]], an abstract control.
+[[ScrollbarNode]] is an abstract control: its empty subclass gets its two parts, the track and the thumb, where it is created ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) explains this form).
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows.
-Its reference page lists its options, and [Give your controls a look](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) shows how to draw it.
+Its reference page lists its options, and [Give your controls a look](/use/learn/going-further/ui-kit/) turns it into a reusable skin.
 
 ## Recap
 

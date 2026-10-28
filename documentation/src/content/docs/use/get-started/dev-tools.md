@@ -113,7 +113,7 @@ Turn the profiler or the hot reload off for one UI with [[UIDataDebug]], for exa
 public class ChartUI extends UI {
 ```
 
-While the UI runs, [[UI#getDebug]] changes the same settings: `super.getDebug().profiler(false)` silences the profiler at once, and a change of `hotreload` applies at the next load of the UI.
+While the UI runs, [[UI#getDebug]] changes the same settings: `super.getDebug().profiler(false)` silences the profiler at once, and a change of `hotreload` applies at the next frame.
 
 ## Read the warnings
 
