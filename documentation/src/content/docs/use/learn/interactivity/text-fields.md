@@ -108,7 +108,7 @@ The user types ` ab1` then Enter: the digit is refused, and the field rewrites `
 - [[FieldNode#markup]] `(true)` shows the [markup](/use/learn/describing-the-ui/text-markup-and-effects/) of the text instead of its tags.
 
 The signal follows the text as the user types it, and receives the normalized text with the rewrite.
-A rule that changes keeps the text asked for, as a control keeps its value ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)): `maxTextLength` that grows again shows the whole text.
+A rule that changes keeps the text asked for, as a control keeps its value ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)).
 
 ## Ask for a number
 

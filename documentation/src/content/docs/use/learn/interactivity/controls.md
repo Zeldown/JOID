@@ -21,7 +21,7 @@ Learn the pattern once on this page, then the options of each control.
 
 A control is abstract: its look comes from its parts, the nodes that draw its box, its track or its thumb.
 The controls of this page get their parts where they are created, in an empty subclass of the control, such as a [[CheckboxNode]] created with `new CheckboxNode(...) {}`, followed by the setters of the parts; [Give your controls a look](/use/learn/going-further/ui-kit/) gathers them in reusable skins, and [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts of each control.
-A part created with a size of `0` takes the size that the control gives it; a part with a size keeps it, and the control centers or moves it ([Skin a control with parts](/use/learn/going-further/ui-kit/#skin-a-control-with-parts)).
+A part created with a size of `0` takes the size that the control gives it ([Skin a control with parts](/use/learn/going-further/ui-kit/#skin-a-control-with-parts)).
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
 ```

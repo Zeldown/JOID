@@ -29,7 +29,7 @@ Read [Effects](/use/learn/style-and-motion/effects/) to learn how to stack effec
 
 ## Animation
 
-JOID animates values on its own clock, and a node reads the animated value in a lambda.
+JOID animates values on its own clock, and a setter follows the animated value through an expression that reads it.
 
 ```java file="com/example/style/AnimationUI.java" region="appear"
 ```

@@ -106,12 +106,10 @@ The map comes back with the types of JSON, whatever the type you put in it:
 
 Read a number through `Number`, as in `((Number) json.get("volume")).intValue()`, never with a cast to `Integer`.
 `toJson()` writes any other object field by field, and it comes back as a `Map`; a `null` value is not written.
-JOID writes the file only when its text differs from the one it last read or wrote.
 
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.
 
 When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
-A file that cannot be read at all is left in place, and the store starts from `init()`.
 
 :::caution
 A process that is killed or crashes saves nothing: call `save()` on a store that must survive a crash, at the moment its values change.
