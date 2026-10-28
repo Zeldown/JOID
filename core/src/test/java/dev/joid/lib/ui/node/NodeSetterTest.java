@@ -107,6 +107,61 @@ public class NodeSetterTest {
 	}
 
 	@Test
+	public void followsTheStyleAndTheTextThatSignalsChooseInAText() {
+		final SetterUI ui = new SetterUI();
+		Assert.assertEquals("", TestUtils.captureErr(true, () -> this.bridges.open(ui)));
+		Assert.assertSame(ui.getInfo(), ui.getStyled().getText().get(0).getInfo());
+		ui.getMuted().set(true);
+		this.bridges.frame();
+		Assert.assertEquals("Muted", ui.getStyled().getText().getText());
+		Assert.assertSame(ui.getQuiet(), ui.getStyled().getText().get(0).getInfo());
+		Assert.assertEquals("Muted", ui.getMixed().getText().getText());
+		Assert.assertSame(ui.getInfo(), ui.getMixed().getText().get(0).getInfo());
+		ui.getStep().set(1);
+		this.bridges.frame();
+		Assert.assertEquals("Muted", ui.getMixed().getText().getText());
+		Assert.assertSame(ui.getQuiet(), ui.getMixed().getText().get(0).getInfo());
+		ui.getMuted().set(false);
+		this.bridges.frame();
+		Assert.assertEquals("Sound on", ui.getStyled().getText().getText());
+		Assert.assertSame(ui.getInfo(), ui.getStyled().getText().get(0).getInfo());
+		Assert.assertEquals("Sound on", ui.getMixed().getText().getText());
+		Assert.assertSame(ui.getQuiet(), ui.getMixed().getText().get(0).getInfo());
+	}
+
+	@Test
+	public void followsTheStyleChosenInEachTurnOfALoop() {
+		final SetterUI ui = new SetterUI();
+		Assert.assertEquals("", TestUtils.captureErr(true, () -> this.bridges.open(ui)));
+		ui.getSwitchList().get(1).set(true);
+		this.bridges.frame();
+		Assert.assertEquals("Off", ui.getRowList().get(0).getText().getText());
+		Assert.assertSame(ui.getInfo(), ui.getRowList().get(0).getText().get(0).getInfo());
+		Assert.assertEquals("On", ui.getRowList().get(1).getText().getText());
+		Assert.assertSame(ui.getQuiet(), ui.getRowList().get(1).getText().get(0).getInfo());
+		ui.getSwitchList().get(0).set(true);
+		this.bridges.frame();
+		Assert.assertEquals("On", ui.getRowList().get(0).getText().getText());
+		Assert.assertSame(ui.getQuiet(), ui.getRowList().get(0).getText().get(0).getInfo());
+	}
+
+	@Test
+	public void followsEachSignalGivenToAnEffectFactory() {
+		final SetterUI ui = new SetterUI();
+		Assert.assertEquals("", TestUtils.captureErr(true, () -> this.bridges.open(ui)));
+		ui.getMuted().set(true);
+		Assert.assertSame(Color.RED, ui.getEdge().getColor(ui.getFlex()));
+		Assert.assertEquals(1F, ui.getEdge().getWidth(), 0F);
+		Assert.assertSame(Color.RED, ui.getHalo().getColor());
+		Assert.assertEquals(2F, ui.getHalo().getBlur(), 0F);
+		ui.getStep().set(1);
+		Assert.assertSame(Color.RED, ui.getEdge().getColor(ui.getFlex()));
+		Assert.assertEquals(2F, ui.getEdge().getWidth(), 0F);
+		Assert.assertSame(Color.RED, ui.getHalo().getColor());
+		Assert.assertEquals(3F, ui.getHalo().getBlur(), 0F);
+	}
+
+	@Test
 	public void followsABoundSignalButNotAStartValue() {
 		final BooleanSignal checked = new BooleanSignal(true);
 		final Checkbox checkbox = new Checkbox().checked(checked);

@@ -306,7 +306,7 @@ public final class SignalReplayMethod {
 			final Frame<SourceValue> frame = this.frames[end];
 			final int start = this.expressionStart(frame.getStack(frame.getStackSize() - 1).insns, end);
 			if (store.getOpcode() != Opcodes.ASTORE || this.isValue(((VarInsnNode) instruction).var, index) || this.isPure(start, end)) {
-				this.definitionMap.put(instruction, SignalReplaySlice.of(this, start, end, null));
+				this.definitionMap.put(instruction, SignalReplaySlice.of(this, start, end, null, Collections.emptyList()));
 			}
 		}
 	}

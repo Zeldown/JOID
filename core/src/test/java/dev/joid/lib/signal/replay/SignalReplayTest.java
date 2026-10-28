@@ -29,6 +29,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.showcase.ReplayShowcaseFixture;
 import example.replay.LabelNode;
 import example.replay.LabelUI;
@@ -141,6 +142,16 @@ public class SignalReplayTest {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("enclosed");
 		Assert.assertEquals("", this.open(ui));
 		Assert.assertEquals("o0t1", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
+	public void warnsWhenAnEnclosingCallReadsMoreThanItsInnerCallFollows() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("style");
+		Assert.assertEquals("[JOID] ReplayScenarioUI.java:N text(...) reads clicks but cannot follow it: the local variable info is combined with a signal. The value stays \"\"Off\" - START / START - NONE [1]\". Use a field, map(...) or a lambda.\n", this.open(ui));
+		ui.getClicks().set(1);
+		this.bridges.frame();
+		Assert.assertEquals("On", ((TextNode) ui.getNodeList().get(0)).getText().getText());
+		Assert.assertSame(ui.getInfos().get(0), ((TextNode) ui.getNodeList().get(0)).getText().get(0).getInfo());
 	}
 
 	@Test
