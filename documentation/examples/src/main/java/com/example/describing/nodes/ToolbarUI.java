@@ -29,6 +29,7 @@ public class ToolbarUI extends UI {
 
 		// #region front
 		final RectNode first = RectNode.create(660, 690, 300, 100).color(ToolbarUI.ACCENT).attach(this);
+
 		RectNode.create(760, 720, 300, 100).color(ToolbarUI.ELEMENT).attach(this);
 		first.attach(this);
 		// #endregion

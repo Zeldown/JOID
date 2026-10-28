@@ -18,7 +18,7 @@ Learn: [The bridges](/build/bridges/), [Render bridge](/build/bridges/render/), 
 | [`BorrowedTexture`](/reference/bridges/borrowedtexture/) | class | The base class of a texture that belongs to the host: JOID samples it and reads its size, and never allocates, writes or deletes it. |
 | [`BridgeHandler`](/reference/bridges/bridgehandler/) | class | The static registries through which the core of JOID reaches its bridges, one registry per kind of bridge. |
 | [`BridgeRegistry`](/reference/bridges/bridgeregistry/) | class | An ordered set of bridges of one kind, kept sorted by priority, whose highest bridge answers `get()`. |
-| [`BufferedImageResourceResolver`](/reference/bridges/bufferedimageresourceresolver/) | class | The resolver that turns a `BufferedImage` into a resource, one resource per image. |
+| [`BufferedImageResourceResolver`](/reference/bridges/bufferedimageresourceresolver/) | class | The resolver that turns a `BufferedImage` into a resource; every resource of one image shares its decoded data. |
 | [`DirectThreadBridge`](/reference/bridges/directthreadbridge/) | class | The thread bridge that JOID holds before any backend, for which every thread is the render thread. |
 | [`FrameBufferHandle`](/reference/bridges/framebufferhandle/) | class | The base class of a framebuffer, which owns its color texture and deletes it with its own handle. |
 | [`FrameThreadBridge`](/reference/bridges/framethreadbridge/) | class | The default thread bridge of a backend, for which the thread that creates it draws while other threads queue their tasks. |

@@ -90,12 +90,12 @@ public class MenuUI extends UI {
 					.color(Theme.ELEMENT)
 					.body(row -> {
 						TextNode
-						.create(24, row.dh(2))
+						.create(24, row.dh(2D))
 						.text(Text.create(round[0], caption))
 						.anchorY(Align.CENTER)
 						.attach(row);
 						TextNode
-						.create(row.aw(-24), row.dh(2))
+						.create(row.aw(-24D), row.dh(2D))
 						.text(Text.create(round[1], caption))
 						.anchorX(Align.END)
 						.anchorY(Align.CENTER)

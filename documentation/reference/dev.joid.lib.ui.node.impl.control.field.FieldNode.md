@@ -142,7 +142,7 @@ Throws an `IllegalArgumentException` for a signal that cannot be written.
 
 ## focus()
 
-Gives the field the focus as a press would: `beforeFocus` can refuse it, then `onFocus` fires.
+Gives the field the focus: `beforeFocus` can refuse it, then `onFocus` fires; unlike a press, it does not blur the other fields.
 
 ## blur()
 

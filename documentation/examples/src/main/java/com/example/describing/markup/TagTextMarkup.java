@@ -21,11 +21,11 @@ public final class TagTextMarkup implements ITextMarkup {
 			return 4;
 		}
 		if (text.startsWith("<em>", index)) {
-			style.color(TagTextMarkup.ACCENT).effect(UnderlineTextEffect.INSTANCE);
+			style.color(TagTextMarkup.ACCENT).effect(UnderlineTextEffect.inst());
 			return 4;
 		}
 		if (text.startsWith("</em>", index)) {
-			style.color(style.getBase().getColor()).removeEffect(UnderlineTextEffect.INSTANCE);
+			style.color(style.getBase().getColor()).removeEffect(UnderlineTextEffect.inst());
 			return 5;
 		}
 		return 0;

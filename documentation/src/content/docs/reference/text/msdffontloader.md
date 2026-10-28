@@ -17,11 +17,7 @@ Loads an MSDF font from the files of its faces, in the background, and completes
 
 ## Description
 
-Load each font once, when your application starts, and keep the [`MsdfFont`](/reference/text/msdffont/) in a field:
-
-```java fragment
-MsdfFontLoader.load("fonts/Inter-Regular.ttf", "fonts/Inter-Bold.ttf").thenAccept(font -> this.font = font);
-```
+Load each font once, when your application starts, and keep the [`MsdfFont`](/reference/text/msdffont/) in a field ([Load a font family](/use/learn/describing-the-ui/fonts/#load-a-font-family)).
 
 A TrueType or OpenType file generates its MSDF atlas on the first load and reads it from the cache folder afterwards; a `.msdf` file made by the msdf tool loads as it is.
 The future completes on the render thread, at the next frame, through `runOnRenderThread` of the thread bridge ([Threads](/use/learn/running/threads/)); `join()` on the render thread waits for the load there.

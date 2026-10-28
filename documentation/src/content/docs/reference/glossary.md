@@ -150,7 +150,7 @@ See [Effects](/use/learn/style-and-motion/effects/).
 
 ### focus
 
-The state of the text field that receives the typed keys: one field at a time has it among the UIs of a UI bridge.
+The state of the text field that receives the typed keys: a press over a field blurs the other fields of the UI bridge first, so the user has one focused field at a time.
 A field gains the focus ("focuses the field") on a press over it or with `focus()`, and loses it ("blurs the field") on a press elsewhere, Escape, Enter in a one-line field, its detach or `blur()`.
 
 See [Text fields](/use/learn/interactivity/text-fields/).

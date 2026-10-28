@@ -20,11 +20,11 @@ public class HexColorFieldNode extends LineFieldNode<Color> {
 		return new HexColorFieldNode(x, y, width, height);
 	}
 
-	public final HexColorFieldNode value(final Color value) {
+	public final <T extends HexColorFieldNode> T value(final Color value) {
 		return super.startValue(value);
 	}
 
-	public final HexColorFieldNode value(final Signal<Color> value) {
+	public final <T extends HexColorFieldNode> T value(final Signal<Color> value) {
 		return super.bindValue(value);
 	}
 

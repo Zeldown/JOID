@@ -21,11 +21,6 @@ The Vulkan host of a GLFW window, which owns the instance, the device and a swap
 
 It presents in `MAILBOX` when the surface offers it, `FIFO` otherwise.
 
-```java fragment
-final WindowVulkanHost host = WindowVulkanHost.create(window);
-final VulkanBackend backend = VulkanBackend.create(window, host).register();
-```
-
 ## Learn more
 
 - [Start the other backends](/use/learn/running/backends/#start-the-other-backends)

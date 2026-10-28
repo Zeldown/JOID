@@ -1,6 +1,6 @@
 ---
 title: "BufferedImageResourceResolver"
-description: "The resolver that turns a BufferedImage into a resource, one resource per image."
+description: "The resolver that turns a BufferedImage into a resource; every resource of one image shares its decoded data."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Implements:** [`IResourceResolver`](/reference/bridges/iresourceresolver/)<br/>
 **Package:** `dev.joid.lib.resource.resolver.impl` · **Module:** `core` · **Source:** [BufferedImageResourceResolver.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/resource/resolver/impl/BufferedImageResourceResolver.java)
 
-The resolver that turns a `BufferedImage` into a resource, one resource per image.
+The resolver that turns a `BufferedImage` into a resource; every resource of one image shares its decoded data.
 
 ## Learn more
 

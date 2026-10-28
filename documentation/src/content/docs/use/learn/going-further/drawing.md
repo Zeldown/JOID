@@ -79,8 +79,8 @@ Each call draws over the previous one, so `drawShadow` comes before the shape it
 
 Every value is in design pixels, and every color can be a gradient ([Colors and styling](/use/learn/style-and-motion/styling/)); `drawShadow` takes the first color of a gradient.
 Outlines draw their stroke inside the box, and a radius larger than half the box is reduced to it.
-Rectangles, outlines and images snap their edges to the pixels of the screen, and a rectangle thinner than a pixel fades instead of disappearing; circles, polygons and lines keep their exact geometry ([Pixel alignment](/use/in-depth/pixel-alignment/)).
-Each call sets the render state it needs, so the order of your calls is the only thing that matters: each call draws over the previous ones.
+Rectangles, outlines and images snap their edges to the pixels of the screen, and a rectangle thinner than a pixel fades instead of disappearing; circles and polygons keep their exact geometry ([Pixel alignment](/use/in-depth/pixel-alignment/)).
+Each call sets the render state it needs.
 
 ## Draw lines and curves
 

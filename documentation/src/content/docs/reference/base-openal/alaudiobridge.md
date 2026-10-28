@@ -18,17 +18,15 @@ The audio bridge of OpenAL, whose streaming sources call OpenAL through a bindin
 
 ## Description
 
-```java fragment
-final AlAudioBridge audio = AlAudioBridge.create(Lwjgl3AlBinding.inst()).ownContext(false);
-```
+Create it with the binding of your library ([Create the bridge](/build/base-modules/openal/#create-the-bridge)).
 
 ## Learn more
 
-- [Create the bridge](/build/base-modules/openal/#create-the-bridge)
 - [Images and media](/use/learn/describing-the-ui/media/)
 - [LWJGL 2 backend](/build/backends/lwjgl2/)
 - [LWJGL 3 backend](/build/backends/lwjgl3/)
 - [Vulkan backend](/build/backends/vulkan/)
+- [Writing a backend](/build/writing-a-backend/)
 
 ## Creation
 

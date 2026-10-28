@@ -107,7 +107,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 |---|---|---|
 | `T` | [focused](#FieldNode-method-focused)(boolean focused) | Gives the field its start focus: `true` gives it the keyboard. |
 | `T` | [focused](#FieldNode-method-focused)(Signal<Boolean> focused) | Binds the focus to a signal both ways: the field gains or loses the focus with the signal, and writes into it when the user focuses or blurs the field. |
-| `this` | [focus](#FieldNode-method-focus)() <span class="joid-qualifier">fluent</span> | Gives the field the focus as a press would: `beforeFocus` can refuse it, then `onFocus` fires. |
+| `this` | [focus](#FieldNode-method-focus)() <span class="joid-qualifier">fluent</span> | Gives the field the focus: `beforeFocus` can refuse it, then `onFocus` fires; unlike a press, it does not blur the other fields. |
 | `T` | [beforeFocus](#FieldNode-method-beforeFocus)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the field gains the focus on a press or `focus()`; `cancel()` refuses the focus. |
 | `boolean` | [isFocused](#FieldNode-method-isFocused)() | If `true`, the field has the focus. |
 
@@ -503,7 +503,7 @@ Throws an `IllegalArgumentException` for a signal that cannot be written.
 
 `this focus()` <span class="joid-qualifier">fluent</span>
 
-Gives the field the focus as a press would: `beforeFocus` can refuse it, then `onFocus` fires.
+Gives the field the focus: `beforeFocus` can refuse it, then `onFocus` fires; unlike a press, it does not blur the other fields.
 
 <a id="FieldNode-method-beforeFocus"></a>
 

@@ -2,12 +2,7 @@
 summary: The style of a text, with its font, size, weight, color, spacing, shadow, markups and effects, and the measures it gives.
 ---
 
-Create one per style with `create(font, fontSize)` and keep it in a field: every text node and [[DrawText]] call takes one.
-
-```java fragment
-final TextInfo title = TextInfo.create(font, 32F).weight(FontWeight.BOLD).color(Color.decode("#E7E9EE"));
-final TextInfo faded = title.withColor(Color.decode("#8B93A3"));
-```
+Create one per style with `create(font, fontSize)` and keep it in a field: every text node and [[DrawText]] call takes one ([Describe a style](/use/learn/describing-the-ui/text/#describe-a-style)).
 
 The plain setters (`color`, `fontSize`…) change this style in place; the `withX` methods return a changed copy and leave this one unchanged, which a locked style requires: a plain setter on a locked style throws `IllegalStateException`.
 Sizes are in design pixels; the letter spacing and the line height are on 1 of the font size.

@@ -2,12 +2,7 @@
 summary: A list of translations, rotations and scales applied to the model-view matrix around what you draw.
 ---
 
-Build it once, then apply it around your drawing:
-
-```java fragment
-final Transformation tilt = Transformation.create().rotate(() -> this.angle, Rotation.ROLL, Vector.create(60D, 20D));
-tilt.apply(() -> DrawUtils.SHAPE.drawRect(0D, 0D, 120D, 40D, Color.decode("#5B8CFF")));
-```
+Build it once, then apply it around your drawing ([Rotate and scale a drawing](/use/learn/going-further/drawing-resources-and-transforms/#rotate-and-scale-a-drawing)).
 
 The operations run in the order you add them, and the suppliers are read each time the transformation is applied, so a transformation can follow a value that changes.
 A translation also tells the pixel grid how far the drawing moved, so that a moving node stays sharp.

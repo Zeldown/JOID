@@ -18,11 +18,7 @@ Creates resources with shared default settings and a cache that makes two loads 
 ## Description
 
 [`Resource.of`](/reference/resources/resource/#Resource-factory-of) uses a default builder with linear filtering and a shared [`MemoryResourceCache`](/reference/resources/memoryresourcecache/).
-Make your own when a group of resources needs other defaults or another cache:
-
-```java fragment
-private static final ResourceBuilder PIXEL_ART = ResourceBuilder.create().nearest().mipmap(false);
-```
+Make your own when a group of resources needs other defaults or another cache ([Give a set of images the same settings](/use/learn/describing-the-ui/media/#give-a-set-of-images-the-same-settings)).
 
 Every setting returns a new builder and leaves this one unchanged.
 

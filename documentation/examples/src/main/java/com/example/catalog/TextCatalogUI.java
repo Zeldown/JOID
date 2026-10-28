@@ -22,7 +22,7 @@ public class TextCatalogUI extends CatalogUI {
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 30F).color(CatalogUI.TEXT);
 		final TextInfo small = TextInfo.create(ExampleFont.REGULAR, 26F).color(CatalogUI.TEXT);
-		final ITextEffect[] effects = {new WaveTextEffect(), new RainbowTextEffect(), UnderlineTextEffect.INSTANCE, new HighlightTextEffect(), new ScrambleTextEffect()};
+		final ITextEffect[] effects = {WaveTextEffect.inst(), new RainbowTextEffect(), UnderlineTextEffect.inst(), new HighlightTextEffect(), new ScrambleTextEffect()};
 		final TextModifier[] modifiers = {TextModifier.UPPER_CASE, TextModifier.LOWER_CASE, TextModifier.CAPITALIZE, TextModifier.WORD_CAPITALIZE, TextModifier.CAMEL_CASE, TextModifier.UPPER_CAMEL_CASE, TextModifier.SNAKE_CASE};
 
 		for (int i = 0; i < effects.length; i++) {

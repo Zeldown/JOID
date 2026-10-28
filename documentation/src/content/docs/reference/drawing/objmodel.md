@@ -18,15 +18,8 @@ A 3D model read from a Wavefront .obj file, drawn with one texture.
 
 ## Description
 
-Load it once and keep it in a field; a model node or [`DrawModel`](/reference/drawing/drawmodel/) draws it.
-
-```java fragment
-final ObjModel crate = ObjModel.of("crate", "models/crate.obj", Resource.of("models/crate.png"));
-```
-
-The file is read at once, on the calling thread.
-It reads vertices (`v`, with optional vertex colors that it ignores), normals (`vn`), texture coordinates (`vt`), faces (`f`) of 3 vertices or more, split into triangles, and groups (`g` or `o`); comments and other lines are skipped.
-A face without normals is lit with the normal of its triangle.
+Load it once and keep it in a field ([Load a model](/use/learn/going-further/3d-models/#load-a-model)); a model node or [`DrawModel`](/reference/drawing/drawmodel/) draws it.
+The file is read at once, on the calling thread ([Know what JOID reads in a .obj file](/use/learn/going-further/3d-models/#know-what-joid-reads-in-a-obj-file)).
 
 ## Learn more
 

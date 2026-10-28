@@ -34,9 +34,11 @@ public class ScrollbarUI extends UI {
 			.color(ScrollbarUI.ELEMENT)
 			// #region scrollbar
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(new ScrollbarNode(424, 8, 8, 304) {}
-			.track(RectNode.create(0, 0, 0, 0).color(ScrollbarUI.SURFACE))
-			.thumb(RectNode.create(0, 0, 0, 0).color(ScrollbarUI.ACCENT)))
+			.scrollbar(
+				new ScrollbarNode(424, 8, 8, 304) {}
+				.track(RectNode.create(0, 0, 0, 0).color(ScrollbarUI.SURFACE))
+				.thumb(RectNode.create(0, 0, 0, 0).color(ScrollbarUI.ACCENT))
+			)
 			// #endregion
 			.body(area -> {
 				for (int i = 0; i < 8; i++) {

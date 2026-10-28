@@ -17,16 +17,13 @@ The shape of the mouse pointer that a node shows while the pointer is over it.
 
 ## Description
 
-Give a node a cursor with [`Node.cursor`](/reference/nodes/node/#Node-property-cursor); a node without one shows the cursor of its parent, and the root shows [`Cursor.DEFAULT`](/reference/input/cursor/#Cursor-value-DEFAULT).
-On every frame, the UI bridge gives the window the cursor of the hovered node, and keeps the cursor of the pressed node while a button is held on it.
-Nothing changes while the window grabs the mouse.
+Give a node a cursor with [`Node.cursor`](/reference/nodes/node/#Node-property-cursor); [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) explains which cursor shows over a node without one and while a node is pressed.
 
 Backend note: the shapes are the standard pointers of the system.
 On LWJGL 2, JOID loads them from the native cursors of Windows, macOS or X11.
 
 ## Learn more
 
-- [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node)
 - [Polish with effects and motion](/use/tutorial/polish/)
 - [Window bridge](/build/bridges/window/)
 

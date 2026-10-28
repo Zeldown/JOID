@@ -2,9 +2,7 @@
 summary: Base class of the MSDF sources, which can override the weight and the style that the file declares.
 ---
 
-```java fragment
-MsdfFontLoader.load(OpenTypeMsdfSource.of("fonts/Logo.ttf").weight(FontWeight.BOLD));
-```
+Wrap a file in a source when the weight or the style that it declares is wrong ([Set the weight of a font file](/use/learn/going-further/fonts/#set-the-weight-of-a-font-file)).
 
 Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 

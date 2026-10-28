@@ -3,13 +3,7 @@ summary: An RGBA color with channels on 1, which can also hold a linear gradient
 ---
 
 Every color setter of JOID takes a `Color`.
-Create one from a hex string, from channels, or take a named constant:
-
-```java fragment
-final Color text = Color.decode("#E7E9EE");
-final Color shadow = new Color(0F, 0F, 0F, 0.6F);
-final Color glow = Color.decode("#5B8CFF").toGradient(Color.decode("#7DA4FF"));
-```
+Create one from a hex string, from channels, or take a named constant ([Create a color](/use/learn/style-and-motion/styling/#create-a-color)).
 
 An animated color, such as [[Color#RAINBOW]], carries an update function that JOID applies each time it draws the color.
 Two colors are equal when their channels, their gradient and their update function are equal; the update function compares by identity.

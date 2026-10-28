@@ -40,7 +40,7 @@ public class IntroUI extends UI {
 		.effect(ShadowNodeEffect.create(IntroUI.SHADOW, 36F).offsetY(12D))
 		.body(card -> {
 			TextNode
-			.create(48, card.dh(2))
+			.create(48, card.dh(2D))
 			.text(Text.create("Notifications", caption))
 			.anchorY(Align.CENTER)
 			.attach(card);

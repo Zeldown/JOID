@@ -26,6 +26,7 @@ public class EdgesUI extends UI {
 
 		// #region canvas
 		RectNode.create(0, 0, 1920, 1080).color(EdgesUI.SURFACE).attach(this);
+
 		RectNode.create(660, 340, 600, 400).color(EdgesUI.ACCENT).attach(this);
 		// #endregion
 

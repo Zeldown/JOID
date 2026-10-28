@@ -4,10 +4,6 @@ summary: Generates the MSDF atlas of a font file, as a `font.msdf` file that JOI
 
 JOID calls it at the first load of a font file and caches the result; run it from the command line to ship the atlases ready.
 
-```text fragment
-java -jar joid-tool-msdf-<version>.jar --font Montserrat-Regular.ttf --output fonts/Montserrat-Regular
-```
-
 Learn: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship), [MSDF text](/use/in-depth/msdf-text/).
 
 ## main(String[])

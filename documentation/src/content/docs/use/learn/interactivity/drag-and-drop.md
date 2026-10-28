@@ -126,7 +126,7 @@ The copy disappears at the drop: the listener of `onDragSnap` puts a chip of its
 </figure>
 
 JOID draws the copy above every node of the UI, under the pointer.
-The copy disappears at the drop, whatever happens: the drop does nothing to your tree unless a listener changes it.
+Whatever happens at the drop, your tree changes only if a listener changes it.
 The events run on the original node.
 
 ## Drag from a handle only

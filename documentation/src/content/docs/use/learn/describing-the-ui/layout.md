@@ -157,7 +157,7 @@ The list grows each time its end is reached, and `scrollTo(0D, 0D)` glides back 
 ```java file="com/example/describing/layout/ScrollbarUI.java" region="scrollbar"
 ```
 
-[[ScrollbarNode]] is an abstract control: its empty subclass gets its two parts, the track and the thumb, where it is created ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) explains this form).
+[[ScrollbarNode]] is an abstract control: its empty subclass gets its two parts, the track and the thumb, where it is created, at size 0, since the scrollbar sizes them ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) explains this form).
 Its shape sets its axis: a scrollbar taller than wide scrolls vertically, one wider than tall horizontally.
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows on its axis.
 

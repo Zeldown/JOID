@@ -45,7 +45,7 @@ public class MarkupUI extends UI {
 			// #region effects
 			TextNode
 			.create(50, 150)
-			.text(Text.create("A wave moves every glyph", info.withEffects(new WaveTextEffect())))
+			.text(Text.create("A wave moves every glyph", info.withEffects(WaveTextEffect.inst())))
 			.attach(card);
 			// #endregion
 			// #region modifier

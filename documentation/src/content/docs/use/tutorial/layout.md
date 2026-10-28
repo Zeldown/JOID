@@ -60,8 +60,8 @@ Add it after the column:
   Three cards of 280 with two gaps of 32 fill one row exactly.
 - The recent rounds are a second column: a `FlexNode.vertical` whose rows are 72 design pixels high, 12 apart.
   A plain Java loop creates the rows, one per entry of the array.
-- In each row, the points sit against the right edge: `row.aw(-24)` is the width of the row minus 24, and [[Align]]`.END`, given to `anchorX(...)`, puts the end of the text on that point.
-  `row.dh(2)` is half the height of the row, and `anchorY(Align.CENTER)` centers each text on it vertically ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
+- In each row, the points sit against the right edge: `row.aw(-24D)` is the width of the row minus 24, and [[Align]]`.END`, given to `anchorX(...)`, puts the end of the text on that point.
+  `row.dh(2D)` is half the height of the row, and `anchorY(Align.CENTER)` centers each text on it vertically ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
 
 **Run it.**
 You should see the panel with its three cards and its three rounds.

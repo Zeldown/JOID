@@ -101,14 +101,12 @@ Opening a screen closes the open screens first, with the popups open above them:
 ```java file="com/example/describing/uis/Navigation.java" region="replace"
 ```
 
-`MenuUI` closes, then `EditorUI` opens.
-
 <figure>
 
 ![The Menu card with its three grey buttons; the editor card, with its blue Save button, opens in its place; Escape, shown in a badge, leaves the editor open; the pointer clicks Save, which changes nothing on screen; a second later MenuUI opens again and replaces the editor, which lets it close once saved](/captures/describing-uis-replace.webp)
 
 <figcaption>
-Opening a screen closes the one before it: the editor refuses to close until Save is clicked, then opening `MenuUI` replaces it.
+The editor refuses to close until Save is clicked; then opening `MenuUI` replaces it.
 </figcaption>
 </figure>
 
@@ -220,12 +218,12 @@ Show how many times `MenuUI` has been opened.
 <details>
 <summary>Solution</summary>
 
-`init()` runs at every opening and the fields keep their values: increment a field in `init()`, then show it in a [[TextNode]].
+`init()` runs at every opening and the fields keep their values: increment a field in `init()`, then show it in a [[TextNode]] under the card:
 
 ```java fragment
 this.openings++;
 final Text count = Text.create("Opened " + this.openings + " times", title);
-TextNode.create(200, 450).text(count).anchor(Align.CENTER).attach(card);
+TextNode.create(960, 790).text(count).anchor(Align.CENTER).attach(this);
 ```
 
 </details>
