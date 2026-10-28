@@ -106,7 +106,7 @@ This field never receives a digit:
 
 <figure>
 
-![A dark grey text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, each key showing in a badge at the bottom right, and only "RD" appears](/captures/interactivity-consume.webp)
+![A dark grey text field with the placeholder "No digits"; the pointer clicks it and the user types R, 2, D and 2, each key showing in a badge at the bottom right, and only "RD" appears; two presses of Backspace empty the field and Escape leaves it](/captures/interactivity-consume.webp)
 
 <figcaption>
 The user types `R2D2`: the listener consumes both digits before they reach the field.

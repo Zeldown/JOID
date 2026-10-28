@@ -9,5 +9,5 @@ shot style-derive
 shot style-gradient
 ui com.example.style.LiveColorsUI
 # film style-live
-wait 6000
+wait 5967
 cut

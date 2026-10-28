@@ -29,6 +29,15 @@ JOID scales everything it draws with the window, the zoom and the [interface sca
 Instead of the color of each texel, the atlas stores how far the texel is from the outline of the letter, inside or outside.
 Three color channels hold three distance fields, so the corners of the letters stay sharp instead of rounding off.
 
+<figure>
+
+![The letters Ag in light grey on a dark card, growing smoothly from 24 to 220 pixels and shrinking back, their edges sharp at every size](/captures/depth-msdf-zoom.webp)
+
+<figcaption>
+Every size comes from the same atlas, so the edges stay sharp between the sizes too, not only at a few chosen ones.
+</figcaption>
+</figure>
+
 To draw a letter, the shader reads the three distances, keeps the median one, and turns it into the coverage of each screen pixel at the size the letter has right now.
 The edge is computed for the screen, not stored, so one atlas draws every size sharply.
 

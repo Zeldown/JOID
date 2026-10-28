@@ -39,7 +39,7 @@ A [[ModelNode]] draws its model centered in its bounds:
 
 <figure>
 
-![Two grey and white textured cubes seen at an angle, with a blue Turn button under the first one and a Yaw text under the second; the pointer drags the second cube right and back, which turns under the mouse and back while the Yaw text follows, then clicks Turn eight times, and the first cube turns at each click until it has made a full turn](/captures/further-3d-models-cubes.webp)
+![Two grey and white textured cubes seen at an angle, with a blue Turn button under the first one and a Yaw text under the second; the pointer drags the second cube right and back, which turns under the mouse and back while the Yaw text follows; five notches of the wheel, shown in a badge, zoom the second cube in and five zoom it back out; then the pointer clicks Turn eight times, and the first cube turns at each click until it has made a full turn](/captures/further-3d-models-cubes.webp)
 
 <figcaption>
 Both nodes share one model.

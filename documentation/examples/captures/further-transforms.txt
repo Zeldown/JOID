@@ -13,5 +13,5 @@ shot further-transforms-blend
 # crop further-transforms-spin 660 360 600 360
 ui com.example.further.PivotSpinUI
 # film further-transforms-spin 60
-wait 4000
+wait 3000
 cut

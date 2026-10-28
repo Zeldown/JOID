@@ -38,7 +38,7 @@ public class GridFlowUI extends UI {
 
 	private double getGridWidth() {
 		final double time = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 4000D;
-		return 200D + 140D * (1D - Math.cos(time * 2D * Math.PI));
+		return 200D + 160D * (1D - Math.cos(time * 2D * Math.PI));
 	}
 
 }

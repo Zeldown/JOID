@@ -138,6 +138,15 @@ Append more children when the end is reached, and the list grows as the user rea
 ```
 
 The node measures its new content on the next frame, and the wheel scrolls further.
+
+<figure>
+
+![The same panel of numbered blue rows above the blue Top button; the wheel, shown in a badge at the bottom right, scrolls down to row 8 at the end of the list, rows 9 to 12 appear below it and the wheel scrolls on to row 10, then the pointer clicks Top and the list glides back up to row 1](/captures/describing-layout-feed.webp)
+
+<figcaption>
+The list grows each time its end is reached, and `scrollTo(0D, 0D)` glides back to the start as the wheel does.
+</figcaption>
+</figure>
 [Events](/use/learn/interactivity/events/) explains listeners, their phases and cancellation.
 
 ## Add a scrollbar
@@ -154,6 +163,7 @@ The node measures its new content on the next frame, and the wheel scrolls furth
 [[ScrollbarNode]] is an abstract control: its empty subclass gets its two parts, the track and the thumb, where it is created ([Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) explains this form).
 Its shape sets its axis: a scrollbar taller than wide scrolls vertically, one wider than tall horizontally.
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows on its axis.
+The [catalog](/use/catalog/#controls) shows one in motion, scrolled by the wheel and by its thumb.
 Its reference page lists its options, and [Give your controls a look](/use/learn/going-further/ui-kit/) turns it into a reusable skin.
 
 ## Recap

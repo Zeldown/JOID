@@ -8,7 +8,7 @@ shot describing-grid-margins
 shot describing-grid-align
 # crop describing-grid-rows 1420 80 440 340
 shot describing-grid-rows
-# crop describing-grid-flow 680 380 560 280
+# crop describing-grid-flow 680 380 600 280
 ui com.example.describing.grid.GridFlowUI
 # film describing-grid-flow 60
 wait 4000

@@ -10,6 +10,11 @@ shot depth-signal-tracking
 ui com.example.depth.MsdfTextUI
 wait 100
 shot depth-msdf-text
+# crop depth-msdf-zoom 640 320 640 440
+ui com.example.depth.MsdfZoomUI
+# film depth-msdf-zoom 60
+wait 4000
+cut
 # crop depth-performance 510 190 900 700
 ui com.example.depth.PerformanceUI
 wait 100

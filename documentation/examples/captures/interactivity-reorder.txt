@@ -7,13 +7,13 @@ wait 400
 # film interactivity-reorder 60
 wait 200
 press LEFT
-moveto 960 570 800
+moveto 960 570 700
 release LEFT
-wait 700
+wait 400
 press LEFT
-moveto 960 395 800
+moveto 960 395 700
 release LEFT
-wait 700
+wait 400
 cut
 ui com.example.interactivity.reorder.HandleListUI
 move 1000 720

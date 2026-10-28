@@ -50,3 +50,24 @@ release LEFT
 wait 1000
 moveto 400 650 400
 wait 300
+cut
+# crop quick-start-popup 480 360 700 350
+# still quick-start-popup 100
+ui com.example.start.TourUI
+move 950 620
+wait 300
+# film quick-start-popup 60
+wait 300
+moveto 710 530 450
+wait 150
+press LEFT
+release LEFT
+wait 1300
+moveto 1000 560 450
+wait 150
+press LEFT
+release LEFT
+wait 900
+moveto 950 620 400
+wait 300
+cut

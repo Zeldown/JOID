@@ -248,6 +248,15 @@ The annotation [[UIDataPopup]], `@UIDataPopup(active = true)`, turns a UI into a
 ```java file="com/example/start/TourUI.java" region="popup"
 ```
 
+<figure>
+
+![A dark card with a dark grey button above the text "Visit 4"; the pointer clicks the button: a dark backdrop dims the screen and an empty dark card opens above it; a click on that card closes it and the screen comes back](/captures/quick-start-popup.webp)
+
+<figcaption>
+The popup opens above the screen, which stays open behind its backdrop; a click on the popup closes it.
+</figcaption>
+</figure>
+
 Read [UIs](/use/learn/describing-the-ui/uis/), then [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
 ## Inspect and reload your UI

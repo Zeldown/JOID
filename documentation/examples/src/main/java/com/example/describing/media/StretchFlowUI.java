@@ -64,7 +64,7 @@ public class StretchFlowUI extends UI {
 	}
 
 	private double getStretch() {
-		final double time = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 4000D;
+		final double time = (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) / 3000D;
 		return Math.sin(time * 2D * Math.PI);
 	}
 

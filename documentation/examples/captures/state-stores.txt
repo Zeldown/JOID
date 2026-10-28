@@ -24,3 +24,18 @@ wait 700
 moveto 1700 480 500
 wait 300
 cut
+# crop state-property 1040 130 840 440
+ui com.example.state.SettingsUI
+move 1500 500
+wait 300
+# film state-property 60
+wait 600
+key ESCAPE
+wait 500
+open com.example.state.SettingsUI
+wait 900
+key ESCAPE
+wait 500
+open com.example.state.SettingsUI
+wait 900
+cut
