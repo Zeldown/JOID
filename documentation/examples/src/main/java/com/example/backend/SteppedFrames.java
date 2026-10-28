@@ -9,7 +9,7 @@ public final class SteppedFrames {
 
 	// #region clock
 	public static void run(final int frames, final Runnable frame) {
-		final ManualClockBridge clock = new ManualClockBridge(0L);
+		final ManualClockBridge clock = new ManualClockBridge(BridgeHandler.CLOCK.get().currentTimeMillis());
 		BridgeHandler.CLOCK.register(clock);
 		try {
 			for (int index = 0; index < frames; index++) {

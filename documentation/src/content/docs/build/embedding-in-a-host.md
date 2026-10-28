@@ -59,7 +59,7 @@ A node that shows something drawn by the host (a 3D preview, an item of the game
 
 On OpenGL, `suspend` restores the state of the host, runs the drawing, then starts the journal again and resets the pipeline.
 A JOID call made inside the drawing of the host, such as a nested raster, opens and closes its own journal, so the host keeps its state.
-The host draws with its own matrices, so the node gives it screen pixels, read from the [[PixelGrid]].
+The host draws with its own matrices, so the node gives it its rectangle in screen pixels from the bottom-left corner of the viewport, read from the [[PixelGrid]].
 
 [[IRenderBridge#raster]] does the same into a JOID framebuffer at its pixel size, so that the effects of the node apply to the drawing of the host; the OpenGL bridge binds that framebuffer and its viewport around the drawing.
 The user side is [[DrawUtils#RASTER]] ([Drawing shapes and text](/use/learn/going-further/drawing/#show-what-another-renderer-draws)).
