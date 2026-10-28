@@ -57,7 +57,7 @@ A focused text field consumes Escape to lose the focus, so the first Escape leav
 A key that the top screen does not consume goes on to the UI below it, except under a popup ([How UIs stack](/use/learn/describing-the-ui/overlays-and-popups/#see-how-uis-stack)).
 
 JOID has no focus of its own outside the text fields: a node that needs the keys tests its own state in its listener, and consumes what it handles.
-[Text fields](/use/learn/interactivity/text-fields/#give-and-take-the-focus) explains the focus of a field.
+[Text fields](/use/learn/interactivity/text-fields/#move-the-focus) explains the focus of a field.
 
 ## Tell a letter from its place
 
@@ -105,7 +105,7 @@ A [[Shortcut]] runs a listener when its key goes down with its modifiers:
 ![A dark card with a dark grey "Notes" field and the texts "Ctrl + S: 0" and "F1: 0"; each shortcut shows in a badge at the bottom right; Ctrl + S and F1 count once each, then the pointer clicks the field, the user types, and of the same two shortcuts only F1 counts again](/captures/interactivity-shortcut.webp)
 
 <figcaption>
-Ctrl + S counts once before the field takes the focus; F1 counts twice, the second time while the user types in the field.
+Ctrl + S counts once before the field gains the focus; F1 counts twice, the second time while the user types in the field.
 </figcaption>
 </figure>
 

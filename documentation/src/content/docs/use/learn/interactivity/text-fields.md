@@ -12,7 +12,7 @@ This page adds what only a field has: the focus, the cursor, and the rules on th
 
 **You will learn**
 - How to add a text field and read what the user types
-- How to give and take the focus
+- How to move the focus
 - How to shape what the user can type
 - How to ask for a number or for several lines
 - How to write a field for a value of your own
@@ -47,14 +47,14 @@ The fields of this page take a dark grey `background(...)`, and any node can be 
 - [[FieldNode#cursorColor]] and [[FieldNode#selectionColor]] color the cursor and the selection; the cursor blinks.
 - [[LineFieldNode#alignX]] places the text at the start, the center or the end of the field.
 
-## Give and take the focus
+## Move the focus
 
 A field takes the keyboard only while it has the focus: it then consumes every key and every character ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).
 
-- A press on the field gives it the focus and puts the cursor under the pointer.
-- A press anywhere else takes the focus, and so do Enter in a one-line field, Escape, and the detach of the field.
+- A press on the field focuses it and puts the cursor under the pointer.
+- A press anywhere else blurs the field, and so do Enter in a one-line field, Escape, and the detach of the field.
 - Escape keeps the typed text ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard) gives what a second Escape does).
-- One field has the focus at a time among the UIs of a [UI bridge](/use/learn/running/embedding/) (the UIs of one window): a press on a field first takes the focus from the field that had it, which runs its `onBlur`, then gives it to the new one.
+- One field has the focus at a time among the UIs of a [UI bridge](/use/learn/running/embedding/) (the UIs of one window): a press on a field first blurs the field that had the focus, which runs its `onBlur`, then focuses the new one.
 
 [[FieldNode#focus]] and [[FieldNode#blur]] act from your code, and `focused(...)` binds the focus to a signal:
 
@@ -66,7 +66,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 ![A dark grey "Search" field, a dark grey "Search" button and the text "Not focused"; the pointer clicks the button, the field gets its blue focus border and the cursor, and the text reads "Focused"; a press elsewhere on the card leaves the focus in the empty field](/captures/interactivity-focus.webp)
 
 <figcaption>
-The button gives the focus to the field, and the signal follows it.
+The button focuses the field, and the signal follows the focus.
 </figcaption>
 </figure>
 
@@ -108,7 +108,7 @@ The user types ` ab1` then Enter: the digit is refused, and the field rewrites `
 - [[FieldNode#markup]] `(true)` shows the [markup](/use/learn/describing-the-ui/text-markup-and-effects/) of the text instead of its tags.
 
 The signal follows the text as the user types it, and receives the normalized text with the rewrite.
-A rule that changes keeps the text asked for, as a control keeps its value ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)).
+A rule that changes keeps the text asked for, as a control keeps its pending value ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)).
 
 ## Ask for a number
 
@@ -174,7 +174,7 @@ The rectangle reads the same signal as the field: a valid color shows at once.
 ## Recap
 
 - A **text field** needs `info(...)`, binds its text to a signal, and runs `onChange` on each edit and **`onSubmit`** on Enter.
-- A press gives the **focus**, a press elsewhere, Enter, Escape or a detach takes it; **one field** has the focus at a time on the screen.
+- A field gains the **focus** on a press, and loses it on a press elsewhere, Enter, Escape or its detach; **one field** has the focus at a time on the screen.
 - A focused field **consumes every key**; shortcuts set with `overrideFocus(true)` still run.
 - **`accept`**, **`maxTextLength`**, **`normalize`** and **`allowEmpty`** shape the text; the field rewrites it when it loses the focus.
 - **`IntegerFieldNode`** holds a number between `min` and `max`, stepped by the arrows and the wheel.
