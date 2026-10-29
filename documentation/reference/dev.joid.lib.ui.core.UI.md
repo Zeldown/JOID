@@ -38,7 +38,7 @@ The UI bridge calls it; to close a UI, call [[JOID#close]] or [[JOID#forceClose]
 
 ## reload()
 
-Builds the UI again on the same instance: it saves the remembered properties, reads the annotations of the class again, then runs `init()` again, so the fields keep their values.
+Builds the UI again on the same instance: it saves the remembered properties, applies the values of the annotations that changed in the code since they were read, keeps the options that setters changed, then runs `init()` again, so the fields keep their values.
 Throws an `IllegalStateException` when the annotations make the UI both a popup and an overlay.
 
 ## renew()

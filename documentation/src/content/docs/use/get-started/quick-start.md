@@ -111,7 +111,7 @@ Read [Nodes and the tree](/use/learn/describing-the-ui/nodes/), then [Position a
 The [Catalog](/use/catalog/) shows every node that JOID offers.
 
 The examples of the rest of this page come from one UI, `TourUI`.
-Its nodes each sit in a card of their own, `body(card -> ...)`, and the fields and the lines of `init()` that they read are shown above them: paste each one at the same place in your UI, or open its full file.
+Its nodes each sit in a card of their own, `body(card -> ...)`, and the fields and the lines of `init()` that they read are shown above them, except its color constants: paste each one at the same place in your UI with colors of your own, or open its full file.
 
 ## Lay out a row or a column
 

@@ -111,7 +111,7 @@ The shortcuts rebuild the UI without a button of your own: `Ctrl+R` keeps the co
 </figure>
 
 [Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui) explains what each of them keeps.
-A reload that fails prints the exception instead of stopping the program: `[JOID] The reload of MenuUI failed (…), fix init() then reload it again`.
+A reload that fails prints the exception instead of stopping the program: the message of an `IllegalStateException`, such as a missing setting, or else `[JOID] The reload of MenuUI failed (…), fix init() then reload it again`.
 A UI without a constructor without argument cannot be renewed: `[JOID] The UI … has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead`.
 
 **Hot reload** reloads a UI by itself.

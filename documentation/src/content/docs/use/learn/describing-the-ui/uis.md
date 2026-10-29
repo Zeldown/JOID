@@ -132,7 +132,7 @@ Reload keeps the instance and its field, so the count goes on; Renew replaces th
 </figcaption>
 </figure>
 
-[[UI#reload]] rebuilds an open UI on the same instance: it reads the annotations of the class again, then runs `init()` again, so its fields keep their values.
+[[UI#reload]] rebuilds an open UI on the same instance: it applies the values of the annotations that changed in the code since they were read, keeps the options that setters changed, then runs `init()` again, so its fields keep their values.
 [[UI#renew]] starts from a fresh state instead: it replaces the open UI by a new instance of its class, built by its constructor without argument, and returns that instance.
 In dev mode, shortcuts call each of them for you ([Dev tools](/use/get-started/dev-tools/)).
 
