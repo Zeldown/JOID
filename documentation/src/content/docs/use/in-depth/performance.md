@@ -70,7 +70,7 @@ A shader compiles the first time it draws, so an effect or a shader that appears
 |---|---|---|
 | A resource (image, animated image, video, SVG) | Width × height × 4 bytes, a third more with mipmaps | JOID, once no object refers to it and the shared cache dropped it, 5 minutes after its last use; or you, at once, with [[Resource#clear]] |
 | A font face | 16 MB (a 2048 × 2048 atlas) | JOID, with the font |
-| The off-screen images of effects | One set per level of nested effects, as large as the largest visible area that used it in the last 5 seconds | JOID, 5 seconds after their last use |
+| The targets of [[FrameBufferPool]]: the off-screen images of effects and the targets you borrow | One set per owner, depth and count (for effects, per level of nesting), as large as the largest area that used it in the last 5 seconds | JOID, 5 seconds after their last use |
 | A [[FrameBuffer]] you create | Width × height × 4 bytes, plus depth | You, with [[FrameBuffer#delete]] |
 
 JOID releases what the garbage collector reclaims on the render thread, before the next frame draws.
