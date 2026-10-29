@@ -954,7 +954,7 @@ public class UITest {
 		StateFailureUI.failing = true;
 		try {
 			final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
-			Assert.assertTrue(output, output.startsWith("[JOID] Init state failed"));
+			Assert.assertTrue(output, output.startsWith("[JOID] The reload of StateFailureUI failed: Init state failed"));
 			Assert.assertTrue(output, output.contains("java.lang.IllegalStateException: Init state failed"));
 			Assert.assertTrue(output, output.contains("\tat " + StateFailureUI.class.getName() + ".init("));
 		} finally {
@@ -1003,7 +1003,7 @@ public class UITest {
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
 		final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
-		Assert.assertTrue(output, output.startsWith("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The reload of TraceUI failed: The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead"));
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 	}

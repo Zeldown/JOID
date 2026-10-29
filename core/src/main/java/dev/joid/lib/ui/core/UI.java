@@ -856,7 +856,7 @@ public abstract class UI implements IIndexedElement {
 		try {
 			reload.run();
 		} catch (final IllegalStateException exception) {
-			JOIDLog.warn(exception.getMessage(), exception);
+			JOIDLog.warn("The reload of " + JOIDLog.nameOf(this.getClass()) + " failed: " + exception.getMessage(), exception);
 		} catch (final RuntimeException exception) {
 			JOIDLog.warn("The reload of " + JOIDLog.nameOf(this.getClass()) + " failed (" + exception + "), fix init() then reload it again", exception);
 		}

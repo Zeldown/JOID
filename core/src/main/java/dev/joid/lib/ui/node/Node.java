@@ -410,7 +410,10 @@ public abstract class Node implements INode {
 		if (!this.hoverSupplierList.isEmpty()) {
 			final List<String> lines = new LinkedList<>();
 			for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
-				lines.addAll(hoverSupplier.get());
+				final List<String> hoverLines = hoverSupplier.get();
+				if (hoverLines != null) {
+					lines.addAll(hoverLines);
+				}
 			}
 
 			if (!lines.isEmpty()) {
@@ -1203,7 +1206,7 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T hover(final @NonNull Supplier<@NonNull List<@NonNull String>> supplier) {
+	public final <T extends Node> @NonNull T hover(final @NonNull Supplier<List<@NonNull String>> supplier) {
 		this.hoverSupplierList.add(supplier);
 		return (T) this;
 	}

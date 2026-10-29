@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -779,10 +780,14 @@ public class NodeTest {
 
 	@Test
 	public void showsNoTooltipForAMissingLine() {
-		final HoverUI ui = new HoverUI(RectNode.create(100D, 100D, 100D, 100D).hover((HoverSupplier) () -> null));
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover((HoverSupplier) () -> null).hover((Supplier<List<String>>) () -> null);
+		final HoverUI ui = new HoverUI(node);
 		this.bridges.open(ui);
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertTrue(ui.tooltips.isEmpty());
+		node.hover(() -> "Save");
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(Arrays.asList("Save")), ui.tooltips);
 	}
 
 	@Test
