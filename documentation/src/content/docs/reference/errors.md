@@ -53,9 +53,9 @@ No fix is needed; the reason is in the parentheses: [Reload a UI while you work]
 
 **Warning** · `[JOID] …`
 
-Emitted by [`JOIDLog.warnOnce`](/reference/ui/joidlog/#JOIDLog-method-warnOnce), [`JOIDLog.devWarnOnce`](/reference/ui/joidlog/#JOIDLog-method-devWarnOnce), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw), [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install), [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
+Emitted by [`JOIDLog.warnOnce`](/reference/ui/joidlog/#JOIDLog-method-warnOnce), [`JOIDLog.devWarnOnce`](/reference/ui/joidlog/#JOIDLog-method-devWarnOnce), [`VideoNatives.install`](/reference/resources/videonatives/#VideoNatives-method-install), [`SnapshotComparison.main`](/reference/testing/snapshotcomparison/#SnapshotComparison-method-main).
 
-A warning whose whole text is the message of an exception, printed with its stack trace: a reload that failed on a rule of JOID, a draw that failed, a failed install of the video natives, or an error of the snapshot comparison.
+A warning whose whole text is the message of an exception, printed with its stack trace: a draw that failed, a failed install of the video natives, or an error of the snapshot comparison.
 Each of these messages has its own entry on this page.
 
 Read the message and look it up on this page.
@@ -123,13 +123,23 @@ The `toJson()` of a [`UIStore`](/reference/ui/uistore/) threw while JOID saved t
 
 Catch the exception inside `toJson()`, or fix the code it names: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
+### The reload of … failed {#reload-failed}
+
+**Warning** · `[JOID] The reload of … failed: …`
+
+Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
+
+With the dev jar, the reload or the renewal of the UI (Ctrl + R, Ctrl + Shift + R, or a hot reload after an edit) threw an `IllegalStateException`, whose message follows the colon, and the program goes on.
+
+Look up that message on this page, fix its cause, then reload again: [Dev tools](/use/get-started/dev-tools/).
+
 ### The reload of … failed (…), fix init() then reload it again {#reload-failed-fix-init}
 
 **Warning** · `[JOID] The reload of … failed (…), fix init() then reload it again`
 
 Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
 
-With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()` an exception other than an `IllegalStateException`, whose own message prints instead, and the UI shows what the failed build left.
+With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()` an exception other than an `IllegalStateException`, and the UI shows what the failed build left.
 
 Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-started/dev-tools/).
 
@@ -245,6 +255,7 @@ Open the UI first, or create a new instance and open it: [Rebuild an open UI](/u
 Emitted by [`UI.renew`](/reference/ui/ui/#UI-method-renew).
 
 [`UI.renew`](/reference/ui/ui/#UI-method-renew) creates the fresh instance with the constructor without argument of the class, and the class has none.
+With the dev jar, Ctrl + Shift + R prints this message in the warning [The reload of … failed](#reload-failed).
 
 Add a constructor without argument, of any visibility, or reload the UI instead: [Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui).
 

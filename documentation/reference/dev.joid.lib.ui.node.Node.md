@@ -107,7 +107,7 @@ Easing of the hover progress.
 
 ## hover
 
-Adds a tooltip shown while the node is hovered: a [[IHoverElement]], a [[HoverSupplier]] that gives one line (`null` for none), or a `Supplier` of lines drawn by [[UI#drawHover]].
+Adds a tooltip shown while the node is hovered: a [[IHoverElement]], a [[HoverSupplier]] that gives one line (`null` for none), or a `Supplier` of lines (`null` for none) drawn by [[UI#drawHover]].
 Each call adds one more element.
 
 ## overflow

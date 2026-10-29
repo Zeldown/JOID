@@ -28,7 +28,7 @@ Returns `true`: the text keeps its line breaks.
 
 ## handleKey(Key)
 
-Handles Up and Down, which move the cursor to the nearest place on the line above or below, and Enter, which inserts a line break.
+Handles Up and Down, which move the cursor to the nearest place on the line above or below, Home and End, which move it to the start or the end of its line, wrapped lines included, and Enter, which inserts a line break.
 
 ## getPositionAt(double,double)
 

@@ -162,7 +162,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `this` | [bindValue](#FieldNode-method-bindValue)(Signal<V> value) <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">protected</span> | Binds the value to a signal of its type both ways: the field shows the signal through `format`, and writes the value of each valid edit into it. |
 | `void` | [write](#FieldNode-method-write)(V value, boolean refusable) <span class="joid-qualifier">protected</span> | Shows a value, brought into its bounds and formatted. |
 | `void` | [revalidate](#FieldNode-method-revalidate)() <span class="joid-qualifier">protected</span> | Shows again the value asked for last, after a bound of the field changed, such as its `min` or its `max`. |
-| `void` | [blurNow](#FieldNode-method-blurNow)() <span class="joid-qualifier">protected</span> | Blurs the field at once. |
+| `boolean` | [blurNow](#FieldNode-method-blurNow)() <span class="joid-qualifier">protected</span> | Blurs the field at once. |
 | `boolean` | [insert](#FieldNode-method-insert)(String text) <span class="joid-qualifier">protected</span> | Inserts a text at the cursor, in place of the selection, as typing would: cleaned of control characters, cut to `maxTextLength`, and tested by `accept` and `accepts`. |
 | `void` | [placeCursor](#FieldNode-method-placeCursor)(int position, boolean forward) <span class="joid-qualifier">protected</span> | Moves the cursor to an index and scrolls to keep it in view; with Shift held, extends the selection. |
 | `void` | [increaseCursor](#FieldNode-method-increaseCursor)(int value) <span class="joid-qualifier">protected</span> | Moves the cursor forward by a number of characters and scrolls to keep it in view. |
@@ -830,9 +830,10 @@ Shows again the value asked for last, after a bound of the field changed, such a
 
 ### blurNow
 
-`void blurNow()` <span class="joid-qualifier">protected</span>
+`boolean blurNow()` <span class="joid-qualifier">protected</span>
 
 Blurs the field at once.
+Returns `true` when the field lost the focus, `false` when a `beforeBlur` listener kept it.
 
 <a id="FieldNode-method-insert"></a>
 

@@ -315,11 +315,11 @@ The Page Down key.
 
 ## HOME
 
-The Home key, which moves the cursor of a text field to the start.
+The Home key, which moves the cursor of a text field to the start of the line.
 
 ## END
 
-The End key, which moves the cursor of a text field to the end.
+The End key, which moves the cursor of a text field to the end of the line.
 
 ## CAPS_LOCK
 

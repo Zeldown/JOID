@@ -71,7 +71,7 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 | Returns | Signature | Summary |
 |---|---|---|
 | `boolean` | [isMultiline](#LineFieldNode-method-isMultiline)() <span class="joid-qualifier">protected</span> | Returns `false`: the text holds one line. |
-| `boolean` | [handleKey](#LineFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit`. |
+| `boolean` | [handleKey](#LineFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit` if the field lost the focus. |
 | `int` | [getPositionAt](#LineFieldNode-method-getPositionAt)(double mouseX, double mouseY) <span class="joid-qualifier">protected</span> | Returns the index in the text nearest to the pointer, along the line. |
 | `void` | [followCursorForward](#LineFieldNode-method-followCursorForward)() <span class="joid-qualifier">protected</span> | Scrolls the text to the left when the cursor passes the right margin. |
 | `void` | [followCursorBackward](#LineFieldNode-method-followCursorBackward)() <span class="joid-qualifier">protected</span> | Scrolls the text to the right when the cursor passes the left margin. |
@@ -103,7 +103,7 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 
 | Event | Listener | Summary |
 |---|---|---|
-| [onSubmit](#LineFieldNode-event-onSubmit) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the user presses Enter or the Enter of the keypad, once the field has tried to blur: it runs even when a `beforeBlur` listener kept the focus. |
+| [onSubmit](#LineFieldNode-event-onSubmit) | [`EventListener<NodeEvent<T>>`](/reference/events/nodeevent/) | Adds a listener that runs when the user presses Enter or the Enter of the keypad and the field blurs: it does not run when a `beforeBlur` listener keeps the focus. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/fieldnode/#FieldNode-events"><code>FieldNode</code></a> (5)</summary>
@@ -181,7 +181,7 @@ Returns `false`: the text holds one line.
 
 `boolean handleKey(Key key)` <span class="joid-qualifier">protected</span>
 
-Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit`.
+Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit` if the field lost the focus.
 
 <a id="LineFieldNode-method-getPositionAt"></a>
 
@@ -231,7 +231,7 @@ Draws the text or the placeholder between the margins, with the cursor while the
 
 `this onSubmit(EventListener<NodeEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that runs when the user presses Enter or the Enter of the keypad, once the field has tried to blur: it runs even when a `beforeBlur` listener kept the focus.
+Adds a listener that runs when the user presses Enter or the Enter of the keypad and the field blurs: it does not run when a `beforeBlur` listener keeps the focus.
 
 ---
 

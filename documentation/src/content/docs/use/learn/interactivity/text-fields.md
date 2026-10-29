@@ -42,7 +42,7 @@ With the factory without a height, the field takes the height of its font plus i
 The fields of this page take a dark grey `background(...)`, and any node can be the background; their `placeholderColor(...)` is a grey that reads better on it than the default, the text color at half its opacity.
 
 - [[FieldNode#onChange]] runs on each edit with a [[NodeFieldChangeEvent.Post]]: `getText()` is the text, `getValue()` the value, `isValid()` whether the text is a valid value.
-- [[LineFieldNode#onSubmit]] runs when the user presses Enter: the field blurs first, and the listener runs even when a `beforeBlur` listener keeps the focus.
+- [[LineFieldNode#onSubmit]] runs when the user presses Enter: the field blurs first, and the listener runs only if the field lost the focus: a `beforeBlur` listener that keeps the focus prevents it.
 - `placeholder(...)` shows a text while the field is empty and has no focus, in the color of [[FieldNode#placeholderColor]].
 - [[FieldNode#cursorColor]] and [[FieldNode#selectionColor]] color the cursor and the selection; the cursor blinks.
 - [[LineFieldNode#alignX]] places the text at the start, the center or the end of the field.
@@ -79,7 +79,7 @@ The user edits the text with the keys of every text editor:
 | Keys | Action |
 |---|---|
 | Left, Right | Move the cursor; with Ctrl (Alt on macOS), by word |
-| Home, End | Go to the start or the end of the text, in a field of several lines too |
+| Home, End | Go to the start or the end of the line, or of the text in a field of one line |
 | Shift with a move, or a drag of the pointer | Select |
 | A double press, a triple press | Select a word, a line |
 | Backspace, Delete | Erase a character; with Ctrl (Alt on macOS), a word |
