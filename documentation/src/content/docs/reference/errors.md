@@ -1660,7 +1660,27 @@ Pass a value; the reference page of the method says which parameters accept `nul
 
 Emitted by [`LockableValue.mutate`](/reference/utilities/lockablevalue/#LockableValue-method-mutate).
 
-A setter was called on a locked value, such as a color of a palette locked with `lock()`, which never changes.
+A [`LockableValue`](/reference/utilities/lockablevalue/) subclass of your own gave the start of the message from [`LockableValue.describeLocked`](/reference/utilities/lockablevalue/#LockableValue-method-describeLocked), and a setter was called on a locked value of it.
+
+Call the method that the message names to get a modified copy, and read the start that your code gave.
+
+### Color.… is a constant {#color-constant-use-get}
+
+**`IllegalStateException`** · `Color.… is a constant, use …(...) to get a modified copy`
+
+Emitted by [`LockableValue.mutate`](/reference/utilities/lockablevalue/#LockableValue-method-mutate).
+
+A setter was called on a constant of [`Color`](/reference/drawing/color/), such as `Color.WHITE`, which never changes.
+
+Call the method that the message names to get a modified copy: [Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe).
+
+### This … is locked {#locked-use-get-modified}
+
+**`IllegalStateException`** · `This … is locked, use …(...) to get a modified copy`
+
+Emitted by [`LockableValue.mutate`](/reference/utilities/lockablevalue/#LockableValue-method-mutate).
+
+A setter was called on a value locked with [`LockableValue.lock`](/reference/utilities/lockablevalue/#LockableValue-method-lock), such as a color of a palette, which never changes.
 
 Call the method that the message names to get a modified copy: [Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe).
 
