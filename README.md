@@ -46,7 +46,7 @@ Real JOID renders, styled for this showcase: JOID ships with no design of its ow
 
 <table>
   <tr>
-    <td width="50%"><img src="documentation/public/showcase/reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers, the swatches and an equalizer follow every move"></td>
+    <td width="50%"><img src="documentation/public/showcase/reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers, the swatches and an equalizer follow every move, then a switch lights a halo behind the orb"></td>
     <td width="50%"><img src="documentation/public/showcase/type.webp" alt="Text from 14 to 108 px in several fonts, with markup and animated effects, then a 6x zoom that stays perfectly sharp"></td>
   </tr>
   <tr>
@@ -63,7 +63,7 @@ Real JOID renders, styled for this showcase: JOID ships with no design of its ow
   </tr>
   <tr>
     <td width="50%"><img src="documentation/public/showcase/form.webp" alt="A sign-up form: a name and an email are typed, a word is selected with a double click and replaced, and a live profile card follows"></td>
-    <td width="50%"><img src="documentation/public/showcase/player.webp" alt="A video player with designed controls: the pointer pauses the video, drags the progress bar to seek, then plays it again"></td>
+    <td width="50%"><img src="documentation/public/showcase/player.webp" alt="A video player with designed controls: the pointer pauses the video, hovers the progress bar where a preview frame follows it, drags the bar to seek, then plays the video again"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Text input.</b> Selection, markup, validation.</sub></td>
@@ -87,7 +87,7 @@ Real JOID renders, styled for this showcase: JOID ships with no design of its ow
   </tr>
   <tr>
     <td width="50%"><img src="documentation/public/showcase/inspect.webp" alt="The dev mode over the playlist: the grid is turned on and off, a reload rebuilds the list, the panel is dragged to the top, hovered nodes are outlined with their render time, and a click locks a row whose details scroll in the panel"></td>
-    <td width="50%"><img src="documentation/public/showcase/design.webp" alt="A settings screen drawn by a dark neon kit, then wiped into a flat paper kit by the same code: switches, a slider and a save button react in both, and the values follow from one kit to the other"></td>
+    <td width="50%"><img src="documentation/public/showcase/design.webp" alt="A settings screen drawn by a dark neon kit, wiped into a flat paper kit by the same code and back: switches and a slider react in both kits, a save button confirms, and the values follow from one kit to the other"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Dev mode.</b> Inspect any node live.</sub></td>
