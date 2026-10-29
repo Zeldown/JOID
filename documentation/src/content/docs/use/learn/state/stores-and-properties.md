@@ -153,7 +153,7 @@ It writes them when the UI closes, before a reload, and when the program ends, i
 - A **store** extends `UIStore`, carries `@UIStoreData`, and holds signals.
 - **`useStore(Class, factory)`** gives the one instance of its scope, created by the factory at the first call.
 - A **`PERMANENT`** store is saved through `toJson()` when a UI closes and when the program ends, and restored through `fromJson()`.
-- A store file of invalid JSON becomes **`.store.corrupt`**, and the store starts from `init()`.
+- A store file of invalid JSON becomes **`.store.corrupt`**, and the store starts from its defaults.
 - **`@UIProperty`** remembers a field of a UI across launches, read before each `init()`.
 
 ## Try it
