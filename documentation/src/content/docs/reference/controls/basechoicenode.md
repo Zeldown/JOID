@@ -21,7 +21,8 @@ The behavior shared by the controls that select one value among options: the swi
 
 A choice holds a list of options and the selected one.
 New options keep the selected value when it is still one of them; otherwise the choice shows the value of `fallback(...)`.
-A value that is not an option yet waits until the options hold it, and the order of `values(...)` and `value(...)` does not matter.
+A value given by a bound signal that is not an option yet waits until the options hold it; a plain value must be one of the options.
+The order of `values(...)` and `value(...)` does not matter.
 Attaching a choice without options throws an `IllegalStateException`.
 
 ## Learn more
