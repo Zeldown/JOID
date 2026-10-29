@@ -1,6 +1,6 @@
 # Page templates
 
-Front-matter on every page: `title`, `description` (one sentence, used by search and link previews), and `genre` (tutorial | learn | guide | reference | in-depth | build).
+Front-matter on every page: `title`, `description` (one sentence, used by search and link previews), and `genre` (tutorial | learn | guide | reference | in-depth | build | home, for the home page and the Showcase page).
 
 ## Learn page (Use JOID > Learn)
 1. Intro: 1 to 3 sentences that state the problem this page solves.

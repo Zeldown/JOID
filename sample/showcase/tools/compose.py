@@ -1,4 +1,4 @@
-"""Compose the rendered showcase frames (see showcase.py) into the README media.
+"""Compose the rendered showcase frames (see showcase.py) into the showcase media (README and documentation).
 
 usage: python compose.py webp <clip|all> [width] [quality] [step]   -> media/<clip>.webp + media/<clip>.still.webp
        python compose.py still <clip|all> [width] [quality]         -> media/<clip>.still.webp (the frame of STILLS)
