@@ -2380,8 +2380,8 @@ public class UITest {
 
 	@Test
 	public void watchesNothingOnceItsClassesAreNotInAFile() throws Exception {
-		final UI first = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
-		final UI second = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
+		final UI first = UITest.hotReloaded(new URL("http://localhost/classes/"), new AtomicInteger());
+		final UI second = UITest.hotReloaded(new URL("http://localhost/classes/"), new AtomicInteger());
 		JOIDEnv.devMode(true);
 		JOIDWarnings.forget();
 		final String errors = TestUtils.captureErr(() -> {
@@ -2428,6 +2428,54 @@ public class UITest {
 			}
 		});
 		Assert.assertTrue(output, output.contains("[JOID] ui.jar changed, the UIs that use it reload"));
+	}
+
+	@Test
+	public void reloadsOnceTheJarOfItsClassEntryChanges() throws Exception {
+		final File location = new File(this.folder.newFolder("mods"), "ui.jar");
+		final AtomicInteger inits = new AtomicInteger();
+		Files.write(location.toPath(), new byte[] {1});
+		final UI ui = UITest.hotReloaded(new URL("jar:" + location.toURI() + "!/dev/joid/lib/ui/core/HotReloadUI.class"), inits);
+		JOIDEnv.devMode(true);
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		try {
+			Assert.assertEquals(location, UITest.location(ui));
+			final BlockingQueue<String> changes = UITest.listen(ui);
+			Files.write(location.toPath(), new byte[] {1, 2});
+			UITest.await(changes, "file change ui.jar");
+			UITest.await(changes, "stop");
+			Assert.assertTrue(UITest.isReloadPending(ui));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
+			Assert.assertEquals(2, inits.get());
+		} finally {
+			ui.dispose();
+		}
+	}
+
+	@Test
+	public void reloadsOnceAClassOfTheFolderAboveItsClassFileChanges() throws Exception {
+		final File location = this.folder.newFolder("classes");
+		final File own = new File(location, "dev/joid/lib/ui/core/HotReloadUI.class");
+		final File type = new File(new File(location, "shop"), "ShopNode.class");
+		final AtomicInteger inits = new AtomicInteger();
+		Assert.assertTrue(own.getParentFile().mkdirs());
+		Assert.assertTrue(type.getParentFile().mkdir());
+		Files.write(own.toPath(), new byte[] {1});
+		final UI ui = UITest.hotReloaded(own, inits);
+		JOIDEnv.devMode(true);
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		try {
+			Assert.assertEquals(location, UITest.location(ui));
+			final BlockingQueue<String> changes = UITest.listen(ui);
+			Files.write(type.toPath(), new byte[] {1});
+			UITest.await(changes, "file create ShopNode.class");
+			UITest.await(changes, "stop");
+			Assert.assertTrue(UITest.isReloadPending(ui));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
+			Assert.assertEquals(2, inits.get());
+		} finally {
+			ui.dispose();
+		}
 	}
 
 	@Test

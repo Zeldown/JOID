@@ -116,6 +116,7 @@ A UI without a constructor without argument cannot be renewed: `[JOID] The reloa
 
 **Hot reload** reloads a UI by itself.
 JOID watches the folder or the jar file that the classes of the UI come from, and reloads the UI about a second after a `.class` file of that folder, or the jar file, changes.
+A class loader that gives each class the location of its own file, a `jar:` URL to its entry in a jar or the URL of its `.class` file, leads JOID to that jar or to the root folder of the classes.
 The console tells you each step, and every reload, by a shortcut or by hot reload, prints its time on one line:
 
 ```text

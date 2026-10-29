@@ -3,6 +3,7 @@ package dev.joid.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -153,7 +154,31 @@ public final class HotReload {
 		final ProtectionDomain domain = type.getProtectionDomain();
 		final CodeSource source = domain != null ? domain.getCodeSource() : null;
 		final URL location = source != null ? source.getLocation() : null;
-		if (location == null || !"file".equals(location.getProtocol())) {
+		if (location == null) {
+			return null;
+		}
+
+		if ("jar".equals(location.getProtocol())) {
+			final String path = location.getPath();
+			final int separator = path.indexOf("!/");
+			try {
+				return HotReload.toFile(new URL(separator < 0 ? path : path.substring(0, separator)));
+			} catch (final MalformedURLException exception) {
+				return null;
+			}
+		}
+
+		File file = HotReload.toFile(location);
+		if (file != null && file.getName().endsWith(".class")) {
+			for (int segment = type.getName().split("\\.").length; segment > 0 && file != null; segment--) {
+				file = file.getParentFile();
+			}
+		}
+		return file;
+	}
+
+	private static File toFile(final URL location) {
+		if (!"file".equals(location.getProtocol())) {
 			return null;
 		}
 
