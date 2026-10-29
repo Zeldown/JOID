@@ -27,7 +27,7 @@ Catch the exception inside the listener, or fix the code it names: [Run code onc
 
 ## warning [JOID] …
 
-A warning whose whole text is the message of an exception, printed with its stack trace: a draw that failed, a failed install of the video natives, or an error of the snapshot comparison.
+A warning whose whole text is the message of an exception: a failed install of the video natives, or an error of the snapshot comparison.
 Each of these messages has its own entry on this page.
 
 Read the message and look it up on this page.
@@ -145,6 +145,7 @@ Add a constructor without argument, of any visibility, or reload the UI instead:
 ## IllegalStateException The UI … cannot be renewed: its constructor without argument failed (…), fix the constructor from this error
 
 [[UI#renew]] called the constructor without argument of the class, and it threw; the open UI stays as it was.
+With the dev jar, Ctrl + Shift + R prints this message in the warning [The reload of … failed](#reload-failed).
 
 Fix the constructor from the error in the parentheses: [UIs](/use/learn/describing-the-ui/uis/).
 
