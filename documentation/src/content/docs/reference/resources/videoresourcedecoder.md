@@ -20,7 +20,7 @@ Plays a video file with FFmpeg, its frames into a texture and its sound through 
 
 [`VideoResourceFormat`](/reference/resources/videoresourceformat/) picks it for MP4, Matroska and AVI files.
 The first decode waits for the FFmpeg natives ([`VideoNatives`](/reference/resources/videonatives/)); a video that is not a plain file, inside a jar, a stream or a URL, is copied into the `video` area of the cache folder first.
-Frames are decoded ahead on a thread of their own and shown at the time of the JOID clock; the sound plays when an audio bridge is registered, otherwise the video plays silent with one warning.
+Frames are decoded ahead on a thread of their own and shown at the time of the JOID clock; the sound plays when an audio bridge is registered, otherwise the video plays silent, without a warning; an audio bridge that cannot create the source prints one warning and the video plays silent.
 Get it from [`Resource.getPlayback`](/reference/resources/resource/#Resource-method-getPlayback) and cast it to set the sound; each fork of the same file plays on its own.
 
 ## Learn more

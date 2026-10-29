@@ -61,7 +61,7 @@ Catch the exception inside `destroy()`, or fix the code it names: [Write a store
 
 ## warning [JOID] The store … cannot be saved (…), the other stores are saved anyway: catch the exception inside toJson() to handle it
 
-The `toJson()` of a [[UIStore]] threw while JOID saved the stores, at the end of their scope or when the program ended; the previous file stays on disk.
+The `toJson()` of a [[UIStore]] threw while JOID saved the stores, when a UI closed or when the program ended; the previous file stays on disk.
 
 Catch the exception inside `toJson()`, or fix the code it names: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
@@ -433,9 +433,27 @@ See that entry.
 
 ## IllegalStateException …
 
-An `IllegalStateException` whose message comes from your code: a refusal given to [[Signal#refuse]], thrown again by `set(...)` or `reset()`, or the failure of the copy of an effect.
+An `IllegalStateException` whose message comes from your code: the [[Signal#refuse]] of a [[Signal]] subclass of your own gave it, and `set(...)` or `reset()` threw it.
 
 Read the message that your code gave.
+
+## IllegalStateException The … is computed from other signals and cannot be …, set the signals it reads instead
+
+A derived value, made by `map(...)` or `Signal.from(...)`, received `set(...)` or `reset()`.
+
+Set the signals that it reads instead: [Write to a derived value through its sources](/use/learn/state/derived-values/#write-to-a-derived-value-through-its-sources).
+
+## IllegalStateException The … is animated and cannot be …, use value(...) or start a tween
+
+`set(...)` or `reset()` was called on a [[TweenAnimator]].
+
+Use [[TweenAnimator#value]] to put a value at once, or start a tween: [Animate a value](/use/learn/style-and-motion/animation/#animate-a-value).
+
+## IllegalStateException The … is read-only and cannot be …
+
+A [[Signal]] subclass of your own returns `false` from [[Signal#isWritable]], and received `set(...)` or `reset()`.
+
+Change its value the way your subclass provides, or override [[Signal#refuse]] to tell its users how.
 
 ## IllegalArgumentException The … of … is changed by the user, so it cannot follow …, which cannot be written: pass a writable Signal, or its value as a start value
 

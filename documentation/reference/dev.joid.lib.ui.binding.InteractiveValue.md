@@ -6,7 +6,7 @@ The controls, the position of a node, its scroll offsets, the zoom of a UI and t
 It keeps the last value requested by a setter, the bound signal or a gesture, and applies it within the bounds ([Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse)); a change runs its steps in a fixed order ([Know the order of a change](/use/learn/interactivity/controls/#know-the-order-of-a-change)).
 A custom control creates one in its constructor and calls it from its own setters and input handlers.
 
-Learn: [Controls](/use/learn/interactivity/controls/), [Give your controls a look](/use/learn/going-further/ui-kit/).
+Learn: [Custom nodes](/use/learn/going-further/custom-nodes/#hold-a-value-that-the-user-changes), [Controls](/use/learn/interactivity/controls/), [Give your controls a look](/use/learn/going-further/ui-kit/).
 
 ## create(NodeBindings,String,Supplier,Consumer)
 

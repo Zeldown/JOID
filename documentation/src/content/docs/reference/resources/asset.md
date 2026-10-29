@@ -23,8 +23,8 @@ The unique id keys the caches, so two loads of the same asset share their data.
 
 ## Learn more
 
-- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

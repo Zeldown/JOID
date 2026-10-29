@@ -132,7 +132,7 @@ release LEFT
 wait 100
 press LEFT
 release LEFT
-move 680 640
+move 680 620
 wait 1000
 # film tutorial-overview 60
 wait 300
@@ -150,6 +150,6 @@ wait 200
 press LEFT
 release LEFT
 wait 500
-moveto 680 640 350
+moveto 680 620 350
 wait 200
 cut

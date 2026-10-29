@@ -39,7 +39,7 @@ A stage that uses a [`ShaderFeature`](/reference/pipeline/shaderfeature/) the di
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [clampToBorder](#GlslShaderTranslator-property-clampToBorder) | `boolean` | `false` | If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over half a texel for a `LINEAR` filter. |
+| [clampToBorder](#GlslShaderTranslator-property-clampToBorder) | `boolean` | `false` | If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over one texel, centered on the edge of the texture, for a `LINEAR` filter. |
 | [stencil](#GlslShaderTranslator-property-stencil) | [`StencilEmulation.Pass`](/reference/pipeline/stencilemulation-pass/) | `StencilEmulation.Pass.NONE` | Stencil emulation of the fragment stage: `NONE` adds nothing, `TEST` discards the fragments that fail the stencil comparison, `WRITE` outputs the updated stencil value instead of a color. |
 
 <a id="GlslShaderTranslator-methods"></a>
@@ -108,7 +108,7 @@ Throws `IllegalArgumentException` when the layout is `BLOCK` and the dialect has
 
 **Default:** `false`
 
-If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over half a texel for a `LINEAR` filter.
+If `true`, each `texture(sampler, ...)` call samples through a function driven by the `vec3` uniform `joid_Border_<sampler>`, which returns transparent black outside the texture for a sampler in `CLAMP_TO_BORDER` mode, with an edge that fades over one texel, centered on the edge of the texture, for a `LINEAR` filter.
 The constructor of [`Shader`](/reference/bridges/shader/) turns it on when the render bridge cannot wrap to `CLAMP_TO_BORDER`.
 
 <a id="GlslShaderTranslator-property-stencil"></a>

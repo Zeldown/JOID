@@ -76,7 +76,11 @@ Read [Controls](/use/learn/interactivity/controls/) to learn the pattern, the or
 A text field turns what the user types into a value: a text, a number, or a type of your own.
 
 ```java fragment
-IntegerFieldNode.create(60, 60, 240, 60).min(1).max(16).value(this.players).attach(card);
+IntegerFieldNode
+.create(60, 60, 240, 60)
+.info(info)
+.value(this.players)
+.attach(card);
 ```
 
 Read [Text fields](/use/learn/interactivity/text-fields/) to learn the focus, the rules on the text and your own fields.

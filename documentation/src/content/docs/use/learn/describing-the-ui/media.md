@@ -151,7 +151,7 @@ Images that share other settings, such as the sprites of a pixel-art game, come 
 
 [[ResourceBuilder#create]] starts with the settings of `Resource.of(...)`; `nearest()`, `linear()`, `mipmap(...)` and `textureCoords(...)` each return a builder with that setting.
 Each resource starts with a copy of the settings of its builder, and its own setters change that resource only; [[Resource#reset]] gives it back the settings of its builder.
-Resources of every builder share their decoded content, kept in memory 5 minutes after its last use.
+Resources of every builder share their decoded content, which JOID keeps a while after its last use ([Performance](/use/in-depth/performance/#gpu-memory-and-who-releases-it)).
 [[ResourceBuilder#cache]] gives a builder a cache of its own, such as a [[MemoryResourceCache]], or `null` to make each resource decode its own copy.
 
 ## Play animated images and videos

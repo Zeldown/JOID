@@ -26,8 +26,8 @@ public class ColorsUI extends UI {
 		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
 		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
-			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region create
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			RectNode.create(60, 60, 140, 140).color(Color.GRAY).attach(card);
 			RectNode.create(260, 60, 140, 140).color(new Color(0.2F, 0.4F, 0.8F)).attach(card);
 			RectNode.create(460, 60, 140, 140).color(new Color(230, 120, 50)).attach(card);
@@ -43,8 +43,8 @@ public class ColorsUI extends UI {
 		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
 		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
-			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region derive
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			RectNode.create(60, 60, 140, 140).color(ColorsUI.BRAND).attach(card);
 			RectNode.create(240, 60, 140, 140).color(ColorsUI.BRAND.darker()).attach(card);
 			RectNode.create(420, 60, 140, 140).color(ColorsUI.BRAND.darker(0.25F)).attach(card);
@@ -61,8 +61,8 @@ public class ColorsUI extends UI {
 		.effect(RoundedNodeEffect.create(12F).scope(NodeEffectScope.CHILDREN))
 		.effect(BorderNodeEffect.create(ColorsUI.ELEMENT, 1.5F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
-			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			// #region gradient
+			RectNode.create(0, 130, 1200, 130).color(ColorsUI.BAND).attach(card);
 			final Point top = Point.of(0D, 0D);
 			final Point bottom = Point.of(0D, 1D);
 			final Point corner = Point.of(1D, 1D);

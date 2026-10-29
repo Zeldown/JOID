@@ -5,7 +5,7 @@ summary: Where the bytes of a resource, a font, a shader or a model come from, a
 Every loader of JOID takes an `Object` and turns it into an asset with `Asset.of(...)`: a `String` path or URL, a `File`, an `InputStream`, or an asset you build yourself.
 The unique id keys the caches, so two loads of the same asset share their data.
 
-Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Custom formats](/use/learn/going-further/custom-formats/), [Images and media](/use/learn/describing-the-ui/media/).
 
 ## of(Object)
 

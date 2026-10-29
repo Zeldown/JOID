@@ -16,7 +16,7 @@ public class CounterUI extends UI {
 		"fonts/Montserrat/Montserrat-Regular.ttf"
 	).join();
 
-	private static final Color HOVER     = new Color(125, 164, 255).lock();
+	private static final Color ACTIVE    = new Color(125, 164, 255).lock();
 	private static final Color ACCENT    = new Color(91, 140, 255).lock();
 	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
@@ -29,7 +29,7 @@ public class CounterUI extends UI {
 		RectNode
 		.create(760, 480, 400, 120)
 		.color(CounterUI.ACCENT)
-		.hoveredColor(CounterUI.HOVER)
+		.hoveredColor(CounterUI.ACTIVE)
 		.effect(RoundedNodeEffect.create(12F))
 		.onClick(event -> this.clicks.increment())
 		.label(Text.create("Clicks: " + this.clicks.get(), label))
