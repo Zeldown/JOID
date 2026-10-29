@@ -7,8 +7,6 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
-import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -17,7 +15,6 @@ public class VideoGuideUI extends UI {
 
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
-	private static final Color SURFACE = new Color(23, 26, 33).lock();
 	private static final Color ACCENT  = new Color(91, 140, 255).lock();
 
 	@Override
@@ -37,9 +34,7 @@ public class VideoGuideUI extends UI {
 		// #region progress
 		RectNode
 		.create(560, 670, 800, 8)
-		.color(VideoGuideUI.SURFACE)
-		.effect(RoundedNodeEffect.create(12F))
-		.effect(BorderNodeEffect.create(VideoGuideUI.ELEMENT, 1.5F))
+		.color(VideoGuideUI.ELEMENT)
 		.body(bar -> {
 			RectNode
 			.create(0, 0, 0, 8)
@@ -53,9 +48,7 @@ public class VideoGuideUI extends UI {
 		// #region button
 		RectNode
 		.create(860, 710, 200, 70)
-		.color(VideoGuideUI.SURFACE)
-		.effect(RoundedNodeEffect.create(12F))
-		.effect(BorderNodeEffect.create(VideoGuideUI.ELEMENT, 1.5F))
+		.color(VideoGuideUI.ELEMENT)
 		.label(() -> Text.create(player.isPlaying() ? "Pause" : "Play", info))
 		.onClick(event -> player.toggle())
 		.attach(this);
