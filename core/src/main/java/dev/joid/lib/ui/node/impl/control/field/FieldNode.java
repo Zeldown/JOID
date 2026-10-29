@@ -566,8 +566,8 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	protected final void blurNow() {
-		FieldNode.settle(this.focusedValue, false);
+	protected final boolean blurNow() {
+		return FieldNode.settle(this.focusedValue, false);
 	}
 
 	protected final boolean insert(final @NonNull String text) {

@@ -415,11 +415,14 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void staysFocusedWhenItsBlurIsRefused() {
-		final TextFieldNode field = this.field("hello").beforeBlur(event -> event.cancel());
+		final List<String> entered = new ArrayList<>();
+		final TextFieldNode field = this.field("hello").onSubmit(event -> entered.add(event.getNode().getText())).beforeBlur(event -> event.cancel());
+		this.press(field, Key.ENTER);
 		this.press(field, Key.ESCAPE);
 		this.click(500D, 500D);
 		field.blur();
 		Assert.assertTrue(field.isFocused());
+		Assert.assertTrue(entered.isEmpty());
 		field.focused(false);
 		Assert.assertFalse(field.isFocused());
 	}

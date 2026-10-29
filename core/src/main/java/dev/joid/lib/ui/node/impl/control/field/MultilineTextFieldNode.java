@@ -121,6 +121,18 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			return true;
 		}
 
+		if (key == Key.HOME || key == Key.END) {
+			final FieldLayout layout = this.getLayout();
+			final List<FieldLine> lines = layout.getLines();
+			if (lines.isEmpty()) {
+				return true;
+			}
+
+			final FieldLine line = lines.get(this.getLineIndex(layout, super.getCursorPosition()));
+			super.placeCursor(key == Key.HOME ? line.getStart() : line.getEnd(), key == Key.END);
+			return true;
+		}
+
 		if (key == Key.ENTER || key == Key.NUMPAD_ENTER) {
 			super.insert("\n");
 			return true;
