@@ -84,6 +84,8 @@ task exampleTests(type: Test) {
     systemProperty 'java.awt.headless', 'true'
     testLogging.exceptionFormat = 'full'
     testLogging.events 'failed'
+    testLogging.quiet.exceptionFormat = 'full'
+    testLogging.quiet.events 'failed'
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmArgs "-XstartOnFirstThread"
     }
