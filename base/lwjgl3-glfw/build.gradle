@@ -12,10 +12,4 @@ dependencies {
     runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
 }
 
-task releaseJar(type: Jar) {
-    group = 'build'
-    description = 'Builds the released jar of the GLFW bridges, without the demo and snapshot windows of the official backends.'
-    destinationDir = file("$buildDir/release")
-    from sourceSets.main.output
-    exclude 'dev/joid/base/lwjgl3/glfw/demo/**', 'dev/joid/base/lwjgl3/glfw/snapshot/**'
-}
+apply from: rootProject.file('gradle/base.gradle')

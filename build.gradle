@@ -29,7 +29,7 @@ ext {
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     releaseTasks = {
-        [':base-lwjgl3-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
+        subprojects.findAll { module -> module.name.startsWith('base-') }.collect { module -> module.tasks.getByName('releaseJar') } + [':tool-testkit:jar', ':tool-msdf:jar'].collect { path -> tasks.getByPath(path) }
     }
 
     lwjglVersion = "3.3.4"

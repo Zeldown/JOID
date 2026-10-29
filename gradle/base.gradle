@@ -1,0 +1,7 @@
+task releaseJar(type: Jar) {
+    group = 'build'
+    description = "Builds the released jar of ${project.name}, without the demo and snapshot packages that only the jars of the official backends carry."
+    destinationDir = file("$buildDir/release")
+    from sourceSets.main.output
+    exclude 'dev/joid/base/**/demo/**', 'dev/joid/base/**/snapshot/**'
+}
