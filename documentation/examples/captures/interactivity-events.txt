@@ -1,7 +1,7 @@
 # crop interactivity-click 740 370 440 340
 # still interactivity-click 60
 # crop interactivity-through 500 370 920 340
-# still interactivity-through 100
+# still interactivity-through 155
 # crop interactivity-press 560 300 840 480
 # still interactivity-press 135
 # crop interactivity-consume 740 420 440 240
