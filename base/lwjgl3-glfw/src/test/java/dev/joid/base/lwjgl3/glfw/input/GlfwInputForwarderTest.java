@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWCharModsCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
@@ -153,6 +154,41 @@ public class GlfwInputForwarderTest {
 		}
 	}
 
+	@Test
+	public void answersWhetherTheUiConsumedTheKeyAndTheButton() {
+		this.ui.cancel = true;
+		Assert.assertTrue(GlfwInputForwarder.forwardKey(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS));
+		Assert.assertTrue(GlfwInputForwarder.forwardKey(GLFW.GLFW_KEY_F3, GLFW.GLFW_REPEAT));
+		Assert.assertTrue(GlfwInputForwarder.forwardKey(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE));
+		Assert.assertTrue(GlfwInputForwarder.forwardMouseButton(0, GLFW.GLFW_PRESS));
+		Assert.assertTrue(GlfwInputForwarder.forwardMouseButton(0, GLFW.GLFW_RELEASE));
+		Assert.assertFalse(GlfwInputForwarder.forwardKey(GLFW.GLFW_KEY_F3, GLFW.GLFW_REPEAT));
+	}
+
+	@Test
+	public void forwardsTheCharactersThroughTheCharModsCallbackOfTheWindow() {
+		Callbacks.glfwFreeCallbacks(GlfwInputForwarderTest.window);
+		GLFW.glfwSetCharModsCallback(GlfwInputForwarderTest.window, (handle, codepoint, mods) -> this.trace.add("passed char mods"));
+		GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, (handle, codepoint) -> this.trace.add("passed char"));
+		GlfwInputForwarder.attach(GlfwInputForwarderTest.window);
+		GlfwInputForwarderTest.characterMods('a');
+		GlfwInputForwarderTest.character('a');
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.characterMods('b');
+		GlfwInputForwarderTest.character('b');
+		Assert.assertEquals(Arrays.asList("char a", "passed char mods", "passed char", "char b"), this.trace);
+	}
+
+	@Test
+	public void leavesTheCharacterCallbackOfAWindowThatOnlyHadCharMods() {
+		Callbacks.glfwFreeCallbacks(GlfwInputForwarderTest.window);
+		GLFW.glfwSetCharModsCallback(GlfwInputForwarderTest.window, (handle, codepoint, mods) -> this.trace.add("passed char mods"));
+		GlfwInputForwarder.attach(GlfwInputForwarderTest.window);
+		GlfwInputForwarderTest.characterMods('a');
+		Assert.assertNull(GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, null));
+		Assert.assertEquals(Arrays.asList("char a", "passed char mods"), this.trace);
+	}
+
 	private static void key(final int code, final int action) {
 		final GLFWKeyCallback callback = GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, null);
 		GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, callback);
@@ -163,6 +199,12 @@ public class GlfwInputForwarderTest {
 		final GLFWCharCallback callback = GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, null);
 		GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, callback);
 		callback.invoke(GlfwInputForwarderTest.window, codepoint);
+	}
+
+	private static void characterMods(final int codepoint) {
+		final GLFWCharModsCallback callback = GLFW.glfwSetCharModsCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetCharModsCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, codepoint, 0);
 	}
 
 	private static void cursor() {

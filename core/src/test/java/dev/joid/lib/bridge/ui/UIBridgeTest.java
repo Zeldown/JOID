@@ -768,6 +768,24 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void leavesToTheHostTheReleaseOfAPressItDidNotConsume() {
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
+		Assert.assertEquals(Collections.singletonList("released menu LEFT"), this.trace);
+	}
+
+	@Test
+	public void leavesToTheHostTheReleaseOfAPressAnOverlayLetThrough() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		this.bridges.open(overlay);
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
+		overlay.cancel = true;
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
+	}
+
+	@Test
 	public void consumesTheReleaseOfAKeyItConsumed() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;

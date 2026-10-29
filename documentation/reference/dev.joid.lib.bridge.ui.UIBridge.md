@@ -26,7 +26,7 @@ Sends the press to the UIs from the top down, until one consumes it or a popup s
 
 ## mouseReleased(MouseButton)
 
-Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press or the release was consumed.
+Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press was consumed, so that the host receives the release of every press it received.
 
 ## mouseScroll(double,double)
 

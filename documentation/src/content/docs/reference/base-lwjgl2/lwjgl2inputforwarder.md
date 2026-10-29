@@ -22,6 +22,7 @@ Reads the pending mouse and keyboard events of LWJGL 2 and forwards them to the 
 - [Choosing a backend](/use/learn/running/backends/)
 - [Embedding JOID](/use/learn/running/embedding/)
 - [LWJGL 2 backend](/build/backends/lwjgl2/)
+- [Input forwarding](/build/input/)
 
 <a id="Lwjgl2InputForwarder-methods"></a>
 
@@ -29,7 +30,9 @@ Reads the pending mouse and keyboard events of LWJGL 2 and forwards them to the 
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [poll](#Lwjgl2InputForwarder-method-poll)() <span class="joid-qualifier">static</span> | Drains the event queues of `Mouse` and `Keyboard` and forwards every event to `BridgeHandler.UI`: moves, presses and releases, the wheel in notches of 120, key presses without the repeats, releases and typed characters. |
+| `void` | [poll](#Lwjgl2InputForwarder-method-poll)() <span class="joid-qualifier">static</span> | Drains the event queues of `Mouse` and `Keyboard` and forwards every event with `forwardMouseEvent()` and `forwardKeyboardEvent()`. |
+| `boolean` | [forwardMouseEvent](#Lwjgl2InputForwarder-method-forwardMouseEvent)() <span class="joid-qualifier">static</span> | Forwards the current event of `Mouse`, after `Mouse.next()`, to `BridgeHandler.UI`: a move, a press or a release, and the wheel in notches of 120. |
+| `boolean` | [forwardKeyboardEvent](#Lwjgl2InputForwarder-method-forwardKeyboardEvent)() <span class="joid-qualifier">static</span> | Forwards the current event of `Keyboard`, after `Keyboard.next()`, to `BridgeHandler.UI`: a press with the character it types, a repeat as a question on its press with its character, a release, or a character alone. |
 
 ## Method details
 
@@ -39,8 +42,26 @@ Reads the pending mouse and keyboard events of LWJGL 2 and forwards them to the 
 
 `void poll()` <span class="joid-qualifier">static</span>
 
-Drains the event queues of `Mouse` and `Keyboard` and forwards every event to `BridgeHandler.UI`: moves, presses and releases, the wheel in notches of 120, key presses without the repeats, releases and typed characters.
+Drains the event queues of `Mouse` and `Keyboard` and forwards every event with `forwardMouseEvent()` and `forwardKeyboardEvent()`.
 Call it once per frame, before `frame()`; the rest of the application does not receive the events that it reads.
+
+<a id="Lwjgl2InputForwarder-method-forwardMouseEvent"></a>
+
+### forwardMouseEvent
+
+`boolean forwardMouseEvent()` <span class="joid-qualifier">static</span>
+
+Forwards the current event of `Mouse`, after `Mouse.next()`, to `BridgeHandler.UI`: a move, a press or a release, and the wheel in notches of 120.
+Returns `true` when JOID consumed the event, which the host then drops.
+
+<a id="Lwjgl2InputForwarder-method-forwardKeyboardEvent"></a>
+
+### forwardKeyboardEvent
+
+`boolean forwardKeyboardEvent()` <span class="joid-qualifier">static</span>
+
+Forwards the current event of `Keyboard`, after `Keyboard.next()`, to `BridgeHandler.UI`: a press with the character it types, a repeat as a question on its press with its character, a release, or a character alone.
+Returns `true` when JOID consumed the event, which the host then drops.
 
 ---
 

@@ -46,7 +46,7 @@ Each input method returns `true` when JOID consumed the event, which should then
 |---|---|---|
 | `boolean` | [mouseMoved](#UIBridgeRegistry-method-mouseMoved)() | Sends a mouse move to the bridges from the highest priority down, until one consumes it. |
 | `boolean` | [mousePressed](#UIBridgeRegistry-method-mousePressed)(MouseButton button) | Sends a press to the bridges from the highest priority down, until one consumes it, and remembers the bridges that received it. |
-| `boolean` | [mouseReleased](#UIBridgeRegistry-method-mouseReleased)(MouseButton button) | Sends the release to every bridge that received the press of that button. |
+| `boolean` | [mouseReleased](#UIBridgeRegistry-method-mouseReleased)(MouseButton button) | Sends the release to every bridge that received the press of that button; returns `true` when one of them consumed the press. |
 | `boolean` | [mouseScroll](#UIBridgeRegistry-method-mouseScroll)(double notchesX, double notchesY) | Sends a scroll, in wheel notches, to the bridges from the highest priority down, until one consumes it. |
 | `boolean` | [charTyped](#UIBridgeRegistry-method-charTyped)(int codepoint) | Sends a typed Unicode code point to the bridges from the highest priority down, until one consumes it. |
 | `boolean` | [keyPressed](#UIBridgeRegistry-method-keyPressed)(Key physicalKey, Key key) | Records the press in the key state, with the physical key and the key of the layout, then sends it to the bridges from the highest priority down, until one consumes it. |
@@ -122,7 +122,7 @@ Sends a press to the bridges from the highest priority down, until one consumes 
 
 `boolean mouseReleased(MouseButton button)` 
 
-Sends the release to every bridge that received the press of that button.
+Sends the release to every bridge that received the press of that button; returns `true` when one of them consumed the press.
 
 <a id="UIBridgeRegistry-method-mouseScroll"></a>
 

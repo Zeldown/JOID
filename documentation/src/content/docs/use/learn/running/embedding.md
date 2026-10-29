@@ -44,7 +44,7 @@ Each event goes to the UIs first; an event that no UI [consumes](/use/learn/inte
 
 Here, Escape closes the window only when no UI used it, for example to [close a screen](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard).
 To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Convert between the window and the UI](/use/learn/describing-the-ui/design-canvas/#convert-between-the-window-and-the-ui)).
-The same rule holds for releases: when a UI consumed a press, your callback receives neither the press nor its release.
+The same rule holds for releases: when a UI consumed a press, your callback receives neither the press nor its release, and when your callback received a press, it receives its release.
 An overlay that receives the input is the exception: `cancelClick`, `cancelScroll` and `cancelKeyboard` of [[UIDataOverlayInteraction]] decide whether an event it used still reaches your callback ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 
 :::caution
@@ -53,7 +53,7 @@ A callback set after it replaces the one of JOID, and the UIs stop receiving tha
 :::
 
 With LWJGL 2, `poll()` of [[Lwjgl2InputForwarder]] empties the `Mouse` and `Keyboard` queues.
-To share them with your code, read the queues yourself and give each event to the matching method of `BridgeHandler.UI` (`mousePressed`, `keyPressed`, `charTyped`…), which returns `true` when a UI consumed it.
+To share them with your code, read the queues yourself and call [[Lwjgl2InputForwarder#forwardMouseEvent]] after each `Mouse.next()` and [[Lwjgl2InputForwarder#forwardKeyboardEvent]] after each `Keyboard.next()`: each returns `true` when a UI consumed the event, and your code handles only the others.
 
 ## Draw JOID over your own scene
 

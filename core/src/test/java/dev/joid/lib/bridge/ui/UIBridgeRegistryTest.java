@@ -253,7 +253,7 @@ public class UIBridgeRegistryTest {
 		registry.mousePressed(MouseButton.LEFT);
 		high.cancel = true;
 		this.trace.clear();
-		Assert.assertTrue(registry.mouseReleased(MouseButton.LEFT));
+		Assert.assertFalse(registry.mouseReleased(MouseButton.LEFT));
 		Assert.assertEquals(Arrays.asList("released high", "released low"), this.trace);
 	}
 

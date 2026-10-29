@@ -34,7 +34,7 @@ Sends a press to the bridges from the highest priority down, until one consumes 
 
 ## mouseReleased(MouseButton)
 
-Sends the release to every bridge that received the press of that button.
+Sends the release to every bridge that received the press of that button; returns `true` when one of them consumed the press.
 
 ## mouseScroll(double,double)
 

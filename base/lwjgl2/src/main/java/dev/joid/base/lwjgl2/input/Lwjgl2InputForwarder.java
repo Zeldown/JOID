@@ -13,37 +13,34 @@ public final class Lwjgl2InputForwarder {
 
 	public static void poll() {
 		while (Mouse.next()) {
-			final int button = Mouse.getEventButton();
-			if (button == -1) {
-				BridgeHandler.UI.mouseMoved();
-			} else if (Mouse.getEventButtonState()) {
-				BridgeHandler.UI.mousePressed(MouseButton.of(button));
-			} else {
-				BridgeHandler.UI.mouseReleased(MouseButton.of(button));
-			}
-
-			final int wheel = Mouse.getEventDWheel();
-			if (wheel != 0) {
-				BridgeHandler.UI.mouseScroll(0D, wheel / 120D);
-			}
+			Lwjgl2InputForwarder.forwardMouseEvent();
 		}
 
 		while (Keyboard.next()) {
-			final int code = Keyboard.getEventKey();
-			if (!Keyboard.getEventKeyState()) {
-				BridgeHandler.UI.keyReleased(Lwjgl2Keys.getPhysicalKey(code));
-				continue;
-			}
-
-			final char character = Keyboard.getEventCharacter();
-			if (!Keyboard.isRepeatEvent()) {
-				BridgeHandler.UI.keyPressed(Lwjgl2Keys.getPhysicalKey(code), Lwjgl2Keys.getKey(code, character));
-			}
-
-			if (character != Keyboard.CHAR_NONE) {
-				BridgeHandler.UI.charTyped(character);
-			}
+			Lwjgl2InputForwarder.forwardKeyboardEvent();
 		}
+	}
+
+	public static boolean forwardMouseEvent() {
+		final int button = Mouse.getEventButton();
+		final int wheel = Mouse.getEventDWheel();
+		final boolean consumed = button == -1 ? wheel == 0 && BridgeHandler.UI.mouseMoved() : Mouse.getEventButtonState() ? BridgeHandler.UI.mousePressed(MouseButton.of(button)) : BridgeHandler.UI.mouseReleased(MouseButton.of(button));
+		return wheel != 0 && BridgeHandler.UI.mouseScroll(0D, wheel / 120D) || consumed;
+	}
+
+	public static boolean forwardKeyboardEvent() {
+		final int code = Keyboard.getEventKey();
+		final char character = Keyboard.getEventCharacter();
+		if (code == Keyboard.KEY_NONE) {
+			return character != Keyboard.CHAR_NONE && BridgeHandler.UI.charTyped(character);
+		}
+
+		if (!Keyboard.getEventKeyState()) {
+			return BridgeHandler.UI.keyReleased(Lwjgl2Keys.getPhysicalKey(code));
+		}
+
+		final boolean consumed = Keyboard.isRepeatEvent() ? BridgeHandler.UI.isKeyConsumed(Lwjgl2Keys.getPhysicalKey(code)) : BridgeHandler.UI.keyPressed(Lwjgl2Keys.getPhysicalKey(code), Lwjgl2Keys.getKey(code, character));
+		return character != Keyboard.CHAR_NONE && BridgeHandler.UI.charTyped(character) || consumed;
 	}
 
 }

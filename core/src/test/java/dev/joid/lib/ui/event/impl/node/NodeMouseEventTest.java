@@ -129,7 +129,7 @@ public class NodeMouseEventTest {
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
 		this.bridges.move(120D, 120D).frames(2);
-		Assert.assertTrue(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("child", "sibling monitor"), received);
 	}
 

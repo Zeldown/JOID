@@ -97,8 +97,8 @@ public abstract class UIBridge implements IUIBridge {
 			this.pressedNode = null;
 		}
 
-		final UI ui = this.release(this.pressedButtonMap.remove(button), current -> current.fireMouseReleased(button, deltaTime));
-		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
+		this.release(this.pressedButtonMap.remove(button), current -> current.fireMouseReleased(button, deltaTime));
+		return consumed;
 	}
 
 	public final boolean mouseScroll(final double notchesX, final double notchesY) {
@@ -300,9 +300,9 @@ public abstract class UIBridge implements IUIBridge {
 		return null;
 	}
 
-	private UI release(final Set<UI> pressedSet, final Predicate<UI> input) {
+	private void release(final Set<UI> pressedSet, final Predicate<UI> input) {
 		final Set<UI> releasedSet = new HashSet<>();
-		final UI ui = this.dispatch(releasedSet, input);
+		this.dispatch(releasedSet, input);
 		if (pressedSet != null) {
 			for (final UI pressed : pressedSet) {
 				if (!releasedSet.contains(pressed) && this.uiList.contains(pressed)) {
@@ -310,7 +310,6 @@ public abstract class UIBridge implements IUIBridge {
 				}
 			}
 		}
-		return ui;
 	}
 
 	private Node getHoveredNode() {

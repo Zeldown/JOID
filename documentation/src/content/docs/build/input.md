@@ -18,6 +18,7 @@ This forwarder listens to the events of an imaginary engine, whose listeners ret
 ```
 
 The backend connects it in `attachInput()` ([Writing a backend](/build/writing-a-backend/#forward-the-input)).
+On GLFW and on LWJGL 2, the base modules translate one event of the library into these calls and return the same answer: [[GlfwInputForwarder#forwardKey]] and [[GlfwInputForwarder#forwardMouseButton]] in [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/#input-forwarder), [[Lwjgl2InputForwarder#forwardMouseEvent]] and [[Lwjgl2InputForwarder#forwardKeyboardEvent]] in [base-lwjgl2](/build/base-modules/lwjgl2/#input-forwarder).
 
 | Event of your window | Call | Arguments |
 |---|---|---|
@@ -34,11 +35,11 @@ Each call returns `true` when JOID consumed the event.
 
 ## Provided
 
-JOID records which presses it consumed, so that the host receives each key and button either completely or not at all:
+JOID records which presses it consumed, so that the host receives each key and button either completely or not at all: the release of a press that JOID consumed is consumed, and the release of a press that the host received is never consumed, even when a UI consumes the release itself.
 
 | Event | Goes to | Consumed when |
 |---|---|---|
-| Mouse release | The UI bridges that received the press of that button. | One of them consumed the press or the release. |
+| Mouse release | The UI bridges that received the press of that button. | One of them consumed the press. |
 | Key release | Every UI bridge, and every UI that received its press, even a node hidden since. | A UI bridge consumed the press of that key. |
 | Escape on the top closeable UI that is not an overlay | That UI, which closes when no node handles the key and the UI accepts to close. | Always: the host never receives it. |
 | A press that an overlay lets through (its interaction does not cancel it) | The UIs below when no node of the overlay consumed it; the lower bridges and the host in every case. | Never by that overlay, and its release neither. |

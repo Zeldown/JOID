@@ -22,6 +22,7 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW
 - [Keep your own input handlers](/use/learn/running/embedding/#keep-your-own-input-handlers)
 - [LWJGL 3 backend](/build/backends/lwjgl3/)
 - [Vulkan backend](/build/backends/vulkan/)
+- [Input forwarding](/build/input/)
 
 <a id="GlfwInputForwarder-methods"></a>
 
@@ -30,6 +31,8 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [attach](#GlfwInputForwarder-method-attach)(long window) <span class="joid-qualifier">static</span> | Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume. |
+| `boolean` | [forwardKey](#GlfwInputForwarder-method-forwardKey)(int code, int action) <span class="joid-qualifier">static</span> | Forwards one key event of GLFW, its key code and its action, to `BridgeHandler.UI`: `GLFW_PRESS` presses the key at that position with the key that the layout prints there, `GLFW_RELEASE` releases it, and `GLFW_REPEAT` asks whether JOID consumed its press. |
+| `boolean` | [forwardMouseButton](#GlfwInputForwarder-method-forwardMouseButton)(int button, int action) <span class="joid-qualifier">static</span> | Forwards one mouse button event of GLFW, its button and its action, to `BridgeHandler.UI` as a press or a release. |
 
 ## Method details
 
@@ -40,8 +43,27 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW
 `void attach(long window)` <span class="joid-qualifier">static</span>
 
 Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+When the window has a `CharMods` callback, JOID receives the characters through it, and the previous character callbacks only get the characters that JOID did not consume.
 A key repeat never reaches JOID as a press: the previous callback receives it unless JOID consumed the press of that key.
 The LWJGL 3 and Vulkan backends call it during `register()`.
+
+<a id="GlfwInputForwarder-method-forwardKey"></a>
+
+### forwardKey
+
+`boolean forwardKey(int code, int action)` <span class="joid-qualifier">static</span>
+
+Forwards one key event of GLFW, its key code and its action, to `BridgeHandler.UI`: `GLFW_PRESS` presses the key at that position with the key that the layout prints there, `GLFW_RELEASE` releases it, and `GLFW_REPEAT` asks whether JOID consumed its press.
+Returns `true` when JOID consumed the event, which the host then drops.
+
+<a id="GlfwInputForwarder-method-forwardMouseButton"></a>
+
+### forwardMouseButton
+
+`boolean forwardMouseButton(int button, int action)` <span class="joid-qualifier">static</span>
+
+Forwards one mouse button event of GLFW, its button and its action, to `BridgeHandler.UI` as a press or a release.
+Returns `true` when JOID consumed the event, which the host then drops.
 
 ---
 

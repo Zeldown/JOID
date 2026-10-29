@@ -51,7 +51,7 @@ A subclass decides what opening and closing a UI mean; [`StackUIBridge`](/refere
 |---|---|---|
 | `boolean` | [mouseMoved](#UIBridge-method-mouseMoved)() | Sends a drag to the UIs from the top down while a button is held, and returns `true` when a UI consumed it; without a held button it does nothing, since the hover is read from the pointer position each frame. |
 | `boolean` | [mousePressed](#UIBridge-method-mousePressed)(MouseButton button) | Sends the press to the UIs from the top down, until one consumes it or a popup stops it, and remembers the UIs that received it for the release. |
-| `boolean` | [mouseReleased](#UIBridge-method-mouseReleased)(MouseButton button) | Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press or the release was consumed. |
+| `boolean` | [mouseReleased](#UIBridge-method-mouseReleased)(MouseButton button) | Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press was consumed, so that the host receives the release of every press it received. |
 | `boolean` | [mouseScroll](#UIBridge-method-mouseScroll)(double notchesX, double notchesY) | Sends a scroll of that many notches to the UIs from the top down; a scroll of zero notches does nothing. |
 | `boolean` | [charTyped](#UIBridge-method-charTyped)(int codepoint) | Sends a typed character, as a Unicode code point, to the UIs from the top down; control characters are ignored. |
 | `boolean` | [keyPressed](#UIBridge-method-keyPressed)(Key physicalKey, Key key) | Sends a key press to the UIs from the top down. |
@@ -147,7 +147,7 @@ Sends the press to the UIs from the top down, until one consumes it or a popup s
 
 `boolean mouseReleased(MouseButton button)` 
 
-Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press or the release was consumed.
+Sends the release to the UIs from the top down and to every UI that received the press; returns `true` when the press was consumed, so that the host receives the release of every press it received.
 
 <a id="UIBridge-method-mouseScroll"></a>
 

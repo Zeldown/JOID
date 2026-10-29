@@ -33,13 +33,13 @@ Without JNA, the cursor stays the default one, with one warning in dev mode.
 ## Input forwarder
 
 LWJGL 2 delivers input through queues that the loop of the application drains.
-[[Lwjgl2InputForwarder#poll]] drains them once per frame, before `frame()`:
+[[Lwjgl2InputForwarder#poll]] drains them once per frame, before `frame()`, and gives every event to JOID.
+A host that handles the input too drains the queues itself and asks JOID for each event: [[Lwjgl2InputForwarder#forwardMouseEvent]] after `Mouse.next()`, [[Lwjgl2InputForwarder#forwardKeyboardEvent]] after `Keyboard.next()`, and it handles the event only when the call returns `false`.
 
-- each mouse event becomes a move, a press or a release, and the wheel becomes `mouseScroll(0, wheel / 120)`;
-- each key event becomes a press or a release, and a press that types a character is followed by its character;
-- a repeat event of LWJGL 2 sends its character only, so an application can turn `Keyboard.enableRepeatEvents(true)` on without a double repeat.
-
-The forwarder returns nothing to the loop: LWJGL 2 has no handler to chain to.
+- A mouse event becomes a move, a press or a release, and the wheel becomes `mouseScroll(0, wheel / 120)`.
+- A key event becomes a press or a release, and a press that types a character is followed by its character.
+- A repeat event asks `isKeyConsumed` instead of pressing again, and sends its character, so an application can turn `Keyboard.enableRepeatEvents(true)` on without a double repeat.
+- An event without key, which LWJGL 2 sends for a character alone, sends only its character.
 
 ## Keys
 

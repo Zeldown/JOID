@@ -26,6 +26,7 @@ The LWJGL 2 backend gives it to [`GlRenderBridge`](/reference/base-opengl/glrend
 - [base-lwjgl2](/build/base-modules/lwjgl2/#bindings)
 - [Create the bridge](/build/base-modules/opengl/#create-the-bridge)
 - [LWJGL 2 backend](/build/backends/lwjgl2/)
+- [Embedding in a host](/build/embedding-in-a-host/)
 
 ## Creation
 

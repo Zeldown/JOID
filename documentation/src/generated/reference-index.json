@@ -31262,10 +31262,14 @@
       "ancestors": [],
       "url": "/reference/base-lwjgl2/lwjgl2inputforwarder/",
       "members": {
-        "poll": "Lwjgl2InputForwarder-method-poll"
+        "poll": "Lwjgl2InputForwarder-method-poll",
+        "forwardMouseEvent": "Lwjgl2InputForwarder-method-forwardMouseEvent",
+        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent"
       },
       "overloads": [
-        "poll()"
+        "poll()",
+        "forwardMouseEvent()",
+        "forwardKeyboardEvent()"
       ]
     },
     "Lwjgl2InputForwarder": {
@@ -31278,10 +31282,14 @@
       "ancestors": [],
       "url": "/reference/base-lwjgl2/lwjgl2inputforwarder/",
       "members": {
-        "poll": "Lwjgl2InputForwarder-method-poll"
+        "poll": "Lwjgl2InputForwarder-method-poll",
+        "forwardMouseEvent": "Lwjgl2InputForwarder-method-forwardMouseEvent",
+        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent"
       },
       "overloads": [
-        "poll()"
+        "poll()",
+        "forwardMouseEvent()",
+        "forwardKeyboardEvent()"
       ]
     },
     "dev.joid.base.lwjgl2.input.Lwjgl2Keys": {
@@ -32244,10 +32252,14 @@
       "ancestors": [],
       "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
       "members": {
-        "attach": "GlfwInputForwarder-method-attach"
+        "attach": "GlfwInputForwarder-method-attach",
+        "forwardKey": "GlfwInputForwarder-method-forwardKey",
+        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton"
       },
       "overloads": [
-        "attach(long)"
+        "attach(long)",
+        "forwardKey(int,int)",
+        "forwardMouseButton(int,int)"
       ]
     },
     "GlfwInputForwarder": {
@@ -32260,10 +32272,14 @@
       "ancestors": [],
       "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
       "members": {
-        "attach": "GlfwInputForwarder-method-attach"
+        "attach": "GlfwInputForwarder-method-attach",
+        "forwardKey": "GlfwInputForwarder-method-forwardKey",
+        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton"
       },
       "overloads": [
-        "attach(long)"
+        "attach(long)",
+        "forwardKey(int,int)",
+        "forwardMouseButton(int,int)"
       ]
     },
     "dev.joid.base.lwjgl3.glfw.input.GlfwKeys": {

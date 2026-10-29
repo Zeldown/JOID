@@ -35,6 +35,10 @@ The LWJGL 3 and Vulkan backends use it as it is; [base-lwjgl2](/build/base-modul
 
 The forwarder keeps the callbacks that the window had before `attach` and calls them for every event that JOID does not consume.
 An application that sets its callbacks before registering the backend therefore keeps them, behind JOID ([Input forwarding](/build/input/#guarantees)).
+When the window has a `CharMods` callback, JOID takes the characters there, since GLFW calls it before the character callback, and holds back both previous callbacks for a character it consumed.
+
+A host that receives the events of GLFW through a system of its own, or that sets its callbacks after `attach`, forwards each event itself: [[GlfwInputForwarder#forwardKey]] and [[GlfwInputForwarder#forwardMouseButton]] take the code and the action of GLFW, and return `true` when JOID consumed the event.
+The other events need no translation: give them to `mouseMoved()`, `mouseScroll(x, y)` and `charTyped(codepoint)` of [[BridgeHandler#UI]].
 
 ## Keys
 
