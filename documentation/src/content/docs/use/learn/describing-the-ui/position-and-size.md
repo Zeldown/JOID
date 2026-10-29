@@ -25,10 +25,10 @@ The lambda of `body` receives the parent, already sized, so its children can use
 
 <figure>
 
-![A dark panel with rounded corners and a thin border, a blue header bar across its whole width and a dark grey button centered near its bottom edge](/captures/describing-position-panel.webp)
+![A dark panel with rounded corners and a thin border, a blue header bar across its width, 20 pixels inside its edges, and a dark grey button centered near its bottom edge](/captures/describing-position-panel.webp)
 
 <figcaption>
-The header takes the width of the panel and the button is centered from it: change the size of the panel in the code, and both follow the next time `init()` runs.
+The header is sized from the width of the panel and the button is centered from it: change the size of the panel in the code, and both follow the next time `init()` runs.
 </figcaption>
 </figure>
 
@@ -51,7 +51,7 @@ To follow a parent whose size changes, give the setter a lambda:
 
 <figure>
 
-![A dark panel whose width grows and shrinks; a grey bar sized from the width of the panel read once keeps its first width, a blue bar given a lambda stays as wide as the panel, and a blue square whose width follows the panel keeps its square shape](/captures/describing-position-follow.webp)
+![A dark panel whose width grows and shrinks; a grey bar sized from the width of the panel read once keeps its first width, a blue bar given a lambda stays as wide as the panel, and a blue rectangle whose width follows the panel keeps its 16:9 shape](/captures/describing-position-follow.webp)
 
 <figcaption>
 A value read once stays where it was; a lambda follows the parent at each frame, and `aspectRatio` brings the height along with the width.

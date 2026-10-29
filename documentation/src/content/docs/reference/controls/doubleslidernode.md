@@ -16,7 +16,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 A slider over a range of decimal numbers with a fixed step.
 
-![A slider whose blue thumb sits at three quarters; the pointer drags the thumb to the start of the track, and it moves by quarters, then back to three quarters](/captures/catalog-controls-doubleslidernode.webp)
+![A slider whose blue thumb sits at three quarters; the pointer drags the thumb to the start of the track, then back to three quarters; the value of the slider changes by quarters](/captures/catalog-controls-doubleslidernode.webp)
 
 ## Description
 

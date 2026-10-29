@@ -37,7 +37,7 @@ public class PivotSpinUI extends UI {
 	}
 
 	private double getAngle() {
-		return (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) % 3000L * 0.12D;
+		return (BridgeHandler.CLOCK.get().currentTimeMillis() - this.start) % 4000L * 0.09D;
 	}
 
 }

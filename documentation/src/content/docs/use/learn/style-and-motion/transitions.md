@@ -52,7 +52,7 @@ When the code that opens the UI decides how it enters, set the transition before
 
 <figure>
 
-![The pointer clicks Pop, sliding in a row of three blue buttons: the popup of Pop, a dark card, slides up from below with a small bounce instead of popping, stays, then drops down and disappears when Escape, shown in a key badge, closes it](/captures/style-open-transition.webp)
+![The pointer clicks "Pop, sliding" in a row of three blue buttons: the popup of Pop, a dark card, slides up from below with a small bounce instead of popping, stays, then drops down and disappears when Escape, shown in a key badge, closes it](/captures/style-open-transition.webp)
 
 <figcaption>
 The same popup as the Pop button, opened with `SlideTransition`: the transition set before `open` replaces the one of `@UIDataPopup`.

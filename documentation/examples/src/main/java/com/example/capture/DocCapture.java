@@ -290,11 +290,11 @@ public final class DocCapture {
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 			DocCapture.drawPress(graphics, pointer);
+			graphics.setColor(DocCapture.POINTER_OUTLINE);
+			graphics.setStroke(new BasicStroke(4F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+			graphics.draw(shape);
 			graphics.setColor(DocCapture.POINTER_FILL);
 			graphics.fill(shape);
-			graphics.setColor(DocCapture.POINTER_OUTLINE);
-			graphics.setStroke(new BasicStroke(2F, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-			graphics.draw(shape);
 		} finally {
 			graphics.dispose();
 		}

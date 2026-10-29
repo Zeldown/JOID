@@ -457,7 +457,7 @@
 				{
 					"type": "dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode",
 					"learn": "use/learn/interactivity/controls",
-					"alt": "A slider whose blue thumb sits at three quarters; the pointer drags the thumb to the start of the track, and it moves by quarters, then back to three quarters",
+					"alt": "A slider whose blue thumb sits at three quarters; the pointer drags the thumb to the start of the track, then back to three quarters; the value of the slider changes by quarters",
 					"pointer": [
 						290,
 						255

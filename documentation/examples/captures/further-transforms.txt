@@ -10,9 +10,14 @@ shot further-transforms-matrix
 shot further-transforms-state
 # crop further-transforms-blend 1280 380 540 340
 shot further-transforms-blend
+# crop further-transforms-square 1610 810 180 180
+# still further-transforms-square 30
+# film further-transforms-square 60
+wait 4000
+cut
 # crop further-transforms-spin 660 360 600 360
-# still further-transforms-spin 49
+# still further-transforms-spin 65
 ui com.example.further.PivotSpinUI
 # film further-transforms-spin 60
-wait 3000
+wait 4000
 cut
