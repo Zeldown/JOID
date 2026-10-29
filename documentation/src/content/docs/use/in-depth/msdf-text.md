@@ -64,7 +64,7 @@ Every generated atlas is 2048 × 2048 texels, with a distance range of 24 texels
 A character outside this range has no glyph: JOID does not draw it and gives it no width.
 The MSDF generator builds atlases with other characters ([Custom fonts and MSDF](/use/learn/going-further/fonts/)).
 
-Each face of a family is a separate atlas, so a regular and a bold file make two atlases of 16 MB of GPU memory each.
+Each face of a family is a separate atlas, so a regular and a bold file make two atlases ([Performance](/use/in-depth/performance/#gpu-memory-and-who-releases-it) gives their GPU memory).
 
 ## Small text
 

@@ -50,7 +50,7 @@ Your input listeners (`handleMousePressed`, `onClick`, shortcuts…) therefore r
    Inside a bridge, the overlays drawn under the screens come first, then the screens and popups, then the overlays drawn above them.
 6. **End**: JOID closes the frame of the render bridge, and your loop presents the image.
 
-Before it draws its UIs, a bridge also releases the GPU memory of the resources that the garbage collector reclaimed and of the off-screen images that no effect used for 5 seconds ([Performance](/use/in-depth/performance/)).
+Before it draws its UIs, a bridge also releases the GPU memory of the resources that the garbage collector reclaimed and of the off-screen images that no effect used for a while ([Performance](/use/in-depth/performance/)).
 
 ## Inside one UI
 

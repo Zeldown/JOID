@@ -26,7 +26,7 @@ Where the text sits in the height of the field: at the top with `marginTop`, the
 
 ## onSubmit(EventListener)
 
-Adds a listener that runs when the user presses Enter or the Enter of the keypad, after the field lost the focus.
+Adds a listener that runs when the user presses Enter or the Enter of the keypad, once the field has tried to blur: it runs even when a `beforeBlur` listener kept the focus.
 
 ## update()
 
@@ -42,7 +42,7 @@ Returns `false`: the text holds one line.
 
 ## handleKey(Key)
 
-Handles Enter and the Enter of the keypad: blurs the field, then fires `onSubmit`.
+Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit`.
 
 ## getPositionAt(double,double)
 
