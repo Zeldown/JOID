@@ -65,7 +65,7 @@ What your bridge must ensure.
 | Rule | Why |
 |---|---|
 | `canHandle` answers from the class of the UI alone. | `canHandle(ui)` asks it with the class, and the answer must not change while the UI is open. |
-| A bridge that is the lowest of the registry clears the depth and the stencil in `drawBackground()`, and the color unless the host drew its scene beneath (`WindowUIBridge` clears all three). | Only the lowest bridge receives `drawBackground()`: a bridge registered before the backend takes the place of the default one, and without a depth clear the 3D content and the UIs test against the depth of the previous frame. |
+| A bridge that is the lowest of the registry clears the depth and the stencil in `drawBackground()`, and the color unless the host drew its scene beneath (`WindowUIBridge` clears all three). | Only the lowest bridge receives `drawBackground()`: a bridge registered before the backend takes the place of the default one, and without a depth clear the 3D models of the UIs test against the depth of the previous frame. |
 | `add` and `remove` keep `getUiList()` in step with the open UIs. | `JOID.isOpen`, `JOID.getUi`, the frame and the input all read that list. |
 | `draw()` runs only between `beginFrame()` and `endFrame()` of the render bridge. | It throws an `IllegalStateException` outside a frame; [[UIBridgeRegistry#frame]] opens the frame for every bridge. |
 
