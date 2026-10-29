@@ -16,7 +16,7 @@ A node reports what happens to it through listeners that you give to its methods
 An input travels through the node tree from the front to the back, and the first listener that consumes it keeps it.
 
 ```java fragment
-RectNode.create(100, 80, 200, 60).color(new Color(38, 43, 53)).onClick(event -> clicks.increment()).attach(card);
+RectNode.create(100, 80, 200, 60).color(ClickUI.ELEMENT).onClick(event -> clicks.increment()).attach(card);
 ```
 
 Read [Events](/use/learn/interactivity/events/) to learn the three kinds of events, how to consume an input and how to refuse a change.
@@ -36,7 +36,7 @@ Read [Signals](/use/learn/interactivity/signals/) to learn when JOID computes a 
 A node tracks whether the pointer is over it, and can change its look, show a tooltip or set the cursor.
 
 ```java fragment
-button.hoveredColor(new Color(54, 61, 77)).hover(() -> "Opens the shop").cursor(Cursor.POINTER);
+button.hoveredColor(HoverUI.HOVER).hover(() -> "Opens the shop").cursor(Cursor.POINTER);
 ```
 
 Read [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/) to learn the hover animation, the tooltips and the cursors.
@@ -76,7 +76,7 @@ Read [Controls](/use/learn/interactivity/controls/) to learn the pattern, the or
 A text field turns what the user types into a value: a text, a number, or a type of your own.
 
 ```java fragment
-IntegerFieldNode.create(60, 60, 240, 60).min(1).max(16).value(this.players).info(info).attach(card);
+IntegerFieldNode.create(60, 60, 240, 60).min(1).max(16).value(this.players).attach(card);
 ```
 
 Read [Text fields](/use/learn/interactivity/text-fields/) to learn the focus, the rules on the text and your own fields.

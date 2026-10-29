@@ -95,7 +95,8 @@ Each panel takes its slot; the middle one keeps its own `y` of 20 and its height
 - [[Node#layoutPosition]] gives a child its slot; the `x` and `y` of the child stay an offset inside it, so that the user of your node can still move it.
 - [[Node#fit]] gives the size of the slot to a child created with a length of 0, and keeps a length that the child declares.
 - [[Node#layoutSize]] imposes a size on the frame, whatever the child declares, without changing its declared size.
-- Skip the hidden children, with `isVisibleProperty()`, the own `visible` of the child, and the `ABSOLUTE` ones, as the layouts of JOID do: `isVisible()` is also `false` for a child scrolled out of view, and a layout that skips it moves the other children while the user scrolls.
+- Skip the children whose own `visible` is `false`, read with [[Node#isVisibleProperty]], and the `ABSOLUTE` ones, as the layouts of JOID do.
+  Do not test `isVisible()`: it is also `false` for a child scrolled out of view, so a layout that skips on it moves the other children while the user scrolls.
 
 A layout that changes the order of its children, as a reorderable list does, gives the new order to [[Node#reorderChildren]], which the drawing follows too.
 
