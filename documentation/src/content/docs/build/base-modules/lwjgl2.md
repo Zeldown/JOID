@@ -20,7 +20,7 @@ It depends on base-opengl, base-openal and the `lwjgl` jar of LWJGL 2.9, never o
 ## Window
 
 [[Lwjgl2WindowBridge]] multiplies the size and the mouse of `Display` by its pixel scale factor, to report screen pixels on high-density screens, and flips the mouse to a top-left origin.
-Its constructor turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside the window and a drag goes on past its edge, as with GLFW.
+It reads `Display` and `Mouse` as they are and changes nothing in them, so it serves a `Display` that a host created and configured; the LWJGL 2 backend turns off the clipping of `Mouse` to the window itself ([Mouse outside the window](/build/backends/lwjgl2/#mouse-outside-the-window)).
 The clipboard goes through AWT; a clipboard that the system refuses reads as `""`, with one warning in dev mode.
 
 ## Cursors
@@ -28,6 +28,7 @@ The clipboard goes through AWT; a clipboard that the system refuses reads as `""
 LWJGL 2 has no system cursors.
 The window bridge shows them through JNA, with a native implementation per platform (Windows, macOS, X11) set on the `Display`.
 The jar of the module does not embed JNA: the LWJGL 2 backend embeds it, and a host that already has JNA on its classpath keeps its own.
+The bridge loads that implementation at the first cursor other than the default one, so a host whose UIs never change the cursor never loads JNA.
 Without JNA, the cursor stays the default one, with one warning in dev mode.
 
 ## Input forwarder

@@ -35,8 +35,12 @@ An extraction that fails throws an `IllegalStateException` that names the folder
 
 ### Input belongs to the loop
 
-LWJGL 2 delivers input through queues that the application loop drains, so the backend attaches nothing in `attachInput()`.
+LWJGL 2 delivers input through queues that the application loop drains, so the backend attaches no input in `attachInput()`.
 The application calls [[Lwjgl2InputForwarder#poll]] once per frame, before `frame()` ([Input forwarder](/build/base-modules/lwjgl2/#input-forwarder)).
+
+### Mouse outside the window
+
+`attachInput()` turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside the window and a drag goes on past its edge, as with GLFW.
 
 ### JNA
 

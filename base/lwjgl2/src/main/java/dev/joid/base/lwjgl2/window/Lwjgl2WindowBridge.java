@@ -18,11 +18,8 @@ import lombok.NonNull;
 
 public final class Lwjgl2WindowBridge implements IWindowBridge {
 
-	private final NativeCursor nativeCursor = NativeCursor.forPlatform();
-
-	public Lwjgl2WindowBridge() {
-		Mouse.setClipMouseCoordinatesToWindow(false);
-	}
+	private NativeCursor nativeCursor;
+	private boolean      nativeCursorLoaded;
 
 	@Override
 	public int getWidth() {
@@ -79,7 +76,16 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
-		if (this.nativeCursor != null && !Mouse.isGrabbed()) {
+		if (Mouse.isGrabbed() || cursor == Cursor.DEFAULT && !this.nativeCursorLoaded) {
+			return;
+		}
+
+		if (!this.nativeCursorLoaded) {
+			this.nativeCursor       = NativeCursor.forPlatform();
+			this.nativeCursorLoaded = true;
+		}
+
+		if (this.nativeCursor != null) {
 			this.nativeCursor.apply(cursor);
 		}
 	}

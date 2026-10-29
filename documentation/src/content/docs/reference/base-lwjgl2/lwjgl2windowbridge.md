@@ -27,7 +27,7 @@ The window bridge of the `Display` of LWJGL 2, in screen pixels, with the clipbo
 
 | Returns | Signature | Summary |
 |---|---|---|
-|  | [Lwjgl2WindowBridge](#Lwjgl2WindowBridge-constructor)() | Creates the window bridge of the current LWJGL 2 display, and turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside it. |
+|  | [Lwjgl2WindowBridge](#Lwjgl2WindowBridge-constructor)() | Creates the window bridge of the current LWJGL 2 display, without changing anything in `Display` nor in `Mouse`. |
 
 <a id="Lwjgl2WindowBridge-methods"></a>
 
@@ -52,7 +52,7 @@ The window bridge of the `Display` of LWJGL 2, in screen pixels, with the clipbo
 
 `Lwjgl2WindowBridge()` 
 
-Creates the window bridge of the current LWJGL 2 display, and turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside it.
+Creates the window bridge of the current LWJGL 2 display, without changing anything in `Display` nor in `Mouse`.
 
 ## Method details
 
