@@ -270,12 +270,17 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void reachesBothEndsOfTheTextWithHomeAndEnd() {
-		final MultilineTextFieldNode field = this.field("ab\ncd").cursorPosition(1);
+	public void reachesBothEndsOfTheLineWithHomeAndEnd() {
+		final MultilineTextFieldNode field = this.field(54D, "ab\nhello world").cursorPosition(4);
 		this.press(field, Key.END);
-		Assert.assertEquals(5, field.getCursorPosition());
+		Assert.assertEquals(8, field.getCursorPosition());
 		this.press(field, Key.HOME);
-		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(3, field.getCursorPosition());
+		field.cursorPosition(11);
+		this.press(field, Key.HOME);
+		Assert.assertEquals(9, field.getCursorPosition());
+		this.press(field, Key.END);
+		Assert.assertEquals(14, field.getCursorPosition());
 	}
 
 	@Test
@@ -477,20 +482,21 @@ public class MultilineTextFieldNodeTest {
 
 	@Test
 	public void scrollsToKeepItsCursorInView() {
-		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA");
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA").cursorPosition(20);
 		this.press(field, Key.END);
 		Assert.assertEquals(24D, MultilineTextFieldNodeTest.<Double>read(field, MultilineTextFieldNode.class, "yOffset"), 0D);
 		final List<Drawn> drawn = this.draw();
 		Assert.assertEquals("0", drawn.get(0).getText());
 		Assert.assertEquals(-22D, drawn.get(0).getY(), 0D);
 		Assert.assertEquals(178D, this.cursor().getTop(), 0.001D);
+		field.cursorPosition(1);
 		this.press(field, Key.HOME);
 		Assert.assertEquals(0D, MultilineTextFieldNodeTest.<Double>read(field, MultilineTextFieldNode.class, "yOffset"), 0D);
 	}
 
 	@Test
 	public void scrollsBackOnceItsCursorReachesItsTopMargin() {
-		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA");
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA").cursorPosition(20);
 		this.press(field, Key.END);
 		for (int i = 0; i < 13; i++) {
 			this.press(field, Key.LEFT);
@@ -728,7 +734,7 @@ public class MultilineTextFieldNodeTest {
 
 	@Test
 	public void keepsDrawingItsUiOnceAScrolledTextIsCleared() {
-		final MultilineTextFieldNode field = this.markedField("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA");
+		final MultilineTextFieldNode field = this.markedField("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\nA").cursorPosition(20);
 		this.press(field, Key.END);
 		this.bridges.frame();
 		field.text("");
