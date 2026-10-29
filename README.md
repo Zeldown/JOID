@@ -4,7 +4,7 @@
 ## Java Open Interface Development
 
 <div align="center">
-  <img align="center" src="https://img.shields.io/badge/version-8.0.0 (a74f7f2)-blue">
+  <img align="center" src="https://img.shields.io/badge/version-8.0.0 (f74ac60)-blue">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
   <img align="center" src="https://img.shields.io/badge/license-Apache--2.0-blue">
   <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/release.yml/badge.svg">
