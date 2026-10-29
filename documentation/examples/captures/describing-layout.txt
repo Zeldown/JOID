@@ -6,9 +6,9 @@ shot describing-layout-group
 ui com.example.describing.layout.OverflowUI
 wait 100
 shot describing-layout-overflow
-# crop describing-layout-scroll 700 290 520 376
+# crop describing-layout-scroll 700 290 520 400
 # still describing-layout-scroll 70
-ui com.example.describing.layout.FeedUI
+ui com.example.describing.layout.ScrollUI
 wait 100
 move 960 480
 # film describing-layout-scroll 60
