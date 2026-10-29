@@ -90,7 +90,7 @@ Other commands type text, press keys, scroll, resize the window, zoom, turn the 
 
 To create a reference, let the test write the shot once, check it by eye, then copy it into your test resources.
 Drivers round colors differently, so a tolerance of 2 or 3 keeps a reference valid from one machine to another; record the references on the machine that runs the tests when it uses another GPU.
-`getRenderer()` of the runner names that GPU, for example to keep one folder of references per GPU.
+`getRenderer()` of the runner names that GPU: the test above keeps one folder of references per GPU, and records a missing reference when [[SnapshotSettings#isRecord]] is `true`, as on a CI server.
 
 ## Keep every run identical
 

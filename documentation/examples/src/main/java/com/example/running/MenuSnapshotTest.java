@@ -11,6 +11,7 @@ import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.test.snapshot.SnapshotDifference;
 import dev.joid.test.snapshot.SnapshotImage;
 import dev.joid.test.snapshot.SnapshotRunner;
+import dev.joid.test.snapshot.SnapshotSettings;
 
 public class MenuSnapshotTest {
 
@@ -50,8 +51,12 @@ public class MenuSnapshotTest {
 			"wait 100",
 			"shot clicked"
 		).get("clicked");
-		final SnapshotImage reference = SnapshotImage.read(new File("src/test/resources/snapshots/clicked.png"));
-		final SnapshotDifference difference = shot.compare(reference, 2);
+		final File references = new File("src/test/resources/snapshots", MenuSnapshotTest.runner.getRenderer());
+		final File reference = new File(references, "clicked.png");
+		if (!reference.exists() && SnapshotSettings.isRecord()) {
+			shot.write(reference);
+		}
+		final SnapshotDifference difference = shot.compare(SnapshotImage.read(reference), 2);
 		Assert.assertEquals(0, difference.getPixels());
 	}
 	// #endregion

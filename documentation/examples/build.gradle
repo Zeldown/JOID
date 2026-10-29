@@ -80,6 +80,7 @@ task exampleTests(type: Test) {
     include '**/*Test.class'
     exclude 'com/example/backend/EngineRenderBridgeContractTest.class'
     systemProperty 'joid.data', file("$buildDir/example-tests/data").absolutePath
+    systemProperty 'joid.snapshot.record', project.hasProperty('recordSnapshots')
     systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
     systemProperty 'java.awt.headless', 'true'
     testLogging.exceptionFormat = 'full'
