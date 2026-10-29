@@ -106,7 +106,7 @@ moveto 990 488 400
 wait 200
 press LEFT
 release LEFT
-wait 400
+wait 300
 key LEFT_CONTROL+A
 wait 300
 type #
@@ -122,9 +122,14 @@ wait 150
 type 4
 wait 150
 type 1
-wait 900
-key LEFT_CONTROL+A
+wait 600
+key ESCAPE
+wait 400
+press LEFT
+release LEFT
 wait 300
+key LEFT_CONTROL+A
+wait 200
 type #
 wait 150
 type 5
@@ -138,7 +143,7 @@ wait 150
 type F
 wait 150
 type F
-wait 600
+wait 400
 moveto 1120 650 400
 wait 300
 cut

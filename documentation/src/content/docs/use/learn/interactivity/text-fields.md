@@ -176,7 +176,7 @@ The constructor, the factory and the generic setters follow the pattern of every
 
 <figure>
 
-![A dark grey field that reads "#5B8CFF" next to a blue rectangle; the user selects the text and types "#F2A541", and the rectangle turns orange once the color is complete, then the user types "#5B8CFF" back](/captures/interactivity-field-color.webp)
+![A dark grey field that reads "#5B8CFF" next to a blue rectangle; the user selects the text and types "#F2A541", and the rectangle turns orange once the color is complete; Escape leaves the field, the user clicks it again and types "#5B8CFF" back, and the rectangle stays orange until the last F turns it blue](/captures/interactivity-field-color.webp)
 
 <figcaption>
 The rectangle reads the same signal as the field: a valid color shows at once.
