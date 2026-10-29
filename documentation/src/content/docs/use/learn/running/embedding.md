@@ -74,8 +74,22 @@ Draw your scene, then let JOID draw over it:
 ```java file="com/example/running/HostApp.java" region="loop"
 ```
 
-`HostOverlayUI` is an overlay ([[UIDataOverlay]]) whose button receives the mouse.
-It sets no `background` in [[UIData]], so the scene shows around its button; a UI backdrop (`background = true`) covers the whole window and hides the scene.
+`HostScene` stands for your scene: it fills the window and slides a square with plain OpenGL calls.
+
+<details>
+<summary>The complete <code>HostScene.java</code></summary>
+
+```java file="com/example/running/HostScene.java"
+```
+
+</details>
+
+`HostOverlayUI` is an overlay ([[UIDataOverlay]]) that receives the input, so its Tab shortcut opens `HostMenuUI`, a screen:
+
+```java file="com/example/running/HostOverlayUI.java"
+```
+
+It sets no `background` in [[UIData]], so the scene shows around its hint; a UI backdrop (`background = true`) covers the whole window and hides the scene.
 `SceneUIBridge` extends [[WindowUIBridge]], so it keeps the tooltips and every setting of the window UI bridge.
 On Vulkan, the frame of JOID loads the image of the host without clearing it: the scene is what the host recorded into its command buffer before `frame()`.
 
@@ -93,7 +107,35 @@ Your bridge follows the screens of JOID with two hooks of [[StackUIBridge]], `at
 
 JOID calls `attachScreen()` when the first screen or popup of the bridge opens, and `detachScreen()` when the last one closes.
 Overlays do not count, so `HostOverlayUI` never pauses the game, and a screen that replaces another one calls neither hook.
-Register `GameUIBridge.create(window)` in place of `SceneUIBridge`, and skip the update of your game while `isPaused()` returns `true`.
+
+`GameUIBridge` extends `SceneUIBridge`, so the scene stays under the UIs.
+`GameApp` registers it in place of `SceneUIBridge`, and captures the mouse for its game:
+
+```java file="com/example/running/GameApp.java" region="game"
+```
+
+In the loop, the game skips its update while `isPaused()` returns `true`:
+
+```java file="com/example/running/GameApp.java" region="pause"
+```
+
+<figure>
+
+![A dark scene where a blue square slides from side to side, with the hint "Tab: menu" of HostOverlayUI in its corner and no pointer; Tab, shown in a badge, opens the Menu card of HostMenuUI, the pointer appears and the square stops; Escape, shown in a badge, closes the card, the pointer disappears and the square slides again](/captures/running-embedding-pause.webp)
+
+<figcaption>
+The scene of the host shows around the overlay and under the screen.
+Only the screen pauses the game and frees the mouse.
+</figcaption>
+</figure>
+
+<details>
+<summary>The complete <code>HostMenuUI.java</code></summary>
+
+```java file="com/example/running/HostMenuUI.java"
+```
+
+</details>
 
 ## Draw a UI inside your own projection
 
