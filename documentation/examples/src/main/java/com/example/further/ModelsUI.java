@@ -33,7 +33,12 @@ public class ModelsUI extends UI {
 		// #endregion
 
 		// #region node
-		ModelNode.create(100, 100, 200, 200).rotationYaw(yaw).rotationPitch(20D).model(ModelsUI.CUBE).attach(this);
+		ModelNode
+		.create(100, 100, 200, 200)
+		.rotationYaw(yaw)
+		.rotationPitch(20D)
+		.model(ModelsUI.CUBE)
+		.attach(this);
 		// #endregion
 
 		// #region turn

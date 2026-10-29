@@ -100,6 +100,7 @@ public class MenuUI extends UI {
 		// #region footer
 		final BooleanSignal music = settings.getMusic();
 		final IntegerSignal volume = settings.getVolume();
+
 		TextNode
 		.create(164, 760)
 		.text(Text.create((music.get() ? "Music on" : "Music off") + ", volume " + volume.get() * 10 + " %", status))

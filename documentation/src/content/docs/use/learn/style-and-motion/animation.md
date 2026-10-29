@@ -221,13 +221,10 @@ Make a circle grow from 1 to 1.2 times its size and back, forever, soft at both 
 <details>
 <summary>Solution</summary>
 
-```java fragment
-final TweenAnimator pulse = TweenAnimator.create(1F).sequence(600F, 1.2F, TweenEquations.SINE_IN_OUT);
-pulse.repeatYoyo(BaseTween.INFINITY, 0F).start();
-CircleNode.create(200, 200, 100).anchor(Align.CENTER).width(100D * pulse.get()).height(100D * pulse.get()).attach(this);
+```java file="com/example/style/PulseUI.java" region="pulse"
 ```
 
-The size follows the animator through the expression, and [[Node#anchor]] with [[Align#CENTER]] keeps the circle centered on its position while it grows; add `onDetach(event -> pulse.clear())` to stop it with the UI.
+The size follows the animator through the expression, and [[Node#anchor]] with [[Align#CENTER]] keeps the circle centered on its position while it grows; `onDetach(...)` stops the animator with the UI.
 A [[TransformNodeEffect]] scales the node without touching the layout instead ([Effects](/use/learn/style-and-motion/effects/#add-effects-to-a-node)).
 
 </details>
