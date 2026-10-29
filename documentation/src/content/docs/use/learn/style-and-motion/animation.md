@@ -224,11 +224,11 @@ Make a circle grow from 1 to 1.2 times its size and back, forever, soft at both 
 ```java fragment
 final TweenAnimator pulse = TweenAnimator.create(1F).sequence(600F, 1.2F, TweenEquations.SINE_IN_OUT);
 pulse.repeatYoyo(BaseTween.INFINITY, 0F).start();
-final Scale scale = Scale.create(() -> (double) pulse.get(), () -> (double) pulse.get(), () -> 1D);
-CircleNode.create(0, 0, 100).effect(TransformNodeEffect.create(Transformation.create().scale(scale))).attach(this);
+CircleNode.create(200, 200, 100).anchor(Align.CENTER).width(100D * pulse.get()).height(100D * pulse.get()).attach(this);
 ```
 
-[[Scale]] gives the factor of each axis ([Rotate and scale a drawing](/use/learn/going-further/drawing-resources-and-transforms/#rotate-and-scale-a-drawing)), and the transform effect scales around the center of the node; add `onDetach(event -> pulse.clear())` to stop it with the UI.
+The size follows the animator through the expression, and [[Node#anchor]] with [[Align#CENTER]] keeps the circle centered on its position while it grows; add `onDetach(event -> pulse.clear())` to stop it with the UI.
+A [[TransformNodeEffect]] scales the node without touching the layout instead ([Effects](/use/learn/style-and-motion/effects/#add-effects-to-a-node)).
 
 </details>
 

@@ -14,5 +14,6 @@ Learn: [Fonts](/use/learn/describing-the-ui/fonts/), [MSDF text](/use/in-depth/m
 Reads every face in parallel and completes with one [[MsdfFont]] that holds them all.
 Each argument is an [[IMsdfSource]], or anything [[Asset#of]] accepts (a path, a `File`, a URL, a stream, an [[Asset]]): its first bytes pick [[OpenTypeMsdfSource]] or [[BinaryMsdfSource]].
 The weight and the style of each face come from the file; wrap the file in a source and call `weight(...)` or `italic(...)` to override them.
+
 The future completes exceptionally with `IllegalArgumentException` when no face is given or two faces share a weight and a style, and with `IOException` when a file cannot be read or generated.
 In dev mode, the time each face took is logged.

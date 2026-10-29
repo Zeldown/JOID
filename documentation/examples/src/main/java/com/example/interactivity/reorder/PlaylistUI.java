@@ -51,7 +51,7 @@ public class PlaylistUI extends UI {
 					.color(PlaylistUI.ELEMENT)
 					.hoveredColor(PlaylistUI.HOVER)
 					.label(Text.create(song, info))
-					.body(row -> row.effect(ShadowNodeEffect.create(
+					.self(row -> row.effect(ShadowNodeEffect.create(
 						() -> list.isDragging(row) ? PlaylistUI.SHADOW : Color.TRANSPARENT,
 						() -> 32F
 					)))

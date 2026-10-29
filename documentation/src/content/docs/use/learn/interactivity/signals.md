@@ -113,6 +113,7 @@ The table below says what happens outside that form; some code cannot be replaye
 | A field of the class that is not a signal, such as `this.bonus` | Read again each time a signal of the expression changes, never on its own |
 | A getter of a node, a control or the UI, such as `isChecked()`, `getWidth()` or `super.getViewWidth()` | It returns a field: read again each time a signal of the expression changes, never on its own; on a node held in a local variable, frozen |
 | A local variable set before the call, from fields or signals | Followed |
+| A local variable of `init()` captured by a `body(...)` lambda and chosen by a signal, such as `on.get() ? bold : regular` | Frozen, with a warning in dev mode: keep the values in fields |
 | The variable of a loop inside a text, such as `name + ": " + score.get()` | Followed |
 | The variable of a loop combined with a signal in a calculation, or deciding a condition | Frozen |
 | A lambda written inside the expression, such as `names.stream().filter(name -> ...)` | Frozen |
@@ -122,7 +123,7 @@ To follow a getter, pass a lambda, as [The design canvas](/use/learn/describing-
 
 The text of a [[Text]] is followed by itself: `Text.create(text, info)` replays its arguments, so `Text.create("Clicks: " + clicks.get(), info)` follows `clicks` wherever you pass it.
 Its [[TextInfo]] is followed too: `Text.create(on.get() ? "On" : "Off", on.get() ? this.bold : this.regular)` switches the text and its style.
-Keep such styles in fields: a style held in a local variable, such as one of `init()` used inside a `body(...)`, and chosen by a signal stays fixed, with a warning in dev mode.
+Keep such styles in fields ([table above](#what-joid-follows)).
 
 This table is about the expression given to the value overload.
 A lambda given to the setter itself, or to `map(...)` and `Signal.from(...)`, is not part of an expression: the table of the previous section applies to it.

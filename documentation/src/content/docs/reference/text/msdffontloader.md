@@ -49,6 +49,7 @@ The future completes on the render thread, at the next frame, through `runOnRend
 Reads every face in parallel and completes with one [`MsdfFont`](/reference/text/msdffont/) that holds them all.
 Each argument is an [`IMsdfSource`](/reference/text/imsdfsource/), or anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts (a path, a `File`, a URL, a stream, an [`Asset`](/reference/resources/asset/)): its first bytes pick [`OpenTypeMsdfSource`](/reference/text/opentypemsdfsource/) or [`BinaryMsdfSource`](/reference/text/binarymsdfsource/).
 The weight and the style of each face come from the file; wrap the file in a source and call `weight(...)` or `italic(...)` to override them.
+
 The future completes exceptionally with `IllegalArgumentException` when no face is given or two faces share a weight and a style, and with `IOException` when a file cannot be read or generated.
 In dev mode, the time each face took is logged.
 

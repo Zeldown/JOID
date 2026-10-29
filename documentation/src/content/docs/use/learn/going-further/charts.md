@@ -60,7 +60,7 @@ JOID calls `draw` on every frame, so the chart shows a change of its data on the
 
 <figure>
 
-![The charts of the previous figure; the pointer clicks Next week, and the line chart keeps one series with new values, scaled up to 9 k, while the Power axis of the radar chart grows](/captures/further-charts-next.webp)
+![The line chart of the previous figure, next to the radar chart of the next section; the pointer clicks Next week, and the line chart keeps one series with new values, scaled up to 9 k, while the Power axis of the radar chart grows](/captures/further-charts-next.webp)
 
 <figcaption>
 The click replaces one series and removes the other; the scale follows the new values.

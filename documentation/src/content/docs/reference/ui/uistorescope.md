@@ -36,7 +36,7 @@ How long a store lives and which UIs share it.
 |---|---|
 | [`LOCAL`](#UIStoreScope-value-LOCAL) | Each UI that asks for the store gets its own, destroyed when that UI closes. |
 | [`GLOBAL`](#UIStoreScope-value-GLOBAL) | One store for the whole application, shared by every UI, kept in memory until the program ends. |
-| [`PERMANENT`](#UIStoreScope-value-PERMANENT) | Like `GLOBAL`, and saved in the data folder so that its values come back at the next run. |
+| [`PERMANENT`](#UIStoreScope-value-PERMANENT) | One store for the whole application, shared by every UI and saved in the data folder, so that its values come back at the next run. |
 
 ## Method details
 
@@ -80,7 +80,7 @@ One store for the whole application, shared by every UI, kept in memory until th
 
 `PERMANENT` 
 
-Like `GLOBAL`, and saved in the data folder so that its values come back at the next run.
+One store for the whole application, shared by every UI and saved in the data folder, so that its values come back at the next run.
 
 ---
 
