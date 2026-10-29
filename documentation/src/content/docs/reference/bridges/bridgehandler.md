@@ -68,7 +68,7 @@ It stays empty when the backend is built with `audio(false)`.
 `BridgeRegistry<IClockBridge> CLOCK` 
 
 The clock that animations, tweens, media and drags read.
-It holds a [`SystemClockBridge`](/reference/bridges/systemclockbridge/) until a bridge of higher priority is registered, such as a [`ManualClockBridge`](/reference/bridges/manualclockbridge/) in a test.
+It holds a [`SystemClockBridge`](/reference/bridges/systemclockbridge/) until another bridge is registered above it, with a higher priority or later at the same one, such as a [`ManualClockBridge`](/reference/bridges/manualclockbridge/) in a test.
 
 <a id="BridgeHandler-constant-WINDOW"></a>
 

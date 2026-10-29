@@ -21,7 +21,7 @@ It stays empty when the backend is built with `audio(false)`.
 ## CLOCK
 
 The clock that animations, tweens, media and drags read.
-It holds a [[SystemClockBridge]] until a bridge of higher priority is registered, such as a [[ManualClockBridge]] in a test.
+It holds a [[SystemClockBridge]] until another bridge is registered above it, with a higher priority or later at the same one, such as a [[ManualClockBridge]] in a test.
 
 ## WINDOW
 

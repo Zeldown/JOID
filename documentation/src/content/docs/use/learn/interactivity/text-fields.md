@@ -42,7 +42,7 @@ With the factory without a height, the field takes the height of its font plus i
 The fields of this page take a dark grey `background(...)`, and any node can be the background; their `placeholderColor(...)` is a grey that reads better on it than the default, the text color at half its opacity.
 
 - [[FieldNode#onChange]] runs on each edit with a [[NodeFieldChangeEvent.Post]]: `getText()` is the text, `getValue()` the value, `isValid()` whether the text is a valid value.
-- [[LineFieldNode#onSubmit]] runs when the user presses Enter, after the field lost the focus.
+- [[LineFieldNode#onSubmit]] runs when the user presses Enter: the field blurs first, and the listener runs even when a `beforeBlur` listener keeps the focus.
 - `placeholder(...)` shows a text while the field is empty and has no focus, in the color of [[FieldNode#placeholderColor]].
 - [[FieldNode#cursorColor]] and [[FieldNode#selectionColor]] color the cursor and the selection; the cursor blinks.
 - [[LineFieldNode#alignX]] places the text at the start, the center or the end of the field.
