@@ -29,6 +29,7 @@ public enum Family {
 	TESTING("testing", "Testing", "dev.joid.test"),
 	BASE_OPENAL("base-openal", "base-openal", "dev.joid.base.openal"),
 	BASE_OPENGL("base-opengl", "base-opengl", "dev.joid.base.opengl"),
+	BASE_LWJGL2("base-lwjgl2", "base-lwjgl2", "dev.joid.base.lwjgl2"),
 	BASE_LWJGL3_GLFW("base-lwjgl3-glfw", "base-lwjgl3-glfw", "dev.joid.base.lwjgl3.glfw"),
 	BASE_LWJGL3_OPENAL("base-lwjgl3-openal", "base-lwjgl3-openal", "dev.joid.base.lwjgl3.openal"),
 	BASE_LWJGL3_OPENGL("base-lwjgl3-opengl", "base-lwjgl3-opengl", "dev.joid.base.lwjgl3.opengl"),

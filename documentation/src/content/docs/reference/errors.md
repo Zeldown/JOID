@@ -2434,6 +2434,78 @@ An image is wider or taller than the largest texture of the graphics context or 
 
 Downscale the image, or split it: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
+## base-lwjgl2
+
+### The clipboard cannot be read, an empty text replaces it {#clipboard-cannot-read-empty}
+
+**Warning** · `[JOID] The clipboard cannot be read, an empty text replaces it: …`
+
+Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/base-lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-getClipboard).
+
+With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
+
+### The clipboard cannot be written, the text stays out of it {#clipboard-cannot-written-text}
+
+**Warning** · `[JOID] The clipboard cannot be written, the text stays out of it: …`
+
+Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/base-lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-setClipboard).
+
+With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
+
+### JNA is missing or cannot be loaded, the mouse cursor stays the default … {#jna-missing-cannot-loaded}
+
+**Warning** · `[JOID] JNA is missing or cannot be loaded, the mouse cursor stays the default one: …`
+
+Emitted by [`NativeCursor.forPlatform`](/reference/base-lwjgl2/nativecursor/#NativeCursor-factory-forPlatform).
+
+With the dev jar, the LWJGL 2 backend sets the cursors of nodes through JNA, which is not on the classpath; the cursor stays the default one.
+
+Put JNA on the classpath to show the cursors: [Cursors](/build/base-modules/lwjgl2/#cursors).
+
+### The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the … {#native-cursors-lwjgl-2}
+
+**Warning** · `[JOID] The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: …`
+
+Emitted by [`NativeCursor.apply`](/reference/base-lwjgl2/nativecursor/#NativeCursor-method-apply).
+
+With the dev jar, the native cursor of LWJGL 2 could not be reached; the backend stops trying and keeps the default cursor.
+
+Check the version of LWJGL 2 on the classpath: [Cursors](/build/base-modules/lwjgl2/#cursors).
+
+### The … cursor cannot be loaded (…), the default one replaces it {#cursor-cannot-loaded-default}
+
+**Warning** · `[JOID] The … cursor cannot be loaded (…), the default one replaces it: check that the system has this cursor`
+
+Emitted by [`NativeCursor.apply`](/reference/base-lwjgl2/nativecursor/#NativeCursor-method-apply).
+
+With the dev jar, the system has no cursor for one of the cursors of JOID; that one shows the default cursor.
+
+Check the cursor theme of the system: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
+
+### libXcursor cannot be loaded, the X11 cursors come from the cursor font {#libxcursor-cannot-loaded-x11}
+
+**Warning** · `[JOID] libXcursor cannot be loaded, the X11 cursors come from the cursor font: …`
+
+Emitted by [`X11NativeCursor`](/reference/base-lwjgl2/x11nativecursor/#X11NativeCursor-constructor).
+
+With the dev jar, on Linux, libXcursor is missing, so the cursors come from the older cursor font of X11.
+
+Install libXcursor to get the cursors of the theme: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
+
+### LWJGL 2 cannot create the OpenAL context (…), check that an audio output … {#lwjgl-2-cannot-create-openal}
+
+**`IllegalStateException`** · `LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled`
+
+Emitted by [`Lwjgl2AlBinding.createContext`](/reference/base-lwjgl2/lwjgl2albinding/#Lwjgl2AlBinding-method-createContext).
+
+The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
+
+Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
+
 ## base-lwjgl3-glfw
 
 ### GLFW cannot be initialized, check that the system has a display (DISPLAY … {#glfw-cannot-initialized-check}
@@ -2480,66 +2552,6 @@ Close the application that holds the device exclusively, or update its driver: [
 
 ## LWJGL 2 backend
 
-### The clipboard cannot be read, an empty text replaces it {#clipboard-cannot-read-empty}
-
-**Warning** · `[JOID] The clipboard cannot be read, an empty text replaces it: …`
-
-Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-getClipboard).
-
-With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
-
-Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
-
-### The clipboard cannot be written, the text stays out of it {#clipboard-cannot-written-text}
-
-**Warning** · `[JOID] The clipboard cannot be written, the text stays out of it: …`
-
-Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-setClipboard).
-
-With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
-
-Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
-
-### JNA is missing or cannot be loaded, the mouse cursor stays the default … {#jna-missing-cannot-loaded}
-
-**Warning** · `[JOID] JNA is missing or cannot be loaded, the mouse cursor stays the default one: …`
-
-Emitted by [`NativeCursor.forPlatform`](/reference/lwjgl2/nativecursor/#NativeCursor-factory-forPlatform).
-
-With the dev jar, the LWJGL 2 backend sets the cursors of nodes through JNA, which is not on the classpath; the cursor stays the default one.
-
-Put JNA on the classpath to show the cursors: [Cursors](/build/backends/lwjgl2/#cursors).
-
-### The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the … {#native-cursors-lwjgl-2}
-
-**Warning** · `[JOID] The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: …`
-
-Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-method-apply).
-
-With the dev jar, the native cursor of LWJGL 2 could not be reached; the backend stops trying and keeps the default cursor.
-
-Check the version of LWJGL 2 on the classpath: [Cursors](/build/backends/lwjgl2/#cursors).
-
-### The … cursor cannot be loaded (…), the default one replaces it {#cursor-cannot-loaded-default}
-
-**Warning** · `[JOID] The … cursor cannot be loaded (…), the default one replaces it: check that the system has this cursor`
-
-Emitted by [`NativeCursor.apply`](/reference/lwjgl2/nativecursor/#NativeCursor-method-apply).
-
-With the dev jar, the system has no cursor for one of the cursors of JOID; that one shows the default cursor.
-
-Check the cursor theme of the system: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
-
-### libXcursor cannot be loaded, the X11 cursors come from the cursor font {#libxcursor-cannot-loaded-x11}
-
-**Warning** · `[JOID] libXcursor cannot be loaded, the X11 cursors come from the cursor font: …`
-
-Emitted by [`X11NativeCursor`](/reference/lwjgl2/x11nativecursor/#X11NativeCursor-constructor).
-
-With the dev jar, on Linux, libXcursor is missing, so the cursors come from the older cursor font of X11.
-
-Install libXcursor to get the cursors of the theme: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
-
 ### The LWJGL 2 native … is missing from the backend {#lwjgl-2-native-missing}
 
 **`IllegalStateException`** · `The LWJGL 2 native … is missing from the backend`
@@ -2559,16 +2571,6 @@ Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Nati
 [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) could not write the natives into the cache folder.
 
 Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be written.
-
-### LWJGL 2 cannot create the OpenAL context (…), check that an audio output … {#lwjgl-2-cannot-create-openal}
-
-**`IllegalStateException`** · `LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled`
-
-Emitted by [`Lwjgl2AlBinding.createContext`](/reference/lwjgl2/lwjgl2albinding/#Lwjgl2AlBinding-method-createContext).
-
-The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
-
-Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ### LWJGL 2 cannot create the …x… OpenGL context of the snapshots (…), check … {#lwjgl-2-cannot-create-x}
 

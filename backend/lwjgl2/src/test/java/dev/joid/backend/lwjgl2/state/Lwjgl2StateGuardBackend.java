@@ -15,8 +15,8 @@ import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
 
-import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
+import dev.joid.base.lwjgl2.opengl.Lwjgl2GlBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.snapshot.GlStateSnapshot;

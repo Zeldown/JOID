@@ -7,7 +7,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.backend.lwjgl2.Lwjgl2Natives;
-import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
+import dev.joid.base.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.lib.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.WindowUIBridge;

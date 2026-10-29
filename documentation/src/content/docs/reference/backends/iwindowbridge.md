@@ -12,7 +12,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 `interface IWindowBridge`<br/>
 **Extends:** [`IBridge`](/reference/bridges/ibridge/)<br/>
-**Known subtypes:** [`GlfwWindowBridge`](/reference/base-lwjgl3-glfw/glfwwindowbridge/), [`Lwjgl2WindowBridge`](/reference/lwjgl2/lwjgl2windowbridge/), [`SnapshotWindowBridge`](/reference/testing/snapshotwindowbridge/)<br/>
+**Known subtypes:** [`Lwjgl2WindowBridge`](/reference/base-lwjgl2/lwjgl2windowbridge/), [`GlfwWindowBridge`](/reference/base-lwjgl3-glfw/glfwwindowbridge/), [`SnapshotWindowBridge`](/reference/testing/snapshotwindowbridge/)<br/>
 **Package:** `dev.joid.lib.bridge.window` · **Module:** `core` · **Source:** [IWindowBridge.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/bridge/window/IWindowBridge.java)
 
 The bridge that reads the drawable size, the mouse, the held keys and the clipboard of the window, in screen pixels.

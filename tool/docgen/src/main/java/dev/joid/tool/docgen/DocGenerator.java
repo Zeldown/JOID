@@ -51,6 +51,7 @@ public final class DocGenerator {
 		DocGenerator.MODULES.put("core", "core");
 		DocGenerator.MODULES.put("base-openal", "base/openal");
 		DocGenerator.MODULES.put("base-opengl", "base/opengl");
+		DocGenerator.MODULES.put("base-lwjgl2", "base/lwjgl2");
 		DocGenerator.MODULES.put("base-lwjgl3-glfw", "base/lwjgl3-glfw");
 		DocGenerator.MODULES.put("base-lwjgl3-openal", "base/lwjgl3-openal");
 		DocGenerator.MODULES.put("base-lwjgl3-opengl", "base/lwjgl3-opengl");

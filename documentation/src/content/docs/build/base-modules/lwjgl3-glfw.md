@@ -7,7 +7,7 @@ sidebar:
 ---
 
 `joid-base-lwjgl3-glfw` turns a GLFW window, through LWJGL 3, into the window bridge and the input of JOID.
-The LWJGL 3 and Vulkan backends use it as it is.
+The LWJGL 3 and Vulkan backends use it as it is; [base-lwjgl2](/build/base-modules/lwjgl2/) does the same for the `Display` of LWJGL 2.
 
 ## Window bridge
 

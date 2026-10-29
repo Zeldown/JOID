@@ -16,7 +16,7 @@ It calls OpenGL only through an [[IGlBinding]], so the LWJGL 2 and LWJGL 3 backe
 | Binding | Library |
 |---|---|
 | [[Lwjgl3GlBinding#inst]] | LWJGL 3 OpenGL, in [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) |
-| [[Lwjgl2GlBinding#inst]] | LWJGL 2 OpenGL, in the LWJGL 2 backend |
+| [[Lwjgl2GlBinding#inst]] | LWJGL 2 OpenGL, in [base-lwjgl2](/build/base-modules/lwjgl2/) |
 | your [[IGlBinding]] | the OpenGL functions of your engine |
 
 An [[IGlBinding]] gives the queries and the calls of OpenGL, one method for one function, and an [[IGlFrameBufferBinding]] for each family of framebuffer objects, the core one and the EXT one.

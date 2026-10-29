@@ -1,6 +1,6 @@
 ---
 title: "LWJGL 2 backend"
-description: "What the LWJGL 2 backend is made of: the OpenGL and OpenAL modules, a Display window bridge, polled input, bundled natives and native cursors."
+description: "What the LWJGL 2 backend is made of: the OpenGL, OpenAL and LWJGL 2 modules, bundled natives and JNA, and input polled by the loop."
 genre: build
 sidebar:
   order: 1
@@ -13,12 +13,12 @@ How an application installs and starts it is on [Choosing a backend](/use/learn/
 
 | Bridge | Class | From |
 |---|---|---|
-| Render | [[GlRenderBridge]] over [[Lwjgl2GlBinding]] | [base-opengl](/build/base-modules/opengl/) |
-| Audio | [[AlAudioBridge]] over [[Lwjgl2AlBinding]] | [base-openal](/build/base-modules/openal/) |
-| Window | [[Lwjgl2WindowBridge]] | this backend |
-| Input | [[Lwjgl2InputForwarder]], called by the loop | this backend |
+| Render | [[GlRenderBridge]] over [[Lwjgl2GlBinding]] | [base-opengl](/build/base-modules/opengl/), [base-lwjgl2](/build/base-modules/lwjgl2/) |
+| Audio | [[AlAudioBridge]] over [[Lwjgl2AlBinding]] | [base-openal](/build/base-modules/openal/), [base-lwjgl2](/build/base-modules/lwjgl2/) |
+| Window | [[Lwjgl2WindowBridge]] | base-lwjgl2 |
+| Input | [[Lwjgl2InputForwarder]], called by the loop | base-lwjgl2 |
 
-[[Lwjgl2Backend]] registers them; its `create()` takes no window, because LWJGL 2 has a single `Display`.
+Its own code is [[Lwjgl2Backend]], which registers them, and [[Lwjgl2Natives]]; `create()` takes no window, because LWJGL 2 has a single `Display`.
 The backend keeps the default thread bridge and the default UI bridge of [[Backend]].
 
 ## What differs
@@ -36,32 +36,11 @@ An extraction that fails throws an `IllegalStateException` that names the folder
 ### Input belongs to the loop
 
 LWJGL 2 delivers input through queues that the application loop drains, so the backend attaches nothing in `attachInput()`.
-The application calls [[Lwjgl2InputForwarder#poll]] once per frame, before `frame()`:
+The application calls [[Lwjgl2InputForwarder#poll]] once per frame, before `frame()` ([Input forwarder](/build/base-modules/lwjgl2/#input-forwarder)).
 
-- each mouse event becomes a move, a press or a release, and the wheel becomes `mouseScroll(0, wheel / 120)`;
-- each key event becomes a press or a release, and a press that types a character is followed by its character;
-- a repeat event of LWJGL 2 sends its character only, so an application can turn `Keyboard.enableRepeatEvents(true)` on without a double repeat.
+### JNA
 
-The forwarder returns nothing to the loop: LWJGL 2 has no handler to chain to.
-
-### Keys
-
-[[Lwjgl2Keys]] maps the key codes of LWJGL 2 to [[Key]] values.
-LWJGL 2 cannot name a key by layout, so `getKey(code, character)` reads the printed key from the character that the press types, and remembers it for that position.
-With Ctrl, a letter types a control character that names its letter.
-While Shift or Alt is held, or Ctrl on another key, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
-
-### Window
-
-[[Lwjgl2WindowBridge]] multiplies the size and the mouse of `Display` by its pixel scale factor, to report screen pixels on high-density screens, and flips the mouse to a top-left origin.
-Its constructor turns off the clipping of `Mouse` to the window, so that the mouse reports positions outside the window and a drag goes on past its edge, as with GLFW.
-The clipboard goes through AWT; a clipboard that the system refuses reads as `""`, with one warning in dev mode.
-
-### Cursors
-
-LWJGL 2 has no system cursors.
-The backend shows them through JNA, which its jar embeds, with a native implementation per platform (Windows, macOS, X11) set on the `Display`.
-Without JNA, the cursor stays the default one, with one warning in dev mode.
+The jar embeds JNA 5.17, in its own packages, for the [native cursors](/build/base-modules/lwjgl2/#cursors) of base-lwjgl2.
 
 ### Context
 

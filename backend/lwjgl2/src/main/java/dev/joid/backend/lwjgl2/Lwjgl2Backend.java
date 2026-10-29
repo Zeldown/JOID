@@ -1,8 +1,8 @@
 package dev.joid.backend.lwjgl2;
 
-import dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding;
-import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
-import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
+import dev.joid.base.lwjgl2.openal.Lwjgl2AlBinding;
+import dev.joid.base.lwjgl2.opengl.Lwjgl2GlBinding;
+import dev.joid.base.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.audio.IAudioBridge;

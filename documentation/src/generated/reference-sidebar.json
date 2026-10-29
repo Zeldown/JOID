@@ -84,6 +84,10 @@
     "link": "/reference/base-opengl/"
   },
   {
+    "label": "base-lwjgl2",
+    "link": "/reference/base-lwjgl2/"
+  },
+  {
     "label": "base-lwjgl3-glfw",
     "link": "/reference/base-lwjgl3-glfw/"
   },

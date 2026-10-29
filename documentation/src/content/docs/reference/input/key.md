@@ -26,7 +26,7 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 
 - [Keyboard](/use/learn/interactivity/keyboard/#tell-a-letter-from-its-place)
 - [Custom effects](/use/learn/going-further/custom-effects/)
-- [LWJGL 2 backend](/build/backends/lwjgl2/)
+- [base-lwjgl2](/build/base-modules/lwjgl2/)
 - [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/)
 - [Window bridge](/build/bridges/window/)
 

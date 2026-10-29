@@ -82,6 +82,10 @@ Learn: [base-openal](/build/base-modules/openal/).
 The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back.
 Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/embedding-in-a-host/).
 
+## base-lwjgl2
+The OpenGL and OpenAL bindings of LWJGL 2, the window bridge of its `Display` with its native cursors, its input forwarder and its key table.
+Learn: [base-lwjgl2](/build/base-modules/lwjgl2/).
+
 ## base-lwjgl3-glfw
 The window bridge, the input forwarder and the key table of GLFW, and the hidden window of the snapshot backends.
 Learn: [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
@@ -95,7 +99,7 @@ The OpenGL binding of LWJGL 3 and its framebuffer bindings, for the render bridg
 Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
 
 ## lwjgl2
-The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend.
+The backend for LWJGL 2: its natives and its snapshot backend.
 Learn: [LWJGL 2 backend](/build/backends/lwjgl2/).
 
 ## lwjgl3

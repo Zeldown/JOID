@@ -23,7 +23,7 @@ This backend reuses the OpenGL and OpenAL modules on the context and the audio d
 ```
 
 `binding` is the [[IGlBinding]] over the OpenGL functions of the host.
-On LWJGL 3, depend on [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) and pass `Lwjgl3GlBinding.inst()`; on LWJGL 2, copy the binding classes of the official backend ([[Lwjgl2GlBinding]], with its framebuffer bindings) into your backend, under their Apache 2.0 license; on another library, write the binding.
+On LWJGL 3, depend on [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) and pass [[Lwjgl3GlBinding#inst]]; on LWJGL 2, depend on [base-lwjgl2](/build/base-modules/lwjgl2/) and pass [[Lwjgl2GlBinding#inst]]; on another library, write the binding.
 Do not depend on a final backend such as `joid-backend-lwjgl3` for its bindings: its jars embed the core, and yours would then carry two copies of it.
 
 `ownContext(false)` tells the audio bridge that the host created the OpenAL context: it never creates nor destroys one ([base-openal](/build/base-modules/openal/)).

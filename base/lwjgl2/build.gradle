@@ -1,0 +1,17 @@
+archivesBaseName = "joid-base-lwjgl2"
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    compile project(':base-openal')
+    compile project(':base-opengl')
+
+    compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
+
+    shade "net.java.dev.jna:jna:5.17.0"
+}
+
+apply from: rootProject.file('gradle/base.gradle')

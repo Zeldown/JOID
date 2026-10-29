@@ -751,6 +751,7 @@ public final class PageWriter {
 
 		switch (type.getModule()) {
 		case "backend-lwjgl2":
+		case "base-lwjgl2":
 			return "LWJGL 2";
 		case "backend-lwjgl3":
 		case "base-lwjgl3-opengl":

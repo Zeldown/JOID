@@ -11,7 +11,7 @@ A module depends only on the layers above it, and a base module on no other one,
 
 <figure>
 
-![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, the base modules: on a first row, the API modules base-openal (audio bridge over IAlBinding) and base-opengl (render bridge over IGlBinding), each with an arrow up to the core; a note reads: library modules below bind their library to the API modules above; on the rows below, the library modules base-lwjgl3-glfw (window, input and keys of GLFW), base-lwjgl3-openal (binding of base-openal) and base-lwjgl3-opengl (binding of base-opengl). A note reads: each backend uses the base modules named in its box. At the bottom, four backends on two rows: backend-lwjgl2 (openal, opengl), backend-lwjgl3 (lwjgl3-glfw, lwjgl3-openal, lwjgl3-opengl, openal, opengl), backend-vulkan (lwjgl3-glfw, lwjgl3-openal, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
+![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, the base modules: on a first row, the API modules base-openal (audio bridge over IAlBinding) and base-opengl (render bridge over IGlBinding), each with an arrow up to the core; a note reads: library modules below bind their library to the API modules above; on the rows below, the library modules base-lwjgl2 (bindings and bridges of LWJGL 2), base-lwjgl3-glfw (window, input and keys of GLFW), base-lwjgl3-openal (binding of base-openal) and base-lwjgl3-opengl (binding of base-opengl). A note reads: each backend uses the base modules named in its box. At the bottom, four backends on two rows: backend-lwjgl2 (lwjgl2, openal, opengl), backend-lwjgl3 (lwjgl3-glfw, lwjgl3-openal, lwjgl3-opengl, openal, opengl), backend-vulkan (lwjgl3-glfw, lwjgl3-openal, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
 
 <figcaption>
 A backend picks the base modules it needs and adds only what is specific to its library.
@@ -38,6 +38,7 @@ A base module holds the code that several backends would otherwise copy, for one
 |---|---|---|
 | [base-openal](/build/base-modules/openal/) | OpenAL, through [[IAlBinding]] | the audio bridge and its streaming sources |
 | [base-opengl](/build/base-modules/opengl/) | OpenGL 2.1 and later, through [[IGlBinding]] | the render bridge, the state guard, textures, framebuffers, shaders and mipmaps |
+| [base-lwjgl2](/build/base-modules/lwjgl2/) | LWJGL 2, a single jar | the bindings of base-opengl and base-openal, the `Display` window bridge with its native cursors, the input forwarder, the key table |
 | [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) | GLFW of LWJGL 3 | the window bridge, the input forwarder, the key table |
 | [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) | OpenAL of LWJGL 3 | the binding of base-openal |
 | [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) | OpenGL of LWJGL 3 | the binding of base-opengl |
@@ -51,7 +52,7 @@ A final backend picks its base modules, adds what is specific to its library, an
 
 | Backend | Base modules | Its own code |
 |---|---|---|
-| [LWJGL 2](/build/backends/lwjgl2/) | openal, opengl | the `Display` window bridge, the polled input, the natives, the native cursors, the LWJGL 2 bindings |
+| [LWJGL 2](/build/backends/lwjgl2/) | lwjgl2, openal, opengl | the natives |
 | [LWJGL 3](/build/backends/lwjgl3/) | lwjgl3-glfw, lwjgl3-openal, lwjgl3-opengl, openal, opengl | the context hints |
 | [Vulkan](/build/backends/vulkan/) | lwjgl3-glfw, lwjgl3-openal, openal | the whole renderer, and the hosts that own the device and the frame |
 

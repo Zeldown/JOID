@@ -1498,13 +1498,13 @@ Downscale the image, or split it: [Supported formats](/use/learn/describing-the-
 
 With the dev jar, the LWJGL 2 backend sets the cursors of nodes through JNA, which is not on the classpath; the cursor stays the default one.
 
-Put JNA on the classpath to show the cursors: [Cursors](/build/backends/lwjgl2/#cursors).
+Put JNA on the classpath to show the cursors: [Cursors](/build/base-modules/lwjgl2/#cursors).
 
 ## warning [JOID] The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: …
 
 With the dev jar, the native cursor of LWJGL 2 could not be reached; the backend stops trying and keeps the default cursor.
 
-Check the version of LWJGL 2 on the classpath: [Cursors](/build/backends/lwjgl2/#cursors).
+Check the version of LWJGL 2 on the classpath: [Cursors](/build/base-modules/lwjgl2/#cursors).
 
 ## warning [JOID] The … cursor cannot be loaded (…), the default one replaces it: check that the system has this cursor
 

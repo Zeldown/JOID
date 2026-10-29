@@ -13,11 +13,12 @@ public class LayersDiagramUI extends BuildDiagramUI {
 		super.box(40, 200, 400, 90, "base-openal", "audio bridge over IAlBinding").attach(backdrop);
 		super.box(460, 200, 400, 90, "base-opengl", "render bridge over IGlBinding").attach(backdrop);
 
-		super.box(40, 350, 400, 90, "base-lwjgl3-glfw", "window, input and keys of GLFW").attach(backdrop);
-		super.box(460, 350, 400, 90, "base-lwjgl3-openal", "binding of base-openal").attach(backdrop);
-		super.box(40, 460, 400, 90, "base-lwjgl3-opengl", "binding of base-opengl").attach(backdrop);
+		super.box(40, 350, 400, 90, "base-lwjgl2", "bindings and bridges of LWJGL 2").attach(backdrop);
+		super.box(460, 350, 400, 90, "base-lwjgl3-glfw", "window, input and keys of GLFW").attach(backdrop);
+		super.box(40, 460, 400, 90, "base-lwjgl3-openal", "binding of base-openal").attach(backdrop);
+		super.box(460, 460, 400, 90, "base-lwjgl3-opengl", "binding of base-opengl").attach(backdrop);
 
-		super.box(40, 630, 400, 100, "backend-lwjgl2", "openal, opengl").attach(backdrop);
+		super.box(40, 630, 400, 100, "backend-lwjgl2", "lwjgl2, openal, opengl").attach(backdrop);
 		super.box(460, 630, 400, 100, "backend-lwjgl3", "lwjgl3-glfw, lwjgl3-openal, lwjgl3-opengl, openal, opengl").attach(backdrop);
 		super.box(40, 750, 400, 100, "backend-vulkan", "lwjgl3-glfw, lwjgl3-openal, openal").attach(backdrop);
 		super.subject(460, 750, 400, 100, "Your backend", "the modules it reuses").attach(backdrop);
