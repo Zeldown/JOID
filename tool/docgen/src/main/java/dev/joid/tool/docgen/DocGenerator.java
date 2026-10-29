@@ -221,7 +221,13 @@ public final class DocGenerator {
 			entry.put("summary", description == null ? "" : description.getSummary());
 			entry.put("ancestors", TypePage.ancestors(page.getType(), api).stream().map(ApiType::getFqcn).collect(Collectors.toList()));
 			entry.put("url", page.getUrl());
-			entry.put("members", PageWriter.memberAnchors(page));
+			final Map<String, String> members = PageWriter.memberAnchors(page);
+			final Map<String, String> calls = PageWriter.callAnchors(page);
+			calls.entrySet().removeIf(call -> call.getValue().equals(members.get(call.getKey())));
+			entry.put("members", members);
+			if (!calls.isEmpty()) {
+				entry.put("calls", calls);
+			}
 			entry.put("overloads", PageWriter.memberKeys(page));
 			types.put(fqcn, entry);
 			if (names.get(page.getType().getName()) == 1) {

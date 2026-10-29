@@ -171,7 +171,7 @@ public final class ErrorsPage {
 		while (candidate.contains(".") && Character.isUpperCase(candidate.charAt(candidate.lastIndexOf('.') + 1))) {
 			final TypePage target = registry.get(candidate);
 			if (target != null) {
-				final String anchor = candidate.equals(type) ? PageWriter.memberAnchors(target).get(method) : null;
+				final String anchor = candidate.equals(type) ? PageWriter.callAnchors(target).get(method) : null;
 				if (anchor == null && !method.isEmpty() && !method.equals(simple)) {
 					return null;
 				}

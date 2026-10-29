@@ -89,7 +89,7 @@ public final class LinkChecker {
 			return "[`" + target.getType().getName() + "`](" + target.getUrl() + ")";
 		}
 
-		final String anchor = PageWriter.memberAnchors(target).get(member);
+		final String anchor = (parameters == null ? PageWriter.memberAnchors(target) : PageWriter.callAnchors(target)).get(member);
 		if (anchor == null) {
 			this.coverage.broken(path, raw + " names no documented member of " + target.getType().getName());
 			return "`" + name + "." + member + "`";

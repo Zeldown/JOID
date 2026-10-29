@@ -75,6 +75,12 @@ public final class PageWriter {
 	}
 
 	public static Map<String, String> memberAnchors(final TypePage page) {
+		final Map<String, String> anchors = PageWriter.callAnchors(page);
+		page.getConstants().forEach(member -> anchors.put(member.getName(), page.anchorOf(member)));
+		return anchors;
+	}
+
+	public static Map<String, String> callAnchors(final TypePage page) {
 		final Map<String, String> anchors = new LinkedHashMap<>();
 		page.getProperties().keySet().forEach(name -> anchors.put(name, page.anchor("property", name)));
 		for (final List<ApiMember> group : PageWriter.groups(page)) {
@@ -94,6 +100,7 @@ public final class PageWriter {
 
 	public static Set<String> anchors(final TypePage page) {
 		final Set<String> anchors = new LinkedHashSet<>(PageWriter.memberAnchors(page).values());
+		anchors.addAll(PageWriter.callAnchors(page).values());
 		anchors.add(page.getAnchorPrefix() + "-properties");
 		anchors.add(page.getAnchorPrefix() + "-methods");
 		anchors.add(page.getAnchorPrefix() + "-events");

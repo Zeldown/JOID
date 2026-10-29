@@ -67,7 +67,7 @@ function resolveLinks(tree, file) {
 			let url = type.url;
 			let label = type.name;
 			if (member) {
-				const anchor = type.members[member];
+				const anchor = (parameters ? type.calls?.[member] : undefined) ?? type.members[member];
 				if (!anchor) {
 					fail(file, node, `unknown member [[${name}#${member}]] (known: ${Object.keys(type.members).slice(0, 12).join(', ')}…)`);
 				}
