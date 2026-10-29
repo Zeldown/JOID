@@ -79,6 +79,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Options of each control (switch states, selector direction, slider range/step/thumb, progress with `ProgressNode`) | use/learn/interactivity/controls (one section per control) |
 | The pending value of a control (a value that the bounds refuse, kept until they allow it) | use/learn/interactivity/controls (section "Keep a value that the bounds refuse") |
 | The order of the events of one change of a control | use/learn/interactivity/controls (section "Know the order of a change") |
+| A value that the user changes in a node of your own (`InteractiveValue`: start, bind, change, clamp, reapply) | use/learn/going-further/custom-nodes (section "Hold a value that the user changes"); controls gives the pattern from the user side |
 | What updates and what freezes in a reactive expression (native expressions rule) | use/learn/interactivity/signals (section "What JOID follows") |
 | UI masks (`UI.mask`) | use/learn/style-and-motion/effects (section "Clip your own drawing") |
 | `ReorderableFlexNode` | use/learn/interactivity/reorderable-lists |

@@ -6,7 +6,7 @@ The formats pick it with the [[IResourceAnimationReader]] of the file; give it y
 The frames are decoded once, in memory, and shared by every fork of the same file; each fork has its own playback.
 The time follows the JOID clock, so the animation keeps its pace whatever the frame rate.
 
-Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Custom formats](/use/learn/going-further/custom-formats/), [Images and media](/use/learn/describing-the-ui/media/).
 
 ## create(Asset,IResourceAnimationReader)
 

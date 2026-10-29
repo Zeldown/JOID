@@ -23,9 +23,9 @@ A custom control creates one in its constructor and calls it from its own setter
 
 ## Learn more
 
+- [Custom nodes](/use/learn/going-further/custom-nodes/#hold-a-value-that-the-user-changes)
 - [Controls](/use/learn/interactivity/controls/)
 - [Give your controls a look](/use/learn/going-further/ui-kit/)
-- [Custom nodes](/use/learn/going-further/custom-nodes/)
 
 ## Creation
 
