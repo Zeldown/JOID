@@ -328,6 +328,7 @@ Shows again the value asked for last, after a bound of the field changed, such a
 ## blurNow()
 
 Blurs the field at once.
+Returns `true` when the field lost the focus, `false` when a `beforeBlur` listener kept it.
 
 ## insert(String)
 

@@ -116,8 +116,8 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`UP`](#Key-value-UP) | The up arrow key. |
 | [`PAGE_UP`](#Key-value-PAGE_UP) | The Page Up key. |
 | [`PAGE_DOWN`](#Key-value-PAGE_DOWN) | The Page Down key. |
-| [`HOME`](#Key-value-HOME) | The Home key, which moves the cursor of a text field to the start. |
-| [`END`](#Key-value-END) | The End key, which moves the cursor of a text field to the end. |
+| [`HOME`](#Key-value-HOME) | The Home key, which moves the cursor of a text field to the start of the line. |
+| [`END`](#Key-value-END) | The End key, which moves the cursor of a text field to the end of the line. |
 | [`CAPS_LOCK`](#Key-value-CAPS_LOCK) | The Caps Lock key. |
 | [`SCROLL_LOCK`](#Key-value-SCROLL_LOCK) | The Scroll Lock key. |
 | [`NUM_LOCK`](#Key-value-NUM_LOCK) | The Num Lock key. |
@@ -777,7 +777,7 @@ The Page Down key.
 
 `HOME` 
 
-The Home key, which moves the cursor of a text field to the start.
+The Home key, which moves the cursor of a text field to the start of the line.
 
 <a id="Key-value-END"></a>
 
@@ -785,7 +785,7 @@ The Home key, which moves the cursor of a text field to the start.
 
 `END` 
 
-The End key, which moves the cursor of a text field to the end.
+The End key, which moves the cursor of a text field to the end of the line.
 
 <a id="Key-value-CAPS_LOCK"></a>
 

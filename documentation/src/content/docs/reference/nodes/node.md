@@ -81,7 +81,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | [cursor](#Node-property-cursor) <span class="joid-qualifier">signal</span> | [`Cursor`](/reference/input/cursor/) | `null`: the cursor of the closest parent that sets one, `Cursor.DEFAULT` when none does | Cursor shown while the mouse is over the node; `null` uses the cursor of the closest parent that has one. |
 | [hoverDuration](#Node-property-hoverDuration) <span class="joid-qualifier">signal</span> | `long` | `200L` | Time, in ms, that the hover progress takes to go from `0` to `1` and back. |
 | [hoverEquation](#Node-property-hoverEquation) <span class="joid-qualifier">signal</span> | [`TweenEquation`](/reference/animation/tweenequation/) | `TweenEquations.LINEAR` | Easing of the hover progress. |
-| [hover](#Node-property-hover) <span class="joid-qualifier">signal</span> | [`IHoverElement`](/reference/nodes/ihoverelement/) |  | Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover). |
+| [hover](#Node-property-hover) <span class="joid-qualifier">signal</span> | [`IHoverElement`](/reference/nodes/ihoverelement/) |  | Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines (`null` for none) drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover). |
 
 ### Scrolling
 
@@ -638,7 +638,7 @@ Easing of the hover progress.
 - `this hover(HoverSupplier supplier)` <span class="joid-qualifier">fluent</span>
 - `this hover(Supplier<List<String>> supplier)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
 
-Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover).
+Adds a tooltip shown while the node is hovered: a [`IHoverElement`](/reference/nodes/ihoverelement/), a [`HoverSupplier`](/reference/nodes/hoversupplier/) that gives one line (`null` for none), or a `Supplier` of lines (`null` for none) drawn by [`UI.drawHover`](/reference/ui/ui/#UI-method-drawHover).
 Each call adds one more element.
 
 <a id="Node-property-overflow"></a>
