@@ -16,5 +16,5 @@ Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
 |---|---|---|
 | [`Lwjgl3CoreGlFrameBufferBinding`](/reference/base-lwjgl3-opengl/lwjgl3coreglframebufferbinding/) | class | The LWJGL 3 framebuffer binding that calls the core framebuffer functions of OpenGL 3.0 and `GL_ARB_framebuffer_object`. |
 | [`Lwjgl3ExtGlFrameBufferBinding`](/reference/base-lwjgl3-opengl/lwjgl3extglframebufferbinding/) | class | The LWJGL 3 framebuffer binding that calls the functions of `GL_EXT_framebuffer_object`. |
-| [`Lwjgl3GlBinding`](/reference/base-lwjgl3-opengl/lwjgl3glbinding/) | class | The OpenGL binding of LWJGL 3, which calls the core classes `GL11C` to `GL33C`. |
+| [`Lwjgl3GlBinding`](/reference/base-lwjgl3-opengl/lwjgl3glbinding/) | class | The OpenGL binding of LWJGL 3, which calls the classes `GL11` to `GL33`, which LWJGL 3.1 and every later version hold. |
 

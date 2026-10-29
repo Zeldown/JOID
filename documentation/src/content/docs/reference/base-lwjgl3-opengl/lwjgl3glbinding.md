@@ -1,6 +1,6 @@
 ---
 title: "Lwjgl3GlBinding"
-description: "The OpenGL binding of LWJGL 3, which calls the core classes GL11C to GL33C."
+description: "The OpenGL binding of LWJGL 3, which calls the classes GL11 to GL33, which LWJGL 3.1 and every later version hold."
 genre: reference
 topic: reference
 tableOfContents:
@@ -15,7 +15,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Package:** `dev.joid.base.lwjgl3.opengl` · **Module:** `base-lwjgl3-opengl` · **Source:** [Lwjgl3GlBinding.java](https://github.com/Zeldown/JOID/blob/main/base/lwjgl3-opengl/src/main/java/dev/joid/base/lwjgl3/opengl/Lwjgl3GlBinding.java)<br/>
 **Backends:** <span class="joid-badge">LWJGL 3</span>
 
-The OpenGL binding of LWJGL 3, which calls the core classes `GL11C` to `GL33C`.
+The OpenGL binding of LWJGL 3, which calls the classes `GL11` to `GL33`, which LWJGL 3.1 and every later version hold.
 
 ## Description
 

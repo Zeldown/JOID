@@ -1,5 +1,5 @@
 ---
-summary: The OpenGL binding of LWJGL 3, which calls the core classes `GL11C` to `GL33C`.
+summary: The OpenGL binding of LWJGL 3, which calls the classes `GL11` to `GL33`, which LWJGL 3.1 and every later version hold.
 ---
 
 The LWJGL 3 backend gives it to [[GlRenderBridge]], and so does a host that runs on the OpenGL of LWJGL 3.
