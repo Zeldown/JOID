@@ -1,6 +1,6 @@
 ---
 title: "Overlays and popups"
-description: "Open a popup above a screen, keep an overlay open over every screen, and see how open UIs stack and share the input."
+description: "Open a popup above a screen, keep an overlay open across screens, and see how open UIs stack and share the input."
 genre: learn
 sidebar:
   order: 6
@@ -50,7 +50,7 @@ Opening another screen closes the current screen with every popup open above it 
 
 [Make a modal popup](/use/guides/make-a-modal-popup/) builds a confirmation popup end to end.
 
-## Keep an overlay over every screen
+## Keep an overlay open across screens
 
 An overlay is a UI annotated with [[UIDataOverlay]] and `active = true`, which turns it on as for a popup:
 

@@ -64,10 +64,10 @@ The handle comes from a supplier, read again at each use, so that the host can r
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `int` | [getWidth](#BorrowedTexture-method-getWidth)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it with the current handle. |
-| `int` | [getHeight](#BorrowedTexture-method-getHeight)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it with the current handle. |
-| `boolean` | [isValid](#BorrowedTexture-method-isValid)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it with the current handle. |
-| `boolean` | [isMipmapped](#BorrowedTexture-method-isMipmapped)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it with the current handle. |
+| `int` | [getWidth](#BorrowedTexture-method-getWidth)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Returns the width of the handle, in pixels; JOID calls it with the current handle. |
+| `int` | [getHeight](#BorrowedTexture-method-getHeight)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Returns the height of the handle, in pixels; JOID calls it with the current handle. |
+| `boolean` | [isValid](#BorrowedTexture-method-isValid)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Returns `true` when the handle names a live texture; JOID calls it with the current handle. |
+| `boolean` | [isMipmapped](#BorrowedTexture-method-isMipmapped)(H handle) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Returns `true` when the handle has mipmap levels; JOID calls it with the current handle. |
 
 <details>
 <summary>Inherited from <a href="/reference/bridges/itexture/#ITexture-methods"><code>ITexture</code></a> (1)</summary>
@@ -98,8 +98,7 @@ Returns the width of the current handle, or `0` when the supplier returns `null`
 
 `int getWidth(H handle)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span>
 
-JOID calls it with the current handle.
-Return its width in pixels.
+Returns the width of the handle, in pixels; JOID calls it with the current handle.
 
 <a id="BorrowedTexture-method-getHeight"></a>
 
@@ -111,8 +110,7 @@ Returns the height of the current handle, or `0` when the supplier returns `null
 
 `int getHeight(H handle)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span>
 
-JOID calls it with the current handle.
-Return its height in pixels.
+Returns the height of the handle, in pixels; JOID calls it with the current handle.
 
 <a id="BorrowedTexture-method-isMipmapped"></a>
 
@@ -124,8 +122,7 @@ If `true`, the current handle has mipmap levels.
 
 `boolean isMipmapped(H handle)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span>
 
-JOID calls it with the current handle.
-Return `true` when it has mipmap levels.
+Returns `true` when the handle has mipmap levels; JOID calls it with the current handle.
 
 <a id="BorrowedTexture-method-getHandle"></a>
 
@@ -145,8 +142,7 @@ If `true`, the supplier returns a handle that names a texture of the host.
 
 `boolean isValid(H handle)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span>
 
-JOID calls it with the current handle.
-Return `true` when it names a live texture.
+Returns `true` when the handle names a live texture; JOID calls it with the current handle.
 
 <a id="BorrowedTexture-method-getSupplier"></a>
 

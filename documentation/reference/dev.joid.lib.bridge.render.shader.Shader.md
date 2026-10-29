@@ -95,8 +95,7 @@ Writes the built-in uniforms of a draw into the block: matrices, lighting, alpha
 
 ## isProgramActive()
 
-JOID calls it from `isActive()`.
-Return `true` when the program compiled and links.
+Returns `true` when the program compiled and links; JOID calls it from `isActive()`.
 
 ## compileProgram(ShaderTranslation)
 

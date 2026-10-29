@@ -7803,8 +7803,8 @@
         "rgb": "Color-factory-rgb",
         "argb": "Color-factory-argb",
         "decode": "Color-factory-decode",
-        "RAINBOW": "Color-factory-RAINBOW",
-        "LOADING": "Color-factory-LOADING",
+        "RAINBOW": "Color-constant-RAINBOW",
+        "LOADING": "Color-constant-LOADING",
         "Color": "Color-constructor",
         "encode": "Color-method-encode",
         "bind": "Color-method-bind",
@@ -7847,6 +7847,10 @@
         "DARKGRAY": "Color-constant-DARKGRAY",
         "LIGHTGRAY": "Color-constant-LIGHTGRAY",
         "TRANSPARENT": "Color-constant-TRANSPARENT"
+      },
+      "calls": {
+        "RAINBOW": "Color-factory-RAINBOW",
+        "LOADING": "Color-factory-LOADING"
       },
       "overloads": [
         "red(float)",
@@ -7941,8 +7945,8 @@
         "rgb": "Color-factory-rgb",
         "argb": "Color-factory-argb",
         "decode": "Color-factory-decode",
-        "RAINBOW": "Color-factory-RAINBOW",
-        "LOADING": "Color-factory-LOADING",
+        "RAINBOW": "Color-constant-RAINBOW",
+        "LOADING": "Color-constant-LOADING",
         "Color": "Color-constructor",
         "encode": "Color-method-encode",
         "bind": "Color-method-bind",
@@ -7985,6 +7989,10 @@
         "DARKGRAY": "Color-constant-DARKGRAY",
         "LIGHTGRAY": "Color-constant-LIGHTGRAY",
         "TRANSPARENT": "Color-constant-TRANSPARENT"
+      },
+      "calls": {
+        "RAINBOW": "Color-factory-RAINBOW",
+        "LOADING": "Color-factory-LOADING"
       },
       "overloads": [
         "red(float)",

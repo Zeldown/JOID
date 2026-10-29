@@ -79,7 +79,7 @@ The user edits the text with the keys of every text editor:
 | Keys | Action |
 |---|---|
 | Left, Right | Move the cursor; with Ctrl (Alt on macOS), by word |
-| Home, End | Go to the start or the end of the line |
+| Home, End | Go to the start or the end of the text, in a field of several lines too |
 | Shift with a move, or a drag of the pointer | Select |
 | A double press, a triple press | Select a word, a line |
 | Backspace, Delete | Erase a character; with Ctrl (Alt on macOS), a word |

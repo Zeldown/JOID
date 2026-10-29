@@ -26,7 +26,7 @@ Every suite drives your backend through an [[ISnapshotBackend]]: a hidden surfac
 | [[ISnapshotBackend#destroy]] | Releases the surface. |
 
 [[SnapshotImage#from]] builds an image from RGBA or BGRA bytes ([[PixelLayout]]), top-down or bottom-up.
-A [[SnapshotBridgeRestorer]], created before the backend registers, unregisters at `destroy()` every bridge registered since, so that the next suite starts clean.
+A [[SnapshotBridgeRestorer]], created before the backend registers, unregisters every bridge registered since when your `destroy()` calls its `restore()`, so that the next suite starts clean.
 The official snapshot backends ([[Lwjgl2SnapshotBackend]], [[Lwjgl3SnapshotBackend]], [[VulkanSnapshotBackend]]) live in the `snapshot` package of each backend.
 
 ## The suites

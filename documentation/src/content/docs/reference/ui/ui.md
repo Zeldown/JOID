@@ -59,7 +59,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 |---|---|---|
 | `void` | [load](#UI-method-load)(double finalWidth, double finalHeight) | Prepares the UI for a window of this size, in screen pixels: it applies the interface scale and, on the first call after an opening or a `reload()`, loads the remembered properties, runs `init()` and starts the opening transition. |
 | `void` | [dispose](#UI-method-dispose)() | Closes the UI at once, without asking the `beforeClose` listeners and without a transition: it detaches every node, task and shortcut, saves the stores and the remembered properties, then fires `onClose`. |
-| `void` | [reload](#UI-method-reload)() | Builds the UI again on the same instance: it saves the remembered properties, reads the annotations of the class again, then runs `init()` again, so the fields keep their values. |
+| `void` | [reload](#UI-method-reload)() | Builds the UI again on the same instance: it saves the remembered properties, applies the values of the annotations that changed in the code since they were read, keeps the options that setters changed, then runs `init()` again, so the fields keep their values. |
 
 ### Children
 
@@ -255,7 +255,7 @@ The UI bridge calls it; to close a UI, call [`JOID.close`](/reference/ui/joid/#J
 
 `void reload()` 
 
-Builds the UI again on the same instance: it saves the remembered properties, reads the annotations of the class again, then runs `init()` again, so the fields keep their values.
+Builds the UI again on the same instance: it saves the remembered properties, applies the values of the annotations that changed in the code since they were read, keeps the options that setters changed, then runs `init()` again, so the fields keep their values.
 Throws an `IllegalStateException` when the annotations make the UI both a popup and an overlay.
 
 <a id="UI-method-getNodeList"></a>

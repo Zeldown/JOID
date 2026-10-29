@@ -29,7 +29,7 @@ Each section of this page explains one part of the map.
 ## Each interface is a UI
 
 A UI is one interface of your application: a Java class that extends [[UI]] and builds its content in `init()` each time [[JOID#open]] opens it.
-Several UIs can be open at once: a **screen** takes the window, a **popup** opens above another UI, and an **overlay** stays over the screens ([See how UIs stack](/use/learn/describing-the-ui/overlays-and-popups/#see-how-uis-stack)).
+Several UIs can be open at once: a **screen** takes the window, a **popup** opens above another UI, and an **overlay** stays open while screens come and go ([See how UIs stack](/use/learn/describing-the-ui/overlays-and-popups/#see-how-uis-stack)).
 Read [UIs](/use/learn/describing-the-ui/uis/) to write one and follow it from its opening to its closing.
 
 ## A UI is a tree of nodes

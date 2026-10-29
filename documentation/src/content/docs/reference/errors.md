@@ -129,7 +129,7 @@ Catch the exception inside `toJson()`, or fix the code it names: [Keep a store o
 
 Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
 
-With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()`, and the UI shows what the failed build left.
+With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()` an exception other than an `IllegalStateException`, whose own message prints instead, and the UI shows what the failed build left.
 
 Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-started/dev-tools/).
 

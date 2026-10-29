@@ -21,7 +21,7 @@ An RGBA color with channels on 1, which can also hold a linear gradient or chang
 Every color setter of JOID takes a `Color`.
 Create one from a hex string, from channels, or take a named constant ([Create a color](/use/learn/style-and-motion/styling/#create-a-color)).
 
-An animated color, such as [`Color.RAINBOW`](/reference/drawing/color/#Color-factory-RAINBOW), carries an update function that JOID applies each time it draws the color.
+An animated color, such as [`Color.RAINBOW`](/reference/drawing/color/#Color-constant-RAINBOW), carries an update function that JOID applies each time it draws the color.
 Two colors are equal when their channels, their gradient and their update function are equal; the update function compares by identity.
 
 ## Learn more
@@ -180,7 +180,7 @@ Throws `NumberFormatException` for any other text.
 `Color RAINBOW()` <span class="joid-qualifier">factory</span>
 
 Returns the color of the rainbow cycle at this instant of the JOID clock: a full turn of hues every 3 seconds.
-The result is a plain color that does not change: pass the constant [`Color.RAINBOW`](/reference/drawing/color/#Color-factory-RAINBOW) to a setter instead, so that the color cycles by itself.
+The result is a plain color that does not change: pass the constant [`Color.RAINBOW`](/reference/drawing/color/#Color-constant-RAINBOW) to a setter instead, so that the color cycles by itself.
 
 `Color RAINBOW(long time)` <span class="joid-qualifier">factory</span>
 
@@ -193,7 +193,7 @@ Returns the color of the rainbow cycle at `time`, in milliseconds of the JOID cl
 `Color LOADING()` <span class="joid-qualifier">factory</span>
 
 Returns the color of the loading pulse at this instant: a dark gray that brightens and darkens slightly, one cycle every 2 seconds.
-The result is a plain color: pass the constant [`Color.LOADING`](/reference/drawing/color/#Color-factory-LOADING) to a setter instead, so that the color pulses by itself.
+The result is a plain color: pass the constant [`Color.LOADING`](/reference/drawing/color/#Color-constant-LOADING) to a setter instead, so that the color pulses by itself.
 
 <a id="Color-constructor"></a>
 

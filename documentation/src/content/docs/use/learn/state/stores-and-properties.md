@@ -89,7 +89,7 @@ The store of [Write a store](#write-a-store) is `PERMANENT`:
 
 A `PERMANENT` store is written to `store/<id>.store` in the [data folder](/use/learn/running/files/), here `store/sound.store`, as the JSON of `toJson()`:
 - when any UI closes;
-- when the program ends normally;
+- when the program ends normally ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends));
 - when you call `save()` on it.
 
 At its first use in a launch, JOID creates it with the factory, calls `init()`, then `fromJson(...)` with the content of the file when the file exists.
