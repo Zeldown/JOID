@@ -69,7 +69,7 @@ Drawn into a borrowed target, then drawn at 50 %, the two discs share one transp
 `FrameBufferPool.allocate(owner, depth, count, width, height)` returns `count` targets of at least `width` × `height` pixels.
 The pool keeps one set per owner, depth and count, and grows it by powers of two, so the next frame gets the same targets back.
 Pass a depth of your own when a drawing nests inside another drawing of the same owner, so that both do not share a target.
-JOID deletes a set that no frame used for 5 seconds, or that no frame of the last 5 seconds needed at its full size, so you never delete a borrowed target.
+JOID deletes the sets that no frame uses any more, and shrinks those that are larger than recent frames need ([Performance](/use/in-depth/performance/#gpu-memory-and-who-releases-it) gives the delays), so you never delete a borrowed target.
 
 Inside, the drawing sets the target and the viewport in the render state, and a projection that maps your coordinates onto the pixels of the target.
 The target is larger than what you drew: `u` and `v` keep the used part when you draw its texture with `drawTexture`.
