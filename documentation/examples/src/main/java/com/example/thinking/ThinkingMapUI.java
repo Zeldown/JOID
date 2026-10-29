@@ -25,9 +25,9 @@ public class ThinkingMapUI extends UI {
 		.create(390, 250, 1140, 580)
 		.color(Color.TRANSPARENT)
 		.body(card -> {
-			ThinkingMapUI.block(40, 40, 300, 100, "Your loop", "events, frame(), present", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
-			ThinkingMapUI.block(420, 40, 300, 100, "Backend", "LWJGL 3, Vulkan or LWJGL 2", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
-			ThinkingMapUI.block(800, 40, 300, 100, "UI bridge", "routes input, draws the UIs", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
+			ThinkingMapUI.block(30, 40, 320, 100, "Your loop", "events, frame(), present", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
+			ThinkingMapUI.block(410, 40, 320, 100, "Backend", "LWJGL 3, Vulkan or LWJGL 2", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
+			ThinkingMapUI.block(790, 40, 320, 100, "UI bridge", "routes input, draws the UIs", CaptureStyle.SURFACE, CaptureStyle.TEXT).attach(card);
 			RectNode
 			.create(400, 200, 360, 340)
 			.color(CaptureStyle.BACKGROUND)
@@ -50,8 +50,8 @@ public class ThinkingMapUI extends UI {
 			.attach(card);
 			ThinkingMapUI.block(880, 300, 220, 120, "Popup", "", CaptureStyle.ACCENT, CaptureStyle.ON_ACCENT).attach(card);
 			ThinkingMapUI.label(800, 486, 300, 40, "Open UIs, stacked").attach(card);
-			ThinkingMapUI.arrow(card, 340D, 90D, 420D, 90D);
-			ThinkingMapUI.arrow(card, 720D, 90D, 800D, 90D);
+			ThinkingMapUI.arrow(card, 350D, 90D, 410D, 90D);
+			ThinkingMapUI.arrow(card, 730D, 90D, 790D, 90D);
 			ThinkingMapUI.arrow(card, 950D, 140D, 950D, 200D);
 			ThinkingMapUI.arrow(card, 800D, 248D, 670D, 248D);
 			ThinkingMapUI.arrow(card, 580D, 276D, 495D, 320D);
@@ -68,8 +68,8 @@ public class ThinkingMapUI extends UI {
 	}
 
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color) {
-		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 20F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 17F).color(fill == CaptureStyle.ACCENT ? color : CaptureStyle.MUTED);
+		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 22F).weight(FontWeight.BOLD).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 21F).color(fill == CaptureStyle.ACCENT ? color : CaptureStyle.MUTED);
 		return RectNode
 		.create(x, y, width, height)
 		.color(fill)

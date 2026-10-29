@@ -15,13 +15,13 @@ public class LifecycleDiagramUI extends DiagramUI {
 			super.subject(20, 300, 280, 100, "onDetach", "after remove").attach(backdrop);
 			super.arrow(backdrop, 300, 90, 335, 90);
 			super.arrow(backdrop, 615, 90, 650, 90);
-			super.arrow(backdrop, 720, 140, 720, 300);
-			super.arrow(backdrop, 860, 300, 860, 140);
+			super.arrow(backdrop, 680, 140, 680, 300);
+			super.arrow(backdrop, 900, 300, 900, 140);
 			super.arrow(backdrop, 650, 350, 615, 350);
-			super.line(backdrop, 720, 255, 160, 255);
+			super.line(backdrop, 680, 255, 160, 255);
 			super.arrow(backdrop, 160, 255, 160, 300);
-			super.label(335, 160, 340, 34, "every frame", 24F, DiagramUI.LABEL).attach(backdrop);
-			super.label(335, 194, 340, 34, "while attached", 24F, DiagramUI.LABEL).attach(backdrop);
+			super.label(690, 160, 200, 34, "every frame", 24F, DiagramUI.LABEL).attach(backdrop);
+			super.label(690, 194, 200, 34, "while attached", 24F, DiagramUI.LABEL).attach(backdrop);
 		}).attach(this);
 	}
 
