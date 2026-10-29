@@ -16,8 +16,7 @@ Returns the width of the current handle, or `0` when the supplier returns `null`
 
 ## getWidth(H)
 
-JOID calls it with the current handle.
-Return its width in pixels.
+Returns the width of the handle, in pixels; JOID calls it with the current handle.
 
 ## getHeight()
 
@@ -25,8 +24,7 @@ Returns the height of the current handle, or `0` when the supplier returns `null
 
 ## getHeight(H)
 
-JOID calls it with the current handle.
-Return its height in pixels.
+Returns the height of the handle, in pixels; JOID calls it with the current handle.
 
 ## isMipmapped()
 
@@ -34,8 +32,7 @@ If `true`, the current handle has mipmap levels.
 
 ## isMipmapped(H)
 
-JOID calls it with the current handle.
-Return `true` when it has mipmap levels.
+Returns `true` when the handle has mipmap levels; JOID calls it with the current handle.
 
 ## getHandle()
 
@@ -47,8 +44,7 @@ If `true`, the supplier returns a handle that names a texture of the host.
 
 ## isValid(H)
 
-JOID calls it with the current handle.
-Return `true` when it names a live texture.
+Returns `true` when the handle names a live texture; JOID calls it with the current handle.
 
 ## getSupplier()
 

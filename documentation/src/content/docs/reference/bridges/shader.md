@@ -79,7 +79,7 @@ With the dev jar, a stage that uses a feature beyond GLSL 1.20 prints a warning.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isProgramActive](#Shader-method-isProgramActive)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it from `isActive()`. |
+| `boolean` | [isProgramActive](#Shader-method-isProgramActive)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Returns `true` when the program compiled and links; JOID calls it from `isActive()`. |
 | `void` | [compileProgram](#Shader-method-compileProgram)(ShaderTranslation translation) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it once, at the first `isActive()`. |
 | `void` | [deleteProgram](#Shader-method-deleteProgram)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | JOID calls it from `delete()` when the program was compiled. |
 
@@ -259,8 +259,7 @@ Writes the built-in uniforms of a draw into the block: matrices, lighting, alpha
 
 `boolean isProgramActive()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span>
 
-JOID calls it from `isActive()`.
-Return `true` when the program compiled and links.
+Returns `true` when the program compiled and links; JOID calls it from `isActive()`.
 
 <a id="Shader-method-compileProgram"></a>
 

@@ -155,7 +155,7 @@ Return `false` to keep the UI below the new screen.
 `void attachScreen()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
 
 JOID calls it when the first screen or popup of the bridge opens; overlays do not count.
-Override it to free the cursor of the host or pause its input; it does nothing by default.
+Override it to free the cursor of the host or pause its input, as in [Follow the screens that JOID opens](/use/learn/running/embedding/#follow-the-screens-that-joid-opens); it does nothing by default.
 
 <a id="StackUIBridge-method-detachScreen"></a>
 
