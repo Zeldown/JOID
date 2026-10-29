@@ -19,7 +19,7 @@ Reads a face from a TrueType or OpenType file, generating its MSDF atlas into th
 ## Description
 
 The atlas covers the codepoints 32 to 563 at 2048 × 2048 pixels.
-It is stored in the `msdf` area of the cache folder under a hash of the font and of the generator settings, kept 30 days after its last use, and generated again when the cached file cannot be read.
+It is stored in the `msdf` area of the [cache folder](/use/learn/running/files/#know-what-joid-writes) under a hash of the font and of the generator settings, and generated again when the cached file cannot be read.
 
 ## Learn more
 

@@ -4,7 +4,7 @@ summary: Installs the FFmpeg natives that videos need, from the classpath or dow
 
 The first video that decodes installs them by itself; call `install()` at startup to download them before a video shows.
 When the FFmpeg natives of the platform are on the classpath, nothing is downloaded.
-Otherwise the jar of the platform (Windows x64, Linux x64, macOS x64 and arm64) is downloaded from the repository, checked against its SHA-256, and extracted into the `ffmpeg` area of the cache folder, kept 30 days after its last use.
+Otherwise the jar of the platform (Windows x64, Linux x64, macOS x64 and arm64) is downloaded from the repository, checked against its SHA-256, and extracted into the `ffmpeg` area of the [cache folder](/use/learn/running/files/#know-what-joid-writes).
 
 Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
