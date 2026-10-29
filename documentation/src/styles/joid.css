@@ -128,6 +128,30 @@
 	font-weight: 600;
 }
 
+.joid-showcase {
+	display: grid;
+	gap: 1.5rem;
+	grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+}
+
+.sl-markdown-content .joid-showcase .joid-card img {
+	aspect-ratio: 16 / 9;
+}
+
+.joid-showcase small {
+	font-size: var(--sl-text-sm);
+}
+
+.sl-markdown-content .joid-showcase-hero,
+.sl-markdown-content .joid-showcase-video {
+	margin-block: 0 1.5rem;
+}
+
+.joid-showcase-hero .joid-film,
+.joid-showcase-video video {
+	width: 100%;
+}
+
 .joid-film {
 	background: none;
 	border: 0;

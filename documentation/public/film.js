@@ -9,6 +9,9 @@
 	}
 
 	function start() {
+		if (reduced.matches) {
+			document.querySelectorAll('video[autoplay]').forEach((video) => video.pause());
+		}
 		for (const button of document.querySelectorAll('.joid-film')) {
 			show(button, reduced.matches);
 			button.addEventListener('click', () => show(button, button.getAttribute('aria-pressed') !== 'true'));

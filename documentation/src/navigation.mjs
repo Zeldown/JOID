@@ -47,6 +47,10 @@ export function topics(reference) {
 			link: '/reference/',
 			items: ['reference', 'reference/errors', 'reference/glossary', ...reference],
 		},
+		{
+			label: 'Showcase',
+			link: '/showcase/',
+		},
 	];
 }
 

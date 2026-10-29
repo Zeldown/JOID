@@ -49,7 +49,7 @@ export default defineConfig({
 			plugins: [
 				starlightSidebarTopics(
 					topics(reference),
-					{ exclude: ['/', '/404', '/404/'] },
+					{ exclude: ['/', '/404', '/404/', '/showcase', '/showcase/'] },
 				),
 				starlightLinksValidator({ errorOnInvalidHashes: true, errorOnLocalLinks: true }),
 			],

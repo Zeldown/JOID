@@ -27,6 +27,7 @@ const FIRST_MENTION_EXEMPT = /^(?:use\/catalog|reference\/(?!glossary$).*)$/;
 const CODE_KEYWORDS = new Set(['new', 'final', 'extends', 'implements', 'instanceof', 'return', 'throws', 'static', 'public', 'protected', 'private', 'abstract', 'void', 'int', 'long', 'float', 'double', 'boolean', 'char', 'byte', 'short', 'var', 'class', 'interface', 'enum', 'throw', 'case', 'default', 'super', 'this']);
 const OWNER_EXEMPT = /^(?:use\/get-started\/quick-start|use\/tutorial\/.*|.*\/index|use\/catalog|reference\/.*)$/;
 const WRITING = new Set(['coverage']);
+const SHOWCASE_PAGES = new Set(['index', 'showcase']);
 const FENCE = /^(\s*)(`{3,}|~{3,})(\S*)\s*(.*)$/;
 const LINE_WIDTH = 120;
 const TAB_WIDTH = 4;
@@ -196,6 +197,21 @@ function images() {
 	for (const entry of pages()) {
 		const lines = entry.source.split(/\r?\n/);
 		lines.forEach((line, index) => {
+			for (const match of line.matchAll(/(?:!\[[^\]]*\]\(|\b(?:src|srcset|poster|data-film|data-still)=")(\/[^)"\s]+)/g)) {
+				if (!/^\/(?:captures|showcase)\//.test(match[1])) {
+					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: ${match[1]} is not a capture: a page shows captures from /captures/ (voice.md, Images)`);
+				} else if (match[1].startsWith('/showcase/') && !SHOWCASE_PAGES.has(entry.path)) {
+					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: ${match[1]} is a showcase medium, shown on the home page and the Showcase page only (voice.md, Images)`);
+				}
+				if (!existsSync(join(DOCUMENTATION, 'public', match[1]))) {
+					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: ${match[1]} does not exist in public/`);
+				}
+			}
+			for (const match of line.matchAll(/<video\b[^>]*>/g)) {
+				if (!/\baria-label="[^"]+"/.test(match[0])) {
+					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: <video> without an aria-label that states what it shows`);
+				}
+			}
 			if (line.trim() === '<figure>') {
 				const next = lines.slice(index + 1, index + 5).map((part) => part.trim());
 				if (next[0] !== '' || !/^(?:!\[|<img\b|<picture\b)/.test(next[1] ?? '') || next[2] !== '' || !(next[3] ?? '').startsWith('<figcaption>')) {
@@ -205,9 +221,6 @@ function images() {
 			for (const match of line.matchAll(/!\[([^\]]*)\]\(([^)\s]+)/g)) {
 				if (match[1].trim() === '') {
 					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: image ${match[2]} has no alt text`);
-				}
-				if (match[2].startsWith('/') && !existsSync(join(DOCUMENTATION, 'public', match[2]))) {
-					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: image ${match[2]} does not exist in public/`);
 				}
 			}
 			for (const match of line.matchAll(/<img\b[^>]*>/g)) {
