@@ -71,7 +71,12 @@ function expand(file, films) {
 
 	const label = () => {
 		const shown = film.keys.filter((key) => key.start <= film.time && (key.end === null || film.time < key.end));
-		return shown.length === 0 ? null : shown[shown.length - 1].label;
+		if (shown.length === 0) {
+			return null;
+		}
+		const held = shown.filter((key) => key.key !== undefined);
+		const last = shown[shown.length - 1];
+		return (held.includes(last) ? held : [...held, last]).map((key) => key.label).join(' + ');
 	};
 	const capture = () => {
 		output.push(`shot ${film.name}@${String(film.times.length).padStart(4, '0')}`);
