@@ -21,6 +21,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
+import dev.joid.base.lwjgl3.glfw.GlfwWindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -99,6 +100,23 @@ public class GlfwInputForwarderTest {
 		GlfwInputForwarderTest.cursor();
 		GlfwInputForwarderTest.button(0, GLFW.GLFW_RELEASE);
 		Assert.assertEquals(Arrays.asList("pressed LEFT", "dragged LEFT", "released LEFT"), this.trace);
+	}
+
+	@Test
+	public void readsTheCursorOfTheLastMoveWhileItForwardsAButton() {
+		final IWindowBridge glfw = new GlfwWindowBridge(GlfwInputForwarderTest.window);
+		this.ui.handleMousePressed(event -> this.trace.add(BridgeHandler.WINDOW.get().getMouseX() + " " + BridgeHandler.WINDOW.get().getMouseY()));
+		BridgeHandler.WINDOW.unregister(this.fixed);
+		BridgeHandler.WINDOW.register(glfw);
+		try {
+			GlfwInputForwarderTest.cursor(10D, 20D);
+			GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
+			GlfwInputForwarderTest.button(0, GLFW.GLFW_RELEASE);
+		} finally {
+			BridgeHandler.WINDOW.unregister(glfw);
+			BridgeHandler.WINDOW.register(this.fixed);
+		}
+		Assert.assertEquals(Arrays.asList("passed cursor", "pressed LEFT", "10.0 20.0", "passed button", "released LEFT", "passed button"), this.trace);
 	}
 
 	@Test
@@ -208,9 +226,13 @@ public class GlfwInputForwarderTest {
 	}
 
 	private static void cursor() {
+		GlfwInputForwarderTest.cursor(0D, 0D);
+	}
+
+	private static void cursor(final double x, final double y) {
 		final GLFWCursorPosCallback callback = GLFW.glfwSetCursorPosCallback(GlfwInputForwarderTest.window, null);
 		GLFW.glfwSetCursorPosCallback(GlfwInputForwarderTest.window, callback);
-		callback.invoke(GlfwInputForwarderTest.window, 0D, 0D);
+		callback.invoke(GlfwInputForwarderTest.window, x, y);
 	}
 
 	private static void scroll(final double x, final double y) {

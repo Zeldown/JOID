@@ -24,11 +24,11 @@ Returns the height of the framebuffer of the window, in screen pixels.
 
 ## getMouseX()
 
-Returns the horizontal position of the cursor, converted from window coordinates to screen pixels.
+Returns the horizontal position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event.
 
 ## getMouseY()
 
-Returns the vertical position of the cursor, converted from window coordinates to screen pixels.
+Returns the vertical position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event.
 
 ## isMouseGrabbed()
 

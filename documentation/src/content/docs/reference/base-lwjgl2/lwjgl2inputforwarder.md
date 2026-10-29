@@ -33,6 +33,7 @@ Reads the pending mouse and keyboard events of LWJGL 2 and forwards them to the 
 | `void` | [poll](#Lwjgl2InputForwarder-method-poll)() <span class="joid-qualifier">static</span> | Drains the event queues of `Mouse` and `Keyboard` and forwards every event with `forwardMouseEvent()` and `forwardKeyboardEvent()`. |
 | `boolean` | [forwardMouseEvent](#Lwjgl2InputForwarder-method-forwardMouseEvent)() <span class="joid-qualifier">static</span> | Forwards the current event of `Mouse`, after `Mouse.next()`, to `BridgeHandler.UI`: a move, a press or a release, and the wheel in notches of 120. |
 | `boolean` | [forwardKeyboardEvent](#Lwjgl2InputForwarder-method-forwardKeyboardEvent)() <span class="joid-qualifier">static</span> | Forwards the current event of `Keyboard`, after `Keyboard.next()`, to `BridgeHandler.UI`: a press with the character it types, a repeat as a question on its press with its character, a release, or a character alone. |
+| `boolean` | [isForwardingMouseEvent](#Lwjgl2InputForwarder-method-isForwardingMouseEvent)() <span class="joid-qualifier">static</span> | If `true`, `forwardMouseEvent()` is running, and `Lwjgl2WindowBridge` reads the position of the event of `Mouse` instead of its current position. |
 
 ## Method details
 
@@ -52,6 +53,7 @@ Call it once per frame, before `frame()`; the rest of the application does not r
 `boolean forwardMouseEvent()` <span class="joid-qualifier">static</span>
 
 Forwards the current event of `Mouse`, after `Mouse.next()`, to `BridgeHandler.UI`: a move, a press or a release, and the wheel in notches of 120.
+During the call, `Lwjgl2WindowBridge` reports the position of the event.
 Returns `true` when JOID consumed the event, which the host then drops.
 
 <a id="Lwjgl2InputForwarder-method-forwardKeyboardEvent"></a>
@@ -62,6 +64,14 @@ Returns `true` when JOID consumed the event, which the host then drops.
 
 Forwards the current event of `Keyboard`, after `Keyboard.next()`, to `BridgeHandler.UI`: a press with the character it types, a repeat as a question on its press with its character, a release, or a character alone.
 Returns `true` when JOID consumed the event, which the host then drops.
+
+<a id="Lwjgl2InputForwarder-method-isForwardingMouseEvent"></a>
+
+### isForwardingMouseEvent
+
+`boolean isForwardingMouseEvent()` <span class="joid-qualifier">static</span>
+
+If `true`, `forwardMouseEvent()` is running, and `Lwjgl2WindowBridge` reads the position of the event of `Mouse` instead of its current position.
 
 ---
 

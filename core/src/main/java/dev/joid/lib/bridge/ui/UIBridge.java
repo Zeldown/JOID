@@ -61,6 +61,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mouseMoved() {
+		this.moveMouse();
 		if (this.pressed == null) {
 			return false;
 		}
@@ -72,6 +73,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mousePressed(final @NonNull MouseButton button) {
+		this.moveMouse();
 		if (this.pressed == null) {
 			this.pressed     = button;
 			this.pressedNode = this.getHoveredNode();
@@ -89,6 +91,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
+		this.moveMouse();
 		final boolean consumed = this.consumedButtonSet.remove(button);
 		final Long pressTime = this.pressTimeMap.remove(button);
 		final long deltaTime = pressTime == null ? 0L : (BridgeHandler.CLOCK.get().nanoTime() - pressTime) / 1_000_000L;
@@ -106,6 +109,7 @@ public abstract class UIBridge implements IUIBridge {
 			return false;
 		}
 
+		this.moveMouse();
 		final UI ui = this.dispatch(current -> current.fireMouseScroll(notchesX, notchesY));
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelScroll());
 	}
@@ -284,6 +288,13 @@ public abstract class UIBridge implements IUIBridge {
 			UIBridge.windowCursor = cursor;
 			window.setCursor(cursor);
 		}
+	}
+
+	private void moveMouse() {
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
+		final double mouseX = window.getMouseX();
+		final double mouseY = window.getMouseY();
+		this.uiList.forEach(ui -> ui.moveMouse(mouseX, mouseY));
 	}
 
 	private UI dispatch(final Predicate<UI> input) {

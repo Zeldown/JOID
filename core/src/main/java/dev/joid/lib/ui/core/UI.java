@@ -575,6 +575,26 @@ public abstract class UI implements IIndexedElement {
 		return BridgeHandler.UI.get(this);
 	}
 
+	public final void moveMouse(final double mouseX, final double mouseY) {
+		final List<Node> previous = this.hoveredPath;
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
+		this.untraced(() -> {
+			final double mx = this.getMouseX();
+			final double my = this.getMouseY();
+			final List<Node> path = this.getHoveredPath();
+			for (final Node node : previous) {
+				if (!path.contains(node)) {
+					node.refreshHover(mx, my);
+				}
+			}
+
+			for (final Node node : path) {
+				node.refreshHover(mx, my);
+			}
+		});
+	}
+
 	public final void draw(final double mouseX, final double mouseY) {
 		if (this.reloadPending) {
 			this.reloadPending = false;

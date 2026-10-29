@@ -424,7 +424,7 @@ public class NodeTest {
 	}
 
 	@Test
-	public void clicksTheTargetAtTheMouseOfTheLastDrawnFrame() {
+	public void clicksTheTargetAtTheMouseOfThePressBeforeAFrameDrawsIt() {
 		final List<String> clicks = new ArrayList<>();
 		final RectNode left = RectNode.create(0D, 0D, 100D, 100D).onClick(event -> clicks.add("left " + (int) event.getMouseX()));
 		final RectNode right = RectNode.create(200D, 0D, 100D, 100D).onClick(event -> clicks.add("right " + (int) event.getMouseX()));
@@ -432,10 +432,10 @@ public class NodeTest {
 		this.bridges.move(50D, 50D).frames(2);
 		this.bridges.move(250D, 50D);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		Assert.assertEquals(Arrays.asList("left 50"), clicks);
-		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("right 250"), clicks);
+		this.bridges.move(50D, 50D);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		Assert.assertEquals(Arrays.asList("left 50", "right 250"), clicks);
+		Assert.assertEquals(Arrays.asList("right 250", "left 50"), clicks);
 	}
 
 	@Test

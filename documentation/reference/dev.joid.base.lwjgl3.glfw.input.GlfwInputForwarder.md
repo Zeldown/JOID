@@ -6,7 +6,8 @@ Learn: [Input forwarder](/build/base-modules/lwjgl3-glfw/#input-forwarder), [Kee
 
 ## attach(long)
 
-Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+Installs the character, cursor, cursor enter, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+It keeps the position of the last cursor event, until the cursor leaves the window, and gives it to `getEventCursor` while it forwards a move, a button or a scroll.
 When the window has a `CharMods` callback, JOID receives the characters through it, and the previous character callbacks only get the characters that JOID did not consume.
 A key repeat never reaches JOID as a press: the previous callback receives it unless JOID consumed the press of that key.
 The LWJGL 3 and Vulkan backends call it during `register()`.
@@ -20,3 +21,8 @@ Returns `true` when JOID consumed the event, which the host then drops.
 
 Forwards one mouse button event of GLFW, its button and its action, to `BridgeHandler.UI` as a press or a release.
 Returns `true` when JOID consumed the event, which the host then drops.
+
+## getEventCursor(long)
+
+The position, in window coordinates, of the mouse event that a callback installed by `attach` forwards for this window: `{x, y}` of its last cursor event.
+Returns `null` outside such a call, and before the first cursor event or after the cursor left the window; `GlfwWindowBridge` then asks GLFW for the cursor.

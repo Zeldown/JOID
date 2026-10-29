@@ -16,7 +16,7 @@ The LWJGL 3 and Vulkan backends use it as it is; [base-lwjgl2](/build/base-modul
 | Contract | How |
 |---|---|
 | Size | `glfwGetFramebufferSize`: screen pixels. |
-| Mouse | `glfwGetCursorPos`, converted from window coordinates to screen pixels. |
+| Mouse | `glfwGetCursorPos`, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of the last cursor event of the window instead. |
 | Held keys | [[GlfwKeys#isKeyDown]], by physical position. |
 | Grabbed mouse | `true` while the cursor mode is `GLFW_CURSOR_DISABLED`. |
 | Cursors | The standard cursors of GLFW, created on first use and kept; [[GlfwWindowBridge#destroy]] releases them. Before GLFW 3.4, which has no move, not-allowed nor diagonal resize cursor, those four show the default cursor. |
@@ -31,6 +31,7 @@ The LWJGL 3 and Vulkan backends use it as it is; [base-lwjgl2](/build/base-modul
 - a key press becomes `keyPressed(position, printed key)`, a release `keyReleased(position)`;
 - a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the callback of the application may receive it;
 - a button press becomes `mousePressed`, a release `mouseReleased`;
+- a move, a button and a scroll reach JOID at the position of the last cursor event, which GLFW sends before them, rather than at the position that the system gives later in the frame; the cursor leaving the window clears that position;
 - the scroll offsets go through as notches, fractions included, and the characters as whole code points.
 
 The forwarder keeps the callbacks that the window had before `attach` and calls them for every event that JOID does not consume.

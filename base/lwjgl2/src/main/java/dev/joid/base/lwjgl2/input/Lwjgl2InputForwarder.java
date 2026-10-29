@@ -6,10 +6,14 @@ import org.lwjgl.input.Mouse;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2InputForwarder {
+
+	@Getter
+	private static boolean forwardingMouseEvent;
 
 	public static void poll() {
 		while (Mouse.next()) {
@@ -22,10 +26,15 @@ public final class Lwjgl2InputForwarder {
 	}
 
 	public static boolean forwardMouseEvent() {
-		final int button = Mouse.getEventButton();
-		final int wheel = Mouse.getEventDWheel();
-		final boolean consumed = button == -1 ? wheel == 0 && BridgeHandler.UI.mouseMoved() : Mouse.getEventButtonState() ? BridgeHandler.UI.mousePressed(MouseButton.of(button)) : BridgeHandler.UI.mouseReleased(MouseButton.of(button));
-		return wheel != 0 && BridgeHandler.UI.mouseScroll(0D, wheel / 120D) || consumed;
+		Lwjgl2InputForwarder.forwardingMouseEvent = true;
+		try {
+			final int button = Mouse.getEventButton();
+			final int wheel = Mouse.getEventDWheel();
+			final boolean consumed = button == -1 ? wheel == 0 && BridgeHandler.UI.mouseMoved() : Mouse.getEventButtonState() ? BridgeHandler.UI.mousePressed(MouseButton.of(button)) : BridgeHandler.UI.mouseReleased(MouseButton.of(button));
+			return wheel != 0 && BridgeHandler.UI.mouseScroll(0D, wheel / 120D) || consumed;
+		} finally {
+			Lwjgl2InputForwarder.forwardingMouseEvent = false;
+		}
 	}
 
 	public static boolean forwardKeyboardEvent() {

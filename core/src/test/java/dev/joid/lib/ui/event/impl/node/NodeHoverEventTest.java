@@ -90,6 +90,19 @@ public class NodeHoverEventTest {
 	}
 
 	@Test
+	public void entersAndLeavesOnAMoveBeforeAFrameDrawsIt() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode first = RectNode.create(100D, 100D, 200D, 100D).onHoverEnd(event -> received.add(event.getNode()));
+		final RectNode second = RectNode.create(400D, 100D, 200D, 100D).onHoverStart(event -> received.addAll(Arrays.asList(event.getNode(), event.getMouseX(), event.getMouseY())));
+		this.bridges.open(new NodeUI(first, second)).frames(30);
+		this.bridges.move(150D, 160D).frames(2);
+		this.bridges.move(450D, 170D).getUi().mouseMoved();
+		Assert.assertEquals(Arrays.asList(first, second, 450D, 170D), received);
+		Assert.assertFalse(first.isHovered());
+		Assert.assertTrue(second.isHovered());
+	}
+
+	@Test
 	public void waitsForTheMouseToHaveEntered() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onHoverEnd(event -> received.add(event.getNode()));

@@ -18,11 +18,11 @@ Returns the height of the `Display` times its pixel scale factor.
 
 ## getMouseX()
 
-Returns the horizontal position of the mouse, in screen pixels from the left edge.
+Returns the horizontal position of the mouse, in screen pixels from the left edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event.
 
 ## getMouseY()
 
-Returns the vertical position of the mouse, in screen pixels from the top edge.
+Returns the vertical position of the mouse, in screen pixels from the top edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event.
 
 ## isMouseGrabbed()
 

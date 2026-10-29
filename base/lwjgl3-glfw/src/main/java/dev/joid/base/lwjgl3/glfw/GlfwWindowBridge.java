@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.lwjgl.glfw.GLFW;
 
+import dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder;
 import dev.joid.base.lwjgl3.glfw.input.GlfwKeys;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
@@ -92,7 +93,13 @@ public final class GlfwWindowBridge implements IWindowBridge {
 		final double[] y = new double[1];
 		final int[] width = new int[1];
 		final int[] height = new int[1];
-		GLFW.glfwGetCursorPos(this.window, x, y);
+		final double[] event = GlfwInputForwarder.getEventCursor(this.window);
+		if (event != null) {
+			x[0] = event[0];
+			y[0] = event[1];
+		} else {
+			GLFW.glfwGetCursorPos(this.window, x, y);
+		}
 		GLFW.glfwGetWindowSize(this.window, width, height);
 		return GlfwWindowBridge.toFramebuffer(axis == 0 ? x[0] : y[0], axis == 0 ? width[0] : height[0], this.getFramebufferSize()[axis]);
 	}

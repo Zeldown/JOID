@@ -159,6 +159,7 @@ JOID calls every hook and every listener of a node on the render thread.
 |---|---|---|
 | `this` | [removeHover](#Node-method-removeHover)(IHoverElement element) <span class="joid-qualifier">fluent</span> | Removes a tooltip element added with `hover(...)`. |
 | `this` | [clearHover](#Node-method-clearHover)() <span class="joid-qualifier">fluent</span> | Removes every tooltip of the node. |
+| `void` | [refreshHover](#Node-method-refreshHover)(double mouseX, double mouseY) | Reads again whether the node is hovered, from the hovered path of its UI, and starts its hover animation and fires `onHoverStart` or `onHoverEnd` when that changed; the mouse is at this point of the design canvas. |
 | [`Cursor`](/reference/input/cursor/) | [getResolvedCursor](#Node-method-getResolvedCursor)() | The cursor shown over the node: its own, the one of its closest parent that has one, or the default arrow. |
 | `float` | [hoverValue](#Node-method-hoverValue)(float value) | The value multiplied by the hover progress, from `0` when the mouse is away to the value when the hover has fully faded in. |
 | [`TweenAnimator`](/reference/animation/tweenanimator/) | [getHoverAnimator](#Node-method-getHoverAnimator)() | The animator that holds the hover progress, from `0` to `1`. |
@@ -998,6 +999,15 @@ Removes a tooltip element added with `hover(...)`.
 `this clearHover()` <span class="joid-qualifier">fluent</span>
 
 Removes every tooltip of the node.
+
+<a id="Node-method-refreshHover"></a>
+
+### refreshHover
+
+`void refreshHover(double mouseX, double mouseY)` 
+
+Reads again whether the node is hovered, from the hovered path of its UI, and starts its hover animation and fires `onHoverStart` or `onHoverEnd` when that changed; the mouse is at this point of the design canvas.
+The node calls it while it draws, and `UI.moveMouse` at every mouse event.
 
 <a id="Node-method-getResolvedCursor"></a>
 

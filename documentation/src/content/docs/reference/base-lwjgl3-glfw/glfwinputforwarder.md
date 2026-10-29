@@ -30,9 +30,10 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [attach](#GlfwInputForwarder-method-attach)(long window) <span class="joid-qualifier">static</span> | Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume. |
+| `void` | [attach](#GlfwInputForwarder-method-attach)(long window) <span class="joid-qualifier">static</span> | Installs the character, cursor, cursor enter, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume. |
 | `boolean` | [forwardKey](#GlfwInputForwarder-method-forwardKey)(int code, int action) <span class="joid-qualifier">static</span> | Forwards one key event of GLFW, its key code and its action, to `BridgeHandler.UI`: `GLFW_PRESS` presses the key at that position with the key that the layout prints there, `GLFW_RELEASE` releases it, and `GLFW_REPEAT` asks whether JOID consumed its press. |
 | `boolean` | [forwardMouseButton](#GlfwInputForwarder-method-forwardMouseButton)(int button, int action) <span class="joid-qualifier">static</span> | Forwards one mouse button event of GLFW, its button and its action, to `BridgeHandler.UI` as a press or a release. |
+| `double[]` | [getEventCursor](#GlfwInputForwarder-method-getEventCursor)(long window) <span class="joid-qualifier">static</span> | The position, in window coordinates, of the mouse event that a callback installed by `attach` forwards for this window: `{x, y}` of its last cursor event. |
 
 ## Method details
 
@@ -42,7 +43,8 @@ Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW
 
 `void attach(long window)` <span class="joid-qualifier">static</span>
 
-Installs the character, cursor, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+Installs the character, cursor, cursor enter, scroll, key and mouse button callbacks of the window, and calls the callbacks that the window had before for every event that JOID does not consume.
+It keeps the position of the last cursor event, until the cursor leaves the window, and gives it to `getEventCursor` while it forwards a move, a button or a scroll.
 When the window has a `CharMods` callback, JOID receives the characters through it, and the previous character callbacks only get the characters that JOID did not consume.
 A key repeat never reaches JOID as a press: the previous callback receives it unless JOID consumed the press of that key.
 The LWJGL 3 and Vulkan backends call it during `register()`.
@@ -64,6 +66,15 @@ Returns `true` when JOID consumed the event, which the host then drops.
 
 Forwards one mouse button event of GLFW, its button and its action, to `BridgeHandler.UI` as a press or a release.
 Returns `true` when JOID consumed the event, which the host then drops.
+
+<a id="GlfwInputForwarder-method-getEventCursor"></a>
+
+### getEventCursor
+
+`double[] getEventCursor(long window)` <span class="joid-qualifier">static</span>
+
+The position, in window coordinates, of the mouse event that a callback installed by `attach` forwards for this window: `{x, y}` of its last cursor event.
+Returns `null` outside such a call, and before the first cursor event or after the cursor left the window; `GlfwWindowBridge` then asks GLFW for the cursor.
 
 ---
 

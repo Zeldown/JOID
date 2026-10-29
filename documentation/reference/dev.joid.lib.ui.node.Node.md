@@ -775,6 +775,11 @@ Adds a listener that runs when a child is added to the node; moving an existing 
 
 Adds a listener that runs when the node leaves its UI, after its children and its own `detach`.
 
+## refreshHover(double,double)
+
+Reads again whether the node is hovered, from the hovered path of its UI, and starts its hover animation and fires `onHoverStart` or `onHoverEnd` when that changed; the mouse is at this point of the design canvas.
+The node calls it while it draws, and `UI.moveMouse` at every mouse event.
+
 ## onHoverStart(EventListener)
 
 Adds a listener that runs when the mouse enters the node.

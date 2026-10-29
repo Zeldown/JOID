@@ -8,6 +8,7 @@ import java.awt.datatransfer.Transferable;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
+import dev.joid.base.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.base.lwjgl2.input.Lwjgl2Keys;
 import dev.joid.base.lwjgl2.window.cursor.NativeCursor;
 import dev.joid.internal.JOIDLog;
@@ -33,12 +34,12 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	@Override
 	public double getMouseX() {
-		return Mouse.getX() * (double) Display.getPixelScaleFactor();
+		return (Lwjgl2InputForwarder.isForwardingMouseEvent() ? Mouse.getEventX() : Mouse.getX()) * (double) Display.getPixelScaleFactor();
 	}
 
 	@Override
 	public double getMouseY() {
-		return (Display.getHeight() - 1 - Mouse.getY()) * (double) Display.getPixelScaleFactor();
+		return (Display.getHeight() - 1 - (Lwjgl2InputForwarder.isForwardingMouseEvent() ? Mouse.getEventY() : Mouse.getY())) * (double) Display.getPixelScaleFactor();
 	}
 
 	@Override

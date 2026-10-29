@@ -89,6 +89,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `T` | [handleKeyReleased](#UI-method-handleKeyReleased)(EventListener<UIKeyEvent<T>> listener) | Adds a listener that hears a key release after the nodes of the UI, unless a node consumed it. |
 | `double` | [getMouseX](#UI-method-getMouseX)() | Horizontal position of the mouse on the design canvas. |
 | `double` | [getMouseY](#UI-method-getMouseY)() | Vertical position of the mouse on the design canvas. |
+| `void` | [moveMouse](#UI-method-moveMouse)(double mouseX, double mouseY) | Moves the mouse of the UI to this point, in screen pixels, and updates the hovered nodes at once: the nodes that the mouse leaves end their hover, the nodes it enters start theirs. |
 | `boolean` | [isAltKeyDown](#UI-method-isAltKeyDown)() <span class="joid-qualifier">static</span> | If `true`, the left or the right Alt key is down. |
 | `boolean` | [isCtrlKeyDown](#UI-method-isCtrlKeyDown)() <span class="joid-qualifier">static</span> | If `true`, the left or the right Control key is down. |
 | `boolean` | [isShiftKeyDown](#UI-method-isShiftKeyDown)() <span class="joid-qualifier">static</span> | If `true`, the left or the right Shift key is down. |
@@ -372,6 +373,15 @@ Horizontal position of the mouse on the design canvas.
 `double getMouseY()` 
 
 Vertical position of the mouse on the design canvas.
+
+<a id="UI-method-moveMouse"></a>
+
+### moveMouse
+
+`void moveMouse(double mouseX, double mouseY)` 
+
+Moves the mouse of the UI to this point, in screen pixels, and updates the hovered nodes at once: the nodes that the mouse leaves end their hover, the nodes it enters start theirs.
+The UI bridge calls it at every mouse event before it forwards the event, so that a press reaches the node under it even when no frame was drawn since the mouse moved.
 
 <a id="UI-method-isAltKeyDown"></a>
 

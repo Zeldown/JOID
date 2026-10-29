@@ -20,6 +20,7 @@ It depends on base-opengl, base-openal and the `lwjgl` jar of LWJGL 2.9, never o
 ## Window
 
 [[Lwjgl2WindowBridge]] multiplies the size and the mouse of `Display` by its pixel scale factor, to report screen pixels on high-density screens, and flips the mouse to a top-left origin.
+While [[Lwjgl2InputForwarder]] forwards a mouse event, it reports the position of that event, `Mouse.getEventX()` and `Mouse.getEventY()`, instead of the newest one, so that a press reaches the node under it even when later moves wait in the queue.
 It reads `Display` and `Mouse` as they are and changes nothing in them, so it serves a `Display` that a host created and configured; the LWJGL 2 backend turns off the clipping of `Mouse` to the window itself ([Mouse outside the window](/build/backends/lwjgl2/#mouse-outside-the-window)).
 The clipboard goes through AWT; a clipboard that the system refuses reads as `""`, with one warning in dev mode.
 
@@ -37,7 +38,7 @@ LWJGL 2 delivers input through queues that the loop of the application drains.
 [[Lwjgl2InputForwarder#poll]] drains them once per frame, before `frame()`, and gives every event to JOID.
 A host that handles the input too drains the queues itself and asks JOID for each event: [[Lwjgl2InputForwarder#forwardMouseEvent]] after `Mouse.next()`, [[Lwjgl2InputForwarder#forwardKeyboardEvent]] after `Keyboard.next()`, and it handles the event only when the call returns `false`.
 
-- A mouse event becomes a move, a press or a release, and the wheel becomes `mouseScroll(0, wheel / 120)`.
+- A mouse event becomes a move, a press or a release, and the wheel becomes `mouseScroll(0, wheel / 120)`; JOID reads it at the position of the event ([Window](#window)).
 - A key event becomes a press or a release, and a press that types a character is followed by its character.
 - A repeat event asks `isKeyConsumed` instead of pressing again, and sends its character, so an application can turn `Keyboard.enableRepeatEvents(true)` on without a double repeat.
 - An event without key, which LWJGL 2 sends for a character alone, sends only its character.

@@ -57,6 +57,7 @@ The [easing curves](/use/learn/style-and-motion/animation/) of [[TweenEquations]
 
 The pointer hovers the frontmost node under it that is interactive, and every parent of that node: [[Node#isHovered]] is `true` for all of them.
 [[UI#getHoveredNode]] returns the frontmost one, or `null`.
+JOID finds the hovered nodes again on every frame and on every mouse event, so a click reaches the node under the pointer at that moment, even when no frame was drawn since the pointer moved.
 
 - A node set with `interactive(false)` lets the pointer through to the node behind it ([Events](/use/learn/interactivity/events/#let-the-pointer-through-a-decoration)).
 - A node set with `enabled(false)` is hovered, but its hover animation stays at rest.

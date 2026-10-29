@@ -1318,6 +1318,24 @@ public abstract class Node implements INode {
 		return this.listen(Node.DRAG_SNAP, listener);
 	}
 
+	public final void refreshHover(final double mouseX, final double mouseY) {
+		final boolean wasHovered = this.hovered;
+		this.hovered = this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
+		final boolean hoverShown = this.hovered && this.isEnabled();
+		if (hoverShown != this.hoverShown) {
+			this.hoverShown = hoverShown;
+			this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
+		}
+
+		if (!wasHovered && this.hovered) {
+			this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+		}
+
+		if (wasHovered && !this.hovered) {
+			this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+		}
+	}
+
 	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
 		return this.listen(Node.HOVER_START, listener);
 	}
@@ -1657,22 +1675,7 @@ public abstract class Node implements INode {
 	}
 
 	private void updateHover(final double mouseX, final double mouseY) {
-		final boolean wasHovered = this.hovered;
-		this.hovered = this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
-		final boolean hoverShown = this.hovered && this.isEnabled();
-		if (hoverShown != this.hoverShown) {
-			this.hoverShown = hoverShown;
-			this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
-		}
-
-		if (!wasHovered && this.hovered) {
-			this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-		}
-
-		if (wasHovered && !this.hovered) {
-			this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-		}
-
+		this.refreshHover(mouseX, mouseY);
 		if (this.hovered) {
 			this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 		}

@@ -163,6 +163,18 @@ public class NodeMouseEventTest {
 	}
 
 	@Test
+	public void receivesEachMoveAtItsOwnPositionBeforeAFrameDrawsIt() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleMouseDragged(event -> received.addAll(Arrays.asList(event.getMouseX(), event.getMouseY())));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		this.bridges.move(150D, 160D).getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(170D, 180D).getUi().mouseMoved();
+		this.bridges.move(190D, 120D).getUi().mouseMoved();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList(170D, 180D, 190D, 120D), received);
+	}
+
+	@Test
 	public void receivesEachMoveWithItsButtonAndDelay() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleMouseDragged(event -> received.addAll(Arrays.asList(event.getNode(), event.getMouseX(), event.getMouseY(), event.getButton(), event.getDeltaTime())));

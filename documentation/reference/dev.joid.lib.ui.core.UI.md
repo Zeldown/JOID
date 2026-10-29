@@ -183,6 +183,11 @@ Masks nest: inside another mask, the drawing is clipped to both, and the mask al
 Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is above `0.5F`.
 A resource that has not loaded yet hides the whole drawing.
 
+## moveMouse(double,double)
+
+Moves the mouse of the UI to this point, in screen pixels, and updates the hovered nodes at once: the nodes that the mouse leaves end their hover, the nodes it enters start theirs.
+The UI bridge calls it at every mouse event before it forwards the event, so that a press reaches the node under it even when no frame was drawn since the mouse moved.
+
 ## draw(double,double)
 
 Draws one frame of the UI with the mouse at this point, in screen pixels: the UI backdrop, then the nodes inside the transition, then the drag copies and the tooltip of the hovered node.

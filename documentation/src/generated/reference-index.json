@@ -17122,6 +17122,7 @@
         "getNodeAt": "UI-method-getNodeAt",
         "getNodeListAt": "UI-method-getNodeListAt",
         "getBridge": "UI-method-getBridge",
+        "moveMouse": "UI-method-moveMouse",
         "draw": "UI-method-draw",
         "drawGhost": "UI-method-drawGhost",
         "drawHover": "UI-method-drawHover",
@@ -17208,6 +17209,7 @@
         "getNodeAt(double,double)",
         "getNodeListAt(double,double)",
         "getBridge()",
+        "moveMouse(double,double)",
         "draw(double,double)",
         "drawGhost(Node)",
         "drawHover(Object,double,double)",
@@ -17304,6 +17306,7 @@
         "getNodeAt": "UI-method-getNodeAt",
         "getNodeListAt": "UI-method-getNodeListAt",
         "getBridge": "UI-method-getBridge",
+        "moveMouse": "UI-method-moveMouse",
         "draw": "UI-method-draw",
         "drawGhost": "UI-method-drawGhost",
         "drawHover": "UI-method-drawHover",
@@ -17390,6 +17393,7 @@
         "getNodeAt(double,double)",
         "getNodeListAt(double,double)",
         "getBridge()",
+        "moveMouse(double,double)",
         "draw(double,double)",
         "drawGhost(Node)",
         "drawHover(Object,double,double)",
@@ -21106,6 +21110,7 @@
         "beforeMove": "Node-method-beforeMove",
         "beforeDragStart": "Node-method-beforeDragStart",
         "beforeDragDrop": "Node-method-beforeDragDrop",
+        "refreshHover": "Node-method-refreshHover",
         "hasOverflowX": "Node-method-hasOverflowX",
         "hasOverflowY": "Node-method-hasOverflowY",
         "hasListener": "Node-method-hasListener",
@@ -21369,6 +21374,7 @@
         "beforeMove(EventListener)",
         "beforeDragStart(EventListener)",
         "beforeDragDrop(EventListener)",
+        "refreshHover(double,double)",
         "hasOverflowX()",
         "hasOverflowY()",
         "hasListener(EventType)",
@@ -21586,6 +21592,7 @@
         "beforeMove": "Node-method-beforeMove",
         "beforeDragStart": "Node-method-beforeDragStart",
         "beforeDragDrop": "Node-method-beforeDragDrop",
+        "refreshHover": "Node-method-refreshHover",
         "hasOverflowX": "Node-method-hasOverflowX",
         "hasOverflowY": "Node-method-hasOverflowY",
         "hasListener": "Node-method-hasListener",
@@ -21849,6 +21856,7 @@
         "beforeMove(EventListener)",
         "beforeDragStart(EventListener)",
         "beforeDragDrop(EventListener)",
+        "refreshHover(double,double)",
         "hasOverflowX()",
         "hasOverflowY()",
         "hasListener(EventType)",
@@ -31264,12 +31272,14 @@
       "members": {
         "poll": "Lwjgl2InputForwarder-method-poll",
         "forwardMouseEvent": "Lwjgl2InputForwarder-method-forwardMouseEvent",
-        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent"
+        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent",
+        "isForwardingMouseEvent": "Lwjgl2InputForwarder-method-isForwardingMouseEvent"
       },
       "overloads": [
         "poll()",
         "forwardMouseEvent()",
-        "forwardKeyboardEvent()"
+        "forwardKeyboardEvent()",
+        "isForwardingMouseEvent()"
       ]
     },
     "Lwjgl2InputForwarder": {
@@ -31284,12 +31294,14 @@
       "members": {
         "poll": "Lwjgl2InputForwarder-method-poll",
         "forwardMouseEvent": "Lwjgl2InputForwarder-method-forwardMouseEvent",
-        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent"
+        "forwardKeyboardEvent": "Lwjgl2InputForwarder-method-forwardKeyboardEvent",
+        "isForwardingMouseEvent": "Lwjgl2InputForwarder-method-isForwardingMouseEvent"
       },
       "overloads": [
         "poll()",
         "forwardMouseEvent()",
-        "forwardKeyboardEvent()"
+        "forwardKeyboardEvent()",
+        "isForwardingMouseEvent()"
       ]
     },
     "dev.joid.base.lwjgl2.input.Lwjgl2Keys": {
@@ -32254,12 +32266,14 @@
       "members": {
         "attach": "GlfwInputForwarder-method-attach",
         "forwardKey": "GlfwInputForwarder-method-forwardKey",
-        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton"
+        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton",
+        "getEventCursor": "GlfwInputForwarder-method-getEventCursor"
       },
       "overloads": [
         "attach(long)",
         "forwardKey(int,int)",
-        "forwardMouseButton(int,int)"
+        "forwardMouseButton(int,int)",
+        "getEventCursor(long)"
       ]
     },
     "GlfwInputForwarder": {
@@ -32274,12 +32288,14 @@
       "members": {
         "attach": "GlfwInputForwarder-method-attach",
         "forwardKey": "GlfwInputForwarder-method-forwardKey",
-        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton"
+        "forwardMouseButton": "GlfwInputForwarder-method-forwardMouseButton",
+        "getEventCursor": "GlfwInputForwarder-method-getEventCursor"
       },
       "overloads": [
         "attach(long)",
         "forwardKey(int,int)",
-        "forwardMouseButton(int,int)"
+        "forwardMouseButton(int,int)",
+        "getEventCursor(long)"
       ]
     },
     "dev.joid.base.lwjgl3.glfw.input.GlfwKeys": {

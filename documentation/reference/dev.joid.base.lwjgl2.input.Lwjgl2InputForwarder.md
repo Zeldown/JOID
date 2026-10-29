@@ -12,7 +12,12 @@ Call it once per frame, before `frame()`; the rest of the application does not r
 ## forwardMouseEvent()
 
 Forwards the current event of `Mouse`, after `Mouse.next()`, to `BridgeHandler.UI`: a move, a press or a release, and the wheel in notches of 120.
+During the call, `Lwjgl2WindowBridge` reports the position of the event.
 Returns `true` when JOID consumed the event, which the host then drops.
+
+## isForwardingMouseEvent()
+
+If `true`, `forwardMouseEvent()` is running, and `Lwjgl2WindowBridge` reads the position of the event of `Mouse` instead of its current position.
 
 ## forwardKeyboardEvent()
 

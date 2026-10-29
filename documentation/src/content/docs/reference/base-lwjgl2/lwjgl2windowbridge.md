@@ -37,8 +37,8 @@ The window bridge of the `Display` of LWJGL 2, in screen pixels, with the clipbo
 |---|---|---|
 | `int` | [getWidth](#Lwjgl2WindowBridge-method-getWidth)() | Returns the width of the `Display` times its pixel scale factor. |
 | `int` | [getHeight](#Lwjgl2WindowBridge-method-getHeight)() | Returns the height of the `Display` times its pixel scale factor. |
-| `double` | [getMouseX](#Lwjgl2WindowBridge-method-getMouseX)() | Returns the horizontal position of the mouse, in screen pixels from the left edge. |
-| `double` | [getMouseY](#Lwjgl2WindowBridge-method-getMouseY)() | Returns the vertical position of the mouse, in screen pixels from the top edge. |
+| `double` | [getMouseX](#Lwjgl2WindowBridge-method-getMouseX)() | Returns the horizontal position of the mouse, in screen pixels from the left edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event. |
+| `double` | [getMouseY](#Lwjgl2WindowBridge-method-getMouseY)() | Returns the vertical position of the mouse, in screen pixels from the top edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event. |
 | `boolean` | [isMouseGrabbed](#Lwjgl2WindowBridge-method-isMouseGrabbed)() | If `true`, LWJGL 2 grabs the mouse. |
 | `boolean` | [isKeyDown](#Lwjgl2WindowBridge-method-isKeyDown)(Key physicalKey) | If `true`, LWJGL 2 reports the key at that physical position as pressed. |
 | `String` | [getClipboard](#Lwjgl2WindowBridge-method-getClipboard)() | Returns the text of the system clipboard through AWT, or an empty string; with the dev jar, prints once when the clipboard cannot be read. |
@@ -78,7 +78,7 @@ Returns the height of the `Display` times its pixel scale factor.
 
 `double getMouseX()` 
 
-Returns the horizontal position of the mouse, in screen pixels from the left edge.
+Returns the horizontal position of the mouse, in screen pixels from the left edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event.
 
 <a id="Lwjgl2WindowBridge-method-getMouseY"></a>
 
@@ -86,7 +86,7 @@ Returns the horizontal position of the mouse, in screen pixels from the left edg
 
 `double getMouseY()` 
 
-Returns the vertical position of the mouse, in screen pixels from the top edge.
+Returns the vertical position of the mouse, in screen pixels from the top edge; while `Lwjgl2InputForwarder` forwards a mouse event, the position of that event.
 
 <a id="Lwjgl2WindowBridge-method-isMouseGrabbed"></a>
 

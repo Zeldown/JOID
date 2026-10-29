@@ -43,8 +43,8 @@ The LWJGL 3 and Vulkan backends create it from the handle of your window.
 | `void` | [destroy](#GlfwWindowBridge-method-destroy)() | Destroys the cursors that the bridge created; call it before you destroy the window. |
 | `int` | [getWidth](#GlfwWindowBridge-method-getWidth)() | Returns the width of the framebuffer of the window, in screen pixels. |
 | `int` | [getHeight](#GlfwWindowBridge-method-getHeight)() | Returns the height of the framebuffer of the window, in screen pixels. |
-| `double` | [getMouseX](#GlfwWindowBridge-method-getMouseX)() | Returns the horizontal position of the cursor, converted from window coordinates to screen pixels. |
-| `double` | [getMouseY](#GlfwWindowBridge-method-getMouseY)() | Returns the vertical position of the cursor, converted from window coordinates to screen pixels. |
+| `double` | [getMouseX](#GlfwWindowBridge-method-getMouseX)() | Returns the horizontal position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event. |
+| `double` | [getMouseY](#GlfwWindowBridge-method-getMouseY)() | Returns the vertical position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event. |
 | `boolean` | [isMouseGrabbed](#GlfwWindowBridge-method-isMouseGrabbed)() | If `true`, the cursor mode of the window is `GLFW_CURSOR_DISABLED`. |
 | `boolean` | [isKeyDown](#GlfwWindowBridge-method-isKeyDown)(Key physicalKey) | If `true`, GLFW reports the key at that physical position as pressed; a key that GLFW does not know is never down. |
 | `String` | [getClipboard](#GlfwWindowBridge-method-getClipboard)() | Returns the clipboard of GLFW, or an empty string when it holds no text. |
@@ -92,7 +92,7 @@ Returns the height of the framebuffer of the window, in screen pixels.
 
 `double getMouseX()` 
 
-Returns the horizontal position of the cursor, converted from window coordinates to screen pixels.
+Returns the horizontal position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event.
 
 <a id="GlfwWindowBridge-method-getMouseY"></a>
 
@@ -100,7 +100,7 @@ Returns the horizontal position of the cursor, converted from window coordinates
 
 `double getMouseY()` 
 
-Returns the vertical position of the cursor, converted from window coordinates to screen pixels.
+Returns the vertical position of the cursor, converted from window coordinates to screen pixels; while the input forwarder forwards a mouse event, the position of that event.
 
 <a id="GlfwWindowBridge-method-isMouseGrabbed"></a>
 

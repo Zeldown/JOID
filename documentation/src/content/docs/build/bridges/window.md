@@ -20,7 +20,7 @@ This bridge reads the window of an imaginary engine, whose key codes are those o
 | Member | What it returns or does |
 |---|---|
 | [[IWindowBridge#getWidth]], [[IWindowBridge#getHeight]] | The size of the drawable surface, in screen pixels; `0` while the window is minimized. |
-| [[IWindowBridge#getMouseX]], [[IWindowBridge#getMouseY]] | The mouse position, in the same pixels, from the top-left corner. |
+| [[IWindowBridge#getMouseX]], [[IWindowBridge#getMouseY]] | The mouse position, in the same pixels, from the top-left corner; while a mouse event is forwarded, the position of that event ([Input forwarding](/build/input/#guarantees)). |
 | [[IWindowBridge#isMouseGrabbed]] | `true` while the host hides and locks the cursor, during a camera control for example. |
 | [[IWindowBridge#isKeyDown]] | Whether the key at that physical position is held, whatever the keyboard layout. |
 | [[IWindowBridge#getClipboard]], [[IWindowBridge#setClipboard]] | The text of the system clipboard; an empty string when it holds no text. |
@@ -34,7 +34,7 @@ This bridge reads the window of an imaginary engine, whose key codes are those o
 The rest of the core only reads the window bridge:
 
 - [[UIBridgeRegistry#frame]] compares the size with the previous frame and, when it changed and is not zero, resizes the projection and lays every UI out again;
-- each UI converts the mouse position into design pixels;
+- each UI converts the mouse position into design pixels, on every frame and on every mouse event, and finds its hovered nodes from it;
 - [[Key#isDown]] asks `isKeyDown` for the keys that do not depend on the layout, and the key state of the UI registry for the others ([Input forwarding](/build/input/#guarantees));
 - the cursor is set once per change, and never while `isMouseGrabbed()` returns `true`.
 
