@@ -551,7 +551,7 @@ Pass the number of font pixels per em, above `0`: [Write a pixel-art font](/use/
 
 [[FontFamily#of]] received no face.
 
-Pass at least one face: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
+Pass at least one face: [Draw each glyph yourself](/use/learn/going-further/fonts/#draw-each-glyph-yourself).
 
 ## IllegalArgumentException Two faces share the weight …, keep one face per weight and style
 
@@ -563,7 +563,7 @@ Keep one face per weight and style, or set the weight of a file: [Set the weight
 
 Code of your own called a text renderer with a [[TextInfo]] whose font belongs to another renderer.
 
-Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Glyph drawing](/use/learn/going-further/fonts/#glyph-drawing).
+Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Draw each glyph yourself](/use/learn/going-further/fonts/#draw-each-glyph-yourself).
 
 ## IllegalArgumentException A font face needs a name, got an empty one: give the face the name of its font
 

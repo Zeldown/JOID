@@ -29,6 +29,7 @@ The node still receives the mouse at its layout position.
 
 - [Effects](/use/learn/style-and-motion/effects/)
 - [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/#rotate-and-scale-a-drawing)
+- [Animation](/use/learn/style-and-motion/animation/)
 
 ## Creation
 

@@ -83,7 +83,7 @@ The grid measures the canvas from the pointer: copy a position from a mockup and
 </figcaption>
 </figure>
 
-The dev mode adds zoom shortcuts to every zoomable UI: `Ctrl` or `Alt` with `+` and `-` [zoom](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui) it by steps of 0.1, and `Alt` with the wheel by small steps, with `Shift` for larger ones.
+The dev mode adds zoom shortcuts to every zoomable UI: `Ctrl` or `Alt` with `=` (the key of `+`) or the `+` of the numeric keypad, and with `-`, [zoom](/use/learn/describing-the-ui/design-canvas/#zoom-a-ui) it by steps of 0.1, and `Alt` with the wheel by small steps, with `Shift` for larger ones.
 
 <figure>
 

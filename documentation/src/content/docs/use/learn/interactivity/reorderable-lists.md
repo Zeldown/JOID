@@ -55,7 +55,7 @@ The playlist of the first example writes the move once the drag ends:
 | [[ReorderableFlexNode#onReorder]] | The dragged child took a new slot, during the drag |
 | [[ReorderableFlexNode#onReorderEnd]] | The drag ended, and the order is final |
 
-Each listener receives a [[NodeReorderEvent]]: `getChild()` is the dragged child, `getPrevious()` its index before and `getIndex()` its index after.
+Each listener receives a [[NodeReorderEvent]]: `getChild()` is the dragged child, `getPrevious()` is its index before and `getIndex()` its index after, counted from `0`.
 Save the new order in `onReorderEnd`: it runs once per drag, also when the list or the child is removed during the drag.
 The dragged child runs its own [drag events](/use/learn/interactivity/drag-and-drop/#react-to-the-drag), `onDragStart` to `onDragDrop`, and its `beforeDragStart` can refuse the drag.
 

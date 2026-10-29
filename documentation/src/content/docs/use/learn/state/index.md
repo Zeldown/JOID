@@ -7,7 +7,7 @@ sidebar:
 ---
 
 An interface shows values that change: a total, a list, a setting, a status that arrives from a server.
-In JOID, `init()` builds the tree once and the values that change live in [signals](/use/learn/interactivity/signals/).
+In JOID, `init()` builds the tree once per opening, and the values that change live in [signals](/use/learn/interactivity/signals/).
 This chapter builds on signals: it computes values from them, rebuilds the nodes that come and go, keeps values that several UIs or several launches share, and changes them over time.
 
 ## Derived values

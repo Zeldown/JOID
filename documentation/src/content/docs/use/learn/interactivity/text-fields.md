@@ -105,7 +105,7 @@ The user types ` ab1` then Enter: the digit is refused, and the field rewrites `
 - [[FieldNode#accept]] refuses an edit whose text fails the test: the digit never appears.
 - [[FieldNode#maxTextLength]] cuts the text to a number of characters, also for a paste.
 - [[FieldNode#normalize]] turns the text into the value: the field shows the normalized text when it loses the focus, and at once for a text given by a setter or a signal.
-- [[FieldNode#allowEmpty]] `(true)` lets the field be empty, with the value `null`; otherwise, a field that the user empties takes back its last value when it loses the focus.
+- [[FieldNode#allowEmpty]] `(true)` lets the field be empty, with the value `null`; otherwise an empty text field holds `""`, and a field that reads no value from the empty text, such as a number field, takes back its last value when it loses the focus.
 - [[FieldNode#markup]] `(true)` shows the [markup](/use/learn/describing-the-ui/text-markup-and-effects/) of the text instead of its tags.
 
 The signal follows the text as the user types it, and receives the normalized text with the rewrite.

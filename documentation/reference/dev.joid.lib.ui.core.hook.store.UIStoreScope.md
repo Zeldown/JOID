@@ -13,7 +13,7 @@ One store for the whole application, shared by every UI, kept in memory until th
 
 ## PERMANENT
 
-Like `GLOBAL`, and saved in the data folder so that its values come back at the next run.
+One store for the whole application, shared by every UI and saved in the data folder, so that its values come back at the next run.
 
 ## isLocal()
 

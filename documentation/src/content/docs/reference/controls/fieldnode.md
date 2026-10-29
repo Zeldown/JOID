@@ -355,7 +355,7 @@ The field shows the normalized text when it loses the focus, and at once for a t
 **Default:** `false`
 
 If `true`, an empty field is valid and its value is `null`.
-If `false`, a field that the user empties takes back its last value when it loses the focus.
+If `false`, the empty text goes through `parse`: a [`TextFieldNode`](/reference/controls/textfieldnode/) then holds `""`, and a field whose `parse` returns `null` for it, such as [`IntegerFieldNode`](/reference/controls/integerfieldnode/), takes back its last valid value when it loses the focus.
 
 <a id="FieldNode-property-maxTextLength"></a>
 

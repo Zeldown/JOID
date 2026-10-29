@@ -284,7 +284,7 @@ The copy of the closing step that the UI plays, or `null` without transition.
 ## depthLevel
 
 Depth, along the Z axis, that the root nodes drawn after this point and the next UI start from.
-JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D model, raises it so that what comes next is drawn in front.
+JOID resets it to `0` at every frame and never raises it by itself: a node of your own that draws in depth calls `depthLevel(...)` while it renders, so that the root nodes after it and the UIs above are drawn in front.
 
 ## isClosed()
 

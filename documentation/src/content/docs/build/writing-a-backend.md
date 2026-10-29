@@ -80,7 +80,7 @@ Extend [[RenderBridge]]: it keeps the matrices and the state, and your subclass 
 ```java file="com/example/backend/EngineRenderBridge.java" region="bridge"
 ```
 
-`drawPrimitive` applies the whole state at each draw: the core changed it since the previous draw without telling you.
+`drawPrimitive` applies the whole state at each draw, and each clear first allows the writes that it clears: the core changed the state since the previous draw without telling you.
 For the same reason, `suspend` runs the drawing of a host as is: the next draw applies the state of JOID again.
 `raster` targets the framebuffer at the given size and requires an open frame, like every draw.
 [Render bridge](/build/bridges/render/) lists every rule a draw respects, and [Render pipeline](/build/pipeline/) explains what reaches it.

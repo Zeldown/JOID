@@ -103,7 +103,7 @@ With the limit, the field shows `10` and `tickets` holds `10`; once the box is u
 - Writing to the signal the value that it already holds changes nothing, so the pending value stays.
 
 While the pending value is not one of its options, a choice (switch, selector, slider) shows a fallback.
-An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the pending value, the smaller one on a tie: `50` on `range(0, 10)` shows `10`.
+An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the pending value: `50` on `range(0, 10)` shows `10`.
 Any other choice keeps its current value, or shows its first option when the current one is gone too.
 The [[BaseChoiceNode#fallback]] hook picks that value, for a choice of your own.
 

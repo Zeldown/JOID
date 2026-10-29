@@ -37,11 +37,7 @@ Code that runs later or on a period needs no thread of its own: a [[Task]] runs 
 
 A download, a disk read or a long computation on the render thread freezes every UI until it ends.
 Run it on another thread.
-A result that goes into a signal needs nothing more, since the write moves to the render thread:
-
-```java file="com/example/running/ThreadsUI.java" region="signal"
-```
-
+A result that goes into a signal needs nothing more: the write moves to the render thread ([Set a signal from another thread](/use/learn/state/tasks/#set-a-signal-from-another-thread)).
 A result that changes a node directly must not touch it from the worker thread:
 
 ```java file="com/example/running/ThreadsUI.java" region="wrong"

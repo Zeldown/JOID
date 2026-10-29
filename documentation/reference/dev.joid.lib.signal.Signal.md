@@ -27,6 +27,7 @@ Creates a signal whose value and default value are `value`; `reset()` comes back
 
 Wraps the value of an expression in a read-only [[ComputedSignal]] that follows the signals the expression read.
 When the expression read signals with `get()` right before this call, JOID reads the bytecode of the calling line and computes the expression again after each change of those signals.
+
 When it read none, the result is a constant signal.
 When JOID cannot follow it, the result is constant too, and dev mode prints a warning that names the line and the fix.
 [Signals](/use/learn/interactivity/signals/#what-joid-follows) lists the expressions that JOID follows.
@@ -80,6 +81,7 @@ Returns the simple name of the class and the value, as in `IntegerSignal{3}`.
 Sets the value, then returns this signal.
 A value equal to the current one (by `equals`) changes nothing and notifies no one.
 `null` is a value like any other: the listeners receive `null` and `isPresent()` returns `false`.
+
 Called from another thread, the write applies on the render thread at the next frame.
 Throws an `IllegalStateException` when the signal is read-only (`isWritable()` is `false`).
 

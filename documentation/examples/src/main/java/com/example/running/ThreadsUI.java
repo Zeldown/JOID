@@ -7,13 +7,11 @@ import com.example.ExampleFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.thread.RenderThreadFuture;
 import dev.joid.lib.utils.thread.ThreadUtils;
 
@@ -22,8 +20,6 @@ public class ThreadsUI extends UI {
 	private static final Color TEXT    = new Color(231, 233, 238).lock();
 	private static final Color ELEMENT = new Color(38, 43, 53).lock();
 	private static final Color SURFACE = new Color(23, 26, 33).lock();
-
-	private final StringSignal status = new StringSignal("Loading...");
 
 	@Override
 	public void init() {
@@ -36,17 +32,8 @@ public class ThreadsUI extends UI {
 		.color(ThreadsUI.SURFACE)
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(ThreadsUI.ELEMENT, 1.5F))
-		.body(card -> {
-			TextNode.create(0, 0, 400, 150).text(Text.create(this.status::get, info).align(Align.CENTER)).attach(card);
-			label.attach(card);
-		})
+		.body(card -> label.attach(card))
 		.attach(this);
-
-		// #region signal
-		CompletableFuture
-		.supplyAsync(ThreadsUI::download)
-		.thenAccept(this.status::set);
-		// #endregion
 
 		// #region wrong
 		CompletableFuture

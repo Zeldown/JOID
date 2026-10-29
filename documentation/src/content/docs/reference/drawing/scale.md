@@ -23,7 +23,6 @@ Each factor is read each time the scale is applied.
 ## Learn more
 
 - [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)
-- [Animation](/use/learn/style-and-motion/animation/)
 
 ## Creation
 
