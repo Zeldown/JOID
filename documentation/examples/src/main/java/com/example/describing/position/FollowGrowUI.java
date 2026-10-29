@@ -23,7 +23,7 @@ public class FollowGrowUI extends UI {
 		.body(panel -> {
 			RectNode.create(20, 20, panel.w() - 40D, 60).color(CaptureStyle.MUTED).attach(panel);
 			RectNode.create(20, 100, 0, 60).color(CaptureStyle.ACCENT).width(() -> panel.getWidth() - 40D).attach(panel);
-			RectNode.create(20, 180, 0, 0).color(CaptureStyle.ACCENT).width(() -> (panel.getWidth() - 40D) / 4D).aspectRatio(1D).attach(panel);
+			RectNode.create(20, 180, 0, 0).color(CaptureStyle.ACCENT).width(() -> (panel.getWidth() - 40D) / 2D).aspectRatio(16D / 9D).attach(panel);
 		})
 		.attach(this);
 	}

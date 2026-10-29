@@ -22,7 +22,7 @@ public class PanelUI extends UI {
 		.effect(RoundedNodeEffect.create(12F))
 		.effect(BorderNodeEffect.create(PanelUI.ELEMENT, 1.5F))
 		.body(panel -> {
-			RectNode.create(0, 0, panel.getWidth(), 80).color(PanelUI.ACCENT).attach(panel);
+			RectNode.create(20, 20, panel.getWidth() - 40D, 60).color(PanelUI.ACCENT).attach(panel);
 			RectNode.create(panel.dw(2D) - 150D, panel.ah(-100D), 300, 60).color(PanelUI.ELEMENT).attach(panel);
 		})
 		.attach(this);
