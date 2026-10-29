@@ -32,7 +32,12 @@ public class GalleryUI extends UI {
 			ResourceNode.create(400, 40, 160, 0).resource(image).attach(card);
 			// #endregion
 			// #region tint
-			ResourceNode.create(600, 40).resource(image).color(GalleryUI.MUTED).hoveredColor(Color.WHITE).attach(card);
+			ResourceNode
+			.create(600, 40)
+			.resource(image)
+			.color(GalleryUI.MUTED)
+			.hoveredColor(Color.WHITE)
+			.attach(card);
 			// #endregion
 			RectNode.create(40, 260, 180, 180).color(GalleryUI.ELEMENT).attach(card);
 			RectNode.create(260, 260, 180, 180).color(GalleryUI.ELEMENT).attach(card);

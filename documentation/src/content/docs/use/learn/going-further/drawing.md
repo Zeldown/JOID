@@ -133,7 +133,7 @@ Each call returns the [[FontBounds]] of what it drew.
 
 ## Show what another renderer draws
 
-`DrawUtils.RASTER`, a [[DrawRaster]], hands a rectangle of the UI to drawing code that JOID does not know, such as the renderer of a game or a plotting library:
+`DrawUtils.RASTER`, a [[DrawRaster]], hands a rectangle of the UI to drawing code from outside JOID, such as the renderer of a game or a plotting library:
 
 ```java fragment
 DrawUtils.RASTER.drawRaster(0D, 0D, 128D, 128D, (width, height) -> this.renderer.render(width, height));

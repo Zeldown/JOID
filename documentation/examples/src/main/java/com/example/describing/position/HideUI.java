@@ -25,9 +25,19 @@ public class HideUI extends UI {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(HideUI.TEXT);
 
 		// #region hide
-		RectNode.create(660, 440, 180, 180).color(HideUI.ACCENT).hoveredColor(HideUI.ACTIVE).visible(this.shown).attach(this);
+		RectNode
+		.create(660, 440, 180, 180)
+		.color(HideUI.ACCENT)
+		.hoveredColor(HideUI.ACTIVE)
+		.visible(this.shown)
+		.attach(this);
 
-		RectNode.create(870, 440, 180, 180).color(HideUI.ACCENT).hoveredColor(HideUI.ACTIVE).enabled(false).attach(this);
+		RectNode
+		.create(870, 440, 180, 180)
+		.color(HideUI.ACCENT)
+		.hoveredColor(HideUI.ACTIVE)
+		.enabled(false)
+		.attach(this);
 
 		RectNode.create(1080, 440, 180, 180).color(HideUI.MUTED).onClick(event -> this.shown.toggle()).attach(this);
 		// #endregion

@@ -70,7 +70,7 @@ JOID follows the same rule for its own loads: the future of [[MsdfFontLoader#loa
 
 :::caution
 The render thread runs the queue only when your loop calls `frame()`.
-A program that registers the backend, then waits with `join()` on another thread before its loop starts, never sees the future complete.
+A program that registers the backend, then waits with `join()` on another thread before its loop starts, waits forever: the future never completes.
 :::
 
 ## Recap

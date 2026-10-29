@@ -212,7 +212,7 @@ The listener stands at the origin until [[VideoAudioPlayer#audioListenerPosition
 ## Play videos on every machine
 
 JOID decodes videos with FFmpeg, whose native libraries depend on the system.
-When they are not on the classpath, the first video downloads those of the running system from Maven Central, checks their SHA-256 and keeps them in the [cache folder](/use/learn/running/files/) for 30 days.
+When they are not on the classpath, the first video downloads those of the running system from Maven Central, checks their SHA-256 and keeps them in the [cache folder](/use/learn/running/files/#know-what-joid-writes).
 Videos play on Windows (x64), macOS (Intel and Apple silicon) and Linux (x64).
 
 [[VideoNatives#install]] starts that download early and returns a `CompletableFuture`, for example behind a loading screen.
@@ -277,8 +277,7 @@ Show the placeholder image in grey, turning to its own colors under the mouse.
 
 `color` tints the image and `hoveredColor` gives the tint under the mouse; white keeps the image as it is.
 
-```java fragment
-ResourceNode.create(100, 100).resource(logo).color(GalleryUI.MUTED).hoveredColor(Color.WHITE).attach(this);
+```java file="com/example/describing/media/LogoUI.java" region="logo"
 ```
 
 </details>

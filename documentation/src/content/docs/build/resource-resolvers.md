@@ -69,6 +69,6 @@ A resolver that accepts every `Integer` or every `String` takes the inputs that 
 | JOID draws the texture of the host. | `drawsABorrowedTexture` |
 | Releasing the resource keeps the texture of the host alive. | `keepsTheBorrowedTextureOnceTheResourceIsReleased` |
 | Writing into it fails. | `refusesToWriteABorrowedTexture` |
-| JOID sees whether it has mip levels. | `readsTheMipLevelsOfTheBorrowedTexture` |
+| JOID reads whether it has mip levels. | `readsTheMipLevelsOfTheBorrowedTexture` |
 | The host finds its texture parameters unchanged after the frame. | `restoresTheTextureParametersAfterTheFrame` |
 | A new handle from the supplier is drawn on the next frame. | `followsTheHandleOfItsSupplier` |

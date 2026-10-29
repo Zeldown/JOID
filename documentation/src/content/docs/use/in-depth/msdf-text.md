@@ -46,7 +46,7 @@ The edge is computed for the screen, not stored, so one atlas draws every size s
 [[MsdfFontLoader#load]] reads each face on a thread of its own:
 
 1. **Font file**: JOID reads the bytes of the `.ttf`, `.otf` or `.ttc` file.
-2. **Cache folder**: it looks for an atlas of these exact bytes in the `msdf` area of the [cache folder](/use/learn/running/files/).
+2. **Cache folder**: it looks for an atlas of these exact bytes in the `msdf` area of the [cache folder](/use/learn/running/files/#know-what-joid-writes).
    The name of the atlas also depends on the version of JOID and on the settings of the generator, so an update of JOID or of the font never reuses a stale atlas.
 3. **Generation**, only when the atlas is missing: JOID generates it from the outlines of the font, with its kerning, and writes it to the cache folder.
    It writes a temporary file and moves it into place, so an interrupted generation never leaves a broken atlas; an atlas that cannot be read is generated again.
@@ -54,7 +54,6 @@ The edge is computed for the screen, not stored, so one atlas draws every size s
 
 The future of `load` completes on the render thread once every face is ready.
 The first launch on a machine pays for the generation, once per font file; every later load reads the cache.
-An atlas that no load used for 30 days leaves the cache.
 
 In dev mode, JOID prints for each face whether it was generated or read from the cache, with the time it took.
 A `.msdf` file made in advance by the MSDF generator ([Custom fonts and MSDF](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship)) loads without any generation: give its path to `load` instead of the font file.

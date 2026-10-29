@@ -71,7 +71,7 @@ Besides the declarations, each translated shader carries uniforms that the core 
 ### Lines
 
 [[IShader#getLineShader]] derives a second shader from the same sources: its vertex stage receives both ends of each segment and expands them into a quad of the requested width.
-The tessellator binds it for wide or smooth lines; a bridge sees ordinary triangles.
+The tessellator binds it for wide or smooth lines; a bridge receives ordinary triangles.
 
 ### Border emulation
 

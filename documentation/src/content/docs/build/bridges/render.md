@@ -65,7 +65,7 @@ What your implementation must ensure.
 | Create, fill and delete textures, framebuffers and shaders inside a frame and outside one. | The UIs load their resources before `beginFrame()`, and the contract suite creates its resources outside any frame. |
 | Draw every frame that began before your present: several `beginFrame()`/`endFrame()` pairs can share one present. | A host may draw two JOID frames into one of its own frames. |
 | Read the vertices with the layout of [[VertexAttribute]]: 32 bytes per vertex, missing attributes completed. | Every vertex buffer of JOID uses it ([Render pipeline](/build/pipeline/#vertices)). |
-| Follow the OpenGL clip space, in which the projection of `screen` maps the top-left corner of the window to `(0, 0)`, and the rules of [Depth](/build/framebuffers-and-depth/#depth). | The core builds its projections and sorts its 3D content for that clip space. |
+| Follow the OpenGL clip space, in which the projection of `screen` places `(0, 0)` at the top-left corner of the window, and the rules of [Depth](/build/framebuffers-and-depth/#depth). | The core builds its projections and sorts its 3D content for that clip space. |
 | Store a framebuffer as OpenGL does: texture coordinate `v = 0` samples the bottom row of what was drawn. | The core samples framebuffers with that convention ([Orientation](/build/framebuffers-and-depth/#orientation)). |
 | Draw `LINES` one pixel wide. | Wide and smooth lines reach the bridge as triangles already. |
 | Send the uniforms of a shader at the draw, never at `bind()`. | JOID sets uniform values before it binds the shader. |

@@ -47,7 +47,7 @@ Entry point that opens and closes UIs, finds the open ones and runs code once JO
 | `boolean` | [isOpen](#JOID-method-isOpen)(UI ui) <span class="joid-qualifier">static</span> | If `true`, this UI is open in a UI bridge. |
 | `boolean` | [isOpen](#JOID-method-isOpen)(Class<? extends UI> uiClass) <span class="joid-qualifier">static</span> | If `true`, a UI of this class (or of a subclass) is open in any UI bridge. |
 | `T` | [getUi](#JOID-method-getUi)(Class<T> uiClass) <span class="joid-qualifier">static</span> | The first open UI of this class or of a subclass, searched in every UI bridge from the highest priority down, or `null` when none is open. |
-| [`IUIBridge`](/reference/backends/iuibridge/) | [open](#JOID-method-open)(UI ui) <span class="joid-qualifier">static</span> | Opens the UI in the first UI bridge that accepts it, and returns that bridge. |
+| [`IUIBridge`](/reference/backends/iuibridge/) | [open](#JOID-method-open)(UI ui) <span class="joid-qualifier">static</span> | Opens the UI in the UI bridge that already holds it, otherwise in the bridge of highest priority whose `canHandle` accepts it, and returns that bridge. |
 | `void` | [close](#JOID-method-close)(UI ui) <span class="joid-qualifier">static</span> | Closes the UI: the `beforeClose` listeners can refuse, then the closing transition plays. |
 | [`IUIBridge`](/reference/backends/iuibridge/) | [forceOpen](#JOID-method-forceOpen)(UI ui) <span class="joid-qualifier">static</span> | Closes every UI of the bridge that accepts this one, without asking them and without transition, then opens it; returns that bridge. |
 | `void` | [forceClose](#JOID-method-forceClose)(UI ui) <span class="joid-qualifier">static</span> | Closes the UI at once, without asking the `beforeClose` listeners and without its closing transition. |
@@ -138,7 +138,7 @@ The first open UI of this class or of a subclass, searched in every UI bridge fr
 
 **Thread:** runs on the render thread.
 
-Opens the UI in the first UI bridge that accepts it, and returns that bridge.
+Opens the UI in the UI bridge that already holds it, otherwise in the bridge of highest priority whose `canHandle` accepts it, and returns that bridge.
 A screen replaces the open screens, a popup or an overlay opens above them, and a UI already open moves to the top.
 Throws an `IllegalStateException` when no registered bridge accepts the UI.
 

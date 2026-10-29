@@ -95,7 +95,7 @@ Each panel takes its slot; the middle one keeps its own `y` of 20 and its height
 - [[Node#layoutPosition]] gives a child its slot; the `x` and `y` of the child stay an offset inside it, so that the user of your node can still move it.
 - [[Node#fit]] gives the size of the slot to a child created with a length of 0, and keeps a length that the child declares.
 - [[Node#layoutSize]] imposes a size on the frame, whatever the child declares, without changing its declared size.
-- Skip the hidden children and the `ABSOLUTE` ones, as the layouts of JOID do.
+- Skip the hidden children, with `isVisibleProperty()`, the own `visible` of the child, and the `ABSOLUTE` ones, as the layouts of JOID do: `isVisible()` is also `false` for a child scrolled out of view, and a layout that skips it moves the other children while the user scrolls.
 
 A layout that changes the order of its children, as a reorderable list does, gives the new order to [[Node#reorderChildren]], which the drawing follows too.
 
@@ -156,6 +156,7 @@ The fluent methods of the node hand each call to the value:
 - `bind(signal)` follows a writable signal and writes the changes of the user back to it; a signal that cannot be written throws `IllegalArgumentException`.
 - `change(value)` changes the value as the user would: `beforeSelect` can refuse it, then `onSelect` fires.
 - In an input hook, `set(value)` applies the value when the hook ends, and `get()` already reads it.
+- `clamp(operator)` brings every requested value into the bounds of the node, and `reapply()` asks for the [pending value](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse) again after the bounds change.
 
 The UI owns the signal and reads it anywhere:
 

@@ -78,7 +78,7 @@ The release of a button and of a key is the exception: it reaches every node, ev
 
 The methods whose name starts with `handle` give you the input itself, before the node handles it:
 [[Node#handleMousePressed]], [[Node#handleMouseReleased]], [[Node#handleMouseDragged]], [[Node#handleMouseScroll]], [[Node#handleCharTyped]], [[Node#handleKeyPressed]] and [[Node#handleKeyReleased]].
-Every node of the UI receives every press, wherever the pointer is: a listener that cares about the pointer tests `isHovered()` itself.
+Every node of the UI receives every press, wherever the pointer is: a listener that depends on the pointer tests `isHovered()` itself.
 
 ```java file="com/example/interactivity/events/PressUI.java" region="listen"
 ```

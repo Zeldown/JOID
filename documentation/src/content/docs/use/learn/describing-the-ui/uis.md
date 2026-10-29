@@ -87,11 +87,8 @@ It runs for `JOID.close(ui)` and for Escape:
 The editor stays open until the user clicks the save button.
 [[UI#onClose]] runs once the UI has closed, when you need to react to it.
 
-[[JOID#forceClose]] closes a UI without asking the `beforeClose` listeners and without its closing transition.
-Use it when the UI must go, for example when the application quits.
-
-`beforeClose` runs only where a listener can refuse, and `onClose` runs on every closing.
-`JOID.forceClose`, `JOID.forceOpen`, the `closeAll()` of a UI bridge and the end of the program close without `beforeClose`, and fire `onClose` ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+[[JOID#forceClose]] closes a UI without asking the `beforeClose` listeners and without its closing transition, for example when the application quits.
+`JOID.forceOpen`, the `closeAll()` of a UI bridge and the end of the program close the same way; every closing fires `onClose` ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 
 ## Replace the current screen
 
@@ -112,7 +109,7 @@ The editor refuses to close until Save is clicked; then opening `MenuUI` replace
 
 When a UI that must close refuses, the new screen does not open; in dev mode, JOID prints a warning that names both UIs.
 
-[[JOID#forceOpen]] closes every open UI without asking them, then opens the new one:
+[[JOID#forceOpen]] closes every UI open in the UI bridge of the new one, without asking them, then opens it:
 
 ```java file="com/example/describing/uis/Navigation.java" region="force"
 ```

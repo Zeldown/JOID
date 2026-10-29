@@ -216,7 +216,7 @@ BridgeHandler.UI
 </details>
 
 **Open from a library.**
-Move the `JOID.open(...)` call of the program above into a library class that does not know when the backend starts.
+Move the `JOID.open(...)` call of the program above into a library class that may run before the backend starts.
 
 <details>
 <summary>Solution</summary>
