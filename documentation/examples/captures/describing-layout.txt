@@ -37,7 +37,7 @@ press LEFT
 release LEFT
 wait 1000
 moveto 960 480 400
-wait 100
+wait 400
 cut
 # crop describing-layout-scrollbar 700 340 520 400
 # still describing-layout-scrollbar 144
