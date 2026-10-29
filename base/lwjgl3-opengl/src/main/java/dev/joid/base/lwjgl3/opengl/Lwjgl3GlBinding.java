@@ -1,4 +1,4 @@
-package dev.joid.backend.lwjgl3.binding;
+package dev.joid.base.lwjgl3.opengl;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

@@ -4,7 +4,7 @@ summary: The LWJGL 3 framebuffer binding that calls the functions of `GL_EXT_fra
 
 [[Lwjgl3GlBinding#getFrameBufferBinding]] returns it for the `EXT` family.
 
-Learn: [LWJGL 3 backend](/build/backends/lwjgl3/#the-opengl-binding-is-replaceable).
+Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
 
 ## Lwjgl3ExtGlFrameBufferBinding()
 

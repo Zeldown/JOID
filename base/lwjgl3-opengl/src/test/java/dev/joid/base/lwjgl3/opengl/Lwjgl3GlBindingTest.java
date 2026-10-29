@@ -1,4 +1,4 @@
-package dev.joid.backend.lwjgl3.binding;
+package dev.joid.base.lwjgl3.opengl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

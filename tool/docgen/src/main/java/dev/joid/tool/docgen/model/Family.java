@@ -31,6 +31,7 @@ public enum Family {
 	BASE_OPENGL("base-opengl", "base-opengl", "dev.joid.base.opengl"),
 	BASE_LWJGL3_GLFW("base-lwjgl3-glfw", "base-lwjgl3-glfw", "dev.joid.base.lwjgl3.glfw"),
 	BASE_LWJGL3_OPENAL("base-lwjgl3-openal", "base-lwjgl3-openal", "dev.joid.base.lwjgl3.openal"),
+	BASE_LWJGL3_OPENGL("base-lwjgl3-opengl", "base-lwjgl3-opengl", "dev.joid.base.lwjgl3.opengl"),
 	LWJGL2("lwjgl2", "LWJGL 2 backend", "dev.joid.backend.lwjgl2"),
 	LWJGL3("lwjgl3", "LWJGL 3 backend", "dev.joid.backend.lwjgl3"),
 	VULKAN("vulkan", "Vulkan backend", "dev.joid.backend.vulkan"),

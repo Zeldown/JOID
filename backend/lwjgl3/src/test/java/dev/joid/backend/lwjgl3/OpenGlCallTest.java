@@ -1,4 +1,4 @@
-package dev.joid.backend.lwjgl3.binding;
+package dev.joid.backend.lwjgl3;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +19,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 
 public class OpenGlCallTest {
 
@@ -46,11 +45,11 @@ public class OpenGlCallTest {
 				}
 			}
 		}
-		Assert.assertEquals("Classes that call OpenGL outside the LWJGL 3 bindings", new ArrayList<>(), callerList);
+		Assert.assertEquals("Classes of the backend that call OpenGL outside the bindings of base-lwjgl3-opengl", new ArrayList<>(), callerList);
 	}
 
 	private static void check(final String name, final byte[] bytecode, final List<String> callerList) {
-		if (!name.startsWith("dev/joid/backend/lwjgl3/binding/") && OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
+		if (OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
 			callerList.add(name);
 		}
 	}

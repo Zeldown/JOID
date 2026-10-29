@@ -26,7 +26,7 @@ jobs:
       - name: Install Mesa and Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0
       - name: Record the snapshots of the default context
-        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:updateSnapshots --continue
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :base-lwjgl3-opengl:test :backend-lwjgl3:updateSnapshots --continue
       - name: Upload the references
         uses: actions/upload-artifact@v4
         with:
@@ -43,6 +43,7 @@ jobs:
             build/snapshots/backend-lwjgl3
             backend/lwjgl3/build/reports/tests
             base/opengl/build/reports/tests
+            base/lwjgl3-opengl/build/reports/tests
           retention-days: 7
 
   profiles:
@@ -99,7 +100,7 @@ jobs:
             export MESA_GL_VERSION_OVERRIDE=${{ matrix.gl }}
             export MESA_GLSL_VERSION_OVERRIDE=${{ matrix.glsl }}
           fi
-          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ${{ matrix.tasks || ':base-opengl:test :backend-lwjgl3:test' }} -PglProfile=${{ matrix.profile }} --continue
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ${{ matrix.tasks || ':base-opengl:test :base-lwjgl3-opengl:test :backend-lwjgl3:test' }} -PglProfile=${{ matrix.profile }} --continue
       - name: Upload the report
         if: failure()
         uses: actions/upload-artifact@v4
@@ -109,4 +110,5 @@ jobs:
             build/snapshots/backend-lwjgl3
             backend/lwjgl3/build/reports/tests
             base/opengl/build/reports/tests
+            base/lwjgl3-opengl/build/reports/tests
           retention-days: 7

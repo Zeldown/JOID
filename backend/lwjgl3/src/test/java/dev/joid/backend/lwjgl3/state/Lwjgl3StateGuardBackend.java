@@ -14,8 +14,8 @@ import org.lwjgl.opengl.GL21C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL33C;
 
-import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
+import dev.joid.base.lwjgl3.opengl.Lwjgl3GlBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.snapshot.GlStateSnapshot;

@@ -4,7 +4,7 @@ summary: The LWJGL 3 framebuffer binding that calls the core framebuffer functio
 
 [[Lwjgl3GlBinding#getFrameBufferBinding]] returns it for the `CORE` family.
 
-Learn: [LWJGL 3 backend](/build/backends/lwjgl3/#the-opengl-binding-is-replaceable).
+Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
 
 ## Lwjgl3CoreGlFrameBufferBinding()
 

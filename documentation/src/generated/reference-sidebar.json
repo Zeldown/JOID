@@ -92,6 +92,10 @@
     "link": "/reference/base-lwjgl3-openal/"
   },
   {
+    "label": "base-lwjgl3-opengl",
+    "link": "/reference/base-lwjgl3-opengl/"
+  },
+  {
     "label": "LWJGL 2 backend",
     "link": "/reference/lwjgl2/"
   },

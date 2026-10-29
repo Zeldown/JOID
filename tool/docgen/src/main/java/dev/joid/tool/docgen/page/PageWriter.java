@@ -753,6 +753,7 @@ public final class PageWriter {
 		case "backend-lwjgl2":
 			return "LWJGL 2";
 		case "backend-lwjgl3":
+		case "base-lwjgl3-opengl":
 			return "LWJGL 3";
 		case "backend-vulkan":
 			return "Vulkan";

@@ -22,9 +22,9 @@ This backend reuses the OpenGL and OpenAL modules on the context and the audio d
 ```java file="com/example/backend/GlHostBackend.java" region="backend"
 ```
 
-`binding` is the [[IGlBinding]] of your backend, over the OpenGL functions of the host: base-opengl holds none.
-On LWJGL 3 or LWJGL 2, copy the binding classes of the official backend ([[Lwjgl3GlBinding]] or [[Lwjgl2GlBinding]], with their framebuffer bindings) into your backend, under their Apache 2.0 license.
-Do not depend on `joid-backend-lwjgl3` or `joid-backend-lwjgl2` for them: their jars embed the core, and yours would then carry two copies of it.
+`binding` is the [[IGlBinding]] over the OpenGL functions of the host.
+On LWJGL 3, depend on [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) and pass `Lwjgl3GlBinding.inst()`; on LWJGL 2, copy the binding classes of the official backend ([[Lwjgl2GlBinding]], with its framebuffer bindings) into your backend, under their Apache 2.0 license; on another library, write the binding.
+Do not depend on a final backend such as `joid-backend-lwjgl3` for its bindings: its jars embed the core, and yours would then carry two copies of it.
 
 `ownContext(false)` tells the audio bridge that the host created the OpenAL context: it never creates nor destroys one ([base-openal](/build/base-modules/openal/)).
 When the host draws on a thread of its own, add a [thread bridge](/build/bridges/thread/).
@@ -48,6 +48,7 @@ The OpenGL render bridge never calls OpenGL directly: it goes through a [[GlStat
 3. `endFrame()` exits the guard: the journal restores every value it kept, framebuffers and programs first, the active texture unit last.
 
 Only what JOID touched is read and restored, so a frame costs a handful of queries, not a full dump of the state.
+The state of the context after the frame is therefore the state before it, value for value: a host that keeps a cache of the OpenGL state on its side (bound textures and program, blending, depth, vertex arrays, viewport) finds that cache as right after the frame as it was before, and never needs to reset it.
 The guard is re-entrant: nested `enter()` and `exit()` calls count their depth, and only the outermost pair starts and restores the journal.
 
 ### Let the host draw inside a frame

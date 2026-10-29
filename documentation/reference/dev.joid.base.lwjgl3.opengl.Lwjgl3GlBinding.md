@@ -2,9 +2,9 @@
 summary: The OpenGL binding of LWJGL 3, which calls the core classes `GL11C` to `GL33C`.
 ---
 
-The LWJGL 3 backend gives it to [[GlRenderBridge]].
+The LWJGL 3 backend gives it to [[GlRenderBridge]], and so does a host that runs on the OpenGL of LWJGL 3.
 
-Learn: [LWJGL 3 backend](/build/backends/lwjgl3/#the-opengl-binding-is-replaceable), [Create the bridge](/build/base-modules/opengl/#create-the-bridge).
+Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/), [Create the bridge](/build/base-modules/opengl/#create-the-bridge).
 
 ## inst()
 

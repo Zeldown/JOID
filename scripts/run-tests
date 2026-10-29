@@ -70,7 +70,7 @@ if [ $all -eq 1 ]; then
     tasks=":tool-msdf:check :core:check :tool-testkit:check"
 fi
 
-for module in openal opengl lwjgl3-glfw lwjgl3-openal; do
+for module in openal opengl lwjgl3-glfw lwjgl3-openal lwjgl3-opengl; do
     if [ $all -eq 1 ] || changed "^base/$module/"; then
         tasks="$tasks :base-$module:check"
     fi

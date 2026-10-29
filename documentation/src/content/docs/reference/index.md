@@ -37,7 +37,8 @@ Every warning and exception message is on [Warnings and errors](/reference/error
 | [base-opengl](/reference/base-opengl/) | The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back. | 24 |
 | [base-lwjgl3-glfw](/reference/base-lwjgl3-glfw/) | The window bridge, the input forwarder and the key table of GLFW, and the hidden window of the snapshot backends. | 4 |
 | [base-lwjgl3-openal](/reference/base-lwjgl3-openal/) | The OpenAL binding of LWJGL 3, for the audio bridge of base-openal. | 1 |
+| [base-lwjgl3-opengl](/reference/base-lwjgl3-opengl/) | The OpenGL binding of LWJGL 3 and its framebuffer bindings, for the render bridge of base-opengl. | 3 |
 | [LWJGL 2 backend](/reference/lwjgl2/) | The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend. | 14 |
-| [LWJGL 3 backend](/reference/lwjgl3/) | The backend for LWJGL 3: its context requests, its OpenGL bindings and its snapshot backend with the OpenGL profiles of the tests. | 8 |
+| [LWJGL 3 backend](/reference/lwjgl3/) | The backend for LWJGL 3: its context requests and its snapshot backend with the OpenGL profiles of the tests. | 5 |
 | [Vulkan backend](/reference/vulkan/) | The backend for Vulkan: the hosts that lend their device and their frame, the render bridge that records into it, and its textures, framebuffers, shaders and caches. | 19 |
 | [Tools](/reference/tools/) | The MSDF generator, which builds the atlas of a font file ahead of time or at its first load. | 13 |

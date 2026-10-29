@@ -90,12 +90,16 @@ Learn: [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
 The OpenAL binding of LWJGL 3, for the audio bridge of base-openal.
 Learn: [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/).
 
+## base-lwjgl3-opengl
+The OpenGL binding of LWJGL 3 and its framebuffer bindings, for the render bridge of base-opengl.
+Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
+
 ## lwjgl2
 The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend.
 Learn: [LWJGL 2 backend](/build/backends/lwjgl2/).
 
 ## lwjgl3
-The backend for LWJGL 3: its context requests, its OpenGL bindings and its snapshot backend with the OpenGL profiles of the tests.
+The backend for LWJGL 3: its context requests and its snapshot backend with the OpenGL profiles of the tests.
 Learn: [LWJGL 3 backend](/build/backends/lwjgl3/).
 
 ## vulkan

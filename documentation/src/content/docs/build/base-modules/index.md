@@ -23,6 +23,7 @@ A library module follows the jars of one library: it binds that library to an AP
 |---|---|---|
 | [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) | opens its window with GLFW through LWJGL 3 | nothing: pass the window handle |
 | [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) | plays sound with the OpenAL of LWJGL 3 | nothing: give its binding to base-openal |
+| [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) | draws with the OpenGL of LWJGL 3 | nothing: give its binding to base-opengl |
 
 Pick the modules of the libraries your engine already uses, and nothing else: a Vulkan engine takes no OpenGL module, an engine without sound no OpenAL module.
 A library module depends on the API module it binds: embed both.
