@@ -1,12 +1,13 @@
 # host
 # crop running-embedding-pause 0 0 880 660
-# still running-embedding-pause 95
+# still running-embedding-pause 60
+resize 1280 720
 open com.example.running.HostOverlayUI
 move 830 250
 # film running-embedding-pause 60
-wait 900
+wait 400
 key TAB
 wait 1300
 key ESCAPE
-wait 2240
+wait 2723
 cut

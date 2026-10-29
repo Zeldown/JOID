@@ -456,12 +456,24 @@ public final class DocCapture {
 		}
 
 		private void step() {
+			this.fit();
 			final long now = BridgeHandler.CLOCK.get().nanoTime();
 			if (this.last >= 0L && !this.bridge.isPaused()) {
 				this.scene.update((now - this.last) / 1E9D);
 			}
 			this.last = now;
 			this.scene.draw(this.window);
+		}
+
+		private void fit() {
+			final int width = BridgeHandler.WINDOW.get().getWidth();
+			final int height = BridgeHandler.WINDOW.get().getHeight();
+			final int[] framebufferWidth = new int[1];
+			final int[] framebufferHeight = new int[1];
+			GLFW.glfwGetFramebufferSize(this.window, framebufferWidth, framebufferHeight);
+			if (framebufferWidth[0] != width || framebufferHeight[0] != height) {
+				GLFW.glfwSetWindowSize(this.window, width, height);
+			}
 		}
 
 		private boolean isCaptured() {
@@ -473,6 +485,7 @@ public final class DocCapture {
 			BridgeHandler.UI.unregister(this.bridge);
 			BridgeHandler.UI.register(this.snapshot);
 			GLFW.glfwSetInputMode(this.window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+			GLFW.glfwSetWindowSize(this.window, 1920, 1080);
 		}
 
 	}
