@@ -32,7 +32,7 @@ Each release publishes `joid-backend-template-<version>.zip`, a Gradle project t
 3. Add the libraries of your engine to the `compile` dependencies.
    Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; `joid-base-glfw` needs `joid-base-openal` next to it.
 
-**Check**: `./gradlew compileJava` succeeds.
+**Check:** `./gradlew compileJava` succeeds.
 The bridges of the template throw an `UnsupportedOperationException` that names the method to implement, so the first UI that opens, or the first `frame()`, fails until you have implemented them.
 
 ## Extend Backend
@@ -144,7 +144,7 @@ With every hook implemented, an application runs your backend like an official o
 The `DemoWindow` of the template, in `src/demo/java`, registers itself as the UI bridge, then registers `ExampleBackend`, opens the menu of the demos and calls `frame()` in an endless loop.
 Give it the constructor of your backend and the loop of your engine: poll the events, call `frame()`, present.
 
-**Check**: `./gradlew runDemo` opens the JOID demos on your engine ([Demos](/build/demos/)).
+**Check:** `./gradlew runDemo` opens the JOID demos on your engine ([Demos](/build/demos/)).
 On macOS, an engine on GLFW needs `jvmArgs '-XstartOnFirstThread'` on `runDemo` and on the test tasks; an engine on AWT or Swing must not have it.
 
 ## Give the testkit a surface

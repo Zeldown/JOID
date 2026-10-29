@@ -19,7 +19,7 @@ Nothing below the core is visible to the code of a UI.
 </figcaption>
 </figure>
 
-## The core knows no technology
+## The core depends on no technology
 
 `joid-core` holds everything that does not depend on a graphics, window or audio library:
 
