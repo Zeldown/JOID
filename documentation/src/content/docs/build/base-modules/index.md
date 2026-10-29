@@ -29,6 +29,6 @@ A library module follows the jars of one library: it binds that library to an AP
 Pick the modules of the libraries your engine already uses, and nothing else: a Vulkan engine takes no OpenGL module, an engine without sound no OpenAL module.
 A library module depends on the API module it binds: embed both.
 
-Each module is published as its own jar (`joid-base-<module>`), without its `snapshot` and `demo` packages (the hidden window and the demo window of base-lwjgl3-glfw, the snapshot capture of base-opengl), which only the dev and demo jars of the official backends carry; nor does it embed another library, such as the JNA that the cursors of base-lwjgl2 use.
+Each module is published as its own jar (`joid-base-<module>`, which the `jar` task of the module builds), without its `snapshot` and `demo` packages (the hidden window and the demo window of base-lwjgl3-glfw, the snapshot capture of base-opengl), which only the dev and demo jars of the official backends carry; nor does it embed another library, such as the JNA that the cursors of base-lwjgl2 use.
 No module carries the natives of its library: the application, or the final backend, adds the natives of its platform.
 A backend embeds the modules it uses into its jars; in the template, put them into the `embed` configuration ([Start from the template](/build/writing-a-backend/#start-from-the-template)).

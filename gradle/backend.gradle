@@ -24,6 +24,10 @@ sourceSets {
 }
 
 dependencies {
+    embeddedModules.findAll { module -> module.name.startsWith('base-') }.each { module ->
+        compile module.sourceSets.main.output
+    }
+
     compileOnly project(':tool-testkit')
     testCompile project(':tool-testkit')
 }

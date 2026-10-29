@@ -29,7 +29,7 @@ ext {
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     releaseTasks = {
-        subprojects.findAll { module -> module.name.startsWith('base-') }.collect { module -> module.tasks.getByName('releaseJar') } + [':tool-testkit:jar', ':tool-msdf:jar'].collect { path -> tasks.getByPath(path) }
+        subprojects.findAll { module -> module.name.startsWith('base-') }.collect { module -> module.tasks.getByName('jar') } + [':tool-testkit:jar', ':tool-msdf:jar'].collect { path -> tasks.getByPath(path) }
     }
 
     lwjglVersion = "3.3.4"
@@ -131,7 +131,7 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars of the base modules hold no demo nor snapshot package, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
     dependsOn collectArtifacts
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
@@ -161,6 +161,11 @@ task checkJars {
         releaseTasks()*.archivePath.each { jar ->
             finds(jar, classes, library).each { name ->
                 failures << "${jar.name}: $name refers to a library that is not relocated"
+            }
+        }
+        releaseTasks()*.archivePath.findAll { jar -> jar.name.startsWith('joid-base-') }.each { jar ->
+            new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }.findAll { name -> name ==~ /dev\/joid\/base\/.+\/(demo|snapshot)\/.*/ }.each { name ->
+                failures << "${jar.name} holds $name, which only the dev and demo jars of the backends carry"
             }
         }
         variantModules.each { module ->
