@@ -1,3 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <polygon fill="#000000" points="50,4 62,36 96,38 69,59 78,93 50,74 22,93 31,59 4,38 38,36"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><polygon fill="#000" points="50 4 62 36 96 38 69 59 78 93 50 74 22 93 31 59 4 38 38 36"/></svg>
