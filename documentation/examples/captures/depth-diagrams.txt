@@ -20,7 +20,7 @@ cut
 ui com.example.depth.PerformanceUI
 wait 100
 shot depth-performance
-# crop depth-pixel-alignment 300 320 1320 440
+# crop depth-pixel-alignment 510 320 900 320
 ui com.example.depth.PixelAlignmentUI
 wait 100
 shot depth-pixel-alignment
