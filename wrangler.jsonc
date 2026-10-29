@@ -1,7 +1,11 @@
 {
 	"name": "joid",
 	"compatibility_date": "2026-04-19",
+	"build": {
+		"command": "cd documentation && npm ci && npm run build"
+	},
 	"assets": {
-		"directory": "./documentation"
+		"directory": "./documentation/dist",
+		"not_found_handling": "404-page"
 	}
 }
