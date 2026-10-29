@@ -990,11 +990,23 @@ A parameter of JOID that cannot be `null` received `null`; the message names the
 
 Pass a value; the reference page of the method says which parameters accept `null`.
 
-## IllegalStateException …, use …(...) to get a modified copy
+## IllegalStateException Color.… is a constant, use …(...) to get a modified copy
 
-A setter was called on a locked value, such as a color of a palette locked with `lock()`, which never changes.
+A setter was called on a constant of [[Color]], such as `Color.WHITE`, which never changes.
 
 Call the method that the message names to get a modified copy: [Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe).
+
+## IllegalStateException This … is locked, use …(...) to get a modified copy
+
+A setter was called on a value locked with [[LockableValue#lock]], such as a color of a palette, which never changes.
+
+Call the method that the message names to get a modified copy: [Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe).
+
+## IllegalStateException …, use …(...) to get a modified copy
+
+A [[LockableValue]] subclass of your own gave the start of the message from [[LockableValue#describeLocked]], and a setter was called on a locked value of it.
+
+Call the method that the message names to get a modified copy, and read the start that your code gave.
 
 ## warning [JOID] … refused to close: a beforeClose listener cancelled the event, so … is not opened: do not cancel it to let the UI close
 

@@ -2,9 +2,7 @@ package com.example.running;
 
 import org.lwjgl.glfw.GLFW;
 
-import dev.joid.lib.bridge.ui.WindowUIBridge;
-
-public class GameUIBridge extends WindowUIBridge {
+public class GameUIBridge extends SceneUIBridge {
 
 	private final long window;
 

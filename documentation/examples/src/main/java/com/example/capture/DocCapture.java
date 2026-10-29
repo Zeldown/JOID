@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,10 +29,15 @@ import java.util.WeakHashMap;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.example.ExampleFont;
+import com.example.running.GameUIBridge;
+import com.example.running.HostScene;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.cursor.Cursor;
@@ -49,6 +55,8 @@ public final class DocCapture {
 	private static final int MASK = 0xFFFF00FF;
 
 	private static final Set<String> SETTINGS = new HashSet<>(Arrays.asList("dev", "resize", "scale", "mask", "unmask"));
+
+	private static Host host;
 
 	private DocCapture() {}
 
@@ -68,6 +76,11 @@ public final class DocCapture {
 		final List<String> failures = new ArrayList<>();
 		final CursorBackend backend = new CursorBackend(new Lwjgl3SnapshotBackend());
 		final SnapshotRunner runner = SnapshotRunner.start(backend);
+		BridgeHandler.UI.onFrame(() -> {
+			if (DocCapture.host != null) {
+				DocCapture.host.step();
+			}
+		});
 		try {
 			for (final File file : files) {
 				try {
@@ -95,11 +108,22 @@ public final class DocCapture {
 		final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
 		BridgeHandler.UI.getBridge(WindowUIBridge.class).hoverInfo(TextInfo.create(ExampleFont.REGULAR, DocCapture.getTooltipSize(commands)).color(CaptureStyle.TEXT));
 		output.mkdirs();
+		if (commands.stream().anyMatch(line -> line.trim().equals("# host"))) {
+			DocCapture.host = new Host();
+		}
+
 		int count = 0;
-		for (final List<String> part : DocCapture.split(commands)) {
-			final Map<String, SnapshotImage> shots = runner.execute(part.toArray(new String[0]));
-			DocCapture.write(shots, backend, output, pointers, masks, mirrors);
-			count += shots.size();
+		try {
+			for (final List<String> part : DocCapture.split(commands)) {
+				final Map<String, SnapshotImage> shots = runner.execute(part.toArray(new String[0]));
+				DocCapture.write(shots, backend, output, pointers, masks, mirrors);
+				count += shots.size();
+			}
+		} finally {
+			if (DocCapture.host != null) {
+				DocCapture.host.stop();
+				DocCapture.host = null;
+			}
 		}
 		System.out.println(file.getName() + " -> " + count + " shots");
 	}
@@ -163,7 +187,7 @@ public final class DocCapture {
 			image.setRGB(0, 0, snapshot.getWidth(), snapshot.getHeight(), snapshot.getPixels(), 0, snapshot.getWidth());
 			DocCapture.paintMasks(image, masks.get(shot.getKey()));
 			DocCapture.paintMirrors(image, mirrors.get(shot.getKey()));
-			DocCapture.drawPointer(image, pointers.get(shot.getKey()), cursors.get(shot.getKey()));
+			DocCapture.drawPointer(image, backend.isHidden(snapshot) ? null : pointers.get(shot.getKey()), cursors.get(shot.getKey()));
 			try {
 				ImageIO.write(image, "png", new File(output, shot.getKey() + ".png"));
 				if (readouts.get(shot.getKey()) != null) {
@@ -411,11 +435,54 @@ public final class DocCapture {
 
 	}
 
+	private static final class Host {
+
+		private final HostScene    scene    = new HostScene();
+		private final long         window   = GLFW.glfwGetCurrentContext();
+		private final GameUIBridge bridge   = GameUIBridge.create(this.window);
+		private final UIBridge     snapshot = BridgeHandler.UI.getBridge(WindowUIBridge.class);
+
+		private long last = -1L;
+
+		private Host() {
+			if (GLFW.glfwGetWindowAttrib(this.window, GLFW.GLFW_FOCUSED) == GLFW.GLFW_TRUE) {
+				throw new IllegalStateException("The snapshot window has the focus, a host film would capture the mouse of the desktop");
+			}
+
+			this.bridge.hoverInfo(TextInfo.create(ExampleFont.REGULAR, 20F).color(CaptureStyle.TEXT));
+			BridgeHandler.UI.unregister(this.snapshot);
+			BridgeHandler.UI.register(this.bridge);
+			GLFW.glfwSetInputMode(this.window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+		}
+
+		private void step() {
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
+			if (this.last >= 0L && !this.bridge.isPaused()) {
+				this.scene.update((now - this.last) / 1E9D);
+			}
+			this.last = now;
+			this.scene.draw(this.window);
+		}
+
+		private boolean isCaptured() {
+			return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
+		}
+
+		private void stop() {
+			this.bridge.closeAll();
+			BridgeHandler.UI.unregister(this.bridge);
+			BridgeHandler.UI.register(this.snapshot);
+			GLFW.glfwSetInputMode(this.window, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+		}
+
+	}
+
 	private static final class CursorBackend implements ISnapshotBackend {
 
 		private final ISnapshotBackend           backend;
 		private final Map<SnapshotImage, Cursor> cursors  = new WeakHashMap<>();
 		private final Map<SnapshotImage, String> readouts = new WeakHashMap<>();
+		private final Set<SnapshotImage>         hidden   = Collections.newSetFromMap(new WeakHashMap<>());
 
 		private CursorBackend(final ISnapshotBackend backend) {
 			this.backend = backend;
@@ -440,6 +507,9 @@ public final class DocCapture {
 		public SnapshotImage capture(final int width, final int height) {
 			final SnapshotImage image = this.backend.capture(width, height);
 			this.cursors.put(image, ((SnapshotWindowBridge) BridgeHandler.WINDOW.get()).getCursor());
+			if (DocCapture.host != null && DocCapture.host.isCaptured()) {
+				this.hidden.add(image);
+			}
 			BridgeHandler.UI.getBridge(WindowUIBridge.class).getUiList().stream().filter(ICaptureReadout.class::isInstance).findFirst().ifPresent(ui -> this.readouts.put(image, ((ICaptureReadout) ui).getReadout()));
 			return image;
 		}
@@ -455,6 +525,10 @@ public final class DocCapture {
 
 		private String getReadout(final SnapshotImage image) {
 			return this.readouts.get(image);
+		}
+
+		private boolean isHidden(final SnapshotImage image) {
+			return this.hidden.contains(image);
 		}
 
 	}

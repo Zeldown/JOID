@@ -2,7 +2,6 @@ package com.example.running;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 import com.example.ExampleFont;
 
@@ -16,8 +15,6 @@ import dev.joid.lib.font.TextInfo;
 public final class HostApp {
 
 	private static final Color TEXT = new Color(231, 233, 238).lock();
-
-	private static boolean paused;
 
 	private HostApp() {}
 
@@ -44,11 +41,15 @@ public final class HostApp {
 		// #endregion
 
 		// #region loop
+		final HostScene scene = new HostScene();
 		JOID.open(new HostOverlayUI());
+		double last = GLFW.glfwGetTime();
 		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
-			GL11.glClearColor(0.1F, 0.15F, 0.3F, 1F);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			final double now = GLFW.glfwGetTime();
+			scene.update(now - last);
+			last = now;
+			scene.draw(window);
 			backend.frame();
 			GLFW.glfwSwapBuffers(window);
 		}
@@ -57,14 +58,6 @@ public final class HostApp {
 		// #endregion
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
-	}
-
-	public static void togglePause() {
-		HostApp.paused = !HostApp.paused;
-	}
-
-	public static boolean isPaused() {
-		return HostApp.paused;
 	}
 
 }

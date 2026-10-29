@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -40,6 +41,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.ConditionalExpr;
 import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
@@ -50,6 +52,7 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.SuperExpr;
 import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 import com.github.javaparser.ast.nodeTypes.NodeWithModifiers;
@@ -617,10 +620,14 @@ public final class SourceReader {
 			}
 
 			final ObjectCreationExpr creation = (ObjectCreationExpr) statement.getExpression();
-			final MethodDeclaration refusal = SourceReader.refusal(unit, creation.getArgument(0));
+			final Expression argument = creation.getArgument(0);
+			final Expression start = SourceReader.leftmost(argument);
+			final MethodDeclaration refusal = SourceReader.refusal(unit, start);
 			if (refusal == null) {
 				continue;
 			}
+
+			final String rest = start == argument ? "" : SourceReader.messageText(argument).substring(1);
 
 			final String owner = SourceReader.ancestor(refusal, ClassOrInterfaceDeclaration.class).map(ClassOrInterfaceDeclaration::getNameAsString).orElse("");
 			final int line = statement.getBegin().map(position -> position.line).orElse(0);
@@ -631,7 +638,7 @@ public final class SourceReader {
 					}
 
 					final Optional<Expression> returned = method.findFirst(ReturnStmt.class).flatMap(ReturnStmt::getExpression);
-					returned.ifPresent(expression -> SourceReader.origins(unit, statement).forEach(origin -> this.messages.add(ApiMessage.create(false, creation.getType().getNameAsString(), SourceReader.messageText(expression), SourceReader.origin(origin, packageName), file, line))));
+					returned.ifPresent(expression -> SourceReader.branches(expression, refusal.getNameAsString()).forEach(branch -> SourceReader.origins(unit, statement).forEach(origin -> this.messages.add(ApiMessage.create(false, creation.getType().getNameAsString(), (SourceReader.messageText(branch) + rest).replace("……", "…"), SourceReader.origin(origin, packageName), file, line)))));
 				}
 			}
 		}
@@ -644,6 +651,30 @@ public final class SourceReader {
 
 		final String name = ((MethodCallExpr) argument).getNameAsString();
 		return unit.findAll(MethodDeclaration.class).stream().filter(method -> method.getNameAsString().equals(name) && "String".equals(method.getType().asString())).findFirst().orElse(null);
+	}
+
+	private static Expression leftmost(final Expression expression) {
+		if (expression instanceof BinaryExpr && ((BinaryExpr) expression).getOperator() == BinaryExpr.Operator.PLUS) {
+			return SourceReader.leftmost(((BinaryExpr) expression).getLeft());
+		}
+		return expression;
+	}
+
+	private static List<Expression> branches(final Expression expression, final String name) {
+		if (expression instanceof EnclosedExpr) {
+			return SourceReader.branches(((EnclosedExpr) expression).getInner(), name);
+		}
+
+		if (expression instanceof ConditionalExpr) {
+			final List<Expression> branches = new ArrayList<>(SourceReader.branches(((ConditionalExpr) expression).getThenExpr(), name));
+			branches.addAll(SourceReader.branches(((ConditionalExpr) expression).getElseExpr(), name));
+			return branches;
+		}
+
+		if (expression instanceof MethodCallExpr && ((MethodCallExpr) expression).getNameAsString().equals(name) && ((MethodCallExpr) expression).getScope().filter(scope -> scope instanceof SuperExpr).isPresent()) {
+			return Collections.emptyList();
+		}
+		return Collections.singletonList(expression);
 	}
 
 	private static boolean inherits(final List<CompilationUnit> units, final ClassOrInterfaceDeclaration type, final String owner) {

@@ -25,6 +25,9 @@ skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapsho
 skip com.example.running.RunningFolders registers a backend on a window of its own
 skip com.example.running.RunningLibrary registers JOID.onReady for a program that starts later
 skip com.example.running.PanelPlugin registers a UI bridge into the global registry
+skip com.example.running.HostApp program that opens its own GLFW window
+skip com.example.running.GameApp program that opens its own GLFW window
+skip com.example.running.HostScene scene drawn by the loop of HostApp and GameApp
 skip com.example.running.SceneUIBridge UI bridge registered by HostApp
 skip com.example.running.GameUIBridge UI bridge of a host loop
 skip com.example.running.PanelUIBridge UI bridge registered by PanelPlugin

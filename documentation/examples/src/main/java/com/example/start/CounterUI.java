@@ -16,8 +16,8 @@ public class CounterUI extends UI {
 		"fonts/Montserrat/Montserrat-Regular.ttf"
 	).join();
 
-	private static final Color ACTIVE    = new Color(125, 164, 255).lock();
 	private static final Color ACCENT    = new Color(91, 140, 255).lock();
+	private static final Color ACTIVE    = new Color(125, 164, 255).lock();
 	private static final Color ON_ACCENT = new Color(14, 16, 20).lock();
 
 	private final IntegerSignal clicks = new IntegerSignal(0);
