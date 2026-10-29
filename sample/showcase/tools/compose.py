@@ -1,9 +1,9 @@
 """Compose the rendered showcase frames (see showcase.py) into the README media.
 
-usage: python compose.py webp <clip|all> [width] [quality] [step]   -> images/showcase-<clip>.webp
-       python compose.py mp4                                        -> images/showcase.mp4 (every clip, crossfaded)
-       python compose.py still <clip> <frame>                       -> images/showcase-<clip>.png
-images is documentation/content/images. The mp4 needs FFmpeg: the FFMPEG variable, the PATH or a WinGet install.
+usage: python compose.py webp <clip|all> [width] [quality] [step]   -> media/<clip>.webp + media/<clip>.still.webp
+       python compose.py still <clip|all> [width] [quality]         -> media/<clip>.still.webp (the frame of STILLS)
+       python compose.py mp4                                        -> media/showcase.mp4 (every clip, crossfaded)
+media is documentation/public/showcase. The mp4 needs FFmpeg: the FFMPEG variable, the PATH or a WinGet install.
 """
 import glob, json, os, shutil, subprocess, sys
 from PIL import Image, ImageDraw, ImageFilter
@@ -12,8 +12,9 @@ import render
 import showcase
 
 FRAMES = showcase.FRAMES
-IMAGES = render.IMAGES
+MEDIA = render.MEDIA
 ORDER = showcase.ORDER
+STILLS = {"hero": 72, "reactive": 330, "type": 60, "effects": 216, "motion": 44, "form": 171, "player": 261, "model": 147, "lists": 95, "drag": 138, "theme": 100, "inspect": 468, "design": 156}
 
 FADE = 15
 SS = 4
@@ -68,10 +69,21 @@ def frames(clip):
 
 
 def webp(clip, width=960, quality=82, step=1):
-	images = [image.resize((width, width * 9 // 16), Image.LANCZOS) for index, image in enumerate(frames(clip)) if index % step == 0]
-	target = os.path.join(IMAGES, "showcase-%s.webp" % clip)
+	images = []
+	for index, image in enumerate(frames(clip)):
+		if index == STILLS[clip]:
+			save_still(clip, image, width, quality)
+		if index % step == 0:
+			images.append(image.resize((width, width * 9 // 16), Image.LANCZOS))
+	target = os.path.join(MEDIA, "%s.webp" % clip)
 	images[0].save(target, save_all=True, append_images=images[1:], duration=round(1000 / 30 * step), loop=0, quality=quality, method=6)
 	print("[JOID]", target, len(images), "frames", os.path.getsize(target) // 1024, "KB")
+
+
+def save_still(clip, image, width, quality):
+	target = os.path.join(MEDIA, "%s.still.webp" % clip)
+	image.resize((width, width * 9 // 16), Image.LANCZOS).save(target, quality=quality, method=6)
+	print("[JOID]", target, os.path.getsize(target) // 1024, "KB")
 
 
 def ffmpeg():
@@ -84,7 +96,7 @@ def ffmpeg():
 
 
 def mp4():
-	target = os.path.join(IMAGES, "showcase.mp4")
+	target = os.path.join(MEDIA, "showcase.mp4")
 	proc = subprocess.Popen([ffmpeg(), "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", "1920x1080", "-r", "30", "-i", "-",
 		"-c:v", "libx264", "-preset", "slow", "-crf", "21", "-tune", "animation", "-pix_fmt", "yuv420p", "-movflags", "+faststart", target], stdin=subprocess.PIPE)
 	tail = []
@@ -107,13 +119,10 @@ def mp4():
 	print("[JOID]", target, count, "frames", os.path.getsize(target) // 1024, "KB")
 
 
-def still(clip, frame):
-	images = frames(clip)
-	for index, image in enumerate(images):
-		if index == frame:
-			target = os.path.join(IMAGES, "showcase-%s.png" % clip)
-			image.save(target, optimize=True)
-			print("[JOID]", target, os.path.getsize(target) // 1024, "KB")
+def still(clip, width=960, quality=82):
+	for index, image in enumerate(frames(clip)):
+		if index == STILLS[clip]:
+			save_still(clip, image, width, quality)
 			return
 
 
@@ -126,4 +135,5 @@ if __name__ == "__main__":
 	elif sys.argv[1] == "mp4":
 		mp4()
 	else:
-		still(sys.argv[2], int(sys.argv[3]))
+		for clip in (ORDER if sys.argv[2] == "all" else [sys.argv[2]]):
+			still(clip, *[int(a) for a in sys.argv[3:]])

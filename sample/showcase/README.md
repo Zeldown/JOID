@@ -1,6 +1,6 @@
 # JOID showcase
 
-Every designed scene of the README showcase, as a runnable module on the Vulkan backend. The module is not published: it is not part of the release jars, of the backend template or of the classpath of the core and the backends.
+Every designed scene of the showcase of the README and of the documentation, as a runnable module on the Vulkan backend. The module is not published: it is not part of the release jars, of the backend template or of the classpath of the core and the backends.
 
 ## Run it
 
@@ -23,22 +23,22 @@ The scenes are drawn on the 1920×1080 canvas and fit any window size.
 
 - `src/main/java/dev/joid/showcase`: the scenes (`ShowHero`, `ShowReactive`, `ShowType`, `ShowEffects`, `ShowMotion`, `ShowForm`, `ShowPlayer`, `ShowModel`, `ShowLists`, `ShowDrag`, `ShowTheme`, `ShowInspect`, `ShowDesign`), their base `ShowUI`, their nodes, kits and text effects, the menu `ShowMenu`, the scene list `ShowScene`, the window `ShowcaseWindow` and the headless renderer `ShowcaseRender`.
 - `src/main/resources/assets/showcase`: the video and the colored teapot texture.
-- `tools`: the scripts that render the README media.
+- `tools`: the scripts that render the showcase media.
 
-## Render the README media again
+## Render the showcase media again
 
 The tools need Python 3 with Pillow, and FFmpeg for the video (the `FFMPEG` variable, the `PATH` or a WinGet install). They render on the Vulkan snapshot backend with a deterministic clock, so the same script always gives the same frames.
 
 ```
 cd sample/showcase/tools
 python showcase.py all          # frames of every clip in sample/showcase/build/frames/<clip>
-python compose.py webp all      # documentation/content/images/showcase-<clip>.webp
-python compose.py mp4           # documentation/content/images/showcase.mp4
+python compose.py webp all      # documentation/public/showcase/<clip>.webp and <clip>.still.webp
+python compose.py mp4           # documentation/public/showcase/showcase.mp4
 ```
 
 - `showcase.py <clip> [first] [last]` renders one clip, or a range of its frames. The clips are `hero`, `reactive`, `type`, `effects`, `motion`, `form`, `player`, `model`, `lists`, `drag`, `theme`, `inspect` and `design`; each one is a mouse and keyboard script written in the file.
 - `probe.py <clip> <frame> [frame ...]` renders a few frames on a contact sheet in `sample/showcase/build/probe`, to check a script before rendering a whole clip.
-- `compose.py` draws the pointer over the frames, then writes the WebP loops of the README and the crossfaded 1080p video.
+- `compose.py` draws the pointer over the frames, then writes the WebP loops, their still frames (`STILLS`, shown by the documentation for reduced motion and while a loop is paused) and the crossfaded 1080p video. The README and the documentation read them from `documentation/public/showcase`.
 - `render.py <scenario.txt> <folder>` renders any testkit scenario with the showcase classes, one PNG per `shot`.
 - `teapot.py` generates the teapot model and texture of the demo, and the colored texture of the showcase.
 

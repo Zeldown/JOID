@@ -38,56 +38,56 @@ JOID is a Java UI engine: build your interface once, run it on any engine, and g
 
 ## Showcase
 
-Real JOID renders, styled for this showcase: JOID ships with no design of its own. Watch them in the [1080p video](documentation/content/images/showcase.mp4).
+Real JOID renders, styled for this showcase: JOID ships with no design of its own. Watch them in the [1080p video](documentation/public/showcase/showcase.mp4).
 
 <p align="center">
-  <img src="documentation/content/images/showcase-hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D teapot and a notification sliding in, over soft blurred colors" width="100%">
+  <img src="documentation/public/showcase/hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D teapot and a notification sliding in, over soft blurred colors" width="100%">
 </p>
 
 <table>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers, the swatches and an equalizer follow every move"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-type.webp" alt="Text from 14 to 108 px in several fonts, with markup and animated effects, then a 6x zoom that stays perfectly sharp"></td>
+    <td width="50%"><img src="documentation/public/showcase/reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers, the swatches and an equalizer follow every move"></td>
+    <td width="50%"><img src="documentation/public/showcase/type.webp" alt="Text from 14 to 108 px in several fonts, with markup and animated effects, then a 6x zoom that stays perfectly sharp"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Reactive.</b> Values follow your data.</sub></td>
     <td align="center"><sub><b>Typography.</b> Markup, effects, sharp zoom.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-effects.webp" alt="Seven switches add rounded corners, a gradient, an inner border, a drop shadow, a glow, a blur and a tilt to a card, one by one"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-motion.webp" alt="Six balls slide along their tracks with six easing curves, each curve plotted next to its track"></td>
+    <td width="50%"><img src="documentation/public/showcase/effects.webp" alt="Seven switches add rounded corners, a gradient, an inner border, a drop shadow, a glow, a blur and a tilt to a card, one by one"></td>
+    <td width="50%"><img src="documentation/public/showcase/motion.webp" alt="Six balls slide along their tracks with six easing curves, each curve plotted next to its track"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Effects.</b> Stack and animate any effect.</sub></td>
     <td align="center"><sub><b>Motion.</b> Any property, any curve.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-form.webp" alt="A sign-up form: a name and an email are typed, a word is selected with a double click and replaced, and a live profile card follows"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-player.webp" alt="A video player with designed controls: the pointer pauses the video, drags the progress bar to seek, then plays it again"></td>
+    <td width="50%"><img src="documentation/public/showcase/form.webp" alt="A sign-up form: a name and an email are typed, a word is selected with a double click and replaced, and a live profile card follows"></td>
+    <td width="50%"><img src="documentation/public/showcase/player.webp" alt="A video player with designed controls: the pointer pauses the video, drags the progress bar to seek, then plays it again"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Text input.</b> Selection, markup, validation.</sub></td>
     <td align="center"><sub><b>Video.</b> Controls you design.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-model.webp" alt="A textured teapot turned with the mouse and zoomed with the wheel, its yaw, pitch and zoom shown live"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-lists.webp" alt="A playlist: a track is dragged to a new place, the others make room, then the list scrolls with a custom scrollbar"></td>
+    <td width="50%"><img src="documentation/public/showcase/model.webp" alt="A textured teapot turned with the mouse and zoomed with the wheel, its yaw, pitch and zoom shown live"></td>
+    <td width="50%"><img src="documentation/public/showcase/lists.webp" alt="A playlist: a track is dragged to a new place, the others make room, then the list scrolls with a custom scrollbar"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>3D models.</b> Lit, textured, interactive.</sub></td>
     <td align="center"><sub><b>Lists.</b> Reorder, custom scrollbars.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-drag.webp" alt="A record is dragged from a library into a player, snaps into place, and the player shows its title and color"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-theme.webp" alt="A dashboard switches from light to dark and back with one toggle, every color fading smoothly"></td>
+    <td width="50%"><img src="documentation/public/showcase/drag.webp" alt="A record is dragged from a library into a player, snaps into place, and the player shows its title and color"></td>
+    <td width="50%"><img src="documentation/public/showcase/theme.webp" alt="A dashboard switches from light to dark and back with one toggle, every color fading smoothly"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Drag and drop.</b> Drop, snap, update.</sub></td>
     <td align="center"><sub><b>Themes.</b> One signal, a new theme.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-inspect.webp" alt="The dev mode over the playlist: the grid is turned on and off, a reload rebuilds the list, the panel is dragged to the top, hovered nodes are outlined with their render time, and a click locks a row whose details scroll in the panel"></td>
-    <td width="50%"><img src="documentation/content/images/showcase-design.webp" alt="A settings screen drawn by a dark neon kit, then wiped into a flat paper kit by the same code: switches, a slider and a save button react in both, and the values follow from one kit to the other"></td>
+    <td width="50%"><img src="documentation/public/showcase/inspect.webp" alt="The dev mode over the playlist: the grid is turned on and off, a reload rebuilds the list, the panel is dragged to the top, hovered nodes are outlined with their render time, and a click locks a row whose details scroll in the panel"></td>
+    <td width="50%"><img src="documentation/public/showcase/design.webp" alt="A settings screen drawn by a dark neon kit, then wiped into a flat paper kit by the same code: switches, a slider and a save button react in both, and the values follow from one kit to the other"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Dev mode.</b> Inspect any node live.</sub></td>

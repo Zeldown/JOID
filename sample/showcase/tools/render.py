@@ -12,7 +12,7 @@ TOOLS = os.path.dirname(os.path.abspath(__file__))
 MODULE = os.path.dirname(TOOLS)
 ROOT = os.path.dirname(os.path.dirname(MODULE))
 WORK = os.path.join(MODULE, "build", "render")
-IMAGES = os.path.join(ROOT, "documentation", "content", "images")
+MEDIA = os.path.join(ROOT, "documentation", "public", "showcase")
 PACKAGE = "dev.joid.showcase."
 
 _classpath = None
