@@ -76,16 +76,20 @@
     "link": "/reference/testing/"
   },
   {
-    "label": "base-lwjgl3-glfw",
-    "link": "/reference/base-lwjgl3-glfw/"
-  },
-  {
     "label": "base-openal",
     "link": "/reference/base-openal/"
   },
   {
     "label": "base-opengl",
     "link": "/reference/base-opengl/"
+  },
+  {
+    "label": "base-lwjgl3-glfw",
+    "link": "/reference/base-lwjgl3-glfw/"
+  },
+  {
+    "label": "base-lwjgl3-openal",
+    "link": "/reference/base-lwjgl3-openal/"
   },
   {
     "label": "LWJGL 2 backend",

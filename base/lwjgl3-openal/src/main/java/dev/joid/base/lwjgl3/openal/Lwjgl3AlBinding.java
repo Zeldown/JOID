@@ -1,4 +1,4 @@
-package dev.joid.base.lwjgl3.glfw.binding;
+package dev.joid.base.lwjgl3.openal;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

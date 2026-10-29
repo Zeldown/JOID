@@ -2,9 +2,7 @@
 summary: The OpenAL binding of LWJGL 3, given to `AlAudioBridge` by the LWJGL 3 and Vulkan backends.
 ---
 
-It lives in base-lwjgl3-glfw because base-openal depends on no LWJGL version.
-
-Learn: [OpenAL of LWJGL 3](/build/base-modules/lwjgl3-glfw/#openal-of-lwjgl-3), [base-openal](/build/base-modules/openal/).
+Learn: [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/), [base-openal](/build/base-modules/openal/).
 
 ## inst()
 

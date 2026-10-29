@@ -4,6 +4,7 @@ evaluationDependsOn(':base-opengl')
 
 dependencies {
     compile project(':base-lwjgl3-glfw')
+    compile project(':base-lwjgl3-openal')
     compile project(':base-openal')
     compile project(':base-opengl')
 

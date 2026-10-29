@@ -74,10 +74,6 @@ Learn: [Render pipeline](/build/pipeline/), [Shader translation](/build/shader-t
 The testkit: the snapshot runner that renders UIs on a hidden surface, the snapshot suite and the contract suites that check a backend, and the tools that compare renders.
 Learn: [Testing your UIs](/use/learn/running/testing/), [Testing a backend](/build/testing-a-backend/).
 
-## base-lwjgl3-glfw
-The window bridge, the input forwarder and the key table of GLFW, the OpenAL binding of LWJGL 3 and the hidden window of the snapshot backends.
-Learn: [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
-
 ## base-openal
 The audio bridge of OpenAL, its streaming sources and the binding that a backend gives it.
 Learn: [base-openal](/build/base-modules/openal/).
@@ -85,6 +81,14 @@ Learn: [base-openal](/build/base-modules/openal/).
 ## base-opengl
 The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back.
 Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/embedding-in-a-host/).
+
+## base-lwjgl3-glfw
+The window bridge, the input forwarder and the key table of GLFW, and the hidden window of the snapshot backends.
+Learn: [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
+
+## base-lwjgl3-openal
+The OpenAL binding of LWJGL 3, for the audio bridge of base-openal.
+Learn: [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/).
 
 ## lwjgl2
 The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend.

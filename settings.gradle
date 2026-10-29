@@ -1,7 +1,8 @@
 rootProject.name = 'JOID'
 
 include 'core'
-include 'base-lwjgl3-glfw', 'base-openal', 'base-opengl'
+include 'base-openal', 'base-opengl'
+include 'base-lwjgl3-glfw', 'base-lwjgl3-openal'
 include 'backend-lwjgl2', 'backend-lwjgl3', 'backend-vulkan'
 include 'tool-msdf', 'tool-testkit', 'tool-docgen'
 include 'sample-showcase'

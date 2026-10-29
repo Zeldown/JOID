@@ -2,6 +2,7 @@ archivesBaseName = "joid-backend-vulkan"
 
 dependencies {
     compile project(':base-lwjgl3-glfw')
+    compile project(':base-lwjgl3-openal')
     compile project(':base-openal')
 
     compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"

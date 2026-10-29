@@ -1,4 +1,4 @@
-# crop build-layers 510 155 900 770
+# crop build-layers 510 125 900 830
 ui com.example.backend.diagram.LayersDiagramUI
 wait 100
 shot build-layers

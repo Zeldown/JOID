@@ -28294,300 +28294,6 @@
         "VideoNativesException(String,Throwable)"
       ]
     },
-    "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge",
-      "name": "GlfwWindowBridge",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "The window bridge of a GLFW window, which reads its size, mouse, keys, clipboard and cursor in screen pixels.",
-      "ancestors": [
-        "dev.joid.lib.bridge.window.IWindowBridge",
-        "dev.joid.lib.bridge.IBridge"
-      ],
-      "url": "/reference/base-lwjgl3-glfw/glfwwindowbridge/",
-      "members": {
-        "GlfwWindowBridge": "GlfwWindowBridge-constructor",
-        "destroy": "GlfwWindowBridge-method-destroy",
-        "getWidth": "GlfwWindowBridge-method-getWidth",
-        "getHeight": "GlfwWindowBridge-method-getHeight",
-        "getMouseX": "GlfwWindowBridge-method-getMouseX",
-        "getMouseY": "GlfwWindowBridge-method-getMouseY",
-        "isMouseGrabbed": "GlfwWindowBridge-method-isMouseGrabbed",
-        "isKeyDown": "GlfwWindowBridge-method-isKeyDown",
-        "getClipboard": "GlfwWindowBridge-method-getClipboard",
-        "setClipboard": "GlfwWindowBridge-method-setClipboard"
-      },
-      "overloads": [
-        "GlfwWindowBridge(long)",
-        "destroy()",
-        "getWidth()",
-        "getHeight()",
-        "getMouseX()",
-        "getMouseY()",
-        "isMouseGrabbed()",
-        "isKeyDown(Key)",
-        "getClipboard()",
-        "setClipboard(String)"
-      ]
-    },
-    "GlfwWindowBridge": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge",
-      "name": "GlfwWindowBridge",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "The window bridge of a GLFW window, which reads its size, mouse, keys, clipboard and cursor in screen pixels.",
-      "ancestors": [
-        "dev.joid.lib.bridge.window.IWindowBridge",
-        "dev.joid.lib.bridge.IBridge"
-      ],
-      "url": "/reference/base-lwjgl3-glfw/glfwwindowbridge/",
-      "members": {
-        "GlfwWindowBridge": "GlfwWindowBridge-constructor",
-        "destroy": "GlfwWindowBridge-method-destroy",
-        "getWidth": "GlfwWindowBridge-method-getWidth",
-        "getHeight": "GlfwWindowBridge-method-getHeight",
-        "getMouseX": "GlfwWindowBridge-method-getMouseX",
-        "getMouseY": "GlfwWindowBridge-method-getMouseY",
-        "isMouseGrabbed": "GlfwWindowBridge-method-isMouseGrabbed",
-        "isKeyDown": "GlfwWindowBridge-method-isKeyDown",
-        "getClipboard": "GlfwWindowBridge-method-getClipboard",
-        "setClipboard": "GlfwWindowBridge-method-setClipboard"
-      },
-      "overloads": [
-        "GlfwWindowBridge(long)",
-        "destroy()",
-        "getWidth()",
-        "getHeight()",
-        "getMouseX()",
-        "getMouseY()",
-        "isMouseGrabbed()",
-        "isKeyDown(Key)",
-        "getClipboard()",
-        "setClipboard(String)"
-      ]
-    },
-    "dev.joid.base.lwjgl3.glfw.binding.Lwjgl3AlBinding": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.binding.Lwjgl3AlBinding",
-      "name": "Lwjgl3AlBinding",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "The OpenAL binding of LWJGL 3, given to `AlAudioBridge` by the LWJGL 3 and Vulkan backends.",
-      "ancestors": [
-        "dev.joid.base.openal.binding.IAlBinding"
-      ],
-      "url": "/reference/base-lwjgl3-glfw/lwjgl3albinding/",
-      "members": {
-        "inst": "Lwjgl3AlBinding-factory-inst",
-        "createContext": "Lwjgl3AlBinding-method-createContext",
-        "destroyContext": "Lwjgl3AlBinding-method-destroyContext",
-        "getCurrentContext": "Lwjgl3AlBinding-method-getCurrentContext",
-        "genSource": "Lwjgl3AlBinding-method-genSource",
-        "deleteSource": "Lwjgl3AlBinding-method-deleteSource",
-        "genBuffer": "Lwjgl3AlBinding-method-genBuffer",
-        "deleteBuffer": "Lwjgl3AlBinding-method-deleteBuffer",
-        "bufferData": "Lwjgl3AlBinding-method-bufferData",
-        "play": "Lwjgl3AlBinding-method-play",
-        "stop": "Lwjgl3AlBinding-method-stop",
-        "pause": "Lwjgl3AlBinding-method-pause",
-        "gain": "Lwjgl3AlBinding-method-gain",
-        "queueBuffer": "Lwjgl3AlBinding-method-queueBuffer",
-        "unqueueBuffer": "Lwjgl3AlBinding-method-unqueueBuffer",
-        "isPlaying": "Lwjgl3AlBinding-method-isPlaying",
-        "getQueuedBuffers": "Lwjgl3AlBinding-method-getQueuedBuffers",
-        "getProcessedBuffers": "Lwjgl3AlBinding-method-getProcessedBuffers"
-      },
-      "overloads": [
-        "inst()",
-        "createContext()",
-        "destroyContext()",
-        "getCurrentContext()",
-        "genSource()",
-        "deleteSource(int)",
-        "genBuffer()",
-        "deleteBuffer(int)",
-        "bufferData(int,int,short[],int)",
-        "play(int)",
-        "stop(int)",
-        "pause(int)",
-        "gain(int,float)",
-        "queueBuffer(int,int)",
-        "unqueueBuffer(int)",
-        "isPlaying(int)",
-        "getQueuedBuffers(int)",
-        "getProcessedBuffers(int)"
-      ]
-    },
-    "Lwjgl3AlBinding": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.binding.Lwjgl3AlBinding",
-      "name": "Lwjgl3AlBinding",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "The OpenAL binding of LWJGL 3, given to `AlAudioBridge` by the LWJGL 3 and Vulkan backends.",
-      "ancestors": [
-        "dev.joid.base.openal.binding.IAlBinding"
-      ],
-      "url": "/reference/base-lwjgl3-glfw/lwjgl3albinding/",
-      "members": {
-        "inst": "Lwjgl3AlBinding-factory-inst",
-        "createContext": "Lwjgl3AlBinding-method-createContext",
-        "destroyContext": "Lwjgl3AlBinding-method-destroyContext",
-        "getCurrentContext": "Lwjgl3AlBinding-method-getCurrentContext",
-        "genSource": "Lwjgl3AlBinding-method-genSource",
-        "deleteSource": "Lwjgl3AlBinding-method-deleteSource",
-        "genBuffer": "Lwjgl3AlBinding-method-genBuffer",
-        "deleteBuffer": "Lwjgl3AlBinding-method-deleteBuffer",
-        "bufferData": "Lwjgl3AlBinding-method-bufferData",
-        "play": "Lwjgl3AlBinding-method-play",
-        "stop": "Lwjgl3AlBinding-method-stop",
-        "pause": "Lwjgl3AlBinding-method-pause",
-        "gain": "Lwjgl3AlBinding-method-gain",
-        "queueBuffer": "Lwjgl3AlBinding-method-queueBuffer",
-        "unqueueBuffer": "Lwjgl3AlBinding-method-unqueueBuffer",
-        "isPlaying": "Lwjgl3AlBinding-method-isPlaying",
-        "getQueuedBuffers": "Lwjgl3AlBinding-method-getQueuedBuffers",
-        "getProcessedBuffers": "Lwjgl3AlBinding-method-getProcessedBuffers"
-      },
-      "overloads": [
-        "inst()",
-        "createContext()",
-        "destroyContext()",
-        "getCurrentContext()",
-        "genSource()",
-        "deleteSource(int)",
-        "genBuffer()",
-        "deleteBuffer(int)",
-        "bufferData(int,int,short[],int)",
-        "play(int)",
-        "stop(int)",
-        "pause(int)",
-        "gain(int,float)",
-        "queueBuffer(int,int)",
-        "unqueueBuffer(int)",
-        "isPlaying(int)",
-        "getQueuedBuffers(int)",
-        "getProcessedBuffers(int)"
-      ]
-    },
-    "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder",
-      "name": "GlfwInputForwarder",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
-      "members": {
-        "attach": "GlfwInputForwarder-method-attach"
-      },
-      "overloads": [
-        "attach(long)"
-      ]
-    },
-    "GlfwInputForwarder": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder",
-      "name": "GlfwInputForwarder",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
-      "members": {
-        "attach": "GlfwInputForwarder-method-attach"
-      },
-      "overloads": [
-        "attach(long)"
-      ]
-    },
-    "dev.joid.base.lwjgl3.glfw.input.GlfwKeys": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwKeys",
-      "name": "GlfwKeys",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwkeys/",
-      "members": {
-        "getCode": "GlfwKeys-method-getCode",
-        "getKey": "GlfwKeys-method-getKey",
-        "getPhysicalKey": "GlfwKeys-method-getPhysicalKey",
-        "isKeyDown": "GlfwKeys-method-isKeyDown"
-      },
-      "overloads": [
-        "getCode(Key)",
-        "getKey(int)",
-        "getPhysicalKey(int)",
-        "isKeyDown(Key,IntPredicate)"
-      ]
-    },
-    "GlfwKeys": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwKeys",
-      "name": "GlfwKeys",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwkeys/",
-      "members": {
-        "getCode": "GlfwKeys-method-getCode",
-        "getKey": "GlfwKeys-method-getKey",
-        "getPhysicalKey": "GlfwKeys-method-getPhysicalKey",
-        "isKeyDown": "GlfwKeys-method-isKeyDown"
-      },
-      "overloads": [
-        "getCode(Key)",
-        "getKey(int)",
-        "getPhysicalKey(int)",
-        "isKeyDown(Key,IntPredicate)"
-      ]
-    },
-    "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow",
-      "name": "GlfwSnapshotWindow",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "A hidden, undecorated GLFW window of a fixed size, on which the snapshot backends render.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwsnapshotwindow/",
-      "members": {
-        "create": "GlfwSnapshotWindow-factory-create",
-        "destroy": "GlfwSnapshotWindow-method-destroy",
-        "getWindow": "GlfwSnapshotWindow-method-getWindow"
-      },
-      "overloads": [
-        "create(int,int,Runnable)",
-        "destroy()",
-        "getWindow()"
-      ]
-    },
-    "GlfwSnapshotWindow": {
-      "fqcn": "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow",
-      "name": "GlfwSnapshotWindow",
-      "kind": "class",
-      "abstract": false,
-      "family": "base-lwjgl3-glfw",
-      "summary": "A hidden, undecorated GLFW window of a fixed size, on which the snapshot backends render.",
-      "ancestors": [],
-      "url": "/reference/base-lwjgl3-glfw/glfwsnapshotwindow/",
-      "members": {
-        "create": "GlfwSnapshotWindow-factory-create",
-        "destroy": "GlfwSnapshotWindow-method-destroy",
-        "getWindow": "GlfwSnapshotWindow-method-getWindow"
-      },
-      "overloads": [
-        "create(int,int,Runnable)",
-        "destroy()",
-        "getWindow()"
-      ]
-    },
     "dev.joid.base.openal.AlAudioBridge": {
       "fqcn": "dev.joid.base.openal.AlAudioBridge",
       "name": "AlAudioBridge",
@@ -31544,6 +31250,300 @@
       },
       "overloads": [
         "capture(GlRenderBridge,int,int)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge",
+      "name": "GlfwWindowBridge",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "The window bridge of a GLFW window, which reads its size, mouse, keys, clipboard and cursor in screen pixels.",
+      "ancestors": [
+        "dev.joid.lib.bridge.window.IWindowBridge",
+        "dev.joid.lib.bridge.IBridge"
+      ],
+      "url": "/reference/base-lwjgl3-glfw/glfwwindowbridge/",
+      "members": {
+        "GlfwWindowBridge": "GlfwWindowBridge-constructor",
+        "destroy": "GlfwWindowBridge-method-destroy",
+        "getWidth": "GlfwWindowBridge-method-getWidth",
+        "getHeight": "GlfwWindowBridge-method-getHeight",
+        "getMouseX": "GlfwWindowBridge-method-getMouseX",
+        "getMouseY": "GlfwWindowBridge-method-getMouseY",
+        "isMouseGrabbed": "GlfwWindowBridge-method-isMouseGrabbed",
+        "isKeyDown": "GlfwWindowBridge-method-isKeyDown",
+        "getClipboard": "GlfwWindowBridge-method-getClipboard",
+        "setClipboard": "GlfwWindowBridge-method-setClipboard"
+      },
+      "overloads": [
+        "GlfwWindowBridge(long)",
+        "destroy()",
+        "getWidth()",
+        "getHeight()",
+        "getMouseX()",
+        "getMouseY()",
+        "isMouseGrabbed()",
+        "isKeyDown(Key)",
+        "getClipboard()",
+        "setClipboard(String)"
+      ]
+    },
+    "GlfwWindowBridge": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.GlfwWindowBridge",
+      "name": "GlfwWindowBridge",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "The window bridge of a GLFW window, which reads its size, mouse, keys, clipboard and cursor in screen pixels.",
+      "ancestors": [
+        "dev.joid.lib.bridge.window.IWindowBridge",
+        "dev.joid.lib.bridge.IBridge"
+      ],
+      "url": "/reference/base-lwjgl3-glfw/glfwwindowbridge/",
+      "members": {
+        "GlfwWindowBridge": "GlfwWindowBridge-constructor",
+        "destroy": "GlfwWindowBridge-method-destroy",
+        "getWidth": "GlfwWindowBridge-method-getWidth",
+        "getHeight": "GlfwWindowBridge-method-getHeight",
+        "getMouseX": "GlfwWindowBridge-method-getMouseX",
+        "getMouseY": "GlfwWindowBridge-method-getMouseY",
+        "isMouseGrabbed": "GlfwWindowBridge-method-isMouseGrabbed",
+        "isKeyDown": "GlfwWindowBridge-method-isKeyDown",
+        "getClipboard": "GlfwWindowBridge-method-getClipboard",
+        "setClipboard": "GlfwWindowBridge-method-setClipboard"
+      },
+      "overloads": [
+        "GlfwWindowBridge(long)",
+        "destroy()",
+        "getWidth()",
+        "getHeight()",
+        "getMouseX()",
+        "getMouseY()",
+        "isMouseGrabbed()",
+        "isKeyDown(Key)",
+        "getClipboard()",
+        "setClipboard(String)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder",
+      "name": "GlfwInputForwarder",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
+      "members": {
+        "attach": "GlfwInputForwarder-method-attach"
+      },
+      "overloads": [
+        "attach(long)"
+      ]
+    },
+    "GlfwInputForwarder": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder",
+      "name": "GlfwInputForwarder",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "Forwards the input of a GLFW window to the UI bridges of JOID, ahead of the GLFW callbacks the window already had.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwinputforwarder/",
+      "members": {
+        "attach": "GlfwInputForwarder-method-attach"
+      },
+      "overloads": [
+        "attach(long)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.glfw.input.GlfwKeys": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwKeys",
+      "name": "GlfwKeys",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwkeys/",
+      "members": {
+        "getCode": "GlfwKeys-method-getCode",
+        "getKey": "GlfwKeys-method-getKey",
+        "getPhysicalKey": "GlfwKeys-method-getPhysicalKey",
+        "isKeyDown": "GlfwKeys-method-isKeyDown"
+      },
+      "overloads": [
+        "getCode(Key)",
+        "getKey(int)",
+        "getPhysicalKey(int)",
+        "isKeyDown(Key,IntPredicate)"
+      ]
+    },
+    "GlfwKeys": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.input.GlfwKeys",
+      "name": "GlfwKeys",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "Maps the key codes of GLFW to the keys of JOID and back, by physical position or through the keyboard layout.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwkeys/",
+      "members": {
+        "getCode": "GlfwKeys-method-getCode",
+        "getKey": "GlfwKeys-method-getKey",
+        "getPhysicalKey": "GlfwKeys-method-getPhysicalKey",
+        "isKeyDown": "GlfwKeys-method-isKeyDown"
+      },
+      "overloads": [
+        "getCode(Key)",
+        "getKey(int)",
+        "getPhysicalKey(int)",
+        "isKeyDown(Key,IntPredicate)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow",
+      "name": "GlfwSnapshotWindow",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "A hidden, undecorated GLFW window of a fixed size, on which the snapshot backends render.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwsnapshotwindow/",
+      "members": {
+        "create": "GlfwSnapshotWindow-factory-create",
+        "destroy": "GlfwSnapshotWindow-method-destroy",
+        "getWindow": "GlfwSnapshotWindow-method-getWindow"
+      },
+      "overloads": [
+        "create(int,int,Runnable)",
+        "destroy()",
+        "getWindow()"
+      ]
+    },
+    "GlfwSnapshotWindow": {
+      "fqcn": "dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow",
+      "name": "GlfwSnapshotWindow",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-glfw",
+      "summary": "A hidden, undecorated GLFW window of a fixed size, on which the snapshot backends render.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-glfw/glfwsnapshotwindow/",
+      "members": {
+        "create": "GlfwSnapshotWindow-factory-create",
+        "destroy": "GlfwSnapshotWindow-method-destroy",
+        "getWindow": "GlfwSnapshotWindow-method-getWindow"
+      },
+      "overloads": [
+        "create(int,int,Runnable)",
+        "destroy()",
+        "getWindow()"
+      ]
+    },
+    "dev.joid.base.lwjgl3.openal.Lwjgl3AlBinding": {
+      "fqcn": "dev.joid.base.lwjgl3.openal.Lwjgl3AlBinding",
+      "name": "Lwjgl3AlBinding",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-openal",
+      "summary": "The OpenAL binding of LWJGL 3, given to `AlAudioBridge` by the LWJGL 3 and Vulkan backends.",
+      "ancestors": [
+        "dev.joid.base.openal.binding.IAlBinding"
+      ],
+      "url": "/reference/base-lwjgl3-openal/lwjgl3albinding/",
+      "members": {
+        "inst": "Lwjgl3AlBinding-factory-inst",
+        "createContext": "Lwjgl3AlBinding-method-createContext",
+        "destroyContext": "Lwjgl3AlBinding-method-destroyContext",
+        "getCurrentContext": "Lwjgl3AlBinding-method-getCurrentContext",
+        "genSource": "Lwjgl3AlBinding-method-genSource",
+        "deleteSource": "Lwjgl3AlBinding-method-deleteSource",
+        "genBuffer": "Lwjgl3AlBinding-method-genBuffer",
+        "deleteBuffer": "Lwjgl3AlBinding-method-deleteBuffer",
+        "bufferData": "Lwjgl3AlBinding-method-bufferData",
+        "play": "Lwjgl3AlBinding-method-play",
+        "stop": "Lwjgl3AlBinding-method-stop",
+        "pause": "Lwjgl3AlBinding-method-pause",
+        "gain": "Lwjgl3AlBinding-method-gain",
+        "queueBuffer": "Lwjgl3AlBinding-method-queueBuffer",
+        "unqueueBuffer": "Lwjgl3AlBinding-method-unqueueBuffer",
+        "isPlaying": "Lwjgl3AlBinding-method-isPlaying",
+        "getQueuedBuffers": "Lwjgl3AlBinding-method-getQueuedBuffers",
+        "getProcessedBuffers": "Lwjgl3AlBinding-method-getProcessedBuffers"
+      },
+      "overloads": [
+        "inst()",
+        "createContext()",
+        "destroyContext()",
+        "getCurrentContext()",
+        "genSource()",
+        "deleteSource(int)",
+        "genBuffer()",
+        "deleteBuffer(int)",
+        "bufferData(int,int,short[],int)",
+        "play(int)",
+        "stop(int)",
+        "pause(int)",
+        "gain(int,float)",
+        "queueBuffer(int,int)",
+        "unqueueBuffer(int)",
+        "isPlaying(int)",
+        "getQueuedBuffers(int)",
+        "getProcessedBuffers(int)"
+      ]
+    },
+    "Lwjgl3AlBinding": {
+      "fqcn": "dev.joid.base.lwjgl3.openal.Lwjgl3AlBinding",
+      "name": "Lwjgl3AlBinding",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-openal",
+      "summary": "The OpenAL binding of LWJGL 3, given to `AlAudioBridge` by the LWJGL 3 and Vulkan backends.",
+      "ancestors": [
+        "dev.joid.base.openal.binding.IAlBinding"
+      ],
+      "url": "/reference/base-lwjgl3-openal/lwjgl3albinding/",
+      "members": {
+        "inst": "Lwjgl3AlBinding-factory-inst",
+        "createContext": "Lwjgl3AlBinding-method-createContext",
+        "destroyContext": "Lwjgl3AlBinding-method-destroyContext",
+        "getCurrentContext": "Lwjgl3AlBinding-method-getCurrentContext",
+        "genSource": "Lwjgl3AlBinding-method-genSource",
+        "deleteSource": "Lwjgl3AlBinding-method-deleteSource",
+        "genBuffer": "Lwjgl3AlBinding-method-genBuffer",
+        "deleteBuffer": "Lwjgl3AlBinding-method-deleteBuffer",
+        "bufferData": "Lwjgl3AlBinding-method-bufferData",
+        "play": "Lwjgl3AlBinding-method-play",
+        "stop": "Lwjgl3AlBinding-method-stop",
+        "pause": "Lwjgl3AlBinding-method-pause",
+        "gain": "Lwjgl3AlBinding-method-gain",
+        "queueBuffer": "Lwjgl3AlBinding-method-queueBuffer",
+        "unqueueBuffer": "Lwjgl3AlBinding-method-unqueueBuffer",
+        "isPlaying": "Lwjgl3AlBinding-method-isPlaying",
+        "getQueuedBuffers": "Lwjgl3AlBinding-method-getQueuedBuffers",
+        "getProcessedBuffers": "Lwjgl3AlBinding-method-getProcessedBuffers"
+      },
+      "overloads": [
+        "inst()",
+        "createContext()",
+        "destroyContext()",
+        "getCurrentContext()",
+        "genSource()",
+        "deleteSource(int)",
+        "genBuffer()",
+        "deleteBuffer(int)",
+        "bufferData(int,int,short[],int)",
+        "play(int)",
+        "stop(int)",
+        "pause(int)",
+        "gain(int,float)",
+        "queueBuffer(int,int)",
+        "unqueueBuffer(int)",
+        "isPlaying(int)",
+        "getQueuedBuffers(int)",
+        "getProcessedBuffers(int)"
       ]
     },
     "dev.joid.backend.lwjgl2.Lwjgl2Backend": {

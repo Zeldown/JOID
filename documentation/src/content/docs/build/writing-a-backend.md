@@ -30,7 +30,7 @@ Each release publishes `joid-backend-template-<version>.zip`, a Gradle project t
 2. Rename the package `com.example.joid.backend` in `src/main/java`, `src/test/java` and `src/demo/java`.
    In `build.gradle`, rename `group`, `archivesBaseName`, `backendPackage` and the `main` class of the `runDemo` task; in `settings.gradle`, rename `rootProject.name`.
 3. Add the libraries of your engine to the `compile` dependencies.
-   Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; `joid-base-lwjgl3-glfw` needs `joid-base-openal` next to it.
+   Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; a binding module needs the agnostic module it binds next to it (`joid-base-lwjgl3-openal` needs `joid-base-openal`).
 
 **Check:** `./gradlew compileJava` succeeds.
 The bridges of the template throw an `UnsupportedOperationException` that names the method to implement, so the first UI that opens, or the first `frame()`, fails until you have implemented them.

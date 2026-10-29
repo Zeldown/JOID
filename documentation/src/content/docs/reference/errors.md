@@ -2337,48 +2337,6 @@ The JVM offers no SHA-1, which the testkit uses to name its downloads.
 
 Run the tests on a standard JVM.
 
-## base-lwjgl3-glfw
-
-### OpenAL cannot open the default audio device, check that an audio output … {#openal-cannot-open-default}
-
-**`IllegalStateException`** · `OpenAL cannot open the default audio device, check that an audio output device is connected and enabled`
-
-Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-lwjgl3-glfw/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
-
-The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
-
-Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
-
-### OpenAL cannot create a context on the default audio device, check that … {#openal-cannot-create-context}
-
-**`IllegalStateException`** · `OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date`
-
-Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-lwjgl3-glfw/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
-
-The default audio device opened but refused an OpenAL context.
-
-Close the application that holds the device exclusively, or update its driver: [base-openal](/build/base-modules/openal/#create-the-bridge).
-
-### GLFW cannot be initialized, check that the system has a display (DISPLAY … {#glfw-cannot-initialized-check}
-
-**`IllegalStateException`** · `GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)`
-
-Emitted by [`GlfwSnapshotWindow.create`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
-
-A snapshot backend could not start GLFW, usually on a machine without a display.
-
-Run the tests with a display, or a virtual one such as Xvfb on a server: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
-
-### GLFW cannot create the …x… snapshot window, check that the graphics … {#glfw-cannot-create-x}
-
-**`IllegalStateException`** · `GLFW cannot create the …x… snapshot window, check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)`
-
-Emitted by [`GlfwSnapshotWindow.create`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
-
-The graphics driver refused the hidden window of a snapshot backend.
-
-Update the graphics driver, or run on a machine that supports the API of the backend: [Hidden windows](/build/base-modules/lwjgl3-glfw/#hidden-windows).
-
 ## base-opengl
 
 ### OpenGL cannot link a shader program, fix its sources from the log of the … {#opengl-cannot-link-shader}
@@ -2475,6 +2433,50 @@ Register the backend first: [Show a texture of your application](/use/learn/desc
 An image is wider or taller than the largest texture of the graphics context or device.
 
 Downscale the image, or split it: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
+
+## base-lwjgl3-glfw
+
+### GLFW cannot be initialized, check that the system has a display (DISPLAY … {#glfw-cannot-initialized-check}
+
+**`IllegalStateException`** · `GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)`
+
+Emitted by [`GlfwSnapshotWindow.create`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
+
+A snapshot backend could not start GLFW, usually on a machine without a display.
+
+Run the tests with a display, or a virtual one such as Xvfb on a server: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
+
+### GLFW cannot create the …x… snapshot window, check that the graphics … {#glfw-cannot-create-x}
+
+**`IllegalStateException`** · `GLFW cannot create the …x… snapshot window, check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)`
+
+Emitted by [`GlfwSnapshotWindow.create`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/#GlfwSnapshotWindow-factory-create).
+
+The graphics driver refused the hidden window of a snapshot backend.
+
+Update the graphics driver, or run on a machine that supports the API of the backend: [Hidden windows](/build/base-modules/lwjgl3-glfw/#hidden-windows).
+
+## base-lwjgl3-openal
+
+### OpenAL cannot open the default audio device, check that an audio output … {#openal-cannot-open-default}
+
+**`IllegalStateException`** · `OpenAL cannot open the default audio device, check that an audio output device is connected and enabled`
+
+Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-lwjgl3-openal/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
+
+The first video with sound asked OpenAL for the default device, and the machine has none, or it is disabled.
+
+Connect or enable an audio output, or register the backend with `audio(false)`: [What happens at register()](/use/learn/running/backends/#know-what-happens-at-register).
+
+### OpenAL cannot create a context on the default audio device, check that … {#openal-cannot-create-context}
+
+**`IllegalStateException`** · `OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date`
+
+Emitted by [`Lwjgl3AlBinding.createContext`](/reference/base-lwjgl3-openal/lwjgl3albinding/#Lwjgl3AlBinding-method-createContext).
+
+The default audio device opened but refused an OpenAL context.
+
+Close the application that holds the device exclusively, or update its driver: [base-openal](/build/base-modules/openal/#create-the-bridge).
 
 ## LWJGL 2 backend
 

@@ -8,11 +8,12 @@ A backend extends `Backend`, creates three bridges — `IRenderBridge`, `IWindow
 
 1. Put the JOID jars listed in [`libs/README.md`](libs/README.md) in `libs/`.
 2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group`, `archivesBaseName`, `backendPackage` and the `main` class of `runDemo` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
-3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add `joid-base-lwjgl3-glfw` and `joid-base-openal` to the `embed` configuration instead of writing those bridges (on OpenGL, add `joid-base-opengl` too and implement its bindings instead of a render bridge):
+3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add their base modules to the `embed` configuration instead of writing those bridges (on OpenGL, add `joid-base-opengl` too and implement its bindings instead of a render bridge):
 
 ```groovy
 dependencies {
-    embed files("libs/joid-base-lwjgl3-glfw-${joidVersion}.jar", "libs/joid-base-openal-${joidVersion}.jar")
+    embed files("libs/joid-base-lwjgl3-glfw-${joidVersion}.jar")
+    embed files("libs/joid-base-openal-${joidVersion}.jar", "libs/joid-base-lwjgl3-openal-${joidVersion}.jar")
 }
 ```
 

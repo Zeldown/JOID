@@ -1,12 +1,12 @@
 ---
 title: "base-lwjgl3-glfw"
-description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the GLFW callbacks of the application, the key table, the OpenAL binding of LWJGL 3 and hidden windows for tests."
+description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the GLFW callbacks of the application, the key table and hidden windows for tests."
 genre: build
 sidebar:
-  order: 1
+  order: 4
 ---
 
-`joid-base-lwjgl3-glfw` turns a GLFW window, through LWJGL 3, into the window bridge and the input of JOID, and holds the OpenAL binding of LWJGL 3.
+`joid-base-lwjgl3-glfw` turns a GLFW window, through LWJGL 3, into the window bridge and the input of JOID.
 The LWJGL 3 and Vulkan backends use it as it is.
 
 ## Window bridge
@@ -41,11 +41,6 @@ An application that sets its callbacks before registering the backend therefore 
 [[GlfwKeys]] maps the key codes of GLFW to [[Key]] values and back.
 `getPhysicalKey(code)` gives the position, and `getKey(code)` the printed key, through a [[KeyLayout]] fed by `glfwGetKeyName`: `Key.A` is the key that types `a`, wherever it sits.
 Its position table (`getPhysicalKey`, `getCode`, `isKeyDown`) needs no GLFW call, so a backend whose engine reports the key codes of GLFW reuses it with a [[KeyLayout]] of its own, as the forwarder of [Input forwarding](/build/input/) does; `getKey` reads the layout through GLFW.
-
-## OpenAL of LWJGL 3
-
-[[Lwjgl3AlBinding#inst]] is the [[IAlBinding]] of LWJGL 3 for the audio bridge of [base-openal](/build/base-modules/openal/).
-It lives here, next to the dependency of the module on the OpenAL library of LWJGL 3, so that base-openal depends on no LWJGL version.
 
 ## Hidden windows
 

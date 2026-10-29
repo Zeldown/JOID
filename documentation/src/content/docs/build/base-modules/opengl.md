@@ -3,7 +3,7 @@ title: "base-opengl"
 description: "The OpenGL module: a render bridge for OpenGL 2.1 and later over a binding, with capability detection, a state guard, textures, framebuffers, shaders and mipmaps."
 genre: build
 sidebar:
-  order: 3
+  order: 2
 ---
 
 `joid-base-opengl` is a complete [render bridge](/build/bridges/render/) for OpenGL.

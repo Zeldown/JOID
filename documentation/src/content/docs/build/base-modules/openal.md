@@ -3,7 +3,7 @@ title: "base-openal"
 description: "The OpenAL module: an audio bridge of streaming sources over a binding, with gains mapped by the host and an optional shared context."
 genre: build
 sidebar:
-  order: 2
+  order: 1
 ---
 
 `joid-base-openal` implements the [audio bridge](/build/bridges/audio/) on OpenAL.
@@ -15,7 +15,7 @@ It calls OpenAL only through an [[IAlBinding]], so the same code runs on LWJGL 2
 
 | Binding | Library |
 |---|---|
-| [[Lwjgl3AlBinding#inst]] | LWJGL 3 OpenAL, in [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) |
+| [[Lwjgl3AlBinding#inst]] | LWJGL 3 OpenAL, in [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) |
 | [[Lwjgl2AlBinding#inst]] | LWJGL 2 OpenAL, in the LWJGL 2 backend: copy it into your backend, as the GL bindings ([Embedding in a host](/build/embedding-in-a-host/#register-once-the-context-is-current)) |
 | your [[IAlBinding]] | the OpenAL of your engine |
 

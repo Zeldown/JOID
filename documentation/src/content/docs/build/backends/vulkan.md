@@ -15,7 +15,7 @@ How an application installs and starts it is on [Choosing a backend](/use/learn/
 | Bridge | Class | From |
 |---|---|---|
 | Render | [[VulkanRenderBridge]] | this backend |
-| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) |
+| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) |
 | Window | [[GlfwWindowBridge]] | base-lwjgl3-glfw |
 | Input | [[GlfwInputForwarder]] | base-lwjgl3-glfw |
 
