@@ -182,10 +182,10 @@ Make the "Shop" button of `HoverUI` grow from `220` to `260` px wide while it is
 `hoverValue` is read in a lambda, on every frame:
 
 ```java fragment
-.<RectNode>width(() -> 220D + rect.hoverValue(40F))
+.self(rect -> rect.width(() -> 220D + rect.hoverValue(40F)))
 ```
 
-`rect` is the button, kept in a local variable or given by `self(rect -> ...)`.
+`self` hands you the button, so that its width can read its own hover progress.
 
 </details>
 
