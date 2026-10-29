@@ -10,7 +10,7 @@ public final class RainbowTextEffect implements ITextEffect {
 	@Override
 	public void apply(final ITextGlyph glyph) {
 		final long time = BridgeHandler.CLOCK.get().currentTimeMillis() + glyph.getIndex() * 120L;
-		glyph.color(Color.RAINBOW(time).withAlpha(glyph.getColor().getAlphaF()));
+		glyph.color(Color.RAINBOW(time).to(Color.WHITE, 0.5F).withAlpha(glyph.getColor().getAlphaF()));
 	}
 
 }
