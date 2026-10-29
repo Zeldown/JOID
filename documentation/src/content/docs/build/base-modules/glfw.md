@@ -51,4 +51,3 @@ It lives here, next to the dependency of the module on the OpenAL library of LWJ
 
 [[GlfwSnapshotWindow]] opens a hidden, undecorated window of a fixed size for the snapshot backends of the tests; a `Runnable` sets the hints of the backend before the window exists.
 Undecorated, the window gives its whole surface to the framebuffer; on a high-density macOS screen, the framebuffer is larger than the size asked for.
-It ships in the dev and demo jars of the backends; the published `joid-base-glfw` jar does not hold it.

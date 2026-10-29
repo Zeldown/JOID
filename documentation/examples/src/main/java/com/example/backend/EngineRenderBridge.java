@@ -63,6 +63,7 @@ public final class EngineRenderBridge extends RenderBridge {
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
 		super.requireFrame();
 		this.applyTarget(super.getState());
+		this.device.colorMask(true);
 		this.device.clearColor(red, green, blue, alpha);
 	}
 
@@ -70,6 +71,7 @@ public final class EngineRenderBridge extends RenderBridge {
 	protected void clearDepthBuffer() {
 		super.requireFrame();
 		this.applyTarget(super.getState());
+		this.device.depth(false, true);
 		this.device.clearDepth(1F);
 	}
 
@@ -77,6 +79,7 @@ public final class EngineRenderBridge extends RenderBridge {
 	protected void clearStencilBuffer() {
 		super.requireFrame();
 		this.applyTarget(super.getState());
+		this.device.stencilMask(0xFF);
 		this.device.clearStencil(0);
 	}
 

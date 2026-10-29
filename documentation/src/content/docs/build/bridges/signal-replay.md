@@ -14,9 +14,9 @@ The replay bridge translates each name before the replay looks it up.
 The core reads it through [[ISignalReplayBridge]], from [[BridgeHandler#SIGNAL_REPLAY]].
 By default, an identity bridge returns every name unchanged.
 
-## Provided
+## Required
 
-Every method has an identity default; override the ones your environment needs.
+Override only the methods your environment needs: each one returns the name unchanged by default.
 
 | Member | Receives | Returns |
 |---|---|---|

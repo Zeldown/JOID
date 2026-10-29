@@ -59,5 +59,3 @@ The bridge draws into the framebuffer that the host had bound when the frame beg
 |---|---|
 | [[FixedMatrixImport]] | Loads the fixed-function matrices of a compatibility context into JOID ([Embedding in a host](/build/embedding-in-a-host/#import-the-matrices-of-a-fixed-function-host)). |
 | [[GlSnapshotCapture]] | Reads the back buffer into a snapshot image, for the snapshot backends. |
-
-[[GlSnapshotCapture]] lives in the `snapshot` package: the dev and demo jars of the backends hold it, and the published `joid-base-opengl` jar does not.

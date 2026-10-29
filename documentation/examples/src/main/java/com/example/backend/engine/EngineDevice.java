@@ -38,6 +38,7 @@ public interface EngineDevice {
 	public void clearColor(final float red, final float green, final float blue, final float alpha);
 
 	public void cull(final boolean cull);
+	public void stencilMask(final int mask);
 	public void colorMask(final boolean write);
 	public void blend(final BlendState blend);
 	public void stencil(final StencilState stencil);
