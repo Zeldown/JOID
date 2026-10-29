@@ -98,27 +98,35 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	}
 
 	private static long createCursor(final Cursor cursor) {
+		final int[] major = new int[1];
+		final int[] minor = new int[1];
+		GLFW.glfwGetVersion(major, minor, new int[1]);
+		final int shape = GlfwWindowBridge.getShape(cursor, major[0] > 3 || major[0] == 3 && minor[0] >= 4);
+		return shape == 0 ? 0L : GLFW.glfwCreateStandardCursor(shape);
+	}
+
+	private static int getShape(final Cursor cursor, final boolean extended) {
 		switch (cursor) {
 		case POINTER:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_POINTING_HAND_CURSOR);
+			return GLFW.GLFW_POINTING_HAND_CURSOR;
 		case TEXT:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR);
+			return GLFW.GLFW_IBEAM_CURSOR;
 		case CROSSHAIR:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_CROSSHAIR_CURSOR);
+			return GLFW.GLFW_CROSSHAIR_CURSOR;
 		case MOVE:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
+			return extended ? GLFW.GLFW_RESIZE_ALL_CURSOR : 0;
 		case NOT_ALLOWED:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_NOT_ALLOWED_CURSOR);
+			return extended ? GLFW.GLFW_NOT_ALLOWED_CURSOR : 0;
 		case RESIZE_EW:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_EW_CURSOR);
+			return GLFW.GLFW_RESIZE_EW_CURSOR;
 		case RESIZE_NS:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NS_CURSOR);
+			return GLFW.GLFW_RESIZE_NS_CURSOR;
 		case RESIZE_NWSE:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR);
+			return extended ? GLFW.GLFW_RESIZE_NWSE_CURSOR : 0;
 		case RESIZE_NESW:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
+			return extended ? GLFW.GLFW_RESIZE_NESW_CURSOR : 0;
 		default:
-			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+			return GLFW.GLFW_ARROW_CURSOR;
 		}
 	}
 

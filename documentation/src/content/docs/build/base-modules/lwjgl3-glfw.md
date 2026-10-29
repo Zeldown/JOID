@@ -19,7 +19,7 @@ The LWJGL 3 and Vulkan backends use it as it is; [base-lwjgl2](/build/base-modul
 | Mouse | `glfwGetCursorPos`, converted from window coordinates to screen pixels. |
 | Held keys | [[GlfwKeys#isKeyDown]], by physical position. |
 | Grabbed mouse | `true` while the cursor mode is `GLFW_CURSOR_DISABLED`. |
-| Cursors | The standard cursors of GLFW, created on first use and kept; [[GlfwWindowBridge#destroy]] releases them. |
+| Cursors | The standard cursors of GLFW, created on first use and kept; [[GlfwWindowBridge#destroy]] releases them. Before GLFW 3.4, which has no move, not-allowed nor diagonal resize cursor, those four show the default cursor. |
 | Clipboard | The clipboard of GLFW; an empty string when it holds no text. |
 
 [Window bridge](/build/bridges/window/) gives the contract these rows fulfill.

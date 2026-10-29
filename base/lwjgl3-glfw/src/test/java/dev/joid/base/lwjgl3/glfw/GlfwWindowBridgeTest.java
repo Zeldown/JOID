@@ -72,6 +72,17 @@ public class GlfwWindowBridgeTest {
 	}
 
 	@Test
+	public void asksGlfw33OnlyForTheShapesItHas() throws Exception {
+		for (final Cursor cursor : new Cursor[] {Cursor.MOVE, Cursor.NOT_ALLOWED, Cursor.RESIZE_NWSE, Cursor.RESIZE_NESW}) {
+			Assert.assertEquals(cursor.name(), 0, GlfwWindowBridgeTest.getShape(cursor, false));
+			Assert.assertNotEquals(cursor.name(), 0, GlfwWindowBridgeTest.getShape(cursor, true));
+		}
+		Assert.assertEquals(GLFW.GLFW_HAND_CURSOR, GlfwWindowBridgeTest.getShape(Cursor.POINTER, false));
+		Assert.assertEquals(GLFW.GLFW_HRESIZE_CURSOR, GlfwWindowBridgeTest.getShape(Cursor.RESIZE_EW, false));
+		Assert.assertEquals(GLFW.GLFW_VRESIZE_CURSOR, GlfwWindowBridgeTest.getShape(Cursor.RESIZE_NS, false));
+	}
+
+	@Test
 	public void scalesACursorPositionToTheFramebuffer() throws Exception {
 		Assert.assertEquals(300D, GlfwWindowBridgeTest.toFramebuffer(150D, 800, 1600), 0D);
 		Assert.assertEquals(75D, GlfwWindowBridgeTest.toFramebuffer(150D, 1600, 800), 0D);
@@ -86,6 +97,12 @@ public class GlfwWindowBridgeTest {
 		final Method method = GlfwWindowBridge.class.getDeclaredMethod("toFramebuffer", double.class, int.class, int.class);
 		method.setAccessible(true);
 		return (double) method.invoke(null, position, windowSize, framebufferSize);
+	}
+
+	private static int getShape(final Cursor cursor, final boolean extended) throws Exception {
+		final Method method = GlfwWindowBridge.class.getDeclaredMethod("getShape", Cursor.class, boolean.class);
+		method.setAccessible(true);
+		return (int) method.invoke(null, cursor, extended);
 	}
 
 	private static Map<?, ?> cursorMap(final GlfwWindowBridge bridge) throws Exception {
