@@ -2,7 +2,7 @@ package com.example.backend;
 
 import com.example.backend.engine.Engine;
 
-import dev.joid.base.glfw.binding.Lwjgl3AlBinding;
+import dev.joid.base.lwjgl3.glfw.binding.Lwjgl3AlBinding;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;

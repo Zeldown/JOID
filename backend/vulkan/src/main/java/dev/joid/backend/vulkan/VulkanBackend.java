@@ -2,9 +2,9 @@ package dev.joid.backend.vulkan;
 
 import dev.joid.backend.vulkan.host.IVulkanHost;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
-import dev.joid.base.glfw.GlfwWindowBridge;
-import dev.joid.base.glfw.binding.Lwjgl3AlBinding;
-import dev.joid.base.glfw.input.GlfwInputForwarder;
+import dev.joid.base.lwjgl3.glfw.GlfwWindowBridge;
+import dev.joid.base.lwjgl3.glfw.binding.Lwjgl3AlBinding;
+import dev.joid.base.lwjgl3.glfw.input.GlfwInputForwarder;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.backend.Backend;

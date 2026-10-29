@@ -55,7 +55,7 @@ task runDemo(type: JavaExec) {
     systemProperty 'joid.data', file("$buildDir/data").absolutePath
 }
 
-if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && embeddedModules.contains(project(':base-glfw'))) {
+if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && embeddedModules.contains(project(':base-lwjgl3-glfw'))) {
     tasks.withType(JavaForkOptions) {
         jvmArgs '-XstartOnFirstThread'
     }

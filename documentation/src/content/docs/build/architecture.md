@@ -7,11 +7,11 @@ sidebar:
 ---
 
 JOID is split into three layers, so that one interface runs unchanged on OpenGL, Vulkan or the renderer of an engine.
-A module depends only on the layers above it, never on a sibling of its own layer, with one exception: `base-glfw` depends on `base-openal`, because it holds the LWJGL 3 binding of OpenAL.
+A module depends only on the layers above it, never on a sibling of its own layer, with one exception: `base-lwjgl3-glfw` depends on `base-openal`, because it holds the LWJGL 3 binding of OpenAL.
 
 <figure>
 
-![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, three base modules, each with an arrow up to the core: base-glfw (window, input, OpenAL binding), with an arrow to base-openal (audio bridge over IAlBinding), and base-opengl (render bridge over IGlBinding). Between the middle and the bottom, a note reads: each backend uses the base modules named in its box. At the bottom, four backends on two rows: backend-lwjgl2 (openal, opengl), backend-lwjgl3 (glfw, openal, opengl), backend-vulkan (glfw, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
+![Three bands of boxes. At the top, joid-core: UIs, nodes, signals, the bridge contracts and the generic half of every backend. In the middle, three base modules, each with an arrow up to the core: base-lwjgl3-glfw (window, input, OpenAL binding), with an arrow to base-openal (audio bridge over IAlBinding), and base-opengl (render bridge over IGlBinding). Between the middle and the bottom, a note reads: each backend uses the base modules named in its box. At the bottom, four backends on two rows: backend-lwjgl2 (openal, opengl), backend-lwjgl3 (lwjgl3-glfw, openal, opengl), backend-vulkan (lwjgl3-glfw, openal) and, highlighted in blue, your backend with the modules it reuses. A line under them reads: a backend depends on the core and on the base modules it names.](/captures/build-layers.webp)
 
 <figcaption>
 A backend picks the base modules it needs and adds only what is specific to its library.
@@ -36,7 +36,7 @@ A base module holds the code that several backends would otherwise copy, for one
 
 | Module | Library | Gives |
 |---|---|---|
-| [base-glfw](/build/base-modules/glfw/) | GLFW and OpenAL of LWJGL 3 | the window bridge, the input forwarder, the key table, the OpenAL binding |
+| [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) | GLFW and OpenAL of LWJGL 3 | the window bridge, the input forwarder, the key table, the OpenAL binding |
 | [base-openal](/build/base-modules/openal/) | OpenAL, through [[IAlBinding]] | the audio bridge and its streaming sources |
 | [base-opengl](/build/base-modules/opengl/) | OpenGL 2.1 and later, through [[IGlBinding]] | the render bridge, the state guard, textures, framebuffers, shaders and mipmaps |
 
@@ -49,8 +49,8 @@ A final backend picks its base modules, adds what is specific to its library, an
 | Backend | Base modules | Its own code |
 |---|---|---|
 | [LWJGL 2](/build/backends/lwjgl2/) | openal, opengl | the `Display` window bridge, the polled input, the natives, the native cursors, the LWJGL 2 bindings |
-| [LWJGL 3](/build/backends/lwjgl3/) | glfw, openal, opengl | the LWJGL 3 OpenGL binding and the context hints |
-| [Vulkan](/build/backends/vulkan/) | glfw, openal | the whole renderer, and the hosts that own the device and the frame |
+| [LWJGL 3](/build/backends/lwjgl3/) | lwjgl3-glfw, openal, opengl | the LWJGL 3 OpenGL binding and the context hints |
+| [Vulkan](/build/backends/vulkan/) | lwjgl3-glfw, openal | the whole renderer, and the hosts that own the device and the frame |
 
 Each jar of a backend embeds the core and its base modules, with Gson, Guava, Commons IO, Commons Lang, JSVG, TwelveMonkeys and ASM relocated under `dev.joid.shaded`; JavaCV, JavaCPP and FFmpeg keep their own packages, and so does JNA in the LWJGL 2 jars.
 An application declares one JOID jar, next to the libraries of its backend (LWJGL, for the official ones).
@@ -62,7 +62,7 @@ An application declares one JOID jar, next to the libraries of its backend (LWJG
 | `tool-msdf` | Generates the MSDF atlases of the fonts; the core embeds it. |
 | `tool-testkit` | Renders scenarios on a hidden surface and runs the contract suites that every backend passes ([Testing a backend](/build/testing-a-backend/)). |
 
-The `snapshot` packages of `base-glfw`, `base-opengl` and of each final backend hold the hidden surfaces and the captures of the tests; those of `base-opengl` and of the backends use the testkit; [Three jars per module](/build/demos/#three-jars-per-module) says which jars carry them.
+The `snapshot` packages of `base-lwjgl3-glfw`, `base-opengl` and of each final backend hold the hidden surfaces and the captures of the tests; those of `base-opengl` and of the backends use the testkit; [Three jars per module](/build/demos/#three-jars-per-module) says which jars carry them.
 
 ## Feed the core, never the interface
 

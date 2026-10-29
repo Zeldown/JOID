@@ -46,7 +46,7 @@ A hidden GLFW window without client API gives the window and input bridges; it s
 | `String` | [getRenderer](#VulkanSnapshotBackend-method-getRenderer)() | Returns the name of the device. |
 | [`VulkanBackend`](/reference/vulkan/vulkanbackend/) | [getBackend](#VulkanSnapshotBackend-method-getBackend)() | Returns the Vulkan backend. |
 | [`SnapshotVulkanHost`](/reference/vulkan/snapshotvulkanhost/) | [getHost](#VulkanSnapshotBackend-method-getHost)() | Returns the Vulkan host. |
-| [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | [getWindow](#VulkanSnapshotBackend-method-getWindow)() | Returns the hidden window. |
+| [`GlfwSnapshotWindow`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/) | [getWindow](#VulkanSnapshotBackend-method-getWindow)() | Returns the hidden window. |
 
 ## Creation details
 

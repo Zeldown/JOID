@@ -5,7 +5,7 @@ import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.host.WindowVulkanHost;
-import dev.joid.base.glfw.demo.GlfwDemoWindow;
+import dev.joid.base.lwjgl3.glfw.demo.GlfwDemoWindow;
 import dev.joid.lib.bridge.backend.Backend;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

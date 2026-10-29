@@ -2,7 +2,7 @@ package com.example.backend;
 
 import com.example.backend.engine.Engine;
 
-import dev.joid.base.glfw.input.GlfwKeys;
+import dev.joid.base.lwjgl3.glfw.input.GlfwKeys;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 

@@ -1431,7 +1431,7 @@ Run the tests with a display, or a virtual one such as Xvfb on a server: [Give t
 
 The graphics driver refused the hidden window of a snapshot backend.
 
-Update the graphics driver, or run on a machine that supports the API of the backend: [Hidden windows](/build/base-modules/glfw/#hidden-windows).
+Update the graphics driver, or run on a machine that supports the API of the backend: [Hidden windows](/build/base-modules/lwjgl3-glfw/#hidden-windows).
 
 ## warning [JOID] OpenGL cannot link a shader program, fix its sources from the log of the driver: …
 

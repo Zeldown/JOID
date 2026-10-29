@@ -76,8 +76,8 @@
     "link": "/reference/testing/"
   },
   {
-    "label": "base-glfw",
-    "link": "/reference/base-glfw/"
+    "label": "base-lwjgl3-glfw",
+    "link": "/reference/base-lwjgl3-glfw/"
   },
   {
     "label": "base-openal",

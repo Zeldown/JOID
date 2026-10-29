@@ -758,7 +758,7 @@ public final class PageWriter {
 			return "Vulkan";
 		case "base-opengl":
 			return "LWJGL 2, LWJGL 3";
-		case "base-glfw":
+		case "base-lwjgl3-glfw":
 			return "LWJGL 3, Vulkan";
 		default:
 			return null;

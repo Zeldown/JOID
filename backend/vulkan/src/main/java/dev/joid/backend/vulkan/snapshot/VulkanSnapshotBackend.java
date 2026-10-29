@@ -11,7 +11,7 @@ import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.render.buffer.VulkanBuffer;
-import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
+import dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;

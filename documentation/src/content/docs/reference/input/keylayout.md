@@ -24,7 +24,7 @@ Only the letters `A` to `Z` and the punctuation keys from [`Key.APOSTROPHE`](/re
 ## Learn more
 
 - [Input forwarding](/build/input/#guarantees)
-- [base-glfw](/build/base-modules/glfw/)
+- [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/)
 
 ## Creation
 

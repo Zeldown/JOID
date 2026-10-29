@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL;
 
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
-import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
+import dev.joid.base.lwjgl3.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.lib.bridge.BridgeHandler;

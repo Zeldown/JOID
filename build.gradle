@@ -29,7 +29,7 @@ ext {
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     releaseTasks = {
-        [':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
+        [':base-lwjgl3-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
     }
 
     lwjglVersion = "3.3.4"
@@ -168,8 +168,8 @@ task checkJars {
                 def jar = project(module).tasks["${variant}Jar"].archivePath
                 def entries = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }
                 def holds = { prefix -> entries.any { entry -> entry.startsWith(prefix) } }
-                def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/demo\/.*/ }
-                def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*/ }
+                def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base\/.+|backend\/[^\/]+)\/demo\/.*/ }
+                def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base\/.+|backend\/[^\/]+)\/snapshot\/.*/ }
                 if (!holds('dev/joid/lib/JOID.class')) {
                     failures << "${jar.name} misses JOID"
                 }
@@ -214,7 +214,7 @@ task checkJars {
                     failures << "${jar.name} ${variant == 'prod' ? 'holds' : 'misses'} its snapshot backend"
                 }
                 if (variant == 'dev') {
-                    finds(jar, { name -> name ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*\.class/ }, demoClass).each { name ->
+                    finds(jar, { name -> name ==~ /dev\/joid\/(base\/.+|backend\/[^\/]+)\/snapshot\/.*\.class/ }, demoClass).each { name ->
                         failures << "${jar.name}: $name needs a demo class"
                     }
                 }

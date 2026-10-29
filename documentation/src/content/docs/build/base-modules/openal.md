@@ -15,7 +15,7 @@ It calls OpenAL only through an [[IAlBinding]], so the same code runs on LWJGL 2
 
 | Binding | Library |
 |---|---|
-| [[Lwjgl3AlBinding#inst]] | LWJGL 3 OpenAL, in [base-glfw](/build/base-modules/glfw/) |
+| [[Lwjgl3AlBinding#inst]] | LWJGL 3 OpenAL, in [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) |
 | [[Lwjgl2AlBinding#inst]] | LWJGL 2 OpenAL, in the LWJGL 2 backend: copy it into your backend, as the GL bindings ([Embedding in a host](/build/embedding-in-a-host/#register-once-the-context-is-current)) |
 | your [[IAlBinding]] | the OpenAL of your engine |
 

@@ -33,7 +33,7 @@ Every warning and exception message is on [Warnings and errors](/reference/error
 | [Bridges](/reference/bridges/) | The registries of bridges and the bridge contracts of the render, audio, clock, thread and signal replay services, with the textures, framebuffers, shaders and resource resolvers of the render bridge. | 32 |
 | [Pipeline](/reference/pipeline/) | What a draw call carries to the render bridge: the matrices and the pixel grid, the render state with its blending and stencil, the vertices, and the JOID GLSL sources with their translation and uniforms. | 35 |
 | [Testing](/reference/testing/) | The testkit: the snapshot runner that renders UIs on a hidden surface, the snapshot suite and the contract suites that check a backend, and the tools that compare renders. | 26 |
-| [base-glfw](/reference/base-glfw/) | The window bridge, the input forwarder and the key table of GLFW, the OpenAL binding of LWJGL 3 and the hidden window of the snapshot backends. | 5 |
+| [base-lwjgl3-glfw](/reference/base-lwjgl3-glfw/) | The window bridge, the input forwarder and the key table of GLFW, the OpenAL binding of LWJGL 3 and the hidden window of the snapshot backends. | 5 |
 | [base-openal](/reference/base-openal/) | The audio bridge of OpenAL, its streaming sources and the binding that a backend gives it. | 4 |
 | [base-opengl](/reference/base-opengl/) | The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back. | 24 |
 | [LWJGL 2 backend](/reference/lwjgl2/) | The backend for LWJGL 2: its natives, its OpenGL and OpenAL bindings, its window bridge, its input forwarder, its native cursors and its snapshot backend. | 14 |

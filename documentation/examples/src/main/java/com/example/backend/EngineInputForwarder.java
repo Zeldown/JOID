@@ -3,7 +3,7 @@ package com.example.backend;
 import com.example.backend.engine.Engine;
 import com.example.backend.engine.EngineListener;
 
-import dev.joid.base.glfw.input.GlfwKeys;
+import dev.joid.base.lwjgl3.glfw.input.GlfwKeys;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.key.KeyLayout;

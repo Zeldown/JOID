@@ -49,7 +49,7 @@ public final class DocGenerator {
 
 	static {
 		DocGenerator.MODULES.put("core", "core");
-		DocGenerator.MODULES.put("base-glfw", "base/glfw");
+		DocGenerator.MODULES.put("base-lwjgl3-glfw", "base/lwjgl3-glfw");
 		DocGenerator.MODULES.put("base-openal", "base/openal");
 		DocGenerator.MODULES.put("base-opengl", "base/opengl");
 		DocGenerator.MODULES.put("backend-lwjgl2", "backend/lwjgl2");

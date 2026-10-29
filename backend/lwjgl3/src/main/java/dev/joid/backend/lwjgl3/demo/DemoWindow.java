@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL;
 
 import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
-import dev.joid.base.glfw.demo.GlfwDemoWindow;
+import dev.joid.base.lwjgl3.glfw.demo.GlfwDemoWindow;
 import dev.joid.lib.bridge.backend.Backend;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

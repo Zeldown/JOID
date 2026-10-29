@@ -35,10 +35,10 @@ rootProject.variants.each { variant ->
         relocate 'com.google.thirdparty', 'dev.joid.shaded.guava.thirdparty'
         exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1'
         if (variant != 'demo') {
-            exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
+            exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/**/demo/**', 'dev/joid/backend/*/demo/**'
         }
         if (variant == 'prod') {
-            exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/snapshot/**'
+            exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**', 'dev/joid/base/**/snapshot/**', 'dev/joid/backend/*/snapshot/**'
         }
     }
 

@@ -15,9 +15,9 @@ How an application installs and starts it is on [Choosing a backend](/use/learn/
 | Bridge | Class | From |
 |---|---|---|
 | Render | [[GlRenderBridge]] over [[Lwjgl3GlBinding]] | [base-opengl](/build/base-modules/opengl/) |
-| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-glfw](/build/base-modules/glfw/) |
-| Window | [[GlfwWindowBridge]] | base-glfw |
-| Input | [[GlfwInputForwarder]], attached in `attachInput()` | base-glfw |
+| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) |
+| Window | [[GlfwWindowBridge]] | base-lwjgl3-glfw |
+| Input | [[GlfwInputForwarder]], attached in `attachInput()` | base-lwjgl3-glfw |
 
 Its own code is small: [[Lwjgl3Backend]], the LWJGL 3 OpenGL bindings and [[GlContextRequest]].
 

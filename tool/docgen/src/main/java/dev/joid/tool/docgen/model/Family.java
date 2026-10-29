@@ -27,7 +27,7 @@ public enum Family {
 	BRIDGES("bridges", "Bridges", "dev.joid.lib.bridge", "dev.joid.lib.resource.resolver"),
 	PIPELINE("pipeline", "Pipeline", "dev.joid.lib.bridge.render.matrix", "dev.joid.lib.bridge.render.shader.source", "dev.joid.lib.bridge.render.shader.uniform", "dev.joid.lib.bridge.render.state", "dev.joid.lib.bridge.render.vertex"),
 	TESTING("testing", "Testing", "dev.joid.test"),
-	BASE_GLFW("base-glfw", "base-glfw", "dev.joid.base.glfw"),
+	BASE_LWJGL3_GLFW("base-lwjgl3-glfw", "base-lwjgl3-glfw", "dev.joid.base.lwjgl3.glfw"),
 	BASE_OPENAL("base-openal", "base-openal", "dev.joid.base.openal"),
 	BASE_OPENGL("base-opengl", "base-opengl", "dev.joid.base.opengl"),
 	LWJGL2("lwjgl2", "LWJGL 2 backend", "dev.joid.backend.lwjgl2"),

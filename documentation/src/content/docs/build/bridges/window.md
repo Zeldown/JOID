@@ -10,7 +10,7 @@ The window bridge tells the core how large the drawable surface is, where the mo
 The core reads it through [[IWindowBridge]], from [[BridgeHandler#WINDOW]].
 It never creates a window: the application or the host owns it.
 
-This bridge reads the window of an imaginary engine, whose key codes are those of GLFW, so the key table of [base-glfw](/build/base-modules/glfw/) serves it:
+This bridge reads the window of an imaginary engine, whose key codes are those of GLFW, so the key table of [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) serves it:
 
 ```java file="com/example/backend/EngineWindowBridge.java" region="window"
 ```
@@ -48,5 +48,5 @@ The rest of the core only reads the window bridge:
 | Answer `isKeyDown` by physical position, never through the layout. | The core translates the layout keys itself, from what the input forwarder sends. |
 | Never throw from `getClipboard` or `setClipboard`. | A text field reads it on every paste; a clipboard the system refuses reads as `""`. |
 
-On GLFW, the window bridge of [base-glfw](/build/base-modules/glfw/) respects every rule.
+On GLFW, the window bridge of [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) respects every rule.
 The input events do not go through the window bridge: [Input forwarding](/build/input/) covers them.

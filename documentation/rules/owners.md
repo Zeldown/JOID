@@ -107,7 +107,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | `BridgeHandler` registries (the table of registries, backend side; the user side is on use/learn/running/embedding) | build/bridges (overview: the table, then one sentence and a link to running/embedding for priorities) |
 | Writing a backend step by step | build/writing-a-backend |
 | When a shader compiles: `compileProgram` runs at the first `isActive()`, once the constructor of the subclass is done | build/writing-a-backend (section "Shaders"); the Shader reference and build/shader-translation give one sentence and a link |
-| base-glfw, base-openal, base-opengl | build/base-modules/<module> |
+| base-lwjgl3-glfw, base-openal, base-opengl | build/base-modules/<module> |
 | Render pipeline, draw calls, render state, mipmaps (backend side) | build/pipeline |
 | Shader translation (backend side): what the translator adds, never the JOID GLSL list | build/shader-translation |
 | Shader checking tools (`GlslExport`) | build/shader-translation (section "Check your translation"); build/testing-a-backend gives one sentence and a link |

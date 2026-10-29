@@ -1,0 +1,129 @@
+package dev.joid.base.lwjgl3.glfw;
+
+import java.util.EnumMap;
+import java.util.Map;
+
+import org.lwjgl.glfw.GLFW;
+
+import dev.joid.base.lwjgl3.glfw.input.GlfwKeys;
+import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
+import lombok.NonNull;
+
+public final class GlfwWindowBridge implements IWindowBridge {
+
+	private final long              window;
+	private final Map<Cursor, Long> cursorMap;
+
+	public GlfwWindowBridge(final long window) {
+		this.window    = window;
+		this.cursorMap = new EnumMap<>(Cursor.class);
+	}
+
+	public void destroy() {
+		for (final Long handle : this.cursorMap.values()) {
+			if (handle != 0L) {
+				GLFW.glfwDestroyCursor(handle);
+			}
+		}
+		this.cursorMap.clear();
+	}
+
+	@Override
+	public int getWidth() {
+		return this.getFramebufferSize()[0];
+	}
+
+	@Override
+	public int getHeight() {
+		return this.getFramebufferSize()[1];
+	}
+
+	@Override
+	public double getMouseX() {
+		return this.getMouse(0);
+	}
+
+	@Override
+	public double getMouseY() {
+		return this.getMouse(1);
+	}
+
+	@Override
+	public boolean isMouseGrabbed() {
+		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
+	}
+
+	@Override
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return GlfwKeys.isKeyDown(physicalKey, this::isCodeDown);
+	}
+
+	@Override
+	public @NonNull String getClipboard() {
+		final String clipboard = GLFW.glfwGetClipboardString(this.window);
+		return clipboard == null ? "" : clipboard;
+	}
+
+	@Override
+	public void setClipboard(final @NonNull String text) {
+		GLFW.glfwSetClipboardString(this.window, text);
+	}
+
+	@Override
+	public void setCursor(final @NonNull Cursor cursor) {
+		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, GlfwWindowBridge::createCursor));
+	}
+
+	private boolean isCodeDown(final int code) {
+		return GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
+	}
+
+	private int[] getFramebufferSize() {
+		final int[] width = new int[1];
+		final int[] height = new int[1];
+		GLFW.glfwGetFramebufferSize(this.window, width, height);
+		return new int[] {width[0], height[0]};
+	}
+
+	private double getMouse(final int axis) {
+		final double[] x = new double[1];
+		final double[] y = new double[1];
+		final int[] width = new int[1];
+		final int[] height = new int[1];
+		GLFW.glfwGetCursorPos(this.window, x, y);
+		GLFW.glfwGetWindowSize(this.window, width, height);
+		return GlfwWindowBridge.toFramebuffer(axis == 0 ? x[0] : y[0], axis == 0 ? width[0] : height[0], this.getFramebufferSize()[axis]);
+	}
+
+	private static long createCursor(final Cursor cursor) {
+		switch (cursor) {
+		case POINTER:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_POINTING_HAND_CURSOR);
+		case TEXT:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_IBEAM_CURSOR);
+		case CROSSHAIR:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_CROSSHAIR_CURSOR);
+		case MOVE:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
+		case NOT_ALLOWED:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_NOT_ALLOWED_CURSOR);
+		case RESIZE_EW:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_EW_CURSOR);
+		case RESIZE_NS:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NS_CURSOR);
+		case RESIZE_NWSE:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR);
+		case RESIZE_NESW:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
+		default:
+			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+		}
+	}
+
+	private static double toFramebuffer(final double position, final int windowSize, final int framebufferSize) {
+		return windowSize == 0 ? position : position * framebufferSize / windowSize;
+	}
+
+}

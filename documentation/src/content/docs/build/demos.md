@@ -47,7 +47,7 @@ Registered first, the launcher is the only UI bridge: `registerDefaults()` finds
 The `DemoWindow` of the template opens no window: it registers itself the same way, then calls `frame()` until you give it the loop of your engine ([Run it](/build/writing-a-backend/#run-it)).
 
 The launchers are UI bridges: `DemoUIBridge`, a [[WindowUIBridge]] with a dark grey window background and the dev font for its tooltips, opens the menu in `start()` through its `openMenu()` hook.
-The GLFW launchers share `GlfwDemoWindow` of base-glfw, whose subclass names the backend, sets the window hints, registers the backend and presents each frame.
+The GLFW launchers share `GlfwDemoWindow` of base-lwjgl3-glfw, whose subclass names the backend, sets the window hints, registers the backend and presents each frame.
 
 In the demos:
 

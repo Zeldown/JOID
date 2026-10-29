@@ -15,9 +15,9 @@ How an application installs and starts it is on [Choosing a backend](/use/learn/
 | Bridge | Class | From |
 |---|---|---|
 | Render | [[VulkanRenderBridge]] | this backend |
-| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-glfw](/build/base-modules/glfw/) |
-| Window | [[GlfwWindowBridge]] | base-glfw |
-| Input | [[GlfwInputForwarder]] | base-glfw |
+| Audio | [[AlAudioBridge]] over [[Lwjgl3AlBinding]] | [base-openal](/build/base-modules/openal/), [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) |
+| Window | [[GlfwWindowBridge]] | base-lwjgl3-glfw |
+| Input | [[GlfwInputForwarder]] | base-lwjgl3-glfw |
 
 [[VulkanBackend]] registers them from a GLFW window and an [[IVulkanHost]]: the host owns the instance, the device, the queue, the command buffers and the image that JOID draws into.
 For a window of its own, an application uses [[WindowVulkanHost]], which also owns the surface and the swapchain:

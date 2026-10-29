@@ -74,9 +74,9 @@ Learn: [Render pipeline](/build/pipeline/), [Shader translation](/build/shader-t
 The testkit: the snapshot runner that renders UIs on a hidden surface, the snapshot suite and the contract suites that check a backend, and the tools that compare renders.
 Learn: [Testing your UIs](/use/learn/running/testing/), [Testing a backend](/build/testing-a-backend/).
 
-## base-glfw
+## base-lwjgl3-glfw
 The window bridge, the input forwarder and the key table of GLFW, the OpenAL binding of LWJGL 3 and the hidden window of the snapshot backends.
-Learn: [base-glfw](/build/base-modules/glfw/).
+Learn: [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
 
 ## base-openal
 The audio bridge of OpenAL, its streaming sources and the binding that a backend gives it.

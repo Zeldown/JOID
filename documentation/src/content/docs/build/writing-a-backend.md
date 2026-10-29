@@ -30,7 +30,7 @@ Each release publishes `joid-backend-template-<version>.zip`, a Gradle project t
 2. Rename the package `com.example.joid.backend` in `src/main/java`, `src/test/java` and `src/demo/java`.
    In `build.gradle`, rename `group`, `archivesBaseName`, `backendPackage` and the `main` class of the `runDemo` task; in `settings.gradle`, rename `rootProject.name`.
 3. Add the libraries of your engine to the `compile` dependencies.
-   Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; `joid-base-glfw` needs `joid-base-openal` next to it.
+   Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; `joid-base-lwjgl3-glfw` needs `joid-base-openal` next to it.
 
 **Check:** `./gradlew compileJava` succeeds.
 The bridges of the template throw an `UnsupportedOperationException` that names the method to implement, so the first UI that opens, or the first `frame()`, fails until you have implemented them.
@@ -71,7 +71,7 @@ final EngineBackend backend = EngineBackend.create(engine).audio(false).register
 
 The window bridge reports the size, the mouse, the held keys and the clipboard.
 Its contract and the bridge of this engine are on [Window bridge](/build/bridges/window/).
-On GLFW, return a [[GlfwWindowBridge]] of [base-glfw](/build/base-modules/glfw/).
+On GLFW, return a [[GlfwWindowBridge]] of [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/).
 
 ## Implement the render bridge
 

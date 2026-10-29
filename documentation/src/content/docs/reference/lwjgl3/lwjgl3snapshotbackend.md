@@ -46,7 +46,7 @@ The system property `joid.snapshot.profile` picks a [`SnapshotProfile`](/referen
 | `String` | [getRenderer](#Lwjgl3SnapshotBackend-method-getRenderer)() | Returns the renderer string of the driver. |
 | [`SnapshotProfile`](/reference/lwjgl3/snapshotprofile/) | [getProfile](#Lwjgl3SnapshotBackend-method-getProfile)() | Returns the profile of the run. |
 | [`GlRenderBridge`](/reference/base-opengl/glrenderbridge/) | [getBridge](#Lwjgl3SnapshotBackend-method-getBridge)() | Returns the OpenGL render bridge. |
-| [`GlfwSnapshotWindow`](/reference/base-glfw/glfwsnapshotwindow/) | [getWindow](#Lwjgl3SnapshotBackend-method-getWindow)() | Returns the hidden window. |
+| [`GlfwSnapshotWindow`](/reference/base-lwjgl3-glfw/glfwsnapshotwindow/) | [getWindow](#Lwjgl3SnapshotBackend-method-getWindow)() | Returns the hidden window. |
 
 ## Creation details
 
