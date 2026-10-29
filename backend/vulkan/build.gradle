@@ -6,6 +6,9 @@ dependencies {
 
     compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
     compile "org.lwjgl:lwjgl-shaderc:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-shaderc:$lwjglVersion:$lwjglNatives"
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         runtime "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNatives"

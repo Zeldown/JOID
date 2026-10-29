@@ -8,6 +8,9 @@ dependencies {
     compile project(':base-opengl')
 
     compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 
     testCompile project(':base-opengl').sourceSets.test.output
