@@ -119,7 +119,7 @@ Catch the exception inside `destroy()`, or fix the code it names: [Write a store
 
 Emitted by [`UIStoreHook.saveAll`](/reference/ui/uistorehook/#UIStoreHook-method-saveAll).
 
-The `toJson()` of a [`UIStore`](/reference/ui/uistore/) threw while JOID saved the stores, at the end of their scope or when the program ended; the previous file stays on disk.
+The `toJson()` of a [`UIStore`](/reference/ui/uistore/) threw while JOID saved the stores, when a UI closed or when the program ended; the previous file stays on disk.
 
 Catch the exception inside `toJson()`, or fix the code it names: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
 
@@ -725,7 +725,7 @@ Check the divisor before you divide: [Choose a signal type](/use/learn/interacti
 
 Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`TransitionStep.copy`](/reference/ui/transitionstep/#TransitionStep-method-copy), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
 
-An `IllegalStateException` whose message comes from your code: a refusal given to [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse), thrown again by `set(...)` or `reset()`, or the failure of the copy of an effect.
+An `IllegalStateException` whose message comes from your code: the [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse) of a [`Signal`](/reference/signals/signal/) subclass of your own gave it, and `set(...)` or `reset()` threw it.
 
 Read the message that your code gave.
 
@@ -748,6 +748,36 @@ Emitted by [`NodeBindings.bindNullable`](/reference/signals/nodebindings/#NodeBi
 A control received a derived or read-only signal for its value; the user changes that value, so the control must write it back.
 
 Pass a writable [`Signal`](/reference/signals/signal/), or the value as a start value and listen to the changes: [Bind a control to a signal](/use/learn/interactivity/controls/#bind-a-control-to-a-signal).
+
+### The … is animated and cannot be … {#animated-cannot-use-value}
+
+**`IllegalStateException`** · `The … is animated and cannot be …, use value(...) or start a tween`
+
+Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset).
+
+`set(...)` or `reset()` was called on a [`TweenAnimator`](/reference/animation/tweenanimator/).
+
+Use [`TweenAnimator.value`](/reference/animation/tweenanimator/#TweenAnimator-method-value) to put a value at once, or start a tween: [Animate a value](/use/learn/style-and-motion/animation/#animate-a-value).
+
+### The … is computed from other signals and cannot be … {#computed-from-other-signals}
+
+**`IllegalStateException`** · `The … is computed from other signals and cannot be …, set the signals it reads instead`
+
+Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset).
+
+A derived value, made by `map(...)` or `Signal.from(...)`, received `set(...)` or `reset()`.
+
+Set the signals that it reads instead: [Write to a derived value through its sources](/use/learn/state/derived-values/#write-to-a-derived-value-through-its-sources).
+
+### The … is read-only and cannot be … {#read-only-cannot}
+
+**`IllegalStateException`** · `The … is read-only and cannot be …`
+
+Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset).
+
+A [`Signal`](/reference/signals/signal/) subclass of your own returns `false` from [`Signal.isWritable`](/reference/signals/signal/#Signal-method-isWritable), and received `set(...)` or `reset()`.
+
+Change its value the way your subclass provides, or override [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse) to tell its users how.
 
 ## Animation
 

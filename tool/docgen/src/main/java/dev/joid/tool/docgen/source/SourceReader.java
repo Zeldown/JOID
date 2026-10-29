@@ -50,6 +50,7 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.ast.expr.SingleMemberAnnotationExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.ThisExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithAnnotations;
 import com.github.javaparser.ast.nodeTypes.NodeWithModifiers;
 import com.github.javaparser.ast.stmt.BlockStmt;
@@ -124,6 +125,10 @@ public final class SourceReader {
 					unit.getTypes().forEach(type -> this.index(unit.getPackageDeclaration().map(declaration -> declaration.getNameAsString()).orElse(""), "", type));
 				}
 			}
+		}
+
+		for (int i = 0; i < units.size(); i++) {
+			this.collectRefusals(units, units.get(i), locations.get(i)[1]);
 		}
 
 		for (int i = 0; i < units.size(); i++) {
@@ -602,6 +607,60 @@ public final class SourceReader {
 		}
 
 		unit.findAll(Parameter.class).stream().filter(parameter -> parameter.isAnnotationPresent("NonNull")).findFirst().ifPresent(parameter -> this.messages.add(ApiMessage.create(false, "NullPointerException", nonNull, "", file, parameter.getBegin().map(position -> position.line).orElse(0))));
+	}
+
+	private void collectRefusals(final List<CompilationUnit> units, final CompilationUnit unit, final String file) {
+		final String packageName = unit.getPackageDeclaration().map(declaration -> declaration.getNameAsString()).orElse("");
+		for (final ThrowStmt statement : unit.findAll(ThrowStmt.class)) {
+			if (!(statement.getExpression() instanceof ObjectCreationExpr) || ((ObjectCreationExpr) statement.getExpression()).getArguments().isEmpty()) {
+				continue;
+			}
+
+			final ObjectCreationExpr creation = (ObjectCreationExpr) statement.getExpression();
+			final MethodDeclaration refusal = SourceReader.refusal(unit, creation.getArgument(0));
+			if (refusal == null) {
+				continue;
+			}
+
+			final String owner = SourceReader.ancestor(refusal, ClassOrInterfaceDeclaration.class).map(ClassOrInterfaceDeclaration::getNameAsString).orElse("");
+			final int line = statement.getBegin().map(position -> position.line).orElse(0);
+			for (final CompilationUnit other : units) {
+				for (final MethodDeclaration method : other.findAll(MethodDeclaration.class)) {
+					if (!method.getNameAsString().equals(refusal.getNameAsString()) || !"String".equals(method.getType().asString()) || !SourceReader.ancestor(method, ClassOrInterfaceDeclaration.class).filter(type -> SourceReader.inherits(units, type, owner)).isPresent()) {
+						continue;
+					}
+
+					final Optional<Expression> returned = method.findFirst(ReturnStmt.class).flatMap(ReturnStmt::getExpression);
+					returned.ifPresent(expression -> SourceReader.origins(unit, statement).forEach(origin -> this.messages.add(ApiMessage.create(false, creation.getType().getNameAsString(), SourceReader.messageText(expression), SourceReader.origin(origin, packageName), file, line))));
+				}
+			}
+		}
+	}
+
+	private static MethodDeclaration refusal(final CompilationUnit unit, final Expression argument) {
+		if (!(argument instanceof MethodCallExpr) || !((MethodCallExpr) argument).getScope().filter(scope -> scope instanceof ThisExpr).isPresent()) {
+			return null;
+		}
+
+		final String name = ((MethodCallExpr) argument).getNameAsString();
+		return unit.findAll(MethodDeclaration.class).stream().filter(method -> method.getNameAsString().equals(name) && "String".equals(method.getType().asString())).findFirst().orElse(null);
+	}
+
+	private static boolean inherits(final List<CompilationUnit> units, final ClassOrInterfaceDeclaration type, final String owner) {
+		if (type.getNameAsString().equals(owner)) {
+			return true;
+		}
+
+		for (final ClassOrInterfaceType supertype : type.getExtendedTypes()) {
+			for (final CompilationUnit unit : units) {
+				for (final ClassOrInterfaceDeclaration declaration : unit.findAll(ClassOrInterfaceDeclaration.class)) {
+					if (declaration.getNameAsString().equals(supertype.getNameAsString()) && SourceReader.inherits(units, declaration, owner)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private static List<Node> origins(final CompilationUnit unit, final Node node) {
