@@ -51,7 +51,7 @@ The first open UI of this class or of a subclass, searched in every UI bridge fr
 
 ## open(UI)
 
-Opens the UI in the first UI bridge that accepts it, and returns that bridge.
+Opens the UI in the UI bridge that already holds it, otherwise in the bridge of highest priority whose `canHandle` accepts it, and returns that bridge.
 A screen replaces the open screens, a popup or an overlay opens above them, and a UI already open moves to the top.
 Throws an `IllegalStateException` when no registered bridge accepts the UI.
 

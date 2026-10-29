@@ -43,7 +43,7 @@ Its values are signals, so the nodes that show them follow them:
 
 | Scope | One instance | Ends |
 |---|---|---|
-| `LOCAL`, the default | Per UI that uses it | When that UI closes, with a call of `destroy()` |
+| `LOCAL`, the default | Per UI that uses it | When that UI closes, with a call of its `destroy()` hook, empty by default |
 | `GLOBAL` | For the whole program | With the program |
 | `PERMANENT` | For the whole program | With the program, after its values reach the disk |
 
@@ -76,7 +76,7 @@ Two UIs, one store: the overlay follows the volume that the settings screen chan
 </figcaption>
 </figure>
 
-The second argument is the factory: JOID calls it when no instance exists yet, then calls `init()` on the new store.
+The second argument is the factory: JOID calls it when no instance exists yet, then calls the `init()` hook of the new store, empty by default, where a store prepares what its fields do not.
 A `LOCAL` store is the same instance for every call made by one UI, and stays through its reloads; another UI gets its own.
 A node reaches the store of its UI with [[Node#useStore]].
 
@@ -111,7 +111,7 @@ Read a number through `Number`, as in `((Number) json.get("volume")).intValue()`
 
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.
 
-When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from `init()`: the next save writes a fresh file and the old data stays for you to inspect.
+When the file holds invalid JSON, or when `fromJson` throws, JOID renames the file to `<id>.store.corrupt`, warns, and starts the store from its defaults, as when no file exists: the next save writes a fresh file and the old data stays for you to inspect.
 
 [Build a settings screen](/use/guides/build-a-settings-screen/) binds controls to a store kept on disk.
 
@@ -170,7 +170,7 @@ Only that screen reads it, so a store would share it for nothing.
 
 </details>
 
-**A store that forgets.**
+**A store that loses its values.**
 A store keeps the name of the player, but every launch starts with an empty name.
 Which two places of the store do you check?
 

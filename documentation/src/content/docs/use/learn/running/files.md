@@ -24,7 +24,7 @@ The **data folder** belongs to your application: delete it and the users lose th
 | `store/<id>.store` | each store that [lives on the disk](/use/learn/state/stores-and-properties/) |
 | `property/<UI class>.property` | the fields of a UI marked [[UIProperty]]; `<UI class>` is the full name of the class |
 
-JOID writes these files when a UI closes, and saves what is still open when the JVM exits ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
+[Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk) and [Remember a field of a UI](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui) say when JOID writes them.
 
 The **cache folder** belongs to the machine: JOID rebuilds anything in it when it is missing.
 It is split into areas, one folder each:
