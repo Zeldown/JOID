@@ -18,6 +18,7 @@ The system properties of a snapshot run: where the references and the renders go
 ## Learn more
 
 - [References and the report](/build/testing-a-backend/#references-and-the-report)
+- [Testing your UIs](/use/learn/running/testing/)
 
 <a id="SnapshotSettings-methods"></a>
 
