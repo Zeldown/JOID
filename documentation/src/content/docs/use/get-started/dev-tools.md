@@ -139,6 +139,7 @@ The profiler writes each load of a UI on the standard output, except a reload, w
 [JOID] MenuUI took 21.73ms to draw a frame, more than the 16.66ms of 60 fps: …
 ```
 
+The profiler skips the first frame after each load or reload of the UI: that frame prepares everything the UI draws for the first time, such as its shaders, its glyphs and the framebuffers of its effects, and takes far longer than the next ones.
 The slow-frame line ends with its advice: move the heavy work out of `draw()`, the method of a node that draws itself ([Custom nodes](/use/learn/going-further/custom-nodes/#write-a-node-that-draws-itself)), or spread it over several frames.
 The inspector tells you which node is slow: its label gives the render time of the node under the pointer.
 [Performance](/use/in-depth/performance/#find-the-slow-part) explains what to look for.

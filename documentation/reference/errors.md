@@ -80,6 +80,7 @@ Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-
 ## warning [JOID] … took …ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames
 
 With the dev jar and the profiler of the UI turned on in [[UIDataDebug]], one frame of the UI took longer than a frame at 60 fps.
+The first frame after a load or a reload never prints it: it prepares what the UI draws for the first time.
 
 Move loading and computing out of the draw, onto a worker thread or into several frames: [Performance](/use/in-depth/performance/#find-the-slow-part).
 

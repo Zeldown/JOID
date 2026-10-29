@@ -1203,6 +1203,20 @@ public class UITest {
 	}
 
 	@Test
+	public void ignoresTheSlowFirstFrameOfEachLoad() {
+		JOIDEnv.devMode(true);
+		final ProfiledUI ui = new ProfiledUI(this.trace);
+		ui.pause = 20L;
+		final String output = TestUtils.captureErr(() -> TestUtils.captureOut(() -> {
+			this.bridges.open(ui);
+			ui.reload();
+			this.bridges.frame();
+		}));
+		Assert.assertEquals("", output);
+		Assert.assertTrue(TestUtils.captureErr(() -> this.bridges.frame()).contains("ProfiledUI took "));
+	}
+
+	@Test
 	public void closesAtOnceWithoutTransition() {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui);

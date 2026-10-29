@@ -78,7 +78,7 @@ A framebuffer of yours lives until you delete it: [Framebuffers and models](/use
 
 ## Find the slow part
 
-In dev mode, JOID prints the load time of each UI and every frame of a UI that takes more than 16.66 ms to draw, and the inspector shows each node.
+In dev mode, JOID prints the load time of each UI and every frame of a UI that takes more than 16.66 ms to draw, except the first one after a load, and the inspector shows each node.
 [Dev tools](/use/get-started/dev-tools/) explains both.
 
 ## What it means for your code

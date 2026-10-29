@@ -136,6 +136,7 @@ public abstract class UI implements IIndexedElement {
 	private boolean          loaded;
 	private boolean          watched;
 	private boolean          reloading;
+	private boolean          firstFrame;
 	private boolean          customTransition;
 	private volatile boolean reloadPending;
 
@@ -206,6 +207,7 @@ public abstract class UI implements IIndexedElement {
 		this.view.resize(finalWidth, finalHeight);
 
 		if (!this.initialized) {
+			this.firstFrame = true;
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
@@ -1005,12 +1007,13 @@ public abstract class UI implements IIndexedElement {
 		final long end = BridgeHandler.CLOCK.get().nanoTime();
 		this.renderTime = end - start;
 
-		if (JOIDEnv.isDevMode() && this.debug.profiler()) {
+		if (JOIDEnv.isDevMode() && this.debug.profiler() && !this.firstFrame) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
 				JOIDLog.warn(JOIDLog.nameOf(this.getClass()) + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames");
 			}
 		}
+		this.firstFrame = false;
 
 		if (this.lastFpsUpdate == 0L) {
 			this.fps = 0D;
