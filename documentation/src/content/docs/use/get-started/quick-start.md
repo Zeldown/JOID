@@ -110,6 +110,8 @@ A node is a shape, a text, an image, a control or a container.
 Read [Nodes and the tree](/use/learn/describing-the-ui/nodes/), then [Position and size](/use/learn/describing-the-ui/position-and-size/).
 The [Catalog](/use/catalog/) shows every node that JOID offers.
 
+The examples of the rest of this page come from one UI, `TourUI`, where each one sits in a card of its own, `body(card -> ...)`: paste one inside a body of yours, or open its full file.
+
 ## Lay out a row or a column
 
 A [[FlexNode]] places its children one after the other, so you compute no position:
