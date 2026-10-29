@@ -37,16 +37,16 @@ jobs:
       - name: Update version in files
         id: update
         run: |
+          OLD_VERSION=$(sed -n 's/^    version = "\(.*\)"\r\?$/\1/p' build.gradle)
+          [ -n "$OLD_VERSION" ] || { echo "No version found in build.gradle"; exit 1; }
           sed -i "s/^    version = \".*\"/    version = \"${TAG_NAME}\"/g" build.gradle
           sed -i "s/version-[^[:space:]]* ([0-9a-f]*)-/version-${TAG_NAME//-/--} (${COMMIT_SHA})-/g" README.md
-          OLD_VERSION=$(sed -n 's/.*"version": "\([0-9]\+\.[0-9]\+\.[0-9]\+[^"]*\)".*/\1/p' documentation/nav.json)
-          [ -n "$OLD_VERSION" ] || { echo "No version found in documentation/nav.json"; exit 1; }
-          find documentation/content -name "*.md" ! -path "documentation/content/changelog/*" -exec sed -i "s/\b${OLD_VERSION//./\\.}\b/${TAG_NAME}/g" {} +
-          sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+[^\"]*\"/\"version\": \"${TAG_NAME}\"/g" documentation/nav.json
+          git ls-files -z documentation/src/content/docs documentation/reference documentation/examples | grep -zE '\.(md|mdx|java|gradle|txt)$' | OLD="${OLD_VERSION}" NEW="${TAG_NAME}" xargs -0 -r perl -pi -e 's/(?<![\w.^~<>])\Q$ENV{OLD}\E(?!\.?\d)/$ENV{NEW}/g'
           git add README.md
           git add build.gradle
-          git add documentation/nav.json
-          git add documentation/content
+          git add documentation/src/content/docs
+          git add documentation/reference
+          git add documentation/examples
           git commit -m "update: update version to ${TAG_NAME} (🔖)"
           git push origin HEAD:main
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
