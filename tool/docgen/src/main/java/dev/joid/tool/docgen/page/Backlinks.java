@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -55,7 +56,7 @@ public final class Backlinks {
 
 		final List<Path> files;
 		try (Stream<Path> walk = Files.walk(docs.toPath())) {
-			files = walk.filter(path -> path.toString().endsWith(".md") || path.toString().endsWith(".mdx")).sorted().collect(Collectors.toList());
+			files = walk.filter(path -> path.toString().endsWith(".md") || path.toString().endsWith(".mdx")).sorted(Comparator.comparing(path -> path.toString().replace('\\', '/'))).collect(Collectors.toList());
 		}
 
 		for (final Path path : files) {

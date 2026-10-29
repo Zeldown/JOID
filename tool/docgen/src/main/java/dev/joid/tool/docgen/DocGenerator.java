@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -291,6 +292,7 @@ public final class DocGenerator {
 			return descriptions;
 		}
 
+		Arrays.sort(files, Comparator.comparing(File::getName));
 		for (final File file : files) {
 			final DescriptionFile description = DescriptionFile.read(file);
 			descriptions.put(description.getFqcn(), description);

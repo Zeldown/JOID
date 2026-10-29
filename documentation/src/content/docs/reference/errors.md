@@ -70,6 +70,58 @@ A listener given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) th
 
 Catch the exception inside the listener, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
 
+### The reload of … failed {#reload-failed}
+
+**Warning** · `[JOID] The reload of … failed: …`
+
+Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
+
+With the dev jar, the reload or the renewal of the UI (Ctrl + R, Ctrl + Shift + R, or a hot reload after an edit) threw an `IllegalStateException`, whose message follows the colon, and the program goes on.
+
+Look up that message on this page, fix its cause, then reload again: [Dev tools](/use/get-started/dev-tools/).
+
+### The reload of … failed (…), fix init() then reload it again {#reload-failed-fix-init}
+
+**Warning** · `[JOID] The reload of … failed (…), fix init() then reload it again`
+
+Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
+
+With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()` an exception other than an `IllegalStateException`, and the UI shows what the failed build left.
+
+Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-started/dev-tools/).
+
+### … took …ms to draw a frame, more than the 16.66ms of 60 fps {#took-ms-draw-frame}
+
+**Warning** · `[JOID] … took …ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames`
+
+Emitted by [`UI.draw`](/reference/ui/ui/#UI-method-draw).
+
+With the dev jar and the profiler of the UI turned on in [`UIDataDebug`](/reference/annotations/uidatadebug/), one frame of the UI took longer than a frame at 60 fps.
+
+Move loading and computing out of the draw, onto a worker thread or into several frames: [Performance](/use/in-depth/performance/#find-the-slow-part).
+
+### The … of … failed (…), the next inputs still run {#failed-next-inputs-still}
+
+**Warning** · `[JOID] The … of … failed (…), the next inputs still run: catch the exception inside the handler to handle it`
+
+Emitted by [`UI.fireUpdate`](/reference/ui/ui/#UI-method-fireUpdate), [`UI.fireMousePressed`](/reference/ui/ui/#UI-method-fireMousePressed), [`UI.fireMouseReleased`](/reference/ui/ui/#UI-method-fireMouseReleased), [`UI.fireMouseDragged`](/reference/ui/ui/#UI-method-fireMouseDragged), [`UI.fireMouseScroll`](/reference/ui/ui/#UI-method-fireMouseScroll), [`UI.fireCharTyped`](/reference/ui/ui/#UI-method-fireCharTyped), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.fireKeyReleased`](/reference/ui/ui/#UI-method-fireKeyReleased).
+
+A listener or the `update()` of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
+JOID prints it once per kind of input and of exception, and the next inputs still run.
+
+Catch the exception inside the listener or `update()`, or fix the code it names: [Events](/use/learn/interactivity/events/).
+
+### @… on … leaves active = false and changes nothing {#leaves-active-false-changes}
+
+**Warning** · `[JOID] @… on … leaves active = false and changes nothing: write @…(active = true)`
+
+Emitted by [`UI`](/reference/ui/ui/#UI-constructor), [`UI.reload`](/reference/ui/ui/#UI-method-reload).
+
+With the dev jar, a UI was created, or reloaded, whose class carries [`UIDataPopup`](/reference/annotations/uidatapopup/) or [`UIDataOverlay`](/reference/annotations/uidataoverlay/) without `active = true`, and whose parent class does not carry that annotation.
+The UI opens as a screen: the annotation keeps the values of a UI without it.
+
+Write `active = true` in the annotation: [Open a popup above a screen](/use/learn/describing-the-ui/overlays-and-popups/#open-a-popup-above-a-screen).
+
 ### The property … of … cannot be read into its field … (…), the field keeps … {#property-cannot-read-into}
 
 **Warning** · `[JOID] The property … of … cannot be read into its field … (…), the field keeps its default value`
@@ -122,58 +174,6 @@ Emitted by [`UIStoreHook.saveAll`](/reference/ui/uistorehook/#UIStoreHook-method
 The `toJson()` of a [`UIStore`](/reference/ui/uistore/) threw while JOID saved the stores, when a UI closed or when the program ended; the previous file stays on disk.
 
 Catch the exception inside `toJson()`, or fix the code it names: [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk).
-
-### The reload of … failed {#reload-failed}
-
-**Warning** · `[JOID] The reload of … failed: …`
-
-Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
-
-With the dev jar, the reload or the renewal of the UI (Ctrl + R, Ctrl + Shift + R, or a hot reload after an edit) threw an `IllegalStateException`, whose message follows the colon, and the program goes on.
-
-Look up that message on this page, fix its cause, then reload again: [Dev tools](/use/get-started/dev-tools/).
-
-### The reload of … failed (…), fix init() then reload it again {#reload-failed-fix-init}
-
-**Warning** · `[JOID] The reload of … failed (…), fix init() then reload it again`
-
-Emitted by [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.draw`](/reference/ui/ui/#UI-method-draw).
-
-With the dev jar, the reload of the UI (Ctrl + R, or a hot reload after an edit) threw in `init()` an exception other than an `IllegalStateException`, and the UI shows what the failed build left.
-
-Fix the error named in the parentheses, then reload again: [Dev tools](/use/get-started/dev-tools/).
-
-### … took …ms to draw a frame, more than the 16.66ms of 60 fps {#took-ms-draw-frame}
-
-**Warning** · `[JOID] … took …ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames`
-
-Emitted by [`UI.draw`](/reference/ui/ui/#UI-method-draw).
-
-With the dev jar and the profiler of the UI turned on in [`UIDataDebug`](/reference/annotations/uidatadebug/), one frame of the UI took longer than a frame at 60 fps.
-
-Move loading and computing out of the draw, onto a worker thread or into several frames: [Performance](/use/in-depth/performance/#find-the-slow-part).
-
-### The … of … failed (…), the next inputs still run {#failed-next-inputs-still}
-
-**Warning** · `[JOID] The … of … failed (…), the next inputs still run: catch the exception inside the handler to handle it`
-
-Emitted by [`UI.fireUpdate`](/reference/ui/ui/#UI-method-fireUpdate), [`UI.fireMousePressed`](/reference/ui/ui/#UI-method-fireMousePressed), [`UI.fireMouseReleased`](/reference/ui/ui/#UI-method-fireMouseReleased), [`UI.fireMouseDragged`](/reference/ui/ui/#UI-method-fireMouseDragged), [`UI.fireMouseScroll`](/reference/ui/ui/#UI-method-fireMouseScroll), [`UI.fireCharTyped`](/reference/ui/ui/#UI-method-fireCharTyped), [`UI.fireKeyPressed`](/reference/ui/ui/#UI-method-fireKeyPressed), [`UI.fireKeyReleased`](/reference/ui/ui/#UI-method-fireKeyReleased).
-
-A listener or the `update()` of the UI threw while JOID delivered an input or the update of a frame: an `update`, a press, a release, a drag, a scroll, a character or a key.
-JOID prints it once per kind of input and of exception, and the next inputs still run.
-
-Catch the exception inside the listener or `update()`, or fix the code it names: [Events](/use/learn/interactivity/events/).
-
-### @… on … leaves active = false and changes nothing {#leaves-active-false-changes}
-
-**Warning** · `[JOID] @… on … leaves active = false and changes nothing: write @…(active = true)`
-
-Emitted by [`UI`](/reference/ui/ui/#UI-constructor), [`UI.reload`](/reference/ui/ui/#UI-method-reload).
-
-With the dev jar, a UI was created, or reloaded, whose class carries [`UIDataPopup`](/reference/annotations/uidatapopup/) or [`UIDataOverlay`](/reference/annotations/uidataoverlay/) without `active = true`, and whose parent class does not carry that annotation.
-The UI opens as a screen: the annotation keeps the values of a UI without it.
-
-Write `active = true` in the annotation: [Open a popup above a screen](/use/learn/describing-the-ui/overlays-and-popups/#open-a-popup-above-a-screen).
 
 ### No key resolver knows the shortcut binding … of type … yet, the shortcut … {#no-key-resolver-knows-shortcut}
 
@@ -228,16 +228,6 @@ Emitted by [`JOIDEnv.devMode`](/reference/ui/joidenv/#JOIDEnv-method-devMode).
 
 Put the dev jar on the classpath to use the dev mode: [Dev tools](/use/get-started/dev-tools/).
 
-### The store … has no @UIStoreData annotation, add it to the class {#store-has-no-uistoredata}
-
-**`IllegalStateException`** · `The store … has no @UIStoreData annotation, add it to the class`
-
-Emitted by [`UIStoreHook.getData`](/reference/ui/uistorehook/#UIStoreHook-method-getData).
-
-A [`UIStore`](/reference/ui/uistore/) class without [`UIStoreData`](/reference/ui/uistoredata/) was used; JOID cannot know its scope.
-
-Annotate the class with `@UIStoreData`: [Write a store](/use/learn/state/stores-and-properties/#write-a-store).
-
 ### The UI … is not open, only an open UI can be renewed {#ui-not-open-only}
 
 **`IllegalStateException`** · `The UI … is not open, only an open UI can be renewed: open it before renew()`
@@ -280,6 +270,16 @@ The UI is annotated with an active [`UIDataPopup`](/reference/annotations/uidata
 
 Keep one annotation: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
+### The store … has no @UIStoreData annotation, add it to the class {#store-has-no-uistoredata}
+
+**`IllegalStateException`** · `The store … has no @UIStoreData annotation, add it to the class`
+
+Emitted by [`UIStoreHook.getData`](/reference/ui/uistorehook/#UIStoreHook-method-getData).
+
+A [`UIStore`](/reference/ui/uistore/) class without [`UIStoreData`](/reference/ui/uistoredata/) was used; JOID cannot know its scope.
+
+Annotate the class with `@UIStoreData`: [Write a store](/use/learn/state/stores-and-properties/#write-a-store).
+
 ## Annotations
 
 ### The class … has no public method …(...) for the annotation value …, add … {#class-has-no-public}
@@ -303,15 +303,6 @@ The method that applies an annotation value threw; the cause is in the parenthes
 Fix the method from that cause: [Configure a UI](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 ## Nodes
-
-### The dev panel cannot read the field … of … (…), the panel leaves it out {#dev-panel-cannot-read}
-
-**Warning** · `[JOID] The dev panel cannot read the field … of … (…), the panel leaves it out`
-
-With the dev jar, the inspector could not read one field of the selected node, often a field that the module system hides.
-The panel shows the other fields.
-
-No fix is needed; the reason is in the parentheses: [Inspect a UI](/use/get-started/dev-tools/#inspect-a-ui).
 
 ### The update of … failed (…), the next updates still run {#update-failed-next-updates}
 
@@ -355,65 +346,14 @@ The other properties of the watch still apply.
 
 Check the value that the signal gives and the code of the property: [Choose what a change does](/use/learn/state/rebuilding/#choose-what-a-change-does).
 
-### The … has no X axis to hold the data … {#has-no-x-axis-hold}
+### The dev panel cannot read the field … of … (…), the panel leaves it out {#dev-panel-cannot-read}
 
-**`IllegalStateException`** · `The … has no X axis to hold the data …, call xAxis(...) before data(...)`
+**Warning** · `[JOID] The dev panel cannot read the field … of … (…), the panel leaves it out`
 
-Emitted by [`ChartNode.data`](/reference/nodes/chartnode/#ChartNode-method-data).
+With the dev jar, the inspector could not read one field of the selected node, often a field that the module system hides.
+The panel shows the other fields.
 
-`data(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
-
-Call `xAxis(...)` first: [Draw a line chart](/use/learn/going-further/charts/#draw-a-line-chart).
-
-### The … has no X axis to remove the data … from {#has-no-x-axis-remove}
-
-**`IllegalStateException`** · `The … has no X axis to remove the data … from, call xAxis(...) before removeData(...)`
-
-Emitted by [`ChartNode.removeData`](/reference/nodes/chartnode/#ChartNode-method-removeData).
-
-`removeData(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
-
-Call `xAxis(...)` first: [Update the data](/use/learn/going-further/charts/#update-the-data).
-
-### The min … of the zoom range is above its max …, pass a min of at most … {#min-zoom-range-above}
-
-**`IllegalArgumentException`** · `The min … of the zoom range is above its max …, pass a min of at most …`
-
-Emitted by [`ModelViewerNode.zoomRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-zoomRange).
-
-`zoomRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
-
-Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
-
-### The min … of the rotation yaw range is above its max …, pass a min of at … {#min-rotation-yaw-range}
-
-**`IllegalArgumentException`** · `The min … of the rotation yaw range is above its max …, pass a min of at most …`
-
-Emitted by [`ModelViewerNode.rotationYawRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationYawRange).
-
-`rotationYawRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
-
-Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
-
-### The min … of the rotation pitch range is above its max …, pass a min of … {#min-rotation-pitch-range}
-
-**`IllegalArgumentException`** · `The min … of the rotation pitch range is above its max …, pass a min of at most …`
-
-Emitted by [`ModelViewerNode.rotationPitchRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationPitchRange).
-
-`rotationPitchRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
-
-Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
-
-### The resource … of this ResourcePlayerNode has no playback {#resource-resourceplayernode-has-no}
-
-**`IllegalStateException`** · `The resource … of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode`
-
-Emitted by [`ResourcePlayerNode.play`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-play), [`ResourcePlayerNode.stop`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-stop), [`ResourcePlayerNode.pause`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-pause), [`ResourcePlayerNode.restart`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-restart), [`ResourcePlayerNode.seek`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-seek).
-
-`play()`, `stop()`, `pause()`, `restart()` or `seek(...)` was called on a [`ResourcePlayerNode`](/reference/nodes/resourceplayernode/) whose resource is a still image, which has nothing to play.
-
-Give the node a video or an animated image, or show the image with a [`ResourceNode`](/reference/nodes/resourcenode/): [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
+No fix is needed; the reason is in the parentheses: [Inspect a UI](/use/get-started/dev-tools/#inspect-a-ui).
 
 ### The … has no …, … {#has-no}
 
@@ -495,6 +435,66 @@ Emitted by [`Node.copy`](/reference/nodes/node/#Node-method-copy), [`Node.startD
 `copy()` copies every field of the node by reflection, and one field refused the value, for example a final field that the module system protects.
 
 Mark the field `transient` to leave it out of the copy, and set it in the constructor: [Make your node duplicable](/use/learn/going-further/custom-nodes/#make-your-node-duplicable).
+
+### The … has no X axis to hold the data … {#has-no-x-axis-hold}
+
+**`IllegalStateException`** · `The … has no X axis to hold the data …, call xAxis(...) before data(...)`
+
+Emitted by [`ChartNode.data`](/reference/nodes/chartnode/#ChartNode-method-data).
+
+`data(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
+
+Call `xAxis(...)` first: [Draw a line chart](/use/learn/going-further/charts/#draw-a-line-chart).
+
+### The … has no X axis to remove the data … from {#has-no-x-axis-remove}
+
+**`IllegalStateException`** · `The … has no X axis to remove the data … from, call xAxis(...) before removeData(...)`
+
+Emitted by [`ChartNode.removeData`](/reference/nodes/chartnode/#ChartNode-method-removeData).
+
+`removeData(...)` was called on a [`ChartNode`](/reference/nodes/chartnode/) whose X axis is not set yet.
+
+Call `xAxis(...)` first: [Update the data](/use/learn/going-further/charts/#update-the-data).
+
+### The min … of the zoom range is above its max …, pass a min of at most … {#min-zoom-range-above}
+
+**`IllegalArgumentException`** · `The min … of the zoom range is above its max …, pass a min of at most …`
+
+Emitted by [`ModelViewerNode.zoomRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-zoomRange).
+
+`zoomRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
+
+### The min … of the rotation yaw range is above its max …, pass a min of at … {#min-rotation-yaw-range}
+
+**`IllegalArgumentException`** · `The min … of the rotation yaw range is above its max …, pass a min of at most …`
+
+Emitted by [`ModelViewerNode.rotationYawRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationYawRange).
+
+`rotationYawRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
+
+### The min … of the rotation pitch range is above its max …, pass a min of … {#min-rotation-pitch-range}
+
+**`IllegalArgumentException`** · `The min … of the rotation pitch range is above its max …, pass a min of at most …`
+
+Emitted by [`ModelViewerNode.rotationPitchRange`](/reference/nodes/modelviewernode/#ModelViewerNode-method-rotationPitchRange).
+
+`rotationPitchRange(min, max)` of a [`ModelViewerNode`](/reference/nodes/modelviewernode/) received, or its suppliers returned, a minimum above the maximum.
+
+Pass a minimum lower than or equal to the maximum: [Let the user rotate and zoom](/use/learn/going-further/3d-models/#let-the-user-rotate-and-zoom).
+
+### The resource … of this ResourcePlayerNode has no playback {#resource-resourceplayernode-has-no}
+
+**`IllegalStateException`** · `The resource … of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode`
+
+Emitted by [`ResourcePlayerNode.play`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-play), [`ResourcePlayerNode.stop`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-stop), [`ResourcePlayerNode.pause`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-pause), [`ResourcePlayerNode.restart`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-restart), [`ResourcePlayerNode.seek`](/reference/nodes/resourceplayernode/#ResourcePlayerNode-method-seek).
+
+`play()`, `stop()`, `pause()`, `restart()` or `seek(...)` was called on a [`ResourcePlayerNode`](/reference/nodes/resourceplayernode/) whose resource is a still image, which has nothing to play.
+
+Give the node a video or an animated image, or show the image with a [`ResourceNode`](/reference/nodes/resourcenode/): [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ### A free draggable area has no bounds, check getAreaType() before calling … {#free-draggable-area-has}
 
@@ -711,6 +711,16 @@ The function of a derived value read the derived value itself, directly or throu
 
 Remove that read from the function: [Combine several signals](/use/learn/state/derived-values/#combine-several-signals).
 
+### IllegalStateException that carries the message of its cause {#illegalstateexception}
+
+**`IllegalStateException`** · `…`
+
+Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`TransitionStep.copy`](/reference/ui/transitionstep/#TransitionStep-method-copy), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
+
+An `IllegalStateException` whose message comes from your code: the [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse) of a [`Signal`](/reference/signals/signal/) subclass of your own gave it, and `set(...)` or `reset()` threw it.
+
+Read the message that your code gave.
+
 ### The IntegerSignal of value … cannot be divided by 0, check the divisor … {#integersignal-value-cannot-divided}
 
 **`IllegalArgumentException`** · `The IntegerSignal of value … cannot be divided by 0, check the divisor before calling divide(...)`
@@ -730,16 +740,6 @@ Emitted by [`LongSignal.divide`](/reference/signals/longsignal/#LongSignal-metho
 `divide(0)` was called on a [`LongSignal`](/reference/signals/longsignal/).
 
 Check the divisor before you divide: [Choose a signal type](/use/learn/interactivity/signals/#choose-a-signal-type).
-
-### IllegalStateException that carries the message of its cause {#illegalstateexception}
-
-**`IllegalStateException`** · `…`
-
-Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`TransitionStep.copy`](/reference/ui/transitionstep/#TransitionStep-method-copy), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
-
-An `IllegalStateException` whose message comes from your code: the [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse) of a [`Signal`](/reference/signals/signal/) subclass of your own gave it, and `set(...)` or `reset()` threw it.
-
-Read the message that your code gave.
 
 ### The value … has no events to listen to, declare them with events(...) … {#value-has-no-events}
 
@@ -1077,6 +1077,17 @@ An entry of a cache area could not be deleted, usually because a file of it is o
 
 No fix is needed: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
+### The resource … cannot be read {#resource-cannot-read-drawn}
+
+**Warning** · `[JOID] The resource … cannot be read: …. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.`
+
+Emitted by [`ResourceData.fail`](/reference/resources/resourcedata/#ResourceData-method-fail).
+
+With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
+The cause follows the colon; the [`Resource.onError`](/reference/resources/resource/#Resource-event-onError) listeners receive it.
+
+Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [An image shows a checkerboard or nothing](/use/troubleshooting/#an-image-shows-a-checkerboard-or-nothing).
+
 ### The video … cannot be reopened (…), check that the file can still be … {#video-cannot-reopened-check}
 
 **Warning** · `[JOID] The video … cannot be reopened (…), check that the file can still be read`
@@ -1107,17 +1118,6 @@ Emitted by [`VideoResourceDecoder.play`](/reference/resources/videoresourcedecod
 The decoder of a playing video threw; the video stops where it was.
 
 Check that the file can still be read, and that it is not damaged: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
-
-### The resource … cannot be read {#resource-cannot-read-drawn}
-
-**Warning** · `[JOID] The resource … cannot be read: …. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.`
-
-Emitted by [`ResourceData.fail`](/reference/resources/resourcedata/#ResourceData-method-fail).
-
-With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
-The cause follows the colon; the [`Resource.onError`](/reference/resources/resource/#Resource-event-onError) listeners receive it.
-
-Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [An image shows a checkerboard or nothing](/use/troubleshooting/#an-image-shows-a-checkerboard-or-nothing).
 
 ### The video … plays without sound (…), register an audio bridge and check … {#video-plays-without-sound}
 
@@ -1231,6 +1231,27 @@ The JVM offers no SHA-1, which the file cache uses to name its entries.
 
 Run JOID on a standard JVM: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
+### The borrowed texture … is not a texture of the host, borrow a texture … {#borrowed-texture-not-texture}
+
+**`IllegalArgumentException`** · `The borrowed texture … is not a texture of the host, borrow a texture that the host created and has not deleted`
+
+Emitted by [`ResourceData.generate`](/reference/resources/resourcedata/#ResourceData-method-generate).
+
+`Resource.of(...)` received a texture of the host that names no texture when JOID loads the resource: the number is wrong, the texture was deleted, or it belongs to another graphics context.
+The resource fails.
+
+Borrow a texture that exists in the graphics context of JOID: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
+
+### An animation needs at least one frame, got none {#animation-needs-least-one}
+
+**`IllegalArgumentException`** · `An animation needs at least one frame, got none: check that the file holds its frames`
+
+Emitted by [`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of).
+
+[`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of) received no frame, from a reader of your own or from an empty file.
+
+Give the animation at least one frame: [Build an animation from your own frames](/use/learn/going-further/custom-formats/#build-an-animation-from-your-own-frames).
+
 ### The PNG has no IHDR chunk before its image data, the file is damaged {#png-has-no-ihdr-chunk}
 
 **`IllegalArgumentException`** · `The PNG has no IHDR chunk before its image data, the file is damaged: export it again`
@@ -1280,16 +1301,6 @@ Emitted by [`WebpResourceAnimationReader.read`](/reference/resources/webpresourc
 A WebP was decoded as an animation but holds a single image.
 
 Show it with a [`ResourceNode`](/reference/nodes/resourcenode/), or export it with its animation: [Images and media](/use/learn/describing-the-ui/media/).
-
-### An animation needs at least one frame, got none {#animation-needs-least-one}
-
-**`IllegalArgumentException`** · `An animation needs at least one frame, got none: check that the file holds its frames`
-
-Emitted by [`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of).
-
-[`ResourceAnimation.of`](/reference/resources/resourceanimation/#ResourceAnimation-factory-of) received no frame, from a reader of your own or from an empty file.
-
-Give the animation at least one frame: [Build an animation from your own frames](/use/learn/going-further/custom-formats/#build-an-animation-from-your-own-frames).
 
 ### The animation … cannot be read {#animation-cannot-read}
 
@@ -1393,17 +1404,6 @@ The file is a HEIF or AVIF image, which JOID recognizes but does not decode.
 
 Convert it to PNG, JPEG or WebP: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats).
 
-### The borrowed texture … is not a texture of the host, borrow a texture … {#borrowed-texture-not-texture}
-
-**`IllegalArgumentException`** · `The borrowed texture … is not a texture of the host, borrow a texture that the host created and has not deleted`
-
-Emitted by [`ResourceData.generate`](/reference/resources/resourcedata/#ResourceData-method-generate).
-
-`Resource.of(...)` received a texture of the host that names no texture when JOID loads the resource: the number is wrong, the texture was deleted, or it belongs to another graphics context.
-The resource fails.
-
-Borrow a texture that exists in the graphics context of JOID: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
-
 ### FFmpeg has no natives for the platform …, play the videos on … {#ffmpeg-has-no-natives}
 
 **`VideoNativesException`** · `FFmpeg has no natives for the platform …, play the videos on windows-x86_64, linux-x86_64, macosx-x86_64 or macosx-arm64`
@@ -1476,6 +1476,26 @@ Emitted by [`DrawShape.drawDashedLine`](/reference/drawing/drawshape/#DrawShape-
 
 Pass a dash length above `0`, in design pixels: [Draw lines and curves](/use/learn/going-further/drawing/#draw-lines-and-curves).
 
+### The OBJ model … cannot be read (…), check that the file exists and can … {#obj-model-cannot-read-check}
+
+**`UncheckedIOException`** · `The OBJ model … cannot be read (…), check that the file exists and can be read`
+
+Emitted by [`ObjModel`](/reference/drawing/objmodel/).
+
+Reading the OBJ file failed; the cause is in the parentheses.
+
+Check that the file exists and can be read: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
+
+### The OBJ model … cannot be read {#obj-model-cannot-read-line}
+
+**`IllegalArgumentException`** · `The OBJ model … cannot be read: its line … "…" …, fix this line in the model file`
+
+Emitted by [`ObjModel`](/reference/drawing/objmodel/).
+
+A line of the OBJ file is malformed; the message gives its number, its text and the problem.
+
+Fix that line, or export the model again: [Know what JOID reads in a .obj file](/use/learn/going-further/3d-models/#know-what-joid-reads-in-a-obj-file).
+
 ### An ObjFace has 3 vertices, got … {#objface-has-3-vertices}
 
 **`IllegalArgumentException`** · `An ObjFace has 3 vertices, got …: split the polygon into triangles (ObjModel does it for OBJ files)`
@@ -1505,26 +1525,6 @@ Emitted by [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of).
 [`ObjFace.of`](/reference/drawing/objface/#ObjFace-factory-of) received a number of normals other than 0 or 3.
 
 Give one normal per vertex, or none: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
-
-### The OBJ model … cannot be read (…), check that the file exists and can … {#obj-model-cannot-read-check}
-
-**`UncheckedIOException`** · `The OBJ model … cannot be read (…), check that the file exists and can be read`
-
-Emitted by [`ObjModel`](/reference/drawing/objmodel/).
-
-Reading the OBJ file failed; the cause is in the parentheses.
-
-Check that the file exists and can be read: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
-
-### The OBJ model … cannot be read {#obj-model-cannot-read-line}
-
-**`IllegalArgumentException`** · `The OBJ model … cannot be read: its line … "…" …, fix this line in the model file`
-
-Emitted by [`ObjModel`](/reference/drawing/objmodel/).
-
-A line of the OBJ file is malformed; the message gives its number, its text and the problem.
-
-Fix that line, or export the model again: [Know what JOID reads in a .obj file](/use/learn/going-further/3d-models/#know-what-joid-reads-in-a-obj-file).
 
 ### The framebuffer of …x… is empty {#framebuffer-x-empty-call}
 
@@ -2478,6 +2478,26 @@ Downscale the image, or split it: [Supported formats](/use/learn/describing-the-
 
 ## LWJGL 2 backend
 
+### The clipboard cannot be read, an empty text replaces it {#clipboard-cannot-read-empty}
+
+**Warning** · `[JOID] The clipboard cannot be read, an empty text replaces it: …`
+
+Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-getClipboard).
+
+With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
+
+### The clipboard cannot be written, the text stays out of it {#clipboard-cannot-written-text}
+
+**Warning** · `[JOID] The clipboard cannot be written, the text stays out of it: …`
+
+Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-setClipboard).
+
+With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
+
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
+
 ### JNA is missing or cannot be loaded, the mouse cursor stays the default … {#jna-missing-cannot-loaded}
 
 **Warning** · `[JOID] JNA is missing or cannot be loaded, the mouse cursor stays the default one: …`
@@ -2518,36 +2538,6 @@ With the dev jar, on Linux, libXcursor is missing, so the cursors come from the 
 
 Install libXcursor to get the cursors of the theme: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
 
-### The clipboard cannot be read, an empty text replaces it {#clipboard-cannot-read-empty}
-
-**Warning** · `[JOID] The clipboard cannot be read, an empty text replaces it: …`
-
-Emitted by [`Lwjgl2WindowBridge.getClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-getClipboard).
-
-With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
-
-Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
-
-### The clipboard cannot be written, the text stays out of it {#clipboard-cannot-written-text}
-
-**Warning** · `[JOID] The clipboard cannot be written, the text stays out of it: …`
-
-Emitted by [`Lwjgl2WindowBridge.setClipboard`](/reference/lwjgl2/lwjgl2windowbridge/#Lwjgl2WindowBridge-method-setClipboard).
-
-With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
-
-Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
-
-### LWJGL 2 cannot create the OpenAL context (…), check that an audio output … {#lwjgl-2-cannot-create-openal}
-
-**`IllegalStateException`** · `LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled`
-
-Emitted by [`Lwjgl2AlBinding.createContext`](/reference/lwjgl2/lwjgl2albinding/#Lwjgl2AlBinding-method-createContext).
-
-The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
-
-Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
-
 ### The LWJGL 2 native … is missing from the backend {#lwjgl-2-native-missing}
 
 **`IllegalStateException`** · `The LWJGL 2 native … is missing from the backend`
@@ -2567,6 +2557,16 @@ Emitted by [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Nati
 [`Lwjgl2Natives.install`](/reference/lwjgl2/lwjgl2natives/#Lwjgl2Natives-method-install) could not write the natives into the cache folder.
 
 Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be written.
+
+### LWJGL 2 cannot create the OpenAL context (…), check that an audio output … {#lwjgl-2-cannot-create-openal}
+
+**`IllegalStateException`** · `LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled`
+
+Emitted by [`Lwjgl2AlBinding.createContext`](/reference/lwjgl2/lwjgl2albinding/#Lwjgl2AlBinding-method-createContext).
+
+The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
+
+Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ### LWJGL 2 cannot create the …x… OpenGL context of the snapshots (…), check … {#lwjgl-2-cannot-create-x}
 
@@ -2601,6 +2601,16 @@ Emitted by [`VulkanShaderCompiler.compile`](/reference/vulkan/vulkanshadercompil
 shaderc refused a translated stage of a shader; its error follows, and the shader never draws.
 
 Fix the source from the error: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
+
+### VulkanBackend has no render bridge to destroy {#vulkanbackend-has-no-render}
+
+**`IllegalStateException`** · `VulkanBackend has no render bridge to destroy: call register() first and destroy() only once`
+
+Emitted by [`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy).
+
+[`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy) was called before `register()`, or twice.
+
+Destroy the backend once, after the loop: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ### A Vulkan window host needs at least one frame in flight, got … {#vulkan-window-host-needs}
 
@@ -2652,16 +2662,6 @@ No device of the machine supports Vulkan 1.3 and the surface of the window.
 
 Update the graphics driver, or use an OpenGL backend: [Check the prerequisites](/use/learn/running/backends/#check-the-prerequisites).
 
-### No Vulkan render bridge is registered, register the Vulkan backend … {#no-vulkan-render-bridge}
-
-**`IllegalStateException`** · `No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.of(...)`
-
-Emitted by [`VulkanBorrowedTexture`](/reference/vulkan/vulkanborrowedtexture/).
-
-[`VulkanBorrowedTexture.of`](/reference/vulkan/vulkanborrowedtexture/#VulkanBorrowedTexture-factory-of) was called before the Vulkan backend was registered.
-
-Register the backend first: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
-
 ### … failed with the Vulkan error …, update the graphics driver or run with … {#failed-vulkan-error-update}
 
 **`IllegalStateException`** · `… failed with the Vulkan error …, update the graphics driver or run with the Vulkan validation layers to find the call at fault`
@@ -2710,6 +2710,16 @@ A Vulkan host of your own gives a device created for an older version of Vulkan.
 
 Create the instance and the device with `VK_API_VERSION_1_3`: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
+### No Vulkan render bridge is registered, register the Vulkan backend … {#no-vulkan-render-bridge}
+
+**`IllegalStateException`** · `No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.of(...)`
+
+Emitted by [`VulkanBorrowedTexture`](/reference/vulkan/vulkanborrowedtexture/).
+
+[`VulkanBorrowedTexture.of`](/reference/vulkan/vulkanborrowedtexture/#VulkanBorrowedTexture-factory-of) was called before the Vulkan backend was registered.
+
+Register the backend first: [Show a texture of your application](/use/learn/describing-the-ui/media/#show-a-texture-of-your-application).
+
 ### No Vulkan 1.3 device able to draw was found, update the graphics driver … {#no-vulkan-1-3-device-able-draw}
 
 **`IllegalStateException`** · `No Vulkan 1.3 device able to draw was found, update the graphics driver or use an OpenGL backend`
@@ -2720,27 +2730,7 @@ The Vulkan snapshot host found no device with Vulkan 1.3 and a graphics queue.
 
 Update the graphics driver, or run the Vulkan tests on another machine: [Requirements](/build/backends/vulkan/#requirements).
 
-### VulkanBackend has no render bridge to destroy {#vulkanbackend-has-no-render}
-
-**`IllegalStateException`** · `VulkanBackend has no render bridge to destroy: call register() first and destroy() only once`
-
-Emitted by [`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy).
-
-[`VulkanBackend.destroy`](/reference/vulkan/vulkanbackend/#VulkanBackend-method-destroy) was called before `register()`, or twice.
-
-Destroy the backend once, after the loop: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
-
 ## Tools
-
-### The glyphs do not fit in …x… even at …px, raise --width and --height or … {#glyphs-do-not-fit-x-even}
-
-**`IllegalStateException`** · `The glyphs do not fit in …x… even at …px, raise --width and --height or shrink the charset`
-
-Emitted by [`Packer.fit`](/reference/tools/packer/#Packer-method-fit).
-
-The MSDF generator found no glyph size at which the charset fits in the atlas.
-
-Raise `--width` and `--height`, or pass a smaller `--charset`: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ### Usage: msdf --font \<file.ttf\|file.otf\> \[--output \<directory\>\] \[--charset … {#usage-msdf-font-file}
 
@@ -2781,4 +2771,14 @@ Emitted by [`MsdfGenerator.main`](/reference/tools/msdfgenerator/#MsdfGenerator-
 The last option on the command line of the MSDF generator has no value.
 
 Give the option its value after a space: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
+
+### The glyphs do not fit in …x… even at …px, raise --width and --height or … {#glyphs-do-not-fit-x-even}
+
+**`IllegalStateException`** · `The glyphs do not fit in …x… even at …px, raise --width and --height or shrink the charset`
+
+Emitted by [`Packer.fit`](/reference/tools/packer/#Packer-method-fit).
+
+The MSDF generator found no glyph size at which the charset fits in the atlas.
+
+Raise `--width` and `--height`, or pass a smaller `--charset`: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 

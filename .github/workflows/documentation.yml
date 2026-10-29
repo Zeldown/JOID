@@ -30,6 +30,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
           cache-dependency-path: documentation/package-lock.json
+      - name: Install a virtual display
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 libxxf86vm1 libxrandr2 x11-xserver-utils
       - name: Run the checks
         working-directory: documentation
-        run: chmod +x ../gradlew && npm ci && npm run check -- --fresh
+        run: chmod +x ../gradlew && npm ci && xvfb-run -a -s "-screen 0 1920x1080x24" npm run check -- --fresh

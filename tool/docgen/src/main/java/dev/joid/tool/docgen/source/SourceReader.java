@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -110,7 +111,7 @@ public final class SourceReader {
 			}
 
 			try (Stream<Path> files = Files.walk(sources)) {
-				for (final Path file : files.filter(path -> path.toString().endsWith(".java")).sorted().collect(Collectors.toList())) {
+				for (final Path file : files.filter(path -> path.toString().endsWith(".java")).sorted(Comparator.comparing(path -> path.toString().replace('\\', '/'))).collect(Collectors.toList())) {
 					final ParseResult<CompilationUnit> result = this.parser.parse(file);
 					if (!result.isSuccessful() || !result.getResult().isPresent()) {
 						throw new IllegalStateException("Unable to parse " + file + ": " + result.getProblems());
