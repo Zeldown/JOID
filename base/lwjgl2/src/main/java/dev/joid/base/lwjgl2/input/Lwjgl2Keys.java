@@ -58,6 +58,10 @@ public final class Lwjgl2Keys {
 		Lwjgl2Keys.map(Key.MENU, Keyboard.KEY_APPS);
 	}
 
+	public static int getCode(final @NonNull Key key) {
+		return Lwjgl2Keys.CODE_MAP.getOrDefault(key, Keyboard.KEY_NONE);
+	}
+
 	public static @NonNull Key getPhysicalKey(final int code) {
 		return Lwjgl2Keys.KEY_ARRAY[code];
 	}
@@ -86,8 +90,8 @@ public final class Lwjgl2Keys {
 	}
 
 	public static boolean isKeyDown(final @NonNull Key key) {
-		final Integer code = Lwjgl2Keys.CODE_MAP.get(key);
-		return code != null && Keyboard.isKeyDown(code);
+		final int code = Lwjgl2Keys.getCode(key);
+		return code != Keyboard.KEY_NONE && Keyboard.isKeyDown(code);
 	}
 
 	private static void map(final Key key, final int code) {

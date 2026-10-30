@@ -49,3 +49,4 @@ A host that handles the input too drains the queues itself and asks JOID for eac
 LWJGL 2 cannot name a key by layout, so `getKey(code, character)` reads the printed key from the character that the press types, and remembers it for that position.
 With Ctrl, a letter types a control character that names its letter.
 While Shift or Alt is held, or Ctrl on another key, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
+`getCode(key)` goes the other way, from a key to the LWJGL 2 code at its position, such as the default key of a key binding of the host.

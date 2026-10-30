@@ -1,10 +1,14 @@
 ---
-summary: Maps the key codes of LWJGL 2 to the keys of JOID, by physical position or through the character that the key typed.
+summary: Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed.
 ---
 
 LWJGL 2 does not tell the layout, so the key of the layout comes from the character of each press, remembered for the presses with a modifier.
 
 Learn: [Keys](/build/base-modules/lwjgl2/#keys).
+
+## getCode(Key)
+
+Returns the LWJGL 2 code at the physical position of the key, or `Keyboard.KEY_NONE` for a key that LWJGL 2 does not name.
 
 ## getPhysicalKey(int)
 

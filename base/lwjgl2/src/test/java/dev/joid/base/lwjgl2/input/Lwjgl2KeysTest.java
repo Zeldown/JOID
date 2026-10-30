@@ -40,4 +40,16 @@ public class Lwjgl2KeysTest {
 		), keys);
 	}
 
+	@Test
+	public void givesBackTheCodeAtThePositionOfEachKey() {
+		for (int code = 0; code < Keyboard.KEYBOARD_SIZE; code++) {
+			final Key key = Lwjgl2Keys.getPhysicalKey(code);
+			if (key != Key.UNKNOWN) {
+				Assert.assertEquals(key.name(), code, Lwjgl2Keys.getCode(key));
+			}
+		}
+		Assert.assertEquals(Keyboard.KEY_NONE, Lwjgl2Keys.getCode(Key.UNKNOWN));
+		Assert.assertEquals(Keyboard.KEY_NONE, Lwjgl2Keys.getCode(Key.F25));
+	}
+
 }

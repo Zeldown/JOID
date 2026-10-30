@@ -1,6 +1,6 @@
 ---
 title: "Lwjgl2Keys"
-description: "Maps the key codes of LWJGL 2 to the keys of JOID, by physical position or through the character that the key typed."
+description: "Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Package:** `dev.joid.base.lwjgl2.input` · **Module:** `base-lwjgl2` · **Source:** [Lwjgl2Keys.java](https://github.com/Zeldown/JOID/blob/main/base/lwjgl2/src/main/java/dev/joid/base/lwjgl2/input/Lwjgl2Keys.java)<br/>
 **Backends:** <span class="joid-badge">LWJGL 2</span>
 
-Maps the key codes of LWJGL 2 to the keys of JOID, by physical position or through the character that the key typed.
+Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed.
 
 ## Description
 
@@ -30,11 +30,20 @@ LWJGL 2 does not tell the layout, so the key of the layout comes from the charac
 
 | Returns | Signature | Summary |
 |---|---|---|
+| `int` | [getCode](#Lwjgl2Keys-method-getCode)(Key key) <span class="joid-qualifier">static</span> | Returns the LWJGL 2 code at the physical position of the key, or `Keyboard.KEY_NONE` for a key that LWJGL 2 does not name. |
 | [`Key`](/reference/input/key/) | [getPhysicalKey](#Lwjgl2Keys-method-getPhysicalKey)(int code) <span class="joid-qualifier">static</span> | Returns the key at the physical position of the LWJGL 2 code, or `Key.UNKNOWN`. |
 | [`Key`](/reference/input/key/) | [getKey](#Lwjgl2Keys-method-getKey)(int code, char character) <span class="joid-qualifier">static</span> | Returns the key that the press typed on the current layout: the key of the character for a letter or symbol key, the key of the position for the others. |
 | `boolean` | [isKeyDown](#Lwjgl2Keys-method-isKeyDown)(Key key) <span class="joid-qualifier">static</span> | If `true`, LWJGL 2 reports the key at that physical position as pressed. |
 
 ## Method details
+
+<a id="Lwjgl2Keys-method-getCode"></a>
+
+### getCode
+
+`int getCode(Key key)` <span class="joid-qualifier">static</span>
+
+Returns the LWJGL 2 code at the physical position of the key, or `Keyboard.KEY_NONE` for a key that LWJGL 2 does not name.
 
 <a id="Lwjgl2Keys-method-getPhysicalKey"></a>
 
