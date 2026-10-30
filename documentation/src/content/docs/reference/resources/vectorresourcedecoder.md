@@ -21,6 +21,7 @@ Decodes an SVG document and renders it again at the size it is drawn at, so that
 [`SvgResourceFormat`](/reference/resources/svgresourceformat/) picks it.
 The first render has the size of the document; each draw then asks for its size in screen pixels, at most 4096 on the longer side, rendered on a background thread and kept with the last 8 sizes.
 While the size keeps changing, the closest texture already rendered is drawn, so an animated size does not render on every frame.
+Every render gives the same pixels on every JDK, from Java 8 to the latest: the shapes are filled without antialiasing at 8 samples per pixel on each axis, fewer above 512 pixels but at least 2, then averaged, and JOID outlines the strokes itself instead of the JDK.
 
 ## Learn more
 

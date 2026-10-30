@@ -37,6 +37,22 @@ processResources {
     }
 }
 
+task testOnJava(type: JavaExec) {
+    group = 'verification'
+    description = 'Runs the tests that must give the same result on every JDK with the Java installed in -PtestJava.'
+    dependsOn testClasses
+    onlyIf { project.hasProperty('testJava') }
+    classpath = sourceSets.test.runtimeClasspath
+    main = 'org.junit.runner.JUnitCore'
+    args 'dev.joid.lib.resource.decoder.impl.VectorResourceDecoderTest'
+    systemProperty 'joid.data', file("$buildDir/data").absolutePath
+    systemProperty 'joid.cache', file("$buildDir/cache").absolutePath
+    systemProperty 'joid.version', project.version
+    if (project.hasProperty('testJava')) {
+        executable = new File(project.property('testJava').toString(), 'bin/java').absolutePath
+    }
+}
+
 apply from: rootProject.file('gradle/variants.gradle')
 
 build.dependsOn rootProject.installLocalGitHook

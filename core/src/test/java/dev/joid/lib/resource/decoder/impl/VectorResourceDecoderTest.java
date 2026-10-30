@@ -4,7 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,15 @@ public class VectorResourceDecoderTest {
 		Assert.assertEquals(0, pixels[0] >>> 24);
 		Assert.assertEquals(255, pixels[12 * 24 + 4] >>> 24);
 		Assert.assertEquals(255, pixels[12 * 24 + 12] >>> 24);
+	}
+
+	@Test
+	public void rendersTheSameBytesOnEveryJdk() throws IOException, NoSuchAlgorithmException {
+		Assert.assertEquals("185000c32466a8e97a39eaa61738b3085bb04c09158ee0ff3d9733654042c4f2", VectorResourceDecoderTest.hash("icon.svg", 24));
+		Assert.assertEquals("7ee8be61b557274ee6a28eb405f6882f8ce6277ba78785a628e68765c49c7719", VectorResourceDecoderTest.hash("icon.svg", 100));
+		Assert.assertEquals("e39fb101f65a58e357f32c0be4e8c5b281659c72cf17a00f74524af727dcd1c1", VectorResourceDecoderTest.hash("strokes.svg", 64));
+		Assert.assertEquals("9b236f67189accb8b416a35b2cfd708273478859fd3ce581394af4b929c11b32", VectorResourceDecoderTest.hash("strokes.svg", 161));
+		Assert.assertEquals("963bec2164d2d58f36f8c86f94ab9f243c220321a01487e30820f4709cba15fb", VectorResourceDecoderTest.hash("strokes.svg", 900));
 	}
 
 	@Test
@@ -369,6 +381,25 @@ public class VectorResourceDecoderTest {
 		final ResourceData data = ResourceData.create("document.svg", null);
 		VectorResourceDecoder.create(new TextAsset("document.svg", document)).decode(data);
 		return new int[] {data.getWidth(), data.getHeight()};
+	}
+
+	private static String hash(final String name, final int size) throws IOException, NoSuchAlgorithmException {
+		final VectorResourceDecoder decoder = VectorResourceDecoder.create(Asset.of(VectorResourceDecoderTest.class.getResourceAsStream("/vector/" + name)));
+		final ResourceData data = ResourceData.create(name, decoder);
+		decoder.prepare(data);
+		decoder.decode(data);
+		decoder.upload(data);
+		decoder.request(data, size, size, false, false);
+
+		final int[] pixels = ((RecordingTexture) data.getTextures()[0]).getPixels();
+		final ByteBuffer bytes = ByteBuffer.allocate(pixels.length * 4);
+		bytes.asIntBuffer().put(pixels);
+
+		final StringBuilder builder = new StringBuilder();
+		for (final byte value : MessageDigest.getInstance("SHA-256").digest(bytes.array())) {
+			builder.append(String.format("%02x", value));
+		}
+		return builder.toString();
 	}
 
 	private static void awaitRaster(final VectorResourceDecoder decoder) throws InterruptedException {
