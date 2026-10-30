@@ -20,6 +20,7 @@ Learn: [base-lwjgl2](/build/base-modules/lwjgl2/).
 | [`Lwjgl2GlBinding`](/reference/base-lwjgl2/lwjgl2glbinding/) | class | The OpenGL binding of LWJGL 2, which calls the classes `GL11` to `GL33`. |
 | [`Lwjgl2InputForwarder`](/reference/base-lwjgl2/lwjgl2inputforwarder/) | class | Reads the pending mouse and keyboard events of LWJGL 2 and forwards them to the UI bridges of JOID. |
 | [`Lwjgl2Keys`](/reference/base-lwjgl2/lwjgl2keys/) | class | Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed. |
+| [`Lwjgl2StateGuardBackend`](/reference/base-lwjgl2/lwjgl2stateguardbackend/) | class | The state guard backend of the OpenGL of LWJGL 2, over any snapshot backend. |
 | [`Lwjgl2WindowBridge`](/reference/base-lwjgl2/lwjgl2windowbridge/) | class | The window bridge of the `Display` of LWJGL 2, in screen pixels, with the clipboard of AWT and native cursors. |
 | [`MacNativeCursor`](/reference/base-lwjgl2/macnativecursor/) | class | The native cursors of macOS, read from `NSCursor`. |
 | [`NativeCursor`](/reference/base-lwjgl2/nativecursor/) | class | Sets the system cursors that LWJGL 2 cannot set by itself, through JNA and the native cursor of LWJGL 2. |

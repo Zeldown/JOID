@@ -1326,6 +1326,12 @@ A command given to [[SnapshotRunner#execute]] is none of its commands.
 
 Fix the command from the table of `execute`: [Drive the UI with commands](/use/learn/running/testing/#drive-the-ui-with-commands).
 
+## IllegalArgumentException The state trap … sets no state of its own
+
+A subclass of [[GlStateGuardBackend]] was asked to set `EVERYTHING` itself, which `inject` spreads over the other traps.
+
+Call `inject` instead of `injectTrap`: [Tools for hosts and tests](/build/base-modules/opengl/#tools-for-hosts-and-tests).
+
 ## IllegalStateException The window shows the … cursor instead of …
 
 The `cursor` command of a scenario expected another cursor than the one that the UI shows.

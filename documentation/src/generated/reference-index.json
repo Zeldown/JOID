@@ -31228,6 +31228,80 @@
         "getBinding()"
       ]
     },
+    "dev.joid.base.opengl.snapshot.GlBorrowedTextureBackend": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlBorrowedTextureBackend",
+      "name": "GlBorrowedTextureBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-opengl",
+      "summary": "The borrowed texture backend of any OpenGL context, over a snapshot backend and a binding.",
+      "ancestors": [
+        "dev.joid.test.contract.IBorrowedTextureBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-opengl/glborrowedtexturebackend/",
+      "members": {
+        "GlBorrowedTextureBackend": "GlBorrowedTextureBackend-constructor",
+        "create": "GlBorrowedTextureBackend-method-create",
+        "destroy": "GlBorrowedTextureBackend-method-destroy",
+        "present": "GlBorrowedTextureBackend-method-present",
+        "capture": "GlBorrowedTextureBackend-method-capture",
+        "getRenderer": "GlBorrowedTextureBackend-method-getRenderer",
+        "borrow": "GlBorrowedTextureBackend-method-borrow",
+        "isBorrowableTexture": "GlBorrowedTextureBackend-method-isBorrowableTexture",
+        "createBorrowableTexture": "GlBorrowedTextureBackend-method-createBorrowableTexture",
+        "readBorrowableParameters": "GlBorrowedTextureBackend-method-readBorrowableParameters"
+      },
+      "overloads": [
+        "GlBorrowedTextureBackend(ISnapshotBackend,Supplier)",
+        "create(int,int)",
+        "destroy()",
+        "present()",
+        "capture(int,int)",
+        "getRenderer()",
+        "borrow(Supplier)",
+        "isBorrowableTexture(Object)",
+        "createBorrowableTexture(int,int,int,boolean)",
+        "readBorrowableParameters(Object)"
+      ]
+    },
+    "GlBorrowedTextureBackend": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlBorrowedTextureBackend",
+      "name": "GlBorrowedTextureBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-opengl",
+      "summary": "The borrowed texture backend of any OpenGL context, over a snapshot backend and a binding.",
+      "ancestors": [
+        "dev.joid.test.contract.IBorrowedTextureBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-opengl/glborrowedtexturebackend/",
+      "members": {
+        "GlBorrowedTextureBackend": "GlBorrowedTextureBackend-constructor",
+        "create": "GlBorrowedTextureBackend-method-create",
+        "destroy": "GlBorrowedTextureBackend-method-destroy",
+        "present": "GlBorrowedTextureBackend-method-present",
+        "capture": "GlBorrowedTextureBackend-method-capture",
+        "getRenderer": "GlBorrowedTextureBackend-method-getRenderer",
+        "borrow": "GlBorrowedTextureBackend-method-borrow",
+        "isBorrowableTexture": "GlBorrowedTextureBackend-method-isBorrowableTexture",
+        "createBorrowableTexture": "GlBorrowedTextureBackend-method-createBorrowableTexture",
+        "readBorrowableParameters": "GlBorrowedTextureBackend-method-readBorrowableParameters"
+      },
+      "overloads": [
+        "GlBorrowedTextureBackend(ISnapshotBackend,Supplier)",
+        "create(int,int)",
+        "destroy()",
+        "present()",
+        "capture(int,int)",
+        "getRenderer()",
+        "borrow(Supplier)",
+        "isBorrowableTexture(Object)",
+        "createBorrowableTexture(int,int,int,boolean)",
+        "readBorrowableParameters(Object)"
+      ]
+    },
     "dev.joid.base.opengl.snapshot.GlSnapshotCapture": {
       "fqcn": "dev.joid.base.opengl.snapshot.GlSnapshotCapture",
       "name": "GlSnapshotCapture",
@@ -31258,6 +31332,156 @@
       },
       "overloads": [
         "capture(GlRenderBridge,int,int)"
+      ]
+    },
+    "dev.joid.base.opengl.snapshot.GlStateGuardBackend": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+      "name": "GlStateGuardBackend",
+      "kind": "class",
+      "abstract": true,
+      "family": "base-opengl",
+      "summary": "The base of the state guard backends of OpenGL: the surface of a snapshot backend, the traps each context supports and the state read through a binding.",
+      "ancestors": [
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-opengl/glstateguardbackend/",
+      "members": {
+        "GlStateGuardBackend": "GlStateGuardBackend-constructor",
+        "create": "GlStateGuardBackend-method-create",
+        "destroy": "GlStateGuardBackend-method-destroy",
+        "present": "GlStateGuardBackend-method-present",
+        "capture": "GlStateGuardBackend-method-capture",
+        "getRenderer": "GlStateGuardBackend-method-getRenderer",
+        "inject": "GlStateGuardBackend-method-inject",
+        "supports": "GlStateGuardBackend-method-supports",
+        "readState": "GlStateGuardBackend-method-readState",
+        "isCompatibility": "GlStateGuardBackend-method-isCompatibility",
+        "getCapabilities": "GlStateGuardBackend-method-getCapabilities",
+        "injectTrap": "GlStateGuardBackend-method-injectTrap",
+        "readMaterial": "GlStateGuardBackend-method-readMaterial"
+      },
+      "overloads": [
+        "GlStateGuardBackend(ISnapshotBackend,Supplier)",
+        "create(int,int)",
+        "destroy()",
+        "present()",
+        "capture(int,int)",
+        "getRenderer()",
+        "inject(StateTrap)",
+        "supports(StateTrap)",
+        "readState()",
+        "isCompatibility()",
+        "getCapabilities()",
+        "injectTrap(StateTrap)",
+        "readMaterial(int,int,float[])"
+      ]
+    },
+    "GlStateGuardBackend": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+      "name": "GlStateGuardBackend",
+      "kind": "class",
+      "abstract": true,
+      "family": "base-opengl",
+      "summary": "The base of the state guard backends of OpenGL: the surface of a snapshot backend, the traps each context supports and the state read through a binding.",
+      "ancestors": [
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-opengl/glstateguardbackend/",
+      "members": {
+        "GlStateGuardBackend": "GlStateGuardBackend-constructor",
+        "create": "GlStateGuardBackend-method-create",
+        "destroy": "GlStateGuardBackend-method-destroy",
+        "present": "GlStateGuardBackend-method-present",
+        "capture": "GlStateGuardBackend-method-capture",
+        "getRenderer": "GlStateGuardBackend-method-getRenderer",
+        "inject": "GlStateGuardBackend-method-inject",
+        "supports": "GlStateGuardBackend-method-supports",
+        "readState": "GlStateGuardBackend-method-readState",
+        "isCompatibility": "GlStateGuardBackend-method-isCompatibility",
+        "getCapabilities": "GlStateGuardBackend-method-getCapabilities",
+        "injectTrap": "GlStateGuardBackend-method-injectTrap",
+        "readMaterial": "GlStateGuardBackend-method-readMaterial"
+      },
+      "overloads": [
+        "GlStateGuardBackend(ISnapshotBackend,Supplier)",
+        "create(int,int)",
+        "destroy()",
+        "present()",
+        "capture(int,int)",
+        "getRenderer()",
+        "inject(StateTrap)",
+        "supports(StateTrap)",
+        "readState()",
+        "isCompatibility()",
+        "getCapabilities()",
+        "injectTrap(StateTrap)",
+        "readMaterial(int,int,float[])"
+      ]
+    },
+    "dev.joid.base.opengl.snapshot.GlStateSnapshot": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateSnapshot",
+      "name": "GlStateSnapshot",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-opengl",
+      "summary": "Reads the state of an OpenGL context that the state guard must preserve, by name.",
+      "ancestors": [],
+      "url": "/reference/base-opengl/glstatesnapshot/",
+      "members": {
+        "read": "GlStateSnapshot-method-read"
+      },
+      "overloads": [
+        "read(IGlBinding,GlCapabilities,MaterialReader)"
+      ]
+    },
+    "GlStateSnapshot": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateSnapshot",
+      "name": "GlStateSnapshot",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-opengl",
+      "summary": "Reads the state of an OpenGL context that the state guard must preserve, by name.",
+      "ancestors": [],
+      "url": "/reference/base-opengl/glstatesnapshot/",
+      "members": {
+        "read": "GlStateSnapshot-method-read"
+      },
+      "overloads": [
+        "read(IGlBinding,GlCapabilities,MaterialReader)"
+      ]
+    },
+    "dev.joid.base.opengl.snapshot.GlStateSnapshot.MaterialReader": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateSnapshot.MaterialReader",
+      "name": "GlStateSnapshot.MaterialReader",
+      "kind": "interface",
+      "abstract": true,
+      "family": "base-opengl",
+      "summary": "Reads a material of the fixed-function pipeline, which IGlBinding does not query.",
+      "ancestors": [],
+      "url": "/reference/base-opengl/glstatesnapshot-materialreader/",
+      "members": {
+        "read": "GlStateSnapshot-MaterialReader-method-read"
+      },
+      "overloads": [
+        "read(int,int,float[])"
+      ]
+    },
+    "GlStateSnapshot.MaterialReader": {
+      "fqcn": "dev.joid.base.opengl.snapshot.GlStateSnapshot.MaterialReader",
+      "name": "GlStateSnapshot.MaterialReader",
+      "kind": "interface",
+      "abstract": true,
+      "family": "base-opengl",
+      "summary": "Reads a material of the fixed-function pipeline, which IGlBinding does not query.",
+      "ancestors": [],
+      "url": "/reference/base-opengl/glstatesnapshot-materialreader/",
+      "members": {
+        "read": "GlStateSnapshot-MaterialReader-method-read"
+      },
+      "overloads": [
+        "read(int,int,float[])"
       ]
     },
     "dev.joid.base.lwjgl2.input.Lwjgl2InputForwarder": {
@@ -31310,15 +31534,17 @@
       "kind": "class",
       "abstract": false,
       "family": "base-lwjgl2",
-      "summary": "Maps the key codes of LWJGL 2 to the keys of JOID, by physical position or through the character that the key typed.",
+      "summary": "Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed.",
       "ancestors": [],
       "url": "/reference/base-lwjgl2/lwjgl2keys/",
       "members": {
+        "getCode": "Lwjgl2Keys-method-getCode",
         "getPhysicalKey": "Lwjgl2Keys-method-getPhysicalKey",
         "getKey": "Lwjgl2Keys-method-getKey",
         "isKeyDown": "Lwjgl2Keys-method-isKeyDown"
       },
       "overloads": [
+        "getCode(Key)",
         "getPhysicalKey(int)",
         "getKey(int,char)",
         "isKeyDown(Key)"
@@ -31330,15 +31556,17 @@
       "kind": "class",
       "abstract": false,
       "family": "base-lwjgl2",
-      "summary": "Maps the key codes of LWJGL 2 to the keys of JOID, by physical position or through the character that the key typed.",
+      "summary": "Maps the key codes of LWJGL 2 to the keys of JOID and back, by physical position or through the character that the key typed.",
       "ancestors": [],
       "url": "/reference/base-lwjgl2/lwjgl2keys/",
       "members": {
+        "getCode": "Lwjgl2Keys-method-getCode",
         "getPhysicalKey": "Lwjgl2Keys-method-getPhysicalKey",
         "getKey": "Lwjgl2Keys-method-getKey",
         "isKeyDown": "Lwjgl2Keys-method-isKeyDown"
       },
       "overloads": [
+        "getCode(Key)",
         "getPhysicalKey(int)",
         "getKey(int,char)",
         "isKeyDown(Key)"
@@ -31956,6 +32184,54 @@
         "getTexLevelParameteri(int,int,int)",
         "getFrameBufferBinding(GlFrameBufferFamily)",
         "canPointClientMemory()"
+      ]
+    },
+    "dev.joid.base.lwjgl2.snapshot.Lwjgl2StateGuardBackend": {
+      "fqcn": "dev.joid.base.lwjgl2.snapshot.Lwjgl2StateGuardBackend",
+      "name": "Lwjgl2StateGuardBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl2",
+      "summary": "The state guard backend of the OpenGL of LWJGL 2, over any snapshot backend.",
+      "ancestors": [
+        "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-lwjgl2/lwjgl2stateguardbackend/",
+      "members": {
+        "Lwjgl2StateGuardBackend": "Lwjgl2StateGuardBackend-constructor",
+        "drawExternal": "Lwjgl2StateGuardBackend-method-drawExternal",
+        "fill": "Lwjgl2StateGuardBackend-method-fill"
+      },
+      "overloads": [
+        "Lwjgl2StateGuardBackend(ISnapshotBackend)",
+        "drawExternal()",
+        "fill(int,int,int,int,int)"
+      ]
+    },
+    "Lwjgl2StateGuardBackend": {
+      "fqcn": "dev.joid.base.lwjgl2.snapshot.Lwjgl2StateGuardBackend",
+      "name": "Lwjgl2StateGuardBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl2",
+      "summary": "The state guard backend of the OpenGL of LWJGL 2, over any snapshot backend.",
+      "ancestors": [
+        "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-lwjgl2/lwjgl2stateguardbackend/",
+      "members": {
+        "Lwjgl2StateGuardBackend": "Lwjgl2StateGuardBackend-constructor",
+        "drawExternal": "Lwjgl2StateGuardBackend-method-drawExternal",
+        "fill": "Lwjgl2StateGuardBackend-method-fill"
+      },
+      "overloads": [
+        "Lwjgl2StateGuardBackend(ISnapshotBackend)",
+        "drawExternal()",
+        "fill(int,int,int,int,int)"
       ]
     },
     "dev.joid.base.lwjgl2.window.Lwjgl2WindowBridge": {
@@ -32990,6 +33266,54 @@
         "getTexParameteri(int,int)",
         "getTexLevelParameteri(int,int,int)",
         "getFrameBufferBinding(GlFrameBufferFamily)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.opengl.snapshot.Lwjgl3StateGuardBackend": {
+      "fqcn": "dev.joid.base.lwjgl3.opengl.snapshot.Lwjgl3StateGuardBackend",
+      "name": "Lwjgl3StateGuardBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-opengl",
+      "summary": "The state guard backend of the OpenGL of LWJGL 3, over any snapshot backend.",
+      "ancestors": [
+        "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-lwjgl3-opengl/lwjgl3stateguardbackend/",
+      "members": {
+        "Lwjgl3StateGuardBackend": "Lwjgl3StateGuardBackend-constructor",
+        "drawExternal": "Lwjgl3StateGuardBackend-method-drawExternal",
+        "fill": "Lwjgl3StateGuardBackend-method-fill"
+      },
+      "overloads": [
+        "Lwjgl3StateGuardBackend(ISnapshotBackend)",
+        "drawExternal()",
+        "fill(int,int,int,int,int)"
+      ]
+    },
+    "Lwjgl3StateGuardBackend": {
+      "fqcn": "dev.joid.base.lwjgl3.opengl.snapshot.Lwjgl3StateGuardBackend",
+      "name": "Lwjgl3StateGuardBackend",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-opengl",
+      "summary": "The state guard backend of the OpenGL of LWJGL 3, over any snapshot backend.",
+      "ancestors": [
+        "dev.joid.base.opengl.snapshot.GlStateGuardBackend",
+        "dev.joid.test.contract.IStateGuardBackend",
+        "dev.joid.test.snapshot.ISnapshotBackend"
+      ],
+      "url": "/reference/base-lwjgl3-opengl/lwjgl3stateguardbackend/",
+      "members": {
+        "Lwjgl3StateGuardBackend": "Lwjgl3StateGuardBackend-constructor",
+        "drawExternal": "Lwjgl3StateGuardBackend-method-drawExternal",
+        "fill": "Lwjgl3StateGuardBackend-method-fill"
+      },
+      "overloads": [
+        "Lwjgl3StateGuardBackend(ISnapshotBackend)",
+        "drawExternal()",
+        "fill(int,int,int,int,int)"
       ]
     },
     "dev.joid.backend.lwjgl2.Lwjgl2Backend": {

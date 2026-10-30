@@ -12,6 +12,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 `interface IStateGuardBackend`<br/>
 **Extends:** [`ISnapshotBackend`](/reference/testing/isnapshotbackend/)<br/>
+**Known subtypes:** [`GlStateGuardBackend`](/reference/base-opengl/glstateguardbackend/)<br/>
 **Package:** `dev.joid.test.contract` · **Module:** `tool-testkit` · **Source:** [IStateGuardBackend.java](https://github.com/Zeldown/JOID/blob/main/tool/testkit/src/main/java/dev/joid/test/contract/IStateGuardBackend.java)
 
 A snapshot backend that can draw and set state like a host, for the state guard suite.

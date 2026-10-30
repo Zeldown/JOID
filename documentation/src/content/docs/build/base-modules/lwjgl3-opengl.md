@@ -12,3 +12,8 @@ Give `Lwjgl3GlBinding.inst()` to the render bridge of [base-opengl](/build/base-
 The binding calls OpenGL on the context that is current on the calling thread, and returns `null` for the version when none is current.
 It calls the classes `GL11` to `GL33`, which LWJGL 3.1 and every later version hold, so it runs on the LWJGL 3 of an older engine too.
 It depends on base-opengl and on the `lwjgl` and `lwjgl-opengl` jars of LWJGL 3, never on their natives, nor on GLFW: the context may come from any window library.
+
+## Snapshot tools
+
+[[Lwjgl3StateGuardBackend]] runs the [state guard suite](/build/testing-a-backend/#the-suites) on any snapshot backend over a context of LWJGL 3, with the OpenGL functions of LWJGL 3 to set the traps.
+An engine that draws with the OpenGL of LWJGL 3 passes its own snapshot backend, `new Lwjgl3StateGuardBackend(snapshotBackend)`, and takes `joid-base-lwjgl3-opengl-<version>-snapshot.jar` with the snapshot jar of base-opengl.

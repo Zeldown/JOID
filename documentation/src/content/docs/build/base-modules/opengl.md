@@ -59,3 +59,8 @@ The bridge draws into the framebuffer that the host had bound when the frame beg
 |---|---|
 | [[FixedMatrixImport]] | Loads the fixed-function matrices of a compatibility context into JOID ([Embedding in a host](/build/embedding-in-a-host/#import-the-matrices-of-a-fixed-function-host)). |
 | [[GlSnapshotCapture]] | Reads the back buffer into a snapshot image, for the snapshot backends. |
+| [[GlBorrowedTextureBackend]] | Runs the [borrowed texture suite](/build/testing-a-backend/#the-suites) on any OpenGL context, over your snapshot backend and your binding. |
+| [[GlStateGuardBackend]] | The base of the backends of the [state guard suite](/build/testing-a-backend/#the-suites) on OpenGL: [[Lwjgl2StateGuardBackend]] and [[Lwjgl3StateGuardBackend]] set the traps with the functions of their library. |
+| [[GlStateSnapshot]] | Reads the state that the guard must preserve, for those backends. |
+
+The test tools live in the `snapshot` package, which the `joid-base-opengl` jar leaves out: a host that runs the suites on its own context takes the `joid-base-opengl-<version>-snapshot.jar` of the release, next to `joid-tool-testkit`.

@@ -12,6 +12,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 `interface IBorrowedTextureBackend`<br/>
 **Extends:** [`ISnapshotBackend`](/reference/testing/isnapshotbackend/)<br/>
+**Known subtypes:** [`GlBorrowedTextureBackend`](/reference/base-opengl/glborrowedtexturebackend/)<br/>
 **Package:** `dev.joid.test.contract` · **Module:** `tool-testkit` · **Source:** [IBorrowedTextureBackend.java](https://github.com/Zeldown/JOID/blob/main/tool/testkit/src/main/java/dev/joid/test/contract/IBorrowedTextureBackend.java)
 
 A snapshot backend that can create, lend and inspect a texture of its host, for the borrowed texture suite.

@@ -12,12 +12,15 @@ sidebar:
 The render bridge of OpenGL, with its binding, its capabilities, its textures, framebuffers and shaders, and the state guard that gives a host its state back.
 Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/embedding-in-a-host/).
 
+## Main types
+
 | Type | Kind | Summary |
 |---|---|---|
 | [`BlitGlMipmapBuilder`](/reference/base-opengl/blitglmipmapbuilder/) | class | Builds the mipmaps of a texture with one linear framebuffer blit per level, the path that matches the other backends pixel for pixel. |
 | [`DrawGlMipmapBuilder`](/reference/base-opengl/drawglmipmapbuilder/) | class | Builds the mipmaps of a texture by drawing a quad per level, for an OpenGL context that cannot blit framebuffers. |
 | [`FixedMatrixImport`](/reference/base-opengl/fixedmatriximport/) | class | Loads the projection and modelview matrices of the fixed pipeline of a compatibility host into the matrix stacks of JOID. |
 | [`GlBorrowedTexture`](/reference/base-opengl/glborrowedtexture/) | class | A texture of the host, by OpenGL name, that JOID samples without owning it. |
+| [`GlBorrowedTextureBackend`](/reference/base-opengl/glborrowedtexturebackend/) | class | The borrowed texture backend of any OpenGL context, over a snapshot backend and a binding. |
 | [`GlCapabilities`](/reference/base-opengl/glcapabilities/) | class | What the current OpenGL context offers, read once when the render bridge is created: versions, profile, extensions and limits. |
 | [`GlConstants`](/reference/base-opengl/glconstants/) | class | The OpenGL enum values that the OpenGL module passes to its binding, named after the OpenGL constants without their `GL_` prefix. |
 | [`GlEnums`](/reference/base-opengl/glenums/) | class | Converts the render states of JOID to the OpenGL values that the binding takes. |
@@ -28,8 +31,10 @@ Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/
 | [`GlShader`](/reference/base-opengl/glshader/) | class | A shader program of OpenGL, linked from the translation of the two stages of a JOID shader. |
 | [`GlSnapshotCapture`](/reference/base-opengl/glsnapshotcapture/) | class | Reads the back buffer of an OpenGL context into a snapshot image. |
 | [`GlStateGuard`](/reference/base-opengl/glstateguard/) | class | Saves the OpenGL state that JOID changes during a frame and gives it back to the host when the frame ends. |
+| [`GlStateGuardBackend`](/reference/base-opengl/glstateguardbackend/) | class | The base of the state guard backends of OpenGL: the surface of a snapshot backend, the traps each context supports and the state read through a binding. |
 | [`GlStateJournal`](/reference/base-opengl/glstatejournal/) | class | The record of the OpenGL states that JOID touched since the guard was entered, with their values before the first change. |
 | [`GlStateKey`](/reference/base-opengl/glstatekey/) | enum | The kinds of OpenGL state that the journal records, in the order in which it restores them. |
+| [`GlStateSnapshot`](/reference/base-opengl/glstatesnapshot/) | class | Reads the state of an OpenGL context that the state guard must preserve, by name. |
 | [`GlTexture`](/reference/base-opengl/gltexture/) | class | A texture of OpenGL with RGBA8 storage for every level, uploaded as BGRA. |
 | [`GlVertexInput`](/reference/base-opengl/glvertexinput/) | class | The vertex buffer of the OpenGL render bridge, with the vertex array that points every attribute of JOID at it. |
 | [`IGlBinding`](/reference/base-opengl/iglbinding/) | interface | The OpenGL calls of the OpenGL module, one method per OpenGL function, implemented once per library. |
@@ -38,4 +43,12 @@ Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/
 | [`IGlTexture`](/reference/base-opengl/igltexture/) | interface | A texture that the OpenGL render bridge binds by name, owned by JOID or borrowed from the host. |
 | [`JournalGlBinding`](/reference/base-opengl/journalglbinding/) | class | An OpenGL binding that notes in a `GlStateJournal` every state that JOID changes, before passing the call on. |
 | [`JournalGlFrameBufferBinding`](/reference/base-opengl/journalglframebufferbinding/) | class | A framebuffer binding that notes in a `GlStateJournal` the framebuffers and renderbuffers that JOID binds, before passing the call on. |
+
+## Supporting types
+
+Nested types and listeners that the main types use.
+
+| Type | Kind | Summary |
+|---|---|---|
+| [`GlStateSnapshot.MaterialReader`](/reference/base-opengl/glstatesnapshot-materialreader/) | interface | Reads a material of the fixed-function pipeline, which IGlBinding does not query. |
 

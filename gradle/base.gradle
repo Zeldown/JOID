@@ -2,3 +2,12 @@ jar {
     description = "Builds the jar of ${project.name}, without the demo and snapshot packages that only the jars of the official backends carry."
     exclude 'dev/joid/base/**/demo/**', 'dev/joid/base/**/snapshot/**'
 }
+
+task snapshotJar(type: Jar) {
+    group = 'build'
+    description = "Builds the jar of the snapshot package of ${project.name} alone, for a host that runs the suites of the testkit on its own context."
+    classifier = 'snapshot'
+    from(sourceSets.main.output) {
+        include 'dev/joid/base/**/snapshot/**'
+    }
+}

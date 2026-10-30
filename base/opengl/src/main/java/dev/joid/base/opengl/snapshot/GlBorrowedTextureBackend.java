@@ -1,4 +1,4 @@
-package dev.joid.base.opengl.render.texture;
+package dev.joid.base.opengl.snapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
+import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.test.contract.IBorrowedTextureBackend;
 import dev.joid.test.snapshot.ISnapshotBackend;

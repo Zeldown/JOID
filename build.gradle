@@ -29,7 +29,9 @@ ext {
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     releaseTasks = {
-        subprojects.findAll { module -> module.name.startsWith('base-') }.collect { module -> module.tasks.getByName('jar') } + [':tool-testkit:jar', ':tool-msdf:jar'].collect { path -> tasks.getByPath(path) }
+        def bases = subprojects.findAll { module -> module.name.startsWith('base-') }
+        def snapshots = bases.findAll { module -> !module.fileTree('src/main/java') { include 'dev/joid/base/**/snapshot/**' }.isEmpty() }
+        bases.collect { module -> module.tasks.getByName('jar') } + snapshots.collect { module -> module.tasks.getByName('snapshotJar') } + [':tool-testkit:jar', ':tool-msdf:jar'].collect { path -> tasks.getByPath(path) }
     }
 
     lwjglVersion = "3.3.4"
@@ -131,7 +133,7 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars of the base modules hold no demo nor snapshot package, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars of the base modules hold no demo nor snapshot package, that their snapshot jars hold only it and need no demo, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
     dependsOn collectArtifacts
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
@@ -164,8 +166,14 @@ task checkJars {
             }
         }
         releaseTasks()*.archivePath.findAll { jar -> jar.name.startsWith('joid-base-') }.each { jar ->
-            new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }.findAll { name -> name ==~ /dev\/joid\/base\/.+\/(demo|snapshot)\/.*/ }.each { name ->
-                failures << "${jar.name} holds $name, which only the dev and demo jars of the backends carry"
+            def snapshot = jar.name.endsWith('-snapshot.jar')
+            new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }.findAll { name -> snapshot ? !name.endsWith('/') && !name.startsWith('META-INF/') && !(name ==~ /dev\/joid\/base\/.+\/snapshot\/.*/) : name ==~ /dev\/joid\/base\/.+\/(demo|snapshot)\/.*/ }.each { name ->
+                failures << (snapshot ? "${jar.name} holds $name, outside the snapshot package" : "${jar.name} holds $name, which only the dev and demo jars of the backends and the snapshot jars carry")
+            }
+            if (snapshot) {
+                finds(jar, classes, demoClass).each { name ->
+                    failures << "${jar.name}: $name needs a demo class"
+                }
             }
         }
         variantModules.each { module ->

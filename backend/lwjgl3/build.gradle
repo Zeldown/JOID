@@ -1,7 +1,5 @@
 archivesBaseName = "joid-backend-lwjgl3"
 
-evaluationDependsOn(':base-opengl')
-
 dependencies {
     compile project(':base-lwjgl3-glfw')
     compile project(':base-lwjgl3-openal')
@@ -13,8 +11,6 @@ dependencies {
     runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
-
-    testCompile project(':base-opengl').sourceSets.test.output
 }
 
 ext.demoMain = 'dev.joid.backend.lwjgl3.demo.DemoWindow'

@@ -1,5 +1,7 @@
 archivesBaseName = "joid-base-lwjgl3-opengl"
 
+evaluationDependsOn(':base-opengl')
+
 dependencies {
     compile project(':base-opengl')
 
@@ -7,6 +9,9 @@ dependencies {
     compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
     testRuntime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
     testRuntime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+
+    compileOnly project(':base-opengl').sourceSets.main.output
+    compileOnly project(':tool-testkit')
 }
 
 apply from: rootProject.file('gradle/base.gradle')

@@ -50,3 +50,8 @@ LWJGL 2 cannot name a key by layout, so `getKey(code, character)` reads the prin
 With Ctrl, a letter types a control character that names its letter.
 While Shift or Alt is held, or Ctrl on another key, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
 `getCode(key)` goes the other way, from a key to the LWJGL 2 code at its position, such as the default key of a key binding of the host.
+
+## Snapshot tools
+
+[[Lwjgl2StateGuardBackend]] runs the [state guard suite](/build/testing-a-backend/#the-suites) on any snapshot backend over a context of LWJGL 2, with the OpenGL functions of LWJGL 2 to set the traps.
+An engine on LWJGL 2 passes its own snapshot backend, `new Lwjgl2StateGuardBackend(snapshotBackend)`, and takes `joid-base-lwjgl2-<version>-snapshot.jar` with the snapshot jar of base-opengl.

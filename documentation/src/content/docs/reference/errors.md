@@ -2507,6 +2507,14 @@ The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
 
 Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
+### The state trap … sets no state of its own {#state-trap-sets-no}
+
+**`IllegalArgumentException`** · `The state trap … sets no state of its own`
+
+A subclass of [`GlStateGuardBackend`](/reference/base-opengl/glstateguardbackend/) was asked to set `EVERYTHING` itself, which `inject` spreads over the other traps.
+
+Call `inject` instead of `injectTrap`: [Tools for hosts and tests](/build/base-modules/opengl/#tools-for-hosts-and-tests).
+
 ## base-lwjgl3-glfw
 
 ### GLFW cannot be initialized, check that the system has a display (DISPLAY … {#glfw-cannot-initialized-check}

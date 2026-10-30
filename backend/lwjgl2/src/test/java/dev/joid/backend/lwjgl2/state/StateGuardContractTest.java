@@ -1,5 +1,7 @@
 package dev.joid.backend.lwjgl2.state;
 
+import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
+import dev.joid.base.lwjgl2.snapshot.Lwjgl2StateGuardBackend;
 import dev.joid.test.contract.IStateGuardBackend;
 import dev.joid.test.contract.StateGuardContractSuite;
 import lombok.NonNull;
@@ -8,7 +10,7 @@ public class StateGuardContractTest extends StateGuardContractSuite {
 
 	@Override
 	protected @NonNull IStateGuardBackend createBackend() {
-		return new Lwjgl2StateGuardBackend();
+		return new Lwjgl2StateGuardBackend(new Lwjgl2SnapshotBackend());
 	}
 
 }

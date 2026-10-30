@@ -22,7 +22,8 @@ import org.junit.Test;
 
 public class OpenGlCallTest {
 
-	private static final Pattern CALL = Pattern.compile("org/lwjgl/opengl/(?:GL\\d|ARB|EXT)");
+	private static final Pattern CALL     = Pattern.compile("org/lwjgl/opengl/(?:GL\\d|ARB|EXT)");
+	private static final Pattern SNAPSHOT = Pattern.compile("dev/joid/base/.+/snapshot/.*");
 
 	@Test
 	public void callsOpenGlOnlyThroughTheBindings() throws IOException, URISyntaxException {
@@ -49,7 +50,7 @@ public class OpenGlCallTest {
 	}
 
 	private static void check(final String name, final byte[] bytecode, final List<String> callerList) {
-		if (OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
+		if (!OpenGlCallTest.SNAPSHOT.matcher(name).matches() && OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
 			callerList.add(name);
 		}
 	}

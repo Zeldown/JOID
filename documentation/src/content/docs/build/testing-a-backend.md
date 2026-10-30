@@ -46,6 +46,7 @@ A test class of your backend extends it in a few lines:
 | [[SnapshotSuite]] | Every scenario (`dev`, `popup`, `static`, `window`, `resource`, `transition`, `interaction`), pixel for pixel against the references of the machine. | an [[ISnapshotBackend]], and the demo classes on the classpath |
 
 The official backends run all five.
+On OpenGL, the backends of the borrowed texture and state guard suites are written: [[GlBorrowedTextureBackend]] over your snapshot backend and your binding, and [[Lwjgl2StateGuardBackend]] or [[Lwjgl3StateGuardBackend]] over your snapshot backend ([Tools for hosts and tests](/build/base-modules/opengl/#tools-for-hosts-and-tests)).
 A trap that a context cannot set skips its test instead of failing: a backend without global state, such as Vulkan, answers `false` from `supports` for every trap and still runs the raster tests of the state guard suite.
 [[ContractDraw]] holds the helpers of the suites (a frame around a drawing, quads, a shader from a fragment stage, a pixel assertion) for the contract tests of your own.
 

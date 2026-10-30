@@ -50,7 +50,7 @@ public class OpenGlCallTest {
 	}
 
 	private static void check(final String name, final byte[] bytecode, final List<String> callerList) {
-		if (!name.startsWith("dev/joid/base/lwjgl2/opengl/") && OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
+		if (!name.startsWith("dev/joid/base/lwjgl2/opengl/") && !name.startsWith("dev/joid/base/lwjgl2/snapshot/") && OpenGlCallTest.CALL.matcher(new String(bytecode, StandardCharsets.ISO_8859_1)).find()) {
 			callerList.add(name);
 		}
 	}

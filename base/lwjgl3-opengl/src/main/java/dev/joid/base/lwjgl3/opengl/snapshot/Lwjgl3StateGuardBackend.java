@@ -1,7 +1,6 @@
-package dev.joid.backend.lwjgl3.state;
+package dev.joid.base.lwjgl3.opengl.snapshot;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
@@ -14,43 +13,16 @@ import org.lwjgl.opengl.GL21C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL33C;
 
-import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.base.lwjgl3.opengl.Lwjgl3GlBinding;
-import dev.joid.base.opengl.capability.GlCapabilities;
-import dev.joid.base.opengl.capability.GlProfile;
-import dev.joid.base.opengl.snapshot.GlStateSnapshot;
-import dev.joid.test.contract.IStateGuardBackend;
+import dev.joid.base.opengl.snapshot.GlStateGuardBackend;
 import dev.joid.test.contract.StateTrap;
-import dev.joid.test.snapshot.SnapshotImage;
+import dev.joid.test.snapshot.ISnapshotBackend;
 import lombok.NonNull;
 
-public final class Lwjgl3StateGuardBackend implements IStateGuardBackend {
+public final class Lwjgl3StateGuardBackend extends GlStateGuardBackend {
 
-	private final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
-
-	@Override
-	public void create(final int width, final int height) {
-		this.backend.create(width, height);
-	}
-
-	@Override
-	public void destroy() {
-		this.backend.destroy();
-	}
-
-	@Override
-	public void present() {
-		this.backend.present();
-	}
-
-	@Override
-	public @NonNull SnapshotImage capture(final int width, final int height) {
-		return this.backend.capture(width, height);
-	}
-
-	@Override
-	public @NonNull String getRenderer() {
-		return this.backend.getRenderer();
+	public Lwjgl3StateGuardBackend(final @NonNull ISnapshotBackend backend) {
+		super(backend, Lwjgl3GlBinding::inst);
 	}
 
 	@Override
@@ -63,13 +35,22 @@ public final class Lwjgl3StateGuardBackend implements IStateGuardBackend {
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, Lwjgl3StateGuardBackend.texture(GL11C.GL_NEAREST, GL12C.GL_CLAMP_TO_EDGE));
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE1);
-		if (this.isCompatibility()) {
+		if (super.isCompatibility()) {
 			GL11.glColor4f(0.3F, 0.6F, 0.9F, 1F);
 		}
 	}
 
 	@Override
-	public void inject(final @NonNull StateTrap trap) {
+	public void fill(final int x, final int y, final int width, final int height, final int color) {
+		GL11C.glEnable(GL11C.GL_SCISSOR_TEST);
+		GL11C.glScissor(x, y, width, height);
+		GL11C.glClearColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F, (color >>> 24) / 255F);
+		GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT);
+		GL11C.glDisable(GL11C.GL_SCISSOR_TEST);
+	}
+
+	@Override
+	protected void injectTrap(final @NonNull StateTrap trap) {
 		switch (trap) {
 		case BLEND:
 			GL11C.glEnable(GL11C.GL_BLEND);
@@ -135,7 +116,7 @@ public final class Lwjgl3StateGuardBackend implements IStateGuardBackend {
 			GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, Lwjgl3StateGuardBackend.buffer());
 			break;
 		case CLIENT_ARRAYS:
-			if (this.getCapabilities().hasVertexArrays()) {
+			if (super.getCapabilities().hasVertexArrays()) {
 				GL30C.glBindVertexArray(0);
 			}
 			GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
@@ -174,55 +155,13 @@ public final class Lwjgl3StateGuardBackend implements IStateGuardBackend {
 			GL13C.glActiveTexture(GL13C.GL_TEXTURE2);
 			break;
 		default:
-			for (final StateTrap other : StateTrap.values()) {
-				if (other != StateTrap.EVERYTHING && this.supports(other)) {
-					this.inject(other);
-				}
-			}
-			break;
+			throw new IllegalArgumentException("The state trap " + trap + " sets no state of its own");
 		}
 	}
 
 	@Override
-	public boolean supports(final @NonNull StateTrap trap) {
-		switch (trap) {
-		case ALPHA_TEST:
-		case CLIENT_ARRAYS:
-		case COLOR_MATERIAL:
-			return this.isCompatibility();
-		case PIXEL_BUFFER:
-			return this.getCapabilities().hasPixelBuffers();
-		case VERTEX_ARRAY:
-			return this.getCapabilities().hasVertexArrays();
-		case SAMPLER_OBJECTS:
-			return this.getCapabilities().hasSamplerObjects();
-		case FRAMEBUFFER:
-			return this.getCapabilities().hasFrameBufferBlit();
-		default:
-			return true;
-		}
-	}
-
-	@Override
-	public void fill(final int x, final int y, final int width, final int height, final int color) {
-		GL11C.glEnable(GL11C.GL_SCISSOR_TEST);
-		GL11C.glScissor(x, y, width, height);
-		GL11C.glClearColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F, (color >>> 24) / 255F);
-		GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT);
-		GL11C.glDisable(GL11C.GL_SCISSOR_TEST);
-	}
-
-	@Override
-	public @NonNull Map<@NonNull String, @NonNull String> readState() {
-		return GlStateSnapshot.read(Lwjgl3GlBinding.inst(), this.getCapabilities(), GL11::glGetMaterialfv);
-	}
-
-	private boolean isCompatibility() {
-		return this.getCapabilities().getProfile() == GlProfile.COMPATIBILITY;
-	}
-
-	private GlCapabilities getCapabilities() {
-		return this.backend.getBridge().getCapabilities();
+	protected void readMaterial(final int face, final int name, final @NonNull float[] values) {
+		GL11.glGetMaterialfv(face, name, values);
 	}
 
 	private static int buffer() {

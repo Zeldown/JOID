@@ -1,5 +1,7 @@
 archivesBaseName = "joid-base-lwjgl2"
 
+evaluationDependsOn(':base-opengl')
+
 configurations {
     shade
     compile.extendsFrom shade
@@ -10,6 +12,9 @@ dependencies {
     compile project(':base-opengl')
 
     compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
+
+    compileOnly project(':base-opengl').sourceSets.main.output
+    compileOnly project(':tool-testkit')
 
     shade "net.java.dev.jna:jna:5.17.0"
 }
