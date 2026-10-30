@@ -8,11 +8,12 @@ Learn: [Testing your UIs](/use/learn/running/testing/), [References and the repo
 
 ## start(ISnapshotBackend)
 
-Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off.
+Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge, a [[DirectThreadBridge]] and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off.
+The runner holds the render thread from one shot to the next, so a task sent to it from another thread, such as the end of the loading of a resource, runs at once instead of waiting in the queue of the host.
 
 ## stop()
 
-Closes every UI, destroys the surface, gives back the bridges that were there before and the dev mode.
+Closes every UI, destroys the surface, gives back the bridges that were there before, the thread bridge of the host among them, and the dev mode, even when the surface fails to close.
 
 ## getRenderer()
 

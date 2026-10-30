@@ -3,6 +3,7 @@ package dev.joid.test.snapshot;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,8 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.clock.IClockBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
+import dev.joid.lib.bridge.thread.DirectThreadBridge;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.utils.image.PixelLayout;
@@ -37,6 +40,25 @@ public class SnapshotRunnerTest {
 		Assert.assertEquals(audios, BridgeHandler.AUDIO.getBridgeList());
 		Assert.assertEquals(windows, BridgeHandler.WINDOW.getBridgeList());
 		Assert.assertEquals(renders, BridgeHandler.RENDER.getBridgeList());
+	}
+
+	@Test
+	public void runsTheTasksOfEveryThreadAtOnceUntilItGivesBackTheThreadBridgeOfTheHost() throws InterruptedException {
+		final FrameThreadBridge host = new FrameThreadBridge();
+		BridgeHandler.THREAD.register(host);
+		try {
+			final SnapshotRunner runner = SnapshotRunner.start(new HeadlessBackend());
+			final AtomicBoolean ran = new AtomicBoolean();
+			final Thread worker = new Thread(() -> BridgeHandler.THREAD.get().execute(() -> ran.set(true)));
+			worker.start();
+			worker.join();
+			Assert.assertTrue(BridgeHandler.THREAD.get() instanceof DirectThreadBridge);
+			Assert.assertTrue(ran.get());
+			runner.stop();
+			Assert.assertSame(host, BridgeHandler.THREAD.get());
+		} finally {
+			BridgeHandler.THREAD.unregister(host);
+		}
 	}
 
 	@Test

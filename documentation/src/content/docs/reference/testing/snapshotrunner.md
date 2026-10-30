@@ -28,7 +28,7 @@ Start it once per test class with a snapshot backend, run commands, and stop it 
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`SnapshotRunner`](/reference/testing/snapshotrunner/) | [start](#SnapshotRunner-factory-start)(ISnapshotBackend backend) <span class="joid-qualifier">factory</span> | Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off. |
+| [`SnapshotRunner`](/reference/testing/snapshotrunner/) | [start](#SnapshotRunner-factory-start)(ISnapshotBackend backend) <span class="joid-qualifier">factory</span> | Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge, a [`DirectThreadBridge`](/reference/bridges/directthreadbridge/) and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off. |
 
 <a id="SnapshotRunner-methods"></a>
 
@@ -36,7 +36,7 @@ Start it once per test class with a snapshot backend, run commands, and stop it 
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [stop](#SnapshotRunner-method-stop)() | Closes every UI, destroys the surface, gives back the bridges that were there before and the dev mode. |
+| `void` | [stop](#SnapshotRunner-method-stop)() | Closes every UI, destroys the surface, gives back the bridges that were there before, the thread bridge of the host among them, and the dev mode, even when the surface fails to close. |
 | `String` | [getRenderer](#SnapshotRunner-method-getRenderer)() | Returns the name of the renderer with every run of other characters than letters and digits replaced by `-`, the name of its folder of references. |
 | `void` | [writeRenderer](#SnapshotRunner-method-writeRenderer)(File output) | Writes the full name of the renderer into `renderer.txt` in that folder. |
 | `List<String>` | [getScenarios](#SnapshotRunner-method-getScenarios)() <span class="joid-qualifier">static</span> | Returns the names of the scenarios of the testkit: `dev`, `popup`, `static`, `window`, `resource`, `transition` and `interaction`. |
@@ -52,7 +52,8 @@ Start it once per test class with a snapshot backend, run commands, and stop it 
 
 `SnapshotRunner start(ISnapshotBackend backend)` <span class="joid-qualifier">factory</span>
 
-Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off.
+Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then registers a window bridge, a manual clock at 2025-01-01 00:00 UTC, a silent audio bridge, a [`DirectThreadBridge`](/reference/bridges/directthreadbridge/) and a locator that caches downloads in the `snapshot` area of the cache folder; turns the dev mode off.
+The runner holds the render thread from one shot to the next, so a task sent to it from another thread, such as the end of the loading of a resource, runs at once instead of waiting in the queue of the host.
 
 ## Method details
 
@@ -62,7 +63,7 @@ Creates the surface at 1920×1080 pixels with the testkit's own UI bridge, then 
 
 `void stop()` 
 
-Closes every UI, destroys the surface, gives back the bridges that were there before and the dev mode.
+Closes every UI, destroys the surface, gives back the bridges that were there before, the thread bridge of the host among them, and the dev mode, even when the surface fails to close.
 
 <a id="SnapshotRunner-method-getRenderer"></a>
 

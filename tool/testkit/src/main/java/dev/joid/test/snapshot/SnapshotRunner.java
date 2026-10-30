@@ -26,6 +26,7 @@ import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.thread.DirectThreadBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.cursor.Cursor;
@@ -78,6 +79,7 @@ public final class SnapshotRunner {
 		AssetLocator.register(runner.locator);
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
+		BridgeHandler.THREAD.register(new DirectThreadBridge());
 		BridgeHandler.AUDIO.register((sampleRate, channels) -> new SnapshotAudioSource());
 		if (DevFont.MONTSERRAT != null) {
 			runner.bridge.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20).color(Color.WHITE));
@@ -89,11 +91,14 @@ public final class SnapshotRunner {
 	}
 
 	public void stop() {
-		this.bridge.closeAll();
-		this.backend.destroy();
-		this.restorer.restore();
-		AssetLocator.unregister(this.locator);
-		JOIDEnv.devMode(this.devMode);
+		try {
+			this.bridge.closeAll();
+			this.backend.destroy();
+		} finally {
+			this.restorer.restore();
+			AssetLocator.unregister(this.locator);
+			JOIDEnv.devMode(this.devMode);
+		}
 	}
 
 	public @NonNull String getRenderer() {
