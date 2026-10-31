@@ -1,6 +1,6 @@
 ## warning [JOID] Hot reload is off for …: its classes are not loaded from a folder or a jar file, run it from one of them to reload it
 
-With the dev jar, the UI opened, but its classes come from a place that hot reload cannot watch: a class loader of your own that reads them from memory or from the network, for example, rather than from a folder, a jar file, or an entry of a jar.
+With the dev jar, the UI opened, but its classes come from a place that hot reload cannot watch: a class loader of your own that reads them from memory or from the network, for example, rather than from a folder, a jar file, an entry of a jar, or a location of another scheme whose path names one of them.
 The UI works; editing its class does not reload it.
 
 Run the application from a folder of classes or from a jar file, as an IDE or Gradle does: [Dev tools](/use/get-started/dev-tools/).
