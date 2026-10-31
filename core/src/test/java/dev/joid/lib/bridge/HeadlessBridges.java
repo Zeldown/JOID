@@ -155,10 +155,13 @@ public final class HeadlessBridges extends ExternalResource {
 		try {
 			final Field cursor = UIBridge.class.getDeclaredField("windowCursor");
 			final Field window = UIBridge.class.getDeclaredField("cursorWindow");
+			final Field area = UIBridge.class.getDeclaredField("windowTextInputArea");
 			cursor.setAccessible(true);
 			window.setAccessible(true);
+			area.setAccessible(true);
 			cursor.set(null, null);
 			window.set(null, null);
+			area.set(null, null);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

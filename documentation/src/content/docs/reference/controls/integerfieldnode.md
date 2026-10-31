@@ -89,6 +89,13 @@ An empty field that the user leaves takes back its last value, `0` before any; w
 | `boolean` | [accepts](#IntegerFieldNode-method-accepts)(String text) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Accepts digits only, with a leading minus sign when `min` is below `0`. |
 
 <details>
+<summary>Inherited from <a href="/reference/controls/linefieldnode/#LineFieldNode-methods"><code>LineFieldNode</code></a> (1)</summary>
+
+[`getCursorArea`](/reference/controls/linefieldnode/#LineFieldNode-method-getCursorArea)
+
+</details>
+
+<details>
 <summary>Inherited from <a href="/reference/controls/fieldnode/#FieldNode-methods"><code>FieldNode</code></a> (16)</summary>
 
 [`cursorPosition`](/reference/controls/fieldnode/#FieldNode-method-cursorPosition) · [`moveCursor`](/reference/controls/fieldnode/#FieldNode-method-moveCursor) · [`beforeCursorMove`](/reference/controls/fieldnode/#FieldNode-method-beforeCursorMove) · [`focused`](/reference/controls/fieldnode/#FieldNode-method-focused) · [`focus`](/reference/controls/fieldnode/#FieldNode-method-focus) · [`beforeFocus`](/reference/controls/fieldnode/#FieldNode-method-beforeFocus) · [`isFocused`](/reference/controls/fieldnode/#FieldNode-method-isFocused) · [`getValue`](/reference/controls/fieldnode/#FieldNode-method-getValue) · [`isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) · [`getSelection`](/reference/controls/fieldnode/#FieldNode-method-getSelection) · [`selection`](/reference/controls/fieldnode/#FieldNode-method-selection) · [`beforeChange`](/reference/controls/fieldnode/#FieldNode-method-beforeChange) · [`blur`](/reference/controls/fieldnode/#FieldNode-method-blur) · [`beforeBlur`](/reference/controls/fieldnode/#FieldNode-method-beforeBlur) · [`select`](/reference/controls/fieldnode/#FieldNode-method-select) · [`beforeSelect`](/reference/controls/fieldnode/#FieldNode-method-beforeSelect)

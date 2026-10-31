@@ -35,6 +35,7 @@ ext {
     }
 
     lwjglVersion = "3.3.4"
+    lwjglSdlVersion = "3.4.3"
     ffmpegNatives = os.isWindows() ? "windows-x86_64" : os.isMacOsX() ? (arm ? "macosx-arm64" : "macosx-x86_64") : "linux-x86_64"
     lwjglNatives = os.isWindows() ? "natives-windows" : os.isMacOsX() ? (arm ? "natives-macos-arm64" : "natives-macos") : (arm ? "natives-linux-arm64" : "natives-linux")
 }

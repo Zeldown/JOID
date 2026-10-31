@@ -28,7 +28,7 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 - [Custom effects](/use/learn/going-further/custom-effects/)
 - [base-lwjgl2](/build/base-modules/lwjgl2/)
 - [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/)
-- [Window bridge](/build/bridges/window/)
+- [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/)
 
 <a id="Key-methods"></a>
 

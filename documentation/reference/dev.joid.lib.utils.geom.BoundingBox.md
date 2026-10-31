@@ -30,6 +30,14 @@ Returns the width, `maxX - minX`.
 
 Returns the height, `maxY - minY`.
 
+## equals(Object)
+
+If `true`, the other object is a box with the same four edges.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.
+
 ## getMinX()
 
 Returns the left edge.

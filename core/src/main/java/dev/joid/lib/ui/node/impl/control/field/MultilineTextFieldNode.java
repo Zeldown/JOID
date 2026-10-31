@@ -11,6 +11,7 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -45,6 +46,16 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			this.yOffset = offset;
 			event.consume();
 		}
+	}
+
+	@Override
+	public final @NonNull BoundingBox getCursorArea() {
+		final FieldLayout layout = this.getLayout();
+		final List<FieldLine> lines = layout.getLines();
+		final double lineHeight = this.getLineHeight();
+		final int cursorLine = this.getLineIndex(layout, super.getCursorPosition());
+		final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLine), super.getCursorPosition()));
+		return BoundingBox.create(cursorX, super.getAbsoluteY() + super.getMarginTop() - this.yOffset + lineHeight * cursorLine, 2D, lineHeight);
 	}
 
 	@Override

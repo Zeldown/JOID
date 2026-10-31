@@ -98,6 +98,10 @@ Learn: [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/).
 The OpenGL binding of LWJGL 3 and its framebuffer bindings, for the render bridge of base-opengl.
 Learn: [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/).
 
+## base-lwjgl3-sdl
+The key table and the mouse buttons of SDL 3, for a host whose window and input run on the SDL of LWJGL.
+Learn: [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/).
+
 ## lwjgl2
 The backend for LWJGL 2: its natives and its snapshot backend.
 Learn: [LWJGL 2 backend](/build/backends/lwjgl2/).

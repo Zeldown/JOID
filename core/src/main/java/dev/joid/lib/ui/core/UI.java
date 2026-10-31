@@ -65,11 +65,13 @@ import dev.joid.lib.ui.event.impl.ui.UIKeyEvent;
 import dev.joid.lib.ui.event.impl.ui.UIMouseEvent;
 import dev.joid.lib.ui.event.impl.ui.UIMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.control.field.FieldNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.annotation.AnnotationValues;
+import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.list.IIndexedElement;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.Getter;
@@ -537,6 +539,16 @@ public abstract class UI implements IIndexedElement {
 	public final Node getHoveredNode() {
 		final List<Node> path = this.getHoveredPath();
 		return path.isEmpty() ? null : path.get(0);
+	}
+
+	public final BoundingBox getTextInputArea() {
+		final FieldNode<?> field = UI.findFocusedField(this.nodeList);
+		if (field == null) {
+			return null;
+		}
+
+		final BoundingBox area = field.getCursorArea();
+		return BoundingBox.create(this.view.toScreenX(area.getMinX()), this.view.toScreenY(area.getMinY()), this.view.toScreenWidth(area.getWidth()), this.view.toScreenHeight(area.getHeight()));
 	}
 
 	public final @NonNull List<@NonNull Node> getHoveredPath() {
@@ -1128,6 +1140,20 @@ public abstract class UI implements IIndexedElement {
 	private static void collectTasks(final Node node, final List<Task> taskList) {
 		taskList.addAll(node.getTaskList());
 		node.getChildren().forEach(child -> UI.collectTasks(child, taskList));
+	}
+
+	private static FieldNode<?> findFocusedField(final Iterable<Node> nodeList) {
+		for (final Node node : nodeList) {
+			if (node instanceof FieldNode && ((FieldNode<?>) node).isFocused()) {
+				return (FieldNode<?>) node;
+			}
+
+			final FieldNode<?> field = UI.findFocusedField(node.getChildren());
+			if (field != null) {
+				return field;
+			}
+		}
+		return null;
 	}
 
 	private static void collectShortcuts(final Node node, final List<Shortcut> shortcutList) {

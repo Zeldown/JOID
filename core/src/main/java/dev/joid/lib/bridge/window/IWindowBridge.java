@@ -3,6 +3,7 @@ package dev.joid.lib.bridge.window;
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.NonNull;
 
 public interface IWindowBridge extends IBridge {
@@ -19,5 +20,6 @@ public interface IWindowBridge extends IBridge {
 	public void setClipboard(final @NonNull String text);
 
 	public default void setCursor(final @NonNull Cursor cursor) {}
+	public default void setTextInputArea(final BoundingBox area) {}
 
 }

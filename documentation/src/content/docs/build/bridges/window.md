@@ -1,6 +1,6 @@
 ---
 title: "Window bridge"
-description: "The contract of the window bridge: drawable size, mouse, held keys, clipboard and cursor, all in screen pixels."
+description: "The contract of the window bridge: drawable size, mouse, held keys, clipboard, cursor and text input area, all in screen pixels."
 genre: build
 sidebar:
   order: 2
@@ -30,13 +30,15 @@ This bridge reads the window of an imaginary engine, whose key codes are those o
 | Member | Default | Override it to |
 |---|---|---|
 | [[IWindowBridge#setCursor]] | Does nothing. | Show a system [[Cursor]]. |
+| [[IWindowBridge#setTextInputArea]] | Does nothing. | Switch the text input of the host on at the area of the cursor of the focused field, so that the window of the input method opens next to it, and off on `null`. |
 
 The rest of the core only reads the window bridge:
 
 - [[UIBridgeRegistry#frame]] compares the size with the previous frame and, when it changed and is not zero, resizes the projection and lays every UI out again;
 - each UI converts the mouse position into design pixels, on every frame and on every mouse event, and finds its hovered nodes from it;
 - [[Key#isDown]] asks `isKeyDown` for the keys that do not depend on the layout, and the key state of the UI registry for the others ([Input forwarding](/build/input/#guarantees));
-- the cursor is set once per change, and never while `isMouseGrabbed()` returns `true`.
+- the cursor is set once per change, and never while `isMouseGrabbed()` returns `true`;
+- the text input area is set once per change: the area of the cursor of the focused field of the front-most UI that takes input, in screen pixels, or `null` once no UI has a focused field.
 
 ## Guarantees
 

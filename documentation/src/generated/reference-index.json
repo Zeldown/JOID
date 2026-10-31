@@ -7740,7 +7740,8 @@
         "isKeyDown": "IWindowBridge-method-isKeyDown",
         "getClipboard": "IWindowBridge-method-getClipboard",
         "setClipboard": "IWindowBridge-method-setClipboard",
-        "setCursor": "IWindowBridge-method-setCursor"
+        "setCursor": "IWindowBridge-method-setCursor",
+        "setTextInputArea": "IWindowBridge-method-setTextInputArea"
       },
       "overloads": [
         "getWidth()",
@@ -7751,7 +7752,8 @@
         "isKeyDown(Key)",
         "getClipboard()",
         "setClipboard(String)",
-        "setCursor(Cursor)"
+        "setCursor(Cursor)",
+        "setTextInputArea(BoundingBox)"
       ]
     },
     "IWindowBridge": {
@@ -7774,7 +7776,8 @@
         "isKeyDown": "IWindowBridge-method-isKeyDown",
         "getClipboard": "IWindowBridge-method-getClipboard",
         "setClipboard": "IWindowBridge-method-setClipboard",
-        "setCursor": "IWindowBridge-method-setCursor"
+        "setCursor": "IWindowBridge-method-setCursor",
+        "setTextInputArea": "IWindowBridge-method-setTextInputArea"
       },
       "overloads": [
         "getWidth()",
@@ -7785,7 +7788,8 @@
         "isKeyDown(Key)",
         "getClipboard()",
         "setClipboard(String)",
-        "setCursor(Cursor)"
+        "setCursor(Cursor)",
+        "setTextInputArea(BoundingBox)"
       ]
     },
     "dev.joid.lib.cache.FileCache": {
@@ -17118,6 +17122,7 @@
         "getMouseX": "UI-method-getMouseX",
         "getMouseY": "UI-method-getMouseY",
         "getHoveredNode": "UI-method-getHoveredNode",
+        "getTextInputArea": "UI-method-getTextInputArea",
         "getHoveredPath": "UI-method-getHoveredPath",
         "getNodeAt": "UI-method-getNodeAt",
         "getNodeListAt": "UI-method-getNodeListAt",
@@ -17205,6 +17210,7 @@
         "getMouseX()",
         "getMouseY()",
         "getHoveredNode()",
+        "getTextInputArea()",
         "getHoveredPath()",
         "getNodeAt(double,double)",
         "getNodeListAt(double,double)",
@@ -17302,6 +17308,7 @@
         "getMouseX": "UI-method-getMouseX",
         "getMouseY": "UI-method-getMouseY",
         "getHoveredNode": "UI-method-getHoveredNode",
+        "getTextInputArea": "UI-method-getTextInputArea",
         "getHoveredPath": "UI-method-getHoveredPath",
         "getNodeAt": "UI-method-getNodeAt",
         "getNodeListAt": "UI-method-getNodeListAt",
@@ -17389,6 +17396,7 @@
         "getMouseX()",
         "getMouseY()",
         "getHoveredNode()",
+        "getTextInputArea()",
         "getHoveredPath()",
         "getNodeAt(double,double)",
         "getNodeListAt(double,double)",
@@ -23641,6 +23649,7 @@
         "beforeCursorMove": "FieldNode-method-beforeCursorMove",
         "select": "FieldNode-method-select",
         "beforeSelect": "FieldNode-method-beforeSelect",
+        "getCursorArea": "FieldNode-method-getCursorArea",
         "drawField": "FieldNode-method-drawField",
         "isMultiline": "FieldNode-method-isMultiline",
         "handleKey": "FieldNode-method-handleKey",
@@ -23760,6 +23769,7 @@
         "beforeCursorMove(EventListener)",
         "select(int,int)",
         "beforeSelect(EventListener)",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -23855,6 +23865,7 @@
         "beforeCursorMove": "FieldNode-method-beforeCursorMove",
         "select": "FieldNode-method-select",
         "beforeSelect": "FieldNode-method-beforeSelect",
+        "getCursorArea": "FieldNode-method-getCursorArea",
         "drawField": "FieldNode-method-drawField",
         "isMultiline": "FieldNode-method-isMultiline",
         "handleKey": "FieldNode-method-handleKey",
@@ -23974,6 +23985,7 @@
         "beforeCursorMove(EventListener)",
         "select(int,int)",
         "beforeSelect(EventListener)",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -24188,6 +24200,7 @@
         "alignY": "LineFieldNode-property-alignY",
         "LineFieldNode": "LineFieldNode-constructor",
         "update": "LineFieldNode-method-update",
+        "getCursorArea": "LineFieldNode-method-getCursorArea",
         "drawField": "LineFieldNode-method-drawField",
         "isMultiline": "LineFieldNode-method-isMultiline",
         "handleKey": "LineFieldNode-method-handleKey",
@@ -24207,6 +24220,7 @@
         "getAlignY()",
         "LineFieldNode(double,double,double,double)",
         "update()",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -24236,6 +24250,7 @@
         "alignY": "LineFieldNode-property-alignY",
         "LineFieldNode": "LineFieldNode-constructor",
         "update": "LineFieldNode-method-update",
+        "getCursorArea": "LineFieldNode-method-getCursorArea",
         "drawField": "LineFieldNode-method-drawField",
         "isMultiline": "LineFieldNode-method-isMultiline",
         "handleKey": "LineFieldNode-method-handleKey",
@@ -24255,6 +24270,7 @@
         "getAlignY()",
         "LineFieldNode(double,double,double,double)",
         "update()",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -24282,6 +24298,7 @@
         "create": "MultilineTextFieldNode-factory-create",
         "MultilineTextFieldNode": "MultilineTextFieldNode-constructor",
         "mouseScroll": "MultilineTextFieldNode-method-mouseScroll",
+        "getCursorArea": "MultilineTextFieldNode-method-getCursorArea",
         "drawField": "MultilineTextFieldNode-method-drawField",
         "isMultiline": "MultilineTextFieldNode-method-isMultiline",
         "handleKey": "MultilineTextFieldNode-method-handleKey",
@@ -24295,6 +24312,7 @@
         "create(double,double,double,double)",
         "MultilineTextFieldNode(double,double,double,double)",
         "mouseScroll(NodeMouseScrollEvent)",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -24323,6 +24341,7 @@
         "create": "MultilineTextFieldNode-factory-create",
         "MultilineTextFieldNode": "MultilineTextFieldNode-constructor",
         "mouseScroll": "MultilineTextFieldNode-method-mouseScroll",
+        "getCursorArea": "MultilineTextFieldNode-method-getCursorArea",
         "drawField": "MultilineTextFieldNode-method-drawField",
         "isMultiline": "MultilineTextFieldNode-method-isMultiline",
         "handleKey": "MultilineTextFieldNode-method-handleKey",
@@ -24336,6 +24355,7 @@
         "create(double,double,double,double)",
         "MultilineTextFieldNode(double,double,double,double)",
         "mouseScroll(NodeMouseScrollEvent)",
+        "getCursorArea()",
         "drawField()",
         "isMultiline()",
         "handleKey(Key)",
@@ -27567,7 +27587,9 @@
         "getMaxX": "BoundingBox-method-getMaxX",
         "setMaxX": "BoundingBox-method-setMaxX",
         "getMaxY": "BoundingBox-method-getMaxY",
-        "setMaxY": "BoundingBox-method-setMaxY"
+        "setMaxY": "BoundingBox-method-setMaxY",
+        "equals": "BoundingBox-method-equals",
+        "hashCode": "BoundingBox-method-hashCode"
       },
       "overloads": [
         "create(double,double,double,double)",
@@ -27583,7 +27605,9 @@
         "getMaxX()",
         "setMaxX(double)",
         "getMaxY()",
-        "setMaxY(double)"
+        "setMaxY(double)",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "BoundingBox": {
@@ -27609,7 +27633,9 @@
         "getMaxX": "BoundingBox-method-getMaxX",
         "setMaxX": "BoundingBox-method-setMaxX",
         "getMaxY": "BoundingBox-method-getMaxY",
-        "setMaxY": "BoundingBox-method-setMaxY"
+        "setMaxY": "BoundingBox-method-setMaxY",
+        "equals": "BoundingBox-method-equals",
+        "hashCode": "BoundingBox-method-hashCode"
       },
       "overloads": [
         "create(double,double,double,double)",
@@ -27625,7 +27651,9 @@
         "getMaxX()",
         "setMaxX(double)",
         "getMaxY()",
-        "setMaxY(double)"
+        "setMaxY(double)",
+        "equals(Object)",
+        "hashCode()"
       ]
     },
     "dev.joid.lib.utils.geom.Point": {
@@ -33314,6 +33342,82 @@
         "Lwjgl3StateGuardBackend(ISnapshotBackend)",
         "drawExternal()",
         "fill(int,int,int,int,int)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.sdl.input.SdlKeys": {
+      "fqcn": "dev.joid.base.lwjgl3.sdl.input.SdlKeys",
+      "name": "SdlKeys",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-sdl",
+      "summary": "Maps the scancodes of SDL 3 to the keys of JOID and back, by physical position or through the keyboard layout.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-sdl/sdlkeys/",
+      "members": {
+        "getCode": "SdlKeys-method-getCode",
+        "getKey": "SdlKeys-method-getKey",
+        "getPhysicalKey": "SdlKeys-method-getPhysicalKey",
+        "isKeyDown": "SdlKeys-method-isKeyDown"
+      },
+      "overloads": [
+        "getCode(Key)",
+        "getKey(int)",
+        "getPhysicalKey(int)",
+        "isKeyDown(Key,IntPredicate)"
+      ]
+    },
+    "SdlKeys": {
+      "fqcn": "dev.joid.base.lwjgl3.sdl.input.SdlKeys",
+      "name": "SdlKeys",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-sdl",
+      "summary": "Maps the scancodes of SDL 3 to the keys of JOID and back, by physical position or through the keyboard layout.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-sdl/sdlkeys/",
+      "members": {
+        "getCode": "SdlKeys-method-getCode",
+        "getKey": "SdlKeys-method-getKey",
+        "getPhysicalKey": "SdlKeys-method-getPhysicalKey",
+        "isKeyDown": "SdlKeys-method-isKeyDown"
+      },
+      "overloads": [
+        "getCode(Key)",
+        "getKey(int)",
+        "getPhysicalKey(int)",
+        "isKeyDown(Key,IntPredicate)"
+      ]
+    },
+    "dev.joid.base.lwjgl3.sdl.input.SdlMouseButtons": {
+      "fqcn": "dev.joid.base.lwjgl3.sdl.input.SdlMouseButtons",
+      "name": "SdlMouseButtons",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-sdl",
+      "summary": "Maps the mouse buttons of SDL 3, which count from 1, to the mouse buttons of JOID.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-sdl/sdlmousebuttons/",
+      "members": {
+        "getButton": "SdlMouseButtons-method-getButton"
+      },
+      "overloads": [
+        "getButton(int)"
+      ]
+    },
+    "SdlMouseButtons": {
+      "fqcn": "dev.joid.base.lwjgl3.sdl.input.SdlMouseButtons",
+      "name": "SdlMouseButtons",
+      "kind": "class",
+      "abstract": false,
+      "family": "base-lwjgl3-sdl",
+      "summary": "Maps the mouse buttons of SDL 3, which count from 1, to the mouse buttons of JOID.",
+      "ancestors": [],
+      "url": "/reference/base-lwjgl3-sdl/sdlmousebuttons/",
+      "members": {
+        "getButton": "SdlMouseButtons-method-getButton"
+      },
+      "overloads": [
+        "getButton(int)"
       ]
     },
     "dev.joid.backend.lwjgl2.Lwjgl2Backend": {

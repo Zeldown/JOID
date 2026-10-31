@@ -255,6 +255,10 @@ It asks `handleKey` first.
 
 Blurs the field when it leaves the tree.
 
+## getCursorArea()
+
+Returns the area of the text cursor, in design pixels of the UI, where `drawField` draws it while the field has the focus.
+
 ## drawField()
 
 Hook that draws the text, the cursor and the selection, on every frame.

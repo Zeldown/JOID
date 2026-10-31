@@ -23,6 +23,7 @@ Test it with the `isX()` predicates, for example to open a context menu on a rig
 ## Learn more
 
 - [Events](/use/learn/interactivity/events/)
+- [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/)
 - [Input forwarding](/build/input/)
 
 ## Creation

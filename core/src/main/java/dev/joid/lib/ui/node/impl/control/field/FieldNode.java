@@ -24,6 +24,7 @@ import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.Getter;
 import lombok.NonNull;
@@ -500,6 +501,8 @@ public abstract class FieldNode<V> extends Node {
 	public final <T extends FieldNode<V>> @NonNull T onSelect(final @NonNull EventListener<NodeChangeEvent.Post<T, FieldSelection>> listener) {
 		return this.selectionValue.on(listener);
 	}
+
+	public abstract @NonNull BoundingBox getCursorArea();
 
 	protected abstract void drawField();
 

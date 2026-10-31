@@ -42,6 +42,7 @@ A base module holds the code that several backends would otherwise copy, for one
 | [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) | GLFW of LWJGL 3 | the window bridge, the input forwarder, the key table |
 | [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) | OpenAL of LWJGL 3 | the binding of base-openal |
 | [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) | OpenGL of LWJGL 3 | the binding of base-opengl |
+| [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/) | SDL 3 of LWJGL | the key table, the mouse buttons |
 
 `base-openal` and `base-opengl` are API modules: they call their library only through these binding interfaces, so they declare no LWJGL dependency, and the binding you give them decides which library they call.
 The other base modules are library modules, one for each jar of a library, so that a backend takes exactly the libraries it already runs on.

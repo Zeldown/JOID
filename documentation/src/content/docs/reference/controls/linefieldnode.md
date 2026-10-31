@@ -70,6 +70,7 @@ A field of height `0` takes the height of its font plus its top and bottom margi
 
 | Returns | Signature | Summary |
 |---|---|---|
+| [`BoundingBox`](/reference/utilities/boundingbox/) | [getCursorArea](#LineFieldNode-method-getCursorArea)() | Returns the area of the cursor on the line, with the sideways scroll of the text. |
 | `boolean` | [isMultiline](#LineFieldNode-method-isMultiline)() <span class="joid-qualifier">protected</span> | Returns `false`: the text holds one line. |
 | `boolean` | [handleKey](#LineFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Enter and the Enter of the keypad: asks the field to blur, then fires `onSubmit` if the field lost the focus. |
 | `int` | [getPositionAt](#LineFieldNode-method-getPositionAt)(double mouseX, double mouseY) <span class="joid-qualifier">protected</span> | Returns the index in the text nearest to the pointer, along the line. |
@@ -166,6 +167,14 @@ A text at the start, or one wider than the field, scrolls to follow the cursor.
 Where the text sits in the height of the field: at the top with `marginTop`, the center, or the bottom with `marginBottom`.
 
 ## Method details
+
+<a id="LineFieldNode-method-getCursorArea"></a>
+
+### getCursorArea
+
+`BoundingBox getCursorArea()` 
+
+Returns the area of the cursor on the line, with the sideways scroll of the text.
 
 <a id="LineFieldNode-method-isMultiline"></a>
 

@@ -27,6 +27,7 @@ The input events do not go through it; the backend forwards them to `BridgeHandl
 
 - [Input forwarding](/build/input/)
 - [Embedding JOID](/use/learn/running/embedding/)
+- [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/)
 
 <a id="IWindowBridge-methods"></a>
 
@@ -48,6 +49,7 @@ The input events do not go through it; the backend forwards them to `BridgeHandl
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [setCursor](#IWindowBridge-method-setCursor)(Cursor cursor) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">default</span> | Shows that system cursor over the window; does nothing by default. |
+| `void` | [setTextInputArea](#IWindowBridge-method-setTextInputArea)(BoundingBox area) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">default</span> | Receives the area of the cursor of the focused text field, in screen pixels, or `null` once no field has the focus; does nothing by default. |
 
 ## Method details
 
@@ -123,6 +125,15 @@ Puts the text in the system clipboard; never throws.
 
 Shows that system cursor over the window; does nothing by default.
 JOID calls it once per change, never while `isMouseGrabbed()` returns `true`.
+
+<a id="IWindowBridge-method-setTextInputArea"></a>
+
+### setTextInputArea
+
+`void setTextInputArea(BoundingBox area)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">default</span>
+
+Receives the area of the cursor of the focused text field, in screen pixels, or `null` once no field has the focus; does nothing by default.
+JOID calls it once per change: a host whose text input must be switched on, or whose input method places its window near the text, starts it on an area and stops it on `null`.
 
 ---
 

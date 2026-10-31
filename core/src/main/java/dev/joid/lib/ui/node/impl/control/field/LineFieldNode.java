@@ -11,6 +11,7 @@ import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -40,6 +41,13 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	@Override
+	public final @NonNull BoundingBox getCursorArea() {
+		final String text = super.getText();
+		final double cursorX = this.getTextX(super.getAbsoluteX(), text) + this.getX(text, TextMarkup.tags(text, super.getShownInfo()), super.getCursorPosition());
+		return BoundingBox.create(cursorX, this.getTextY(super.getAbsoluteY()), 2D, super.getInfo().getHeight());
+	}
+
+	@Override
 	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
@@ -53,7 +61,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 		final boolean isPlaceholder = text.isEmpty() && !super.isFocused();
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? super.getPlaceholder() : text);
-		final double textY = this.alignY.isCenter() ? super.getY() + (super.getHeight() - info.getHeight()) / 2D : this.alignY.isEnd() ? super.getY() + super.getHeight() - info.getHeight() - super.getMarginBottom() : super.getY() + super.getMarginTop();
+		final double textY = this.getTextY(super.getY());
 		final int[] tags = TextMarkup.tags(text, super.getShownInfo());
 		final FieldSelection selection = super.getSelection();
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
@@ -166,6 +174,11 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		return x + super.getWidth() - super.getShownInfo().getWidth(shown) - super.getMarginRight() - 2D;
+	}
+
+	private double getTextY(final double y) {
+		final double height = super.getInfo().getHeight();
+		return this.alignY.isCenter() ? y + (super.getHeight() - height) / 2D : this.alignY.isEnd() ? y + super.getHeight() - height - super.getMarginBottom() : y + super.getMarginTop();
 	}
 
 	private double getX(final String text, final int[] tags, final int position) {

@@ -63,6 +63,10 @@ The front-most visible, interactive node under this point of the design canvas, 
 
 The front-most interactive node under the mouse, or `null` when there is none or when another UI is on top of this one.
 
+## getTextInputArea()
+
+The area of the cursor of the focused text field, in screen pixels, or `null` when no field of this UI has the focus; the UI bridge gives it to [[IWindowBridge#setTextInputArea]].
+
 ## getHoveredPath()
 
 The hovered node followed by each of its parents up to the root of the tree; empty when nothing is hovered.

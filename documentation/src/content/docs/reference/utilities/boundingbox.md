@@ -62,6 +62,8 @@ Mutable rectangle stored by its minimum and maximum corners, in design pixels.
 | `void` | [setMinY](#BoundingBox-method-setMinY)(double minY) | Moves the top edge. |
 | `void` | [setMaxX](#BoundingBox-method-setMaxX)(double maxX) | Moves the right edge. |
 | `void` | [setMaxY](#BoundingBox-method-setMaxY)(double maxY) | Moves the bottom edge. |
+| `boolean` | [equals](#BoundingBox-method-equals)(Object other) | If `true`, the other object is a box with the same four edges. |
+| `int` | [hashCode](#BoundingBox-method-hashCode)() | Returns a hash of the values that `equals` compares. |
 
 ## Creation details
 
@@ -178,6 +180,22 @@ Moves the right edge.
 `void setMaxY(double maxY)` 
 
 Moves the bottom edge.
+
+<a id="BoundingBox-method-equals"></a>
+
+### equals
+
+`boolean equals(Object other)` 
+
+If `true`, the other object is a box with the same four edges.
+
+<a id="BoundingBox-method-hashCode"></a>
+
+### hashCode
+
+`int hashCode()` 
+
+Returns a hash of the values that `equals` compares.
 
 ---
 

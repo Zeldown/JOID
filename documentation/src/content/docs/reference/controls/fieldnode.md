@@ -146,6 +146,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `void` | [keyPressed](#FieldNode-method-keyPressed)(NodeKeyEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape blurs the field. |
 | `void` | [detach](#FieldNode-method-detach)() <span class="joid-qualifier">hook</span> | Blurs the field when it leaves the tree. |
 | `boolean` | [holdsInput](#FieldNode-method-holdsInput)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container. |
+| [`BoundingBox`](/reference/utilities/boundingbox/) | [getCursorArea](#FieldNode-method-getCursorArea)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> | Returns the area of the text cursor, in design pixels of the UI, where `drawField` draws it while the field has the focus. |
 | `void` | [drawField](#FieldNode-method-drawField)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that draws the text, the cursor and the selection, on every frame. |
 | `boolean` | [isMultiline](#FieldNode-method-isMultiline)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that returns `true` when the text may hold line breaks; a one-line field drops them from a paste. |
 | `boolean` | [handleKey](#FieldNode-method-handleKey)(Key key) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that JOID calls first with each key pressed while the field has the focus. |
@@ -691,6 +692,14 @@ Blurs the field when it leaves the tree.
 `boolean holdsInput()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
 
 If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container.
+
+<a id="FieldNode-method-getCursorArea"></a>
+
+### getCursorArea
+
+`BoundingBox getCursorArea()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span>
+
+Returns the area of the text cursor, in design pixels of the UI, where `drawField` draws it while the field has the focus.
 
 <a id="FieldNode-method-drawField"></a>
 

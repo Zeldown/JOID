@@ -1,0 +1,10 @@
+archivesBaseName = "joid-base-lwjgl3-sdl"
+
+dependencies {
+    compile project(':core')
+
+    compileOnly "org.lwjgl:lwjgl-sdl:$lwjglSdlVersion"
+    testCompile "org.lwjgl:lwjgl-sdl:$lwjglSdlVersion"
+}
+
+apply from: rootProject.file('gradle/base.gradle')

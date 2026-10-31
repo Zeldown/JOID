@@ -32,6 +32,10 @@ Adds a listener that runs when the user presses Enter or the Enter of the keypad
 
 Gives a field of height `0` the height of its font plus its top and bottom margins.
 
+## getCursorArea()
+
+Returns the area of the cursor on the line, with the sideways scroll of the text.
+
 ## drawField()
 
 Draws the text or the placeholder between the margins, with the cursor while the field has the focus and the selection.

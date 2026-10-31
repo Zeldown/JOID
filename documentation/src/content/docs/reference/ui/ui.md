@@ -130,6 +130,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `double` | [getViewY](#UI-method-getViewY)() | Position of the top edge of the window on the design canvas, negative when the window shows more than the canvas above it. |
 | `double` | [getViewWidth](#UI-method-getViewWidth)() | Width of the window measured in design pixels, after the interface scale and the zoom. |
 | `double` | [getViewHeight](#UI-method-getViewHeight)() | Height of the window measured in design pixels, after the interface scale and the zoom. |
+| [`BoundingBox`](/reference/utilities/boundingbox/) | [getTextInputArea](#UI-method-getTextInputArea)() | The area of the cursor of the focused text field, in screen pixels, or `null` when no field of this UI has the focus; the UI bridge gives it to [`IWindowBridge.setTextInputArea`](/reference/backends/iwindowbridge/#IWindowBridge-method-setTextInputArea). |
 | [`Node`](/reference/nodes/node/) | [getNodeAt](#UI-method-getNodeAt)(double x, double y) | The front-most visible, interactive node under this point of the design canvas, or `null` when there is none. |
 | [`IUIBridge`](/reference/backends/iuibridge/) | [getBridge](#UI-method-getBridge)() | The UI bridge that holds this UI, or that would open it; `null` when no registered bridge accepts it. |
 | [`UI`](/reference/ui/ui/) | [getCurrent](#UI-method-getCurrent)() <span class="joid-qualifier">static</span> | The UI whose code is running on the render thread: the one that runs `init()`, a listener, a task or an input; `null` outside of them. |
@@ -544,6 +545,14 @@ Width of the window measured in design pixels, after the interface scale and the
 `double getViewHeight()` 
 
 Height of the window measured in design pixels, after the interface scale and the zoom.
+
+<a id="UI-method-getTextInputArea"></a>
+
+### getTextInputArea
+
+`BoundingBox getTextInputArea()` 
+
+The area of the cursor of the focused text field, in screen pixels, or `null` when no field of this UI has the focus; the UI bridge gives it to [`IWindowBridge.setTextInputArea`](/reference/backends/iwindowbridge/#IWindowBridge-method-setTextInputArea).
 
 <a id="UI-method-getNodeAt"></a>
 

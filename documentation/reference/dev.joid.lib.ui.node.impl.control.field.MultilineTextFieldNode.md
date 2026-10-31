@@ -18,6 +18,10 @@ Creates the field, from the constructor of a subclass.
 
 Over the field, scrolls the text by one line per notch, and consumes the wheel while it can still scroll in that direction.
 
+## getCursorArea()
+
+Returns the area of the cursor on its wrapped line, with the vertical scroll of the text.
+
 ## drawField()
 
 Draws the wrapped lines or the placeholder inside the margins, with the cursor while the field has the focus and the selection over each line.

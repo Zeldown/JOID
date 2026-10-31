@@ -64,6 +64,7 @@ Enter starts a new line, Up and Down move the cursor between lines, and the whee
 
 | Returns | Signature | Summary |
 |---|---|---|
+| [`BoundingBox`](/reference/utilities/boundingbox/) | [getCursorArea](#MultilineTextFieldNode-method-getCursorArea)() | Returns the area of the cursor on its wrapped line, with the vertical scroll of the text. |
 | `boolean` | [isMultiline](#MultilineTextFieldNode-method-isMultiline)() <span class="joid-qualifier">protected</span> | Returns `true`: the text keeps its line breaks. |
 | `boolean` | [handleKey](#MultilineTextFieldNode-method-handleKey)(Key key) <span class="joid-qualifier">protected</span> | Handles Up and Down, which move the cursor to the nearest place on the line above or below, Home and End, which move it to the start or the end of its line, wrapped lines included, and Enter, which inserts a line break. |
 | `int` | [getPositionAt](#MultilineTextFieldNode-method-getPositionAt)(double mouseX, double mouseY) <span class="joid-qualifier">protected</span> | Returns the index in the text nearest to the pointer, on the line under it. |
@@ -130,6 +131,14 @@ Creates the field at `x`, `y` with a `width` and a `height` in design pixels.
 Creates the field, from the constructor of a subclass.
 
 ## Method details
+
+<a id="MultilineTextFieldNode-method-getCursorArea"></a>
+
+### getCursorArea
+
+`BoundingBox getCursorArea()` 
+
+Returns the area of the cursor on its wrapped line, with the vertical scroll of the text.
 
 <a id="MultilineTextFieldNode-method-isMultiline"></a>
 

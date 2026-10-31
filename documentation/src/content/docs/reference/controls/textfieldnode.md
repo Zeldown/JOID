@@ -69,6 +69,13 @@ It needs only a [`TextInfo`](/reference/text/textinfo/) and optional styling; a 
 | `String` | [format](#TextFieldNode-method-format)(String value) <span class="joid-qualifier">protected</span> | Returns the value itself. |
 
 <details>
+<summary>Inherited from <a href="/reference/controls/linefieldnode/#LineFieldNode-methods"><code>LineFieldNode</code></a> (1)</summary>
+
+[`getCursorArea`](/reference/controls/linefieldnode/#LineFieldNode-method-getCursorArea)
+
+</details>
+
+<details>
 <summary>Inherited from <a href="/reference/controls/fieldnode/#FieldNode-methods"><code>FieldNode</code></a> (17)</summary>
 
 [`cursorPosition`](/reference/controls/fieldnode/#FieldNode-method-cursorPosition) · [`moveCursor`](/reference/controls/fieldnode/#FieldNode-method-moveCursor) · [`beforeCursorMove`](/reference/controls/fieldnode/#FieldNode-method-beforeCursorMove) · [`focused`](/reference/controls/fieldnode/#FieldNode-method-focused) · [`focus`](/reference/controls/fieldnode/#FieldNode-method-focus) · [`beforeFocus`](/reference/controls/fieldnode/#FieldNode-method-beforeFocus) · [`isFocused`](/reference/controls/fieldnode/#FieldNode-method-isFocused) · [`getValue`](/reference/controls/fieldnode/#FieldNode-method-getValue) · [`isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) · [`getSelection`](/reference/controls/fieldnode/#FieldNode-method-getSelection) · [`selection`](/reference/controls/fieldnode/#FieldNode-method-selection) · [`change`](/reference/controls/fieldnode/#FieldNode-method-change) · [`beforeChange`](/reference/controls/fieldnode/#FieldNode-method-beforeChange) · [`blur`](/reference/controls/fieldnode/#FieldNode-method-blur) · [`beforeBlur`](/reference/controls/fieldnode/#FieldNode-method-beforeBlur) · [`select`](/reference/controls/fieldnode/#FieldNode-method-select) · [`beforeSelect`](/reference/controls/fieldnode/#FieldNode-method-beforeSelect)

@@ -1,6 +1,6 @@
 ---
 title: "Base modules"
-description: "The modules a backend reuses for GLFW, OpenAL and OpenGL, one per library, and how to pick them."
+description: "The modules a backend reuses for GLFW, SDL, OpenAL and OpenGL, one per library, and how to pick them."
 genre: build
 sidebar:
   order: 0
@@ -25,6 +25,7 @@ A library module follows the jars of one library: it binds that library to an AP
 | [base-lwjgl3-glfw](/build/base-modules/lwjgl3-glfw/) | opens its window with GLFW through LWJGL 3 | nothing: pass the window handle |
 | [base-lwjgl3-openal](/build/base-modules/lwjgl3-openal/) | plays sound with the OpenAL of LWJGL 3 | nothing: give its binding to base-openal |
 | [base-lwjgl3-opengl](/build/base-modules/lwjgl3-opengl/) | draws with the OpenGL of LWJGL 3 | nothing: give its binding to base-opengl |
+| [base-lwjgl3-sdl](/build/base-modules/lwjgl3-sdl/) | opens its window and reads its input with SDL 3 through LWJGL | the window bridge and the input forwarding, with its key table and its mouse buttons |
 
 Pick the modules of the libraries your engine already uses, and nothing else: a Vulkan engine takes no OpenGL module, an engine without sound no OpenAL module.
 A library module depends on the API module it binds: embed both.

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -23,6 +24,7 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataOverlayObject;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.NonNull;
 
@@ -30,6 +32,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	private static Cursor        windowCursor;
 	private static IWindowBridge cursorWindow;
+	private static BoundingBox   windowTextInputArea;
 
 	@NonNull
 	private final IndexedList<@NonNull UI> uiList;
@@ -43,8 +46,9 @@ public abstract class UIBridge implements IUIBridge {
 
 	private MouseButton pressed;
 
-	private Node   pressedNode;
-	private Cursor hoveredCursor;
+	private Node        pressedNode;
+	private Cursor      hoveredCursor;
+	private BoundingBox textInputArea;
 
 	protected UIBridge() {
 		this.uiList = IndexedList.concurrent();
@@ -172,6 +176,7 @@ public abstract class UIBridge implements IUIBridge {
 			FrameBufferPool.releaseUnused();
 			this.drawLayers(filter);
 			this.updateCursor();
+			this.updateTextInput();
 		} catch (final Exception exception) {
 			Tessellator.inst().abort();
 			render.getModelView().pop(modelViewDepth);
@@ -274,8 +279,9 @@ public abstract class UIBridge implements IUIBridge {
 
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		if (window != UIBridge.cursorWindow) {
-			UIBridge.cursorWindow = window;
-			UIBridge.windowCursor = Cursor.DEFAULT;
+			UIBridge.cursorWindow        = window;
+			UIBridge.windowCursor        = Cursor.DEFAULT;
+			UIBridge.windowTextInputArea = null;
 		}
 
 		if (window.isMouseGrabbed()) {
@@ -288,6 +294,27 @@ public abstract class UIBridge implements IUIBridge {
 			UIBridge.windowCursor = cursor;
 			window.setCursor(cursor);
 		}
+	}
+
+	private void updateTextInput() {
+		this.textInputArea = this.findTextInputArea();
+
+		final UIBridge bridge = BridgeHandler.UI.find(current -> !current.uiList.isEmpty() && current.textInputArea != null);
+		final BoundingBox area = bridge != null ? bridge.textInputArea : null;
+		if (!Objects.equals(area, UIBridge.windowTextInputArea)) {
+			UIBridge.windowTextInputArea = area;
+			BridgeHandler.WINDOW.get().setTextInputArea(area);
+		}
+	}
+
+	private BoundingBox findTextInputArea() {
+		for (final UI ui : this.getInputList()) {
+			final BoundingBox area = ui.getTextInputArea();
+			if (area != null) {
+				return area;
+			}
+		}
+		return null;
 	}
 
 	private void moveMouse() {

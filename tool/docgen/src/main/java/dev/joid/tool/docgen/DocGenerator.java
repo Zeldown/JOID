@@ -55,6 +55,7 @@ public final class DocGenerator {
 		DocGenerator.MODULES.put("base-lwjgl3-glfw", "base/lwjgl3-glfw");
 		DocGenerator.MODULES.put("base-lwjgl3-openal", "base/lwjgl3-openal");
 		DocGenerator.MODULES.put("base-lwjgl3-opengl", "base/lwjgl3-opengl");
+		DocGenerator.MODULES.put("base-lwjgl3-sdl", "base/lwjgl3-sdl");
 		DocGenerator.MODULES.put("backend-lwjgl2", "backend/lwjgl2");
 		DocGenerator.MODULES.put("backend-lwjgl3", "backend/lwjgl3");
 		DocGenerator.MODULES.put("backend-vulkan", "backend/vulkan");

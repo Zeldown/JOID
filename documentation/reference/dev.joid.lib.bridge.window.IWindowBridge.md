@@ -44,3 +44,8 @@ Puts the text in the system clipboard; never throws.
 
 Shows that system cursor over the window; does nothing by default.
 JOID calls it once per change, never while `isMouseGrabbed()` returns `true`.
+
+## setTextInputArea(BoundingBox)
+
+Receives the area of the cursor of the focused text field, in screen pixels, or `null` once no field has the focus; does nothing by default.
+JOID calls it once per change: a host whose text input must be switched on, or whose input method places its window near the text, starts it on an area and stops it on `null`.

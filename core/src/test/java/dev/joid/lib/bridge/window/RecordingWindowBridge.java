@@ -7,6 +7,7 @@ import java.util.Set;
 
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -15,8 +16,9 @@ import lombok.Setter;
 @Setter
 public final class RecordingWindowBridge implements IWindowBridge {
 
-	private final Set<Key>     keys    = EnumSet.noneOf(Key.class);
-	private final List<Cursor> cursors = new ArrayList<>();
+	private final Set<Key>          keys           = EnumSet.noneOf(Key.class);
+	private final List<Cursor>      cursors        = new ArrayList<>();
+	private final List<BoundingBox> textInputAreas = new ArrayList<>();
 
 	private int     width;
 	private int     height;
@@ -37,6 +39,11 @@ public final class RecordingWindowBridge implements IWindowBridge {
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
 		this.cursors.add(cursor);
+	}
+
+	@Override
+	public void setTextInputArea(final BoundingBox area) {
+		this.textInputAreas.add(area);
 	}
 
 }
