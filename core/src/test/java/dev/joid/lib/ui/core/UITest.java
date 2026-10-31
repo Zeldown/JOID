@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.CodeSource;
@@ -2467,6 +2469,20 @@ public class UITest {
 	}
 
 	@Test
+	public void watchesTheJarNamedByALocationOfAnotherScheme() throws Exception {
+		final File location = new File(this.folder.newFolder("modules"), "ui.jar");
+		Files.write(location.toPath(), new byte[] {1});
+		final UI ui = UITest.hotReloaded(new URL(null, "module:" + location.toURI().getRawPath() + "%2312!/", new ModuleStreamHandler()), new AtomicInteger());
+		JOIDEnv.devMode(true);
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		try {
+			Assert.assertEquals(location, UITest.location(ui));
+		} finally {
+			ui.dispose();
+		}
+	}
+
+	@Test
 	public void reloadsOnceAClassOfTheFolderAboveItsClassFileChanges() throws Exception {
 		final File location = this.folder.newFolder("classes");
 		final File own = new File(location, "dev/joid/lib/ui/core/HotReloadUI.class");
@@ -3388,6 +3404,15 @@ public class UITest {
 		@Override
 		public void onStop(final FileAlterationObserver observer) {
 			this.changes.add("stop");
+		}
+
+	}
+
+	public static final class ModuleStreamHandler extends URLStreamHandler {
+
+		@Override
+		protected URLConnection openConnection(final URL url) throws IOException {
+			throw new IOException("No connection to " + url);
 		}
 
 	}

@@ -2,10 +2,12 @@ package dev.joid.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
@@ -168,6 +170,10 @@ public final class HotReload {
 			}
 		}
 
+		if (!"file".equals(location.getProtocol())) {
+			return HotReload.toNamedFile(location);
+		}
+
 		File file = HotReload.toFile(location);
 		if (file != null && file.getName().endsWith(".class")) {
 			for (int segment = type.getName().split("\\.").length; segment > 0 && file != null; segment--) {
@@ -175,6 +181,19 @@ public final class HotReload {
 			}
 		}
 		return file;
+	}
+
+	private static File toNamedFile(final URL location) {
+		try {
+			final String path = URLDecoder.decode(location.getPath().replace("+", "%2B"), "UTF-8");
+			final int separator = path.indexOf("!/");
+			final String entry = separator < 0 ? path : path.substring(0, separator);
+			final int suffix = entry.lastIndexOf('#');
+			final File file = HotReload.toFile(new URL("file", "", suffix < 0 ? entry : entry.substring(0, suffix)));
+			return file != null && file.exists() ? file : null;
+		} catch (final UnsupportedEncodingException | MalformedURLException | IllegalArgumentException exception) {
+			return null;
+		}
 	}
 
 	private static File toFile(final URL location) {
