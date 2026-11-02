@@ -15,7 +15,9 @@ import org.junit.Test;
 
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -422,6 +424,25 @@ public class ResourceTest {
 		resource.clear();
 		Assert.assertFalse(resource.isLoaded());
 		resource.prepareBind();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertEquals(Arrays.asList("init", "prepare", "decode", "upload", "clear", "prepare", "decode", "upload"), decoder.calls);
+	}
+
+	@Test
+	public void loadsAgainForTheNextRenderBridge() {
+		final Decoder decoder = new Decoder(true);
+		final Resource resource = ResourceTest.resource(decoder);
+		resource.prepareBind();
+		final RecordingRenderBridge next = new RecordingRenderBridge();
+		BridgeHandler.RENDER.unregister(this.bridges.getRender());
+		BridgeHandler.RENDER.register(next);
+		try {
+			resource.prepareBind();
+			resource.prepareBind();
+		} finally {
+			BridgeHandler.RENDER.unregister(next);
+			BridgeHandler.RENDER.register(this.bridges.getRender());
+		}
 		Assert.assertTrue(resource.isLoaded());
 		Assert.assertEquals(Arrays.asList("init", "prepare", "decode", "upload", "clear", "prepare", "decode", "upload"), decoder.calls);
 	}

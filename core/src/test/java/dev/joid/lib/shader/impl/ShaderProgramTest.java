@@ -18,7 +18,9 @@ import dev.joid.internal.TestUtils;
 import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 
@@ -63,6 +65,23 @@ public class ShaderProgramTest {
 		Assert.assertNotSame(recording, shader.getShader());
 		Assert.assertTrue(shader.isAvailable());
 		new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source()).delete();
+	}
+
+	@Test
+	public void createsItsShaderAgainForTheNextRenderBridge() {
+		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
+		final IShader first = shader.getShader();
+		final RecordingRenderBridge next = new RecordingRenderBridge();
+		BridgeHandler.RENDER.unregister(this.bridges.getRender());
+		BridgeHandler.RENDER.register(next);
+		try {
+			shader.bind();
+			Assert.assertNotSame(first, shader.getShader());
+			Assert.assertSame(shader.getShader(), next.getState().getShader());
+		} finally {
+			BridgeHandler.RENDER.unregister(next);
+			BridgeHandler.RENDER.register(this.bridges.getRender());
+		}
 	}
 
 	@Test

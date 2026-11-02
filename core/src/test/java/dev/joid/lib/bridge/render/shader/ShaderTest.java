@@ -9,6 +9,7 @@ import org.junit.Test;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.JOIDEnv;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -130,6 +131,23 @@ public class ShaderTest {
 		line.isActive();
 		shader.delete();
 		Assert.assertEquals(1, line.deletions);
+	}
+
+	@Test
+	public void leavesTheProgramOfARenderBridgeThatIsGone() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final TestShader shader;
+		BridgeHandler.RENDER.register(render);
+		try {
+			shader = ShaderTest.create(render);
+			shader.isActive();
+		} finally {
+			BridgeHandler.RENDER.unregister(render);
+		}
+
+		shader.delete();
+		Assert.assertEquals(0, shader.deletions);
+		Assert.assertFalse(shader.isCompiled());
 	}
 
 	@Test

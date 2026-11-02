@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
@@ -25,6 +27,7 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -35,6 +38,9 @@ public abstract class Shader implements IShader {
 	private final RenderBridge bridge;
 	private final ShaderSource vertex;
 	private final ShaderSource fragment;
+
+	@Getter(AccessLevel.NONE)
+	private final IRenderBridge render = BridgeHandler.RENDER.getBridge(IRenderBridge.class);
 
 	private final UniformBlock                block;
 	private final ShaderTranslation           translation;
@@ -74,7 +80,9 @@ public abstract class Shader implements IShader {
 
 		if (this.compiled) {
 			this.compiled = false;
-			this.deleteProgram();
+			if (this.render == null || BridgeHandler.RENDER.isRegistered(this.render)) {
+				this.deleteProgram();
+			}
 		}
 	}
 

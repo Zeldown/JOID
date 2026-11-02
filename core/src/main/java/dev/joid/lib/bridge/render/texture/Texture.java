@@ -1,10 +1,16 @@
 package dev.joid.lib.bridge.render.texture;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public abstract class Texture implements ITexture {
+
+	@Getter(AccessLevel.NONE)
+	private final IRenderBridge render = BridgeHandler.RENDER.getBridge(IRenderBridge.class);
 
 	private int     width;
 	private int     height;
@@ -69,7 +75,9 @@ public abstract class Texture implements ITexture {
 			return;
 		}
 
-		this.deleteStorage();
+		if (this.render == null || BridgeHandler.RENDER.isRegistered(this.render)) {
+			this.deleteStorage();
+		}
 		this.deleted = true;
 	}
 

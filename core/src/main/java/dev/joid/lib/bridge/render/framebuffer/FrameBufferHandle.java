@@ -1,5 +1,7 @@
 package dev.joid.lib.bridge.render.framebuffer;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.Texture;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +15,9 @@ public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuff
 	@NonNull
 	private final T texture;
 
+	@Getter(AccessLevel.NONE)
+	private final IRenderBridge render = BridgeHandler.RENDER.getBridge(IRenderBridge.class);
+
 	private boolean deleted;
 
 	@Override
@@ -21,7 +26,9 @@ public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuff
 			return;
 		}
 
-		this.deleteHandle();
+		if (this.render == null || BridgeHandler.RENDER.isRegistered(this.render)) {
+			this.deleteHandle();
+		}
 		this.texture.delete();
 		this.deleted = true;
 	}

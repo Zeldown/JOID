@@ -77,6 +77,10 @@ public class BridgeRegistry<T extends IBridge> {
 		return null;
 	}
 
+	public final boolean isRegistered(final @NonNull T bridge) {
+		return this.bridgeList.contains(bridge);
+	}
+
 	public final @NonNull List<@NonNull T> getBridgeList() {
 		return this.bridgeList;
 	}

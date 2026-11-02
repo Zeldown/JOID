@@ -34,6 +34,8 @@ public class BridgeRegistryTest {
 		registry.register(second);
 		registry.unregister(second);
 		Assert.assertSame(first, registry.get());
+		Assert.assertTrue(registry.isRegistered(first));
+		Assert.assertFalse(registry.isRegistered(second));
 	}
 
 	@Test

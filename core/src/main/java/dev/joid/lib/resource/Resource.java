@@ -286,6 +286,10 @@ public final class Resource {
 	}
 
 	public void prepareBind() {
+		if (this.data.isRenderLost()) {
+			this.data.clear();
+		}
+
 		if (this.blocking) {
 			this.data.await();
 		}

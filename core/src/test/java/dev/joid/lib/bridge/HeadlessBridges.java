@@ -14,7 +14,6 @@ import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.RewoundClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
-import dev.joid.lib.bridge.render.RenderSingletons;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistry;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
@@ -34,7 +33,6 @@ public final class HeadlessBridges extends ExternalResource {
 
 	@Override
 	protected void before() {
-		RenderSingletons.reset();
 		BridgeHandler.UI.register(this.ui);
 		BridgeHandler.CLOCK.register(this.clock);
 		BridgeHandler.WINDOW.register(this.window);
@@ -49,7 +47,6 @@ public final class HeadlessBridges extends ExternalResource {
 			this.ui.remove(opened);
 		}
 
-		RenderSingletons.reset();
 		BridgeHandler.UI.unregister(this.ui);
 		BridgeHandler.CLOCK.unregister(this.clock);
 		BridgeHandler.CLOCK.unregister(this.wall);

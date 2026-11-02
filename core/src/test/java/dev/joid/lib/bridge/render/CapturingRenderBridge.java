@@ -42,12 +42,10 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 
 			@Override
 			public void evaluate() throws Throwable {
-				RenderSingletons.reset();
 				BridgeHandler.RENDER.register(CapturingRenderBridge.this);
 				try {
 					base.evaluate();
 				} finally {
-					RenderSingletons.reset();
 					BridgeHandler.RENDER.unregister(CapturingRenderBridge.this);
 					JOIDWarnings.forget();
 				}

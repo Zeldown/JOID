@@ -54,6 +54,36 @@ public class FrameBufferPoolTest {
 	}
 
 	@Test
+	public void givesNewFrameBuffersToTheNextRenderBridge() {
+		final Object owner = new Object();
+		final IFrameBuffer[] first = FrameBufferPool.allocate(owner, 0, 1, 64, 64);
+		final CapturingRenderBridge next = new CapturingRenderBridge(1920, 1080);
+		BridgeHandler.RENDER.unregister(this.render);
+		BridgeHandler.RENDER.register(next);
+		try {
+			final IFrameBuffer[] second = FrameBufferPool.allocate(owner, 0, 1, 64, 64);
+			Assert.assertNotSame(first, second);
+			Assert.assertTrue(((RecordingFrameBuffer) first[0]).isDeleted());
+			Assert.assertSame(second, FrameBufferPool.allocate(owner, 0, 1, 64, 64));
+		} finally {
+			BridgeHandler.RENDER.unregister(next);
+			BridgeHandler.RENDER.register(this.render);
+		}
+	}
+
+	@Test
+	public void releasesTheFrameBuffersOfARenderBridgeThatIsGone() {
+		final IFrameBuffer[] frameBuffers = FrameBufferPool.allocate(new Object(), 0, 1, 64, 64);
+		BridgeHandler.RENDER.unregister(this.render);
+		try {
+			FrameBufferPool.releaseUnused();
+		} finally {
+			BridgeHandler.RENDER.register(this.render);
+		}
+		Assert.assertTrue(((RecordingFrameBuffer) frameBuffers[0]).isDeleted());
+	}
+
+	@Test
 	public void shrinksToItsPeakOfTheLastFiveSeconds() {
 		final ManualClockBridge clock = new ManualClockBridge(1000L);
 		final RewoundClockBridge wall = new RewoundClockBridge(3_600_000L, clock);

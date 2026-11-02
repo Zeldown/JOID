@@ -39,6 +39,8 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 	private float pixelX;
 	private float pixelY;
 
+	private IRenderBridge render;
+
 	@Getter(AccessLevel.PROTECTED) private IShader   shader;
 	@Getter(AccessLevel.PROTECTED) private PixelGrid grid;
 
@@ -197,7 +199,13 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 
 	private boolean canDraw() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (this.shader != null && !BridgeHandler.RENDER.isRegistered(this.render)) {
+			this.shader.delete();
+			this.shader = null;
+		}
+
 		if (this.shader == null) {
+			this.render = render;
 			this.shader = this.source.create(BlendState.NORMAL);
 		}
 

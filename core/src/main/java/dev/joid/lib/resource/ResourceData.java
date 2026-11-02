@@ -20,6 +20,7 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
@@ -47,6 +48,8 @@ public final class ResourceData {
 	private ITexture[] textures;
 
 	private ITexture missingTexture;
+
+	private IRenderBridge render;
 
 	@Getter
 	private volatile Throwable error;
@@ -187,6 +190,7 @@ public final class ResourceData {
 			this.generated = true;
 
 			try {
+				this.render = BridgeHandler.RENDER.getBridge(IRenderBridge.class);
 				this.decoder.prepare(this);
 			} catch (final RuntimeException exception) {
 				this.fail(exception);
@@ -291,6 +295,10 @@ public final class ResourceData {
 		return this.error != null;
 	}
 
+	public boolean isRenderLost() {
+		return this.render != null && !BridgeHandler.RENDER.isRegistered(this.render);
+	}
+
 	public boolean isDispatching() {
 		final Future<?> detecting = this.detecting;
 		return detecting != null && !detecting.isDone();
@@ -354,7 +362,8 @@ public final class ResourceData {
 			for (int i = 0; i < pixels.length; i++) {
 				pixels[i] = (i / 8 + i % 8) % 2 == 0 ? 0xFFFF00FF : 0xFF000000;
 			}
-			this.missingTexture = BridgeHandler.RENDER.get().createTexture().allocate(8, 8).upload(pixels);
+			this.render = BridgeHandler.RENDER.get();
+			this.missingTexture = this.render.createTexture().allocate(8, 8).upload(pixels);
 		}
 		return this.missingTexture;
 	}
@@ -384,6 +393,7 @@ public final class ResourceData {
 
 		this.data      = null;
 		this.error     = null;
+		this.render    = null;
 		this.loaded    = false;
 		this.uploaded  = false;
 		this.generated = false;

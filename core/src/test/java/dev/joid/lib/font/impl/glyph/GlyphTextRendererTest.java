@@ -16,6 +16,7 @@ import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
@@ -262,6 +263,25 @@ public class GlyphTextRendererTest {
 			JOIDEnv.devMode(devMode);
 		}
 		Assert.assertTrue(renderer.drawn.isEmpty());
+	}
+
+	@Test
+	public void createsItsShaderAgainForTheNextRenderBridge() {
+		final Renderer renderer = new Renderer(false);
+		final TextInfo info = TextInfo.create(new Font(FontFamily.of(GlyphTextRendererTest.REGULAR), renderer), 10F);
+		renderer.drawText(0D, 0D, "A", info);
+		final IShader first = renderer.getShader();
+		final CapturingRenderBridge next = new CapturingRenderBridge(1920, 1080);
+		BridgeHandler.RENDER.unregister(this.render);
+		BridgeHandler.RENDER.register(next);
+		try {
+			renderer.drawText(0D, 0D, "A", info);
+		} finally {
+			BridgeHandler.RENDER.unregister(next);
+			BridgeHandler.RENDER.register(this.render);
+		}
+		Assert.assertNotSame(first, renderer.getShader());
+		Assert.assertEquals(2, renderer.drawn.size());
 	}
 
 	@Test

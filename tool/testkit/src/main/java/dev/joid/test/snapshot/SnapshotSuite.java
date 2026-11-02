@@ -71,6 +71,18 @@ public abstract class SnapshotSuite {
 		this.verify("interaction");
 	}
 
+	@Test
+	public void drawsTheSameShotsAfterARestart() {
+		final String[] commands = {"ui dev.joid.demo.ui.shader.UIDemoEffect", "wait 500", "shot effect", "ui dev.joid.demo.ui.font.UIDemoFont", "wait 500", "shot font", "ui dev.joid.demo.ui.resource.UIDemoResource", "wait 500", "shot resource"};
+		final Map<String, SnapshotImage> before = this.getRunner().execute(commands);
+		SnapshotSuite.runner.stop();
+		SnapshotSuite.runner = null;
+		final Map<String, SnapshotImage> after = this.getRunner().execute(commands);
+		for (final Map.Entry<String, SnapshotImage> shot : before.entrySet()) {
+			Assert.assertEquals(shot.getKey() + " changed after a restart", 0, after.get(shot.getKey()).compare(shot.getValue(), 0).getPixels());
+		}
+	}
+
 	private SnapshotRunner getRunner() {
 		if (SnapshotSuite.runner == null) {
 			SnapshotSuite.runner = SnapshotRunner.start(this.createBackend());

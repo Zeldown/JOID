@@ -3,6 +3,8 @@ package dev.joid.lib.bridge.render.framebuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import dev.joid.lib.bridge.render.texture.Texture;
 import lombok.Getter;
@@ -23,6 +25,23 @@ public class FrameBufferHandleTest {
 		frameBuffer.delete();
 		frameBuffer.delete();
 		Assert.assertEquals(1, frameBuffer.getDeletions());
+		Assert.assertTrue(frameBuffer.isDeleted());
+		Assert.assertTrue(frameBuffer.getTexture().isDeleted());
+	}
+
+	@Test
+	public void leavesTheHandleOfARenderBridgeThatIsGone() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final HookFrameBuffer frameBuffer;
+		BridgeHandler.RENDER.register(render);
+		try {
+			frameBuffer = new HookFrameBuffer(8, 8);
+		} finally {
+			BridgeHandler.RENDER.unregister(render);
+		}
+
+		frameBuffer.delete();
+		Assert.assertEquals(0, frameBuffer.getDeletions());
 		Assert.assertTrue(frameBuffer.isDeleted());
 		Assert.assertTrue(frameBuffer.getTexture().isDeleted());
 	}

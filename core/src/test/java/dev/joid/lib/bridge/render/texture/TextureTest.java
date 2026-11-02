@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -106,6 +108,24 @@ public class TextureTest {
 		texture.delete();
 		texture.delete();
 		Assert.assertEquals(Arrays.asList("allocate 2x2 1", "delete"), texture.getCalls());
+		Assert.assertTrue(texture.isDeleted());
+		Assert.assertFalse(texture.isAllocated());
+	}
+
+	@Test
+	public void leavesTheStorageOfARenderBridgeThatIsGone() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final HookTexture texture;
+		BridgeHandler.RENDER.register(render);
+		try {
+			texture = new HookTexture();
+			texture.allocate(2, 2);
+		} finally {
+			BridgeHandler.RENDER.unregister(render);
+		}
+
+		texture.delete();
+		Assert.assertEquals(Arrays.asList("allocate 2x2 1"), texture.getCalls());
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertFalse(texture.isAllocated());
 	}

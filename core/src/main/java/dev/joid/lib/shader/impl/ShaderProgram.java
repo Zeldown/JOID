@@ -2,6 +2,7 @@ package dev.joid.lib.shader.impl;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
@@ -15,7 +16,9 @@ import lombok.NonNull;
 
 public abstract class ShaderProgram {
 
-	private IShader      shader;
+	private IShader       shader;
+	private IRenderBridge render;
+
 	private ShaderSource vertex;
 	private ShaderSource fragment;
 
@@ -53,9 +56,14 @@ public abstract class ShaderProgram {
 	}
 
 	public IShader getShader() {
+		if (this.shader != null && !BridgeHandler.RENDER.isRegistered(this.render)) {
+			this.delete();
+		}
+
 		if (this.shader == null && this.vertex != null) {
 			try {
-				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
+				this.render = BridgeHandler.RENDER.get();
+				this.shader = this.render.createShader(this.vertex, this.fragment, BlendState.NORMAL);
 			} catch (final Exception e) {
 				this.vertex = null;
 				JOIDLog.warn("The shader " + JOIDLog.nameOf(this.getClass()) + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);

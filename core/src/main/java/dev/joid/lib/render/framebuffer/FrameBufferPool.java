@@ -23,7 +23,7 @@ public final class FrameBufferPool {
 		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final List<Object> key = Arrays.asList(owner, depth, count);
 		final PooledFrameBuffers pooled = FrameBufferPool.POOL.get(key);
-		final boolean owned = pooled != null;
+		final boolean owned = pooled != null && BridgeHandler.RENDER.isRegistered(pooled.render);
 		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {
 			pooled.lastUse = now;
 			pooled.peakWidth = Math.max(pooled.peakWidth, width);
@@ -33,7 +33,7 @@ public final class FrameBufferPool {
 
 		final int targetWidth = FrameBufferPool.capacity(owned ? pooled.frameBuffers[0].getWidth() : 0, width);
 		final int targetHeight = FrameBufferPool.capacity(owned ? pooled.frameBuffers[0].getHeight() : 0, height);
-		if (owned) {
+		if (pooled != null) {
 			pooled.delete();
 			FrameBufferPool.POOL.remove(key);
 		}
@@ -44,7 +44,7 @@ public final class FrameBufferPool {
 			frameBuffers[i] = render.createFrameBuffer(targetWidth, targetHeight);
 		}
 
-		FrameBufferPool.POOL.put(key, new PooledFrameBuffers(frameBuffers, now, now, width, height));
+		FrameBufferPool.POOL.put(key, new PooledFrameBuffers(render, frameBuffers, now, now, width, height));
 		return frameBuffers;
 	}
 
@@ -61,7 +61,7 @@ public final class FrameBufferPool {
 		while (iterator.hasNext()) {
 			final PooledFrameBuffers pooled = iterator.next();
 			final boolean elapsed = now - pooled.peakStart >= 5_000_000_000L;
-			if (now - pooled.lastUse >= 5_000_000_000L || elapsed && (FrameBufferPool.capacity(0, pooled.peakWidth) < pooled.frameBuffers[0].getWidth() || FrameBufferPool.capacity(0, pooled.peakHeight) < pooled.frameBuffers[0].getHeight())) {
+			if (!BridgeHandler.RENDER.isRegistered(pooled.render) || now - pooled.lastUse >= 5_000_000_000L || elapsed && (FrameBufferPool.capacity(0, pooled.peakWidth) < pooled.frameBuffers[0].getWidth() || FrameBufferPool.capacity(0, pooled.peakHeight) < pooled.frameBuffers[0].getHeight())) {
 				pooled.delete();
 				iterator.remove();
 			} else if (elapsed) {
@@ -79,6 +79,7 @@ public final class FrameBufferPool {
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class PooledFrameBuffers {
 
+		private final IRenderBridge  render;
 		private final IFrameBuffer[] frameBuffers;
 
 		private long lastUse;
