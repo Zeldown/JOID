@@ -63,6 +63,28 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void comparesEachChildAsOftenWhateverItsSiblingCountDuringADrag() {
+		final int[] comparisons = {0};
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D);
+		for (int i = 0; i < 10; i++) {
+			new ComparedNode(comparisons).attach(flex);
+		}
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 140D).frames(2);
+		comparisons[0] = 0;
+		this.bridges.frame();
+		final int few = comparisons[0];
+		for (int i = 10; i < 100; i++) {
+			new ComparedNode(comparisons).attach(flex);
+		}
+		this.bridges.frames(2);
+		comparisons[0] = 0;
+		this.bridges.frame();
+		Assert.assertTrue(few + " comparisons for 10 children, then " + comparisons[0] + " for 100", comparisons[0] <= few * 10);
+	}
+
+	@Test
 	public void consumesThePressThatStartsADrag() {
 		final List<Object> clicks = new ArrayList<>();
 		final RectNode parent = RectNode.create(100D, 100D, 200D, 400D).onClick(event -> clicks.add(event.getMouseY()));
@@ -867,6 +889,28 @@ public class ReorderableFlexNodeTest {
 
 	private static RectNode item() {
 		return RectNode.create(0D, 0D, 200D, 50D);
+	}
+
+	private static final class ComparedNode extends RectNode {
+
+		private final int[] comparisons;
+
+		private ComparedNode(final int[] comparisons) {
+			super(0D, 0D, 200D, 50D);
+			this.comparisons = comparisons;
+		}
+
+		@Override
+		public boolean equals(final Object other) {
+			this.comparisons[0]++;
+			return super.equals(other);
+		}
+
+		@Override
+		public int hashCode() {
+			return super.hashCode();
+		}
+
 	}
 
 }
