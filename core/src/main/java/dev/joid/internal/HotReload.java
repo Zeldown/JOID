@@ -160,6 +160,30 @@ public final class HotReload {
 			return null;
 		}
 
+		if ("jar".equals(location.getProtocol()) || "file".equals(location.getProtocol())) {
+			return HotReload.toLocation(type, location);
+		}
+
+		final File file = HotReload.toNamedFile(location);
+		return file != null ? file : HotReload.locateInParents(type, location);
+	}
+
+	private static File locateInParents(final Class<?> type, final URL location) {
+		final String entry = type.getName().replace('.', '/') + ".class";
+		if (!location.getPath().endsWith("/" + entry)) {
+			return null;
+		}
+
+		for (ClassLoader loader = type.getClassLoader(); loader != null; loader = loader.getParent()) {
+			final URL resource = loader.getResource(entry);
+			if (resource != null && ("jar".equals(resource.getProtocol()) || "file".equals(resource.getProtocol()))) {
+				return HotReload.toLocation(type, resource);
+			}
+		}
+		return null;
+	}
+
+	private static File toLocation(final Class<?> type, final URL location) {
 		if ("jar".equals(location.getProtocol())) {
 			final String path = location.getPath();
 			final int separator = path.indexOf("!/");
@@ -168,10 +192,6 @@ public final class HotReload {
 			} catch (final MalformedURLException exception) {
 				return null;
 			}
-		}
-
-		if (!"file".equals(location.getProtocol())) {
-			return HotReload.toNamedFile(location);
 		}
 
 		File file = HotReload.toFile(location);
