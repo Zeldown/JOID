@@ -616,6 +616,50 @@ public class NodeTest {
 	}
 
 	@Test
+	public void hidesTheChildrenOfANodeOutsideItsOverflowArea() {
+		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D);
+		final ContainerNode child = ContainerNode.create(150D, 10D, 20D, 20D).append(grandchild);
+		this.bridges.open(new NodeUI(ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child))).frame();
+		Assert.assertFalse(child.isVisible());
+		Assert.assertFalse(grandchild.isVisible());
+	}
+
+	@Test
+	public void hidesTheChildrenOfAnAreaOutsideItsOwnOverflowArea() {
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D);
+		final ContainerNode inner = ContainerNode.create(10D, 150D, 50D, 50D).overflow(OverflowProperty.HIDDEN).append(child);
+		final ContainerNode outer = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(inner);
+		this.bridges.open(new NodeUI(outer)).frame();
+		inner.y(10D);
+		this.bridges.frames(2);
+		Assert.assertTrue(child.isVisible());
+		inner.y(150D);
+		this.bridges.frame();
+		Assert.assertFalse(inner.isVisible());
+		Assert.assertFalse(child.isVisible());
+	}
+
+	@Test
+	public void looksAtEachChildAsOftenWhateverItsSiblingCount() {
+		final int[] looks = {0};
+		final ContainerNode holder = ContainerNode.create(0D, 0D, 0D, 0D);
+		for (int i = 0; i < 10; i++) {
+			new CountedNode(i * 20D, 0D, looks).attach(holder);
+		}
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 300D).overflow(OverflowProperty.HIDDEN).append(holder))).frames(2);
+		looks[0] = 0;
+		this.bridges.frame();
+		final int few = looks[0];
+		for (int i = 10; i < 100; i++) {
+			new CountedNode(i % 20 * 20D, i / 20 * 20D, looks).attach(holder);
+		}
+		this.bridges.frames(2);
+		looks[0] = 0;
+		this.bridges.frame();
+		Assert.assertEquals(few * 10, looks[0]);
+	}
+
+	@Test
 	public void staysVisibleBesideAnAreaWithoutOverflow() {
 		final RectNode node = NodeTest.assign(RectNode.create(500D, 500D, 10D, 10D), "overflowArea", ContainerNode.create(0D, 0D, 10D, 10D));
 		Assert.assertNotNull(node.getOverflowArea());
@@ -4608,6 +4652,23 @@ public class NodeTest {
 
 		public ShadedRect() {
 			super(0D, 0D, 10D, 10D);
+		}
+
+	}
+
+	public static final class CountedNode extends Node {
+
+		private final int[] looks;
+
+		public CountedNode(final double x, final double y, final int[] looks) {
+			super(x, y, 10D, 10D);
+			this.looks = looks;
+		}
+
+		@Override
+		public int getIndex() {
+			this.looks[0]++;
+			return super.getIndex();
 		}
 
 	}

@@ -1381,17 +1381,7 @@ public abstract class Node implements INode {
 	}
 
 	public boolean isVisible() {
-		if (this.parent != null && !this.parent.isVisible()) {
-			return false;
-		}
-
-		if (this.overflowArea != null && this.overflowArea.overflow != OverflowProperty.NONE) {
-			if (this.getAbsoluteX() + this.getContentWidth() < this.overflowArea.getAbsoluteX() || this.getAbsoluteX() > this.overflowArea.getAbsoluteX() + this.overflowArea.width || this.getAbsoluteY() + this.getContentHeight() < this.overflowArea.getAbsoluteY() || this.getAbsoluteY() > this.overflowArea.getAbsoluteY() + this.overflowArea.height) {
-				return false;
-			}
-		}
-
-		return this.isVisibleProperty();
+		return this.isVisible(false);
 	}
 
 	public boolean isVisibleProperty() {
@@ -1931,6 +1921,20 @@ public abstract class Node implements INode {
 
 	private boolean isShown() {
 		return this.isVisibleProperty() && (this.parent == null || this.parent.isShown());
+	}
+
+	private boolean isVisible(final boolean reaching) {
+		if (!this.isVisibleProperty()) {
+			return false;
+		}
+
+		final Node area = this.overflowArea;
+		final boolean clipped = area != null && area.overflow != OverflowProperty.NONE;
+		if (clipped && (this.getAbsoluteX() > area.getAbsoluteX() + area.width || this.getAbsoluteY() > area.getAbsoluteY() + area.height || !reaching && (this.getAbsoluteX() + this.getContentWidth() < area.getAbsoluteX() || this.getAbsoluteY() + this.getContentHeight() < area.getAbsoluteY()))) {
+			return false;
+		}
+
+		return this.parent == null || this.parent.isVisible(clipped && this.position != PositionProperty.ABSOLUTE && this.parent.overflowArea == area);
 	}
 
 	private boolean reactsToInput() {
