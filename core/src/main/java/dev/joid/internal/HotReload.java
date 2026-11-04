@@ -156,8 +156,9 @@ public final class HotReload {
 		final ProtectionDomain domain = type.getProtectionDomain();
 		final CodeSource source = domain != null ? domain.getCodeSource() : null;
 		final URL location = source != null ? source.getLocation() : null;
+		final String entry = type.getName().replace('.', '/') + ".class";
 		if (location == null) {
-			return null;
+			return HotReload.locateInLoaders(type, entry);
 		}
 
 		if ("jar".equals(location.getProtocol()) || "file".equals(location.getProtocol())) {
@@ -165,15 +166,10 @@ public final class HotReload {
 		}
 
 		final File file = HotReload.toNamedFile(location);
-		return file != null ? file : HotReload.locateInParents(type, location);
+		return file != null || !location.getPath().endsWith("/" + entry) ? file : HotReload.locateInLoaders(type, entry);
 	}
 
-	private static File locateInParents(final Class<?> type, final URL location) {
-		final String entry = type.getName().replace('.', '/') + ".class";
-		if (!location.getPath().endsWith("/" + entry)) {
-			return null;
-		}
-
+	private static File locateInLoaders(final Class<?> type, final String entry) {
 		for (ClassLoader loader = type.getClassLoader(); loader != null; loader = loader.getParent()) {
 			final URL resource = loader.getResource(entry);
 			if (resource != null && ("jar".equals(resource.getProtocol()) || "file".equals(resource.getProtocol()))) {

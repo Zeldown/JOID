@@ -2495,6 +2495,18 @@ public class UITest {
 	}
 
 	@Test
+	public void watchesTheClassFolderOfAClassWithoutLocation() throws Exception {
+		final UI ui = UITest.hotReloaded((URL) null, new AtomicInteger());
+		JOIDEnv.devMode(true);
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		try {
+			Assert.assertEquals(new File(HotReloadUI.class.getProtectionDomain().getCodeSource().getLocation().toURI()), UITest.location(ui));
+		} finally {
+			ui.dispose();
+		}
+	}
+
+	@Test
 	public void reloadsOnceAClassOfTheFolderAboveItsClassFileChanges() throws Exception {
 		final File location = this.folder.newFolder("classes");
 		final File own = new File(location, "dev/joid/lib/ui/core/HotReloadUI.class");
